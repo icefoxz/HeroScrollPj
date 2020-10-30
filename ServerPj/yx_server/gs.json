@@ -1,0 +1,38 @@
+{
+    "dataDir":"config",
+    "log4jFile":"log4j.properties",
+    "linkClient":{
+        "servers":[
+            {
+                "addr":"127.0.0.1",
+                "port":10421,
+                "expireTime":999999,
+                "maxMsgSize":65536000
+            }
+        ]
+    },
+    "xdb":{
+        "localId":1,
+        "corePoolSize":10,
+        "procPoolSize":10,
+        "schedPoolSize":2,
+        "checkpointPeriod":10,
+        "shrinkPeriod":30,
+        "shrinkRecordExpireTime":1800,
+        "defaultCacheRecordNum":10000,
+        "defaultRecordExpireTime":600,
+        "dbhome":"dbhome",
+        "tables":[
+            {
+                "name":"roleinfos",
+                "maxCacheRecordNum":10000,
+                "recordExpireTime":600
+            }
+        ],
+
+        "storage" : {
+            "type" : "bdb",
+            "dbHome" : "_yx_db_"
+        }
+    }
+}

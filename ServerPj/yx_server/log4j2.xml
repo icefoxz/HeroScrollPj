@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN" monitorInterval="60">
+    <Appenders>
+        <!-- 定义类型为Console的Appender -->
+        <Console name="Console" target="SYSTEM_OUT">
+            <!-- 定义类型为Pattern的Layout -->
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%level] [%thread] [%C{1.}.%M:%L] - %m%n"/>
+        </Console>
+
+        <RollingFile name="RollingFile" fileName="logs/gs.log" filePattern="logs/$${date:yyyy-MM}/app-%d{MM-dd-yyyy}-%i.log.gz" bufferedIO="false">
+            <PatternLayout>
+                <Pattern>%d [%p] [%t] [%C{1.}.%M:%L] - %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="10 MB"/>
+            </Policies>
+        </RollingFile>
+
+        <RollingRandomAccessFile name="BiAppender" fileName="logs/bi.log" filePattern="logs/bi-%d{yyyy-MM-dd-HH-mm}.log">
+            <PatternLayout>
+                <Pattern>%m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="30" modulate="true"/>
+            </Policies>
+        </RollingRandomAccessFile>
+
+    </Appenders>
+
+    <Loggers>
+        <!-- 定义Root Logger，其日志级别为error -->
+        <Root level="info">
+            <!-- Root Logger的Appender引用上面定义的Console -->
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="RollingFile"/>
+        </Root>
+        <logger name="bi" level="info" additivity="false">
+            <AppenderRef ref="BiAppender"/>
+        </logger>
+    </Loggers>
+
+</Configuration>
