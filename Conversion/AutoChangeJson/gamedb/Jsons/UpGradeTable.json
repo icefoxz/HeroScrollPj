@@ -1,0 +1,59 @@
+{
+	"UpGradeTable": [
+		{
+			"startLevel": "1",
+			"partsDemand": "5",
+			"yuanbaoDemand": "100"
+		},
+		{
+			"startLevel": "2",
+			"partsDemand": "5",
+			"yuanbaoDemand": "500"
+		},
+		{
+			"startLevel": "3",
+			"partsDemand": "10",
+			"yuanbaoDemand": "1000"
+		},
+		{
+			"startLevel": "4",
+			"partsDemand": "20",
+			"yuanbaoDemand": "2000"
+		},
+		{
+			"startLevel": "5",
+			"partsDemand": "40",
+			"yuanbaoDemand": "4000"
+		},
+		{
+			"startLevel": "6",
+			"partsDemand": "80",
+			"yuanbaoDemand": "8000"
+		},
+		{
+			"startLevel": "7",
+			"partsDemand": "100",
+			"yuanbaoDemand": "15000"
+		},
+		{
+			"startLevel": "8",
+			"partsDemand": "150",
+			"yuanbaoDemand": "30000"
+		},
+		{
+			"startLevel": "9",
+			"partsDemand": "200",
+			"yuanbaoDemand": "45000"
+		},
+		{
+			"startLevel": "10",
+			"partsDemand": "300",
+			"yuanbaoDemand": "60000"
+		},
+		{
+			"startLevel": "11",
+			"partsDemand": "500",
+			"yuanbaoDemand": "80000"
+		}
+	]
+}
