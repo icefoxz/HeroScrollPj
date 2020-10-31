@@ -1,0 +1,74 @@
+{
+	"SpellTable": [
+		{
+			"id": "0",
+			"name": "反间",
+			"intro": "敌方攻击敌方。持续1回合",
+			"rarity": "4",
+			"price": "4",
+			"shortName": "反",
+			"icon": "1",
+			"onShow": "1"
+		},
+		{
+			"id": "1",
+			"name": "激励",
+			"intro": "攻击两次。持续1回合",
+			"rarity": "4",
+			"price": "4",
+			"shortName": "激",
+			"icon": "1",
+			"onShow": "0"
+		},
+		{
+			"id": "2",
+			"name": "铁索连环",
+			"intro": "当目标受到伤害时，目标周围全体单位同时受到伤害，直到目标死亡",
+			"rarity": "4",
+			"price": "4",
+			"shortName": "连",
+			"icon": "1",
+			"onShow": "0"
+		},
+		{
+			"id": "3",
+			"name": "同归于尽",
+			"intro": "自杀式进攻，伤害*5",
+			"rarity": "4",
+			"price": "4",
+			"shortName": "急",
+			"icon": "1",
+			"onShow": "0"
+		},
+		{
+			"id": "4",
+			"name": "固若金汤",
+			"intro": "添加2次可以免伤的护盾",
+			"rarity": "4",
+			"price": "4",
+			"shortName": "金",
+			"icon": "1",
+			"onShow": "0"
+		},
+		{
+			"id": "5",
+			"name": "天罗地网",
+			"intro": "眩晕目标。持续2回合",
+			"rarity": "4",
+			"price": "4",
+			"shortName": "网",
+			"icon": "1",
+			"onShow": "0"
+		},
+		{
+			"id": "6",
+			"name": "侦察",
+			"intro": "破除迷雾",
+			"rarity": "4",
+			"price": "4",
+			"shortName": "侦",
+			"icon": "1",
+			"onShow": "0"
+		}
+	]
+}

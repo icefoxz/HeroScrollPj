@@ -1,0 +1,564 @@
+{
+	"StoryTable": [
+		{
+			"id": "0",
+			"story": "路遇宝箱",
+			"storyBody": "大军行至一僻静幽谷之中，前方草丛中有明光闪烁，十分诡异。你下马前往，于密林之中发现一宝箱，箱外有一大锁，箱内隐约透出金光……",
+			"exitText": ">赶路要紧<",
+			"option1": "挥剑开锁",
+			"option2": "赶路要紧",
+			"option1ToEnding": "0",
+			"option2ToEnding": "1"
+		},
+		{
+			"id": "1",
+			"story": "路遇宝箱",
+			"storyBody": "大军行至一僻静幽谷之中，前方草丛中有明光闪烁，十分诡异。你下马前往，于密林之中发现一宝箱，箱外有一大锁，箱内散发诡异气息……",
+			"exitText": ">赶路要紧<",
+			"option1": "挥剑开锁",
+			"option2": "赶路要紧",
+			"option1ToEnding": "2",
+			"option2ToEnding": "3"
+		},
+		{
+			"id": "2",
+			"story": "路遇难民",
+			"storyBody": "大军正在行进，前方忽然传来一阵喧闹之声。探子来报，一伙难民挡在路中……\n<color=#FFFFFF00>缩进</color>你观难民皆面黄肌瘦，双目无神，心生怜悯……",
+			"exitText": ">赶路要紧<",
+			"option1": "施舍难民",
+			"option2": "驱赶难民",
+			"option1ToEnding": "4",
+			"option2ToEnding": "5"
+		},
+		{
+			"id": "3",
+			"story": "路遇难民",
+			"storyBody": "大军正在行进，前方忽然传来一阵喧闹之声。探子来报，一伙难民挡在路中……\n<color=#FFFFFF00>缩进</color>你观难民虽衣衫褴褛，但各个身强力壮……",
+			"exitText": ">赶路要紧<",
+			"option1": "施舍难民",
+			"option2": "驱赶难民",
+			"option1ToEnding": "6",
+			"option2ToEnding": "7"
+		},
+		{
+			"id": "4",
+			"story": "牧童指路",
+			"storyBody": "大军行至一僻静幽谷之中，密林之间雾气腾腾，道路难辨。正当你要朝着一棵古柳前去，忽有歌声隐约回荡……\n<color=#FFFFFF00>缩进</color>一牧童骑牛而出，遥指前方一条羊肠小道，你往前看去，一处村落藏于杏花林中……\n<color=#FFFFFF00>缩进</color>你万分欣喜，正欲前往，忽然一阵疾风折断大旗……",
+			"exitText": ">赶路要紧<",
+			"option1": "古柳道",
+			"option2": "杏花村",
+			"option1ToEnding": "8",
+			"option2ToEnding": "9"
+		},
+		{
+			"id": "5",
+			"story": "牧童指路",
+			"storyBody": "大军行至一僻静幽谷之中，密林之间雾气腾腾，道路难辨。正当你要朝着一棵古柳前去，忽有歌声隐约回荡……\n<color=#FFFFFF00>缩进</color>一牧童骑牛而出，遥指前方一条羊肠小道，你往前看去，一处村落藏于杏花林中……",
+			"exitText": ">赶路要紧<",
+			"option1": "古柳道",
+			"option2": "杏花村",
+			"option1ToEnding": "10",
+			"option2ToEnding": "11"
+		},
+		{
+			"id": "6",
+			"story": "落难女子",
+			"storyBody": "夜晚时分，营帐外隐约传来嘤嘤啼哭之声。你起身出账，发现小树林中一貌美女子卧倒树边。\n<color=#FFFFFF00>缩进</color>女子言其返回故里，半路遭遇强盗，逃亡途中扭伤脚环，不能行走。你观其楚楚可怜，十分怜悯……",
+			"exitText": ">原路返回<",
+			"option1": "抱回营帐",
+			"option2": "置之不理",
+			"option1ToEnding": "12",
+			"option2ToEnding": "13"
+		},
+		{
+			"id": "7",
+			"story": "空城计",
+			"storyBody": "大军追随敌方残军至一城池前，只见城门洞开，四下无人。城楼之上现一老者，鹤发纶巾，悠然弹琴，音律之中暗藏杀机，令你犹豫不决……",
+			"exitText": ">原路返回<",
+			"option1": "杀入城中",
+			"option2": "退兵三里",
+			"option1ToEnding": "14",
+			"option2ToEnding": "15"
+		},
+		{
+			"id": "8",
+			"story": "三姓家奴",
+			"storyBody": "一场恶战结束，我军险胜。在清理战场时，捕获一身穿布衣之敌兵。你观其身体魁梧，相貌惊人，一眼识破此人乃敌方大将。敌将立马跪地求饶，留其一命，愿为你马首是瞻。",
+			"exitText": ">随他而去<",
+			"option1": "果断处决",
+			"option2": "留为己用",
+			"option1ToEnding": "16",
+			"option2ToEnding": "17"
+		},
+		{
+			"id": "9",
+			"story": "望梅止渴",
+			"storyBody": "行军数日，天气炎热。荒原百里没有水源，将士们口干舌燥。你登上山头遥望远方，忽然想念酸梅滋味，口中生津。失落之余，你心生一计。",
+			"exitText": ">赶路要紧<",
+			"option1": "前有梅林",
+			"option2": "后有追兵",
+			"option1ToEnding": "18",
+			"option2ToEnding": "19"
+		},
+		{
+			"id": "10",
+			"story": "兵临城下",
+			"storyBody": "敌军兵临城下已有数日，城中粮食充足，你避其锋芒严守不出。敌将叫阵，辱骂你为龟缩鼠辈。城内将士纷纷捶胸顿足，抱怨不断……\n<color=#FFFFFF00>缩进</color>又过数日，敌军阵营松松散散，叫骂声有气无力……你心生疑虑，敌将乃中原名将，怎会如此麻痹大意……",
+			"exitText": ">继续守城<",
+			"option1": "出城迎战",
+			"option2": "继续守城",
+			"option1ToEnding": "20",
+			"option2ToEnding": "21"
+		},
+		{
+			"id": "11",
+			"story": "兵临城下",
+			"storyBody": "敌军兵临城下已有数日，城中粮食充足，你避其锋芒严守不出。敌将叫阵，辱骂你为龟缩鼠辈。城内将士纷纷捶胸顿足，抱怨不断……\n<color=#FFFFFF00>缩进</color>又过数日，敌军阵营松松散散，叫骂声有气无力……",
+			"exitText": ">继续守城<",
+			"option1": "出城迎战",
+			"option2": "继续守城",
+			"option1ToEnding": "22",
+			"option2ToEnding": "23"
+		},
+		{
+			"id": "12",
+			"story": "女装受辱",
+			"storyBody": "敌军兵临城下，你观其军容肃穆，杀气腾腾，遂按兵不动。数日之后，敌将派人送来一套女装，将士们皆愤怒不已，请求打开城门，与敌军决一死战……",
+			"exitText": ">继续守城<",
+			"option1": "出城迎战",
+			"option2": "置之不理",
+			"option1ToEnding": "24",
+			"option2ToEnding": "25"
+		},
+		{
+			"id": "13",
+			"story": "里应外合",
+			"storyBody": "敌方城池乃一孤城，你断其水源，将其围得水泄不通。不过数日，城内有人飞书予你，与你约定里应外合。\n<color=#FFFFFF00>缩进</color>时至半夜，敌方城门果然大开，机不可失……",
+			"exitText": ">置之不理<",
+			"option1": "杀入城中",
+			"option2": "按兵不动",
+			"option1ToEnding": "26",
+			"option2ToEnding": "27"
+		},
+		{
+			"id": "14",
+			"story": "里应外合",
+			"storyBody": "敌方城池乃一孤城，你断其水源，将其围得水泄不通。不过数日，城内有人飞书予你，与你约定里应外合。\n<color=#FFFFFF00>缩进</color>时至半夜，敌方城门果然大开，你将信将疑……",
+			"exitText": ">置之不理<",
+			"option1": "杀入城中",
+			"option2": "按兵不动",
+			"option1ToEnding": "28",
+			"option2ToEnding": "29"
+		},
+		{
+			"id": "15",
+			"story": "醉美人",
+			"storyBody": "夜半十分，你正在寝室内阅读春秋大义，忽一女子推门而入，扑倒在床。你惊恐不已，连忙扶起，原来是一醉酒女子。\n<color=#FFFFFF00>缩进</color>女子言其夫早亡，故借酒浇愁，夜半十分无处可去，想是与你有缘，愿与你共赏风月……",
+			"exitText": ">置之不理<",
+			"option1": "共赏风月",
+			"option2": "断然拒绝",
+			"option1ToEnding": "30",
+			"option2ToEnding": "31"
+		},
+		{
+			"id": "16",
+			"story": "虎山之行",
+			"storyBody": "近日，坊间传言，城南山下常有猛虎出没，捕食过路之人。你令人前往打探，数日已过，而前往之人皆迟迟未归。此事甚是蹊跷……",
+			"exitText": ">置之不理<",
+			"option1": "为民除害",
+			"option2": "等待消息",
+			"option1ToEnding": "32",
+			"option2ToEnding": "33"
+		},
+		{
+			"id": "17",
+			"story": "虎山之行",
+			"storyBody": "近日，坊间传言，城南山下常有猛虎出没，捕食过路之人。你令人前往打探，数日已过，而前往之人皆迟迟未归。此事甚是蹊跷……",
+			"exitText": ">置之不理<",
+			"option1": "贸然前往",
+			"option2": "等待消息",
+			"option1ToEnding": "34",
+			"option2ToEnding": "35"
+		},
+		{
+			"id": "18",
+			"story": "逐鹿平原",
+			"storyBody": "时至暖春，平原太守邀各州之豪杰，前往平原猎场进行狩猎比赛，夺得头魁者将获得虎纹锦袍一件，并金银数万。你观当下正值军务繁忙，犹豫不决……",
+			"exitText": ">置之不理<",
+			"option1": "欣然前往",
+			"option2": "书信推辞",
+			"option1ToEnding": "36",
+			"option2ToEnding": "37"
+		},
+		{
+			"id": "19",
+			"story": "擂台招亲",
+			"storyBody": "洛阳城中沸沸扬扬，原来是珠宝商贾陈善人举办擂台招亲，欲为其十八岁女儿含香招得贤良夫君。听闻那陈善人乃是皇亲国戚，家产丰厚，只是其女含香深居简出，无人见过其相貌身姿如何……",
+			"exitText": ">置之不理<",
+			"option1": "机不可失",
+			"option2": "一旁观望",
+			"option1ToEnding": "38",
+			"option2ToEnding": "39"
+		},
+		{
+			"id": "20",
+			"story": "擂台招亲",
+			"storyBody": "长安城中沸沸扬扬，原来是药材商贾王善人举办擂台招亲，欲为其十八岁女儿小婵招得贤良夫君。听闻那王善人乃是皇亲国戚，家产丰厚，只是其女小婵深居简出，无人见过其相貌身姿如何……",
+			"exitText": ">置之不理<",
+			"option1": "机不可失",
+			"option2": "一旁观望",
+			"option1ToEnding": "40",
+			"option2ToEnding": "41"
+		},
+		{
+			"id": "21",
+			"story": "鸿门宴",
+			"storyBody": "两军交战，你方被围困数日。危难之际，敌方将帅设酒摆宴，以叙旧为由，邀请你前往其帐中商谈和解。你知此人表面仁慈宽厚，实则乃阴险狡诈之徒，此去定是生死难测……",
+			"exitText": ">置之不理<",
+			"option1": "慷慨赴宴",
+			"option2": "断然拒绝",
+			"option1ToEnding": "42",
+			"option2ToEnding": "43"
+		},
+		{
+			"id": "22",
+			"story": "口蜜腹剑",
+			"storyBody": "两军隔江相望，相持久矣。夜半，一可疑之人被押解营帐之中。你观此人，乃昔日同窗，紧忙为其松绑。两人促膝长谈，嗟叹岁月蹉跎。\n<color=#FFFFFF00>缩进</color>酒过半巡，你观其神色有变，言辞之间皆奉劝你顾及身家性命，坐享荣华富贵之意……",
+			"exitText": ">一笑而过<",
+			"option1": "立斩此人",
+			"option2": "同窗之谊",
+			"option1ToEnding": "44",
+			"option2ToEnding": "45"
+		},
+		{
+			"id": "23",
+			"story": "修筑城墙",
+			"storyBody": "城墙年久失修，又遇大雨连绵不断，城南一侧出现缺口。临近之城皆贪得无厌，见利忘义之辈，早已对你虎视眈眈。恐城池有失，你欲修筑城墙……",
+			"exitText": ">置之不理<",
+			"option1": "筹措重金",
+			"option2": "花点小钱",
+			"option1ToEnding": "46",
+			"option2ToEnding": "47"
+		},
+		{
+			"id": "24",
+			"story": "三顾茅庐",
+			"storyBody": "听闻隆中有奇才，自比于管仲、乐毅，若得此人相助，足可安天下。你率人前往深山草庐之中，只见书童，不见此人。今日你欲再次前往，怎奈天降大雪，道路艰难……",
+			"exitText": ">置之不理<",
+			"option1": "冒雪前往",
+			"option2": "围炉暖酒",
+			"option1ToEnding": "48",
+			"option2ToEnding": "49"
+		},
+		{
+			"id": "25",
+			"story": "诸侯会盟",
+			"storyBody": "天下兴亡匹夫有责！当今权臣祸乱朝廷，致使国运衰退，民不聊生。有志之士作檄文以达诸郡，汇集诸侯，以讨国贼，救天下于危亡之中。",
+			"exitText": ">置之不理<",
+			"option1": "前往会盟",
+			"option2": "偏安一隅",
+			"option1ToEnding": "50",
+			"option2ToEnding": "51"
+		},
+		{
+			"id": "26",
+			"story": "诸侯会盟",
+			"storyBody": "天下兴亡匹夫有责！当今权臣祸乱朝廷，致使国运衰退，民不聊生。有志之士作檄文以达诸郡，汇集诸侯，以讨国贼，救天下于危亡之中。",
+			"exitText": ">置之不理<",
+			"option1": "前往会盟",
+			"option2": "静观其变",
+			"option1ToEnding": "52",
+			"option2ToEnding": "53"
+		},
+		{
+			"id": "27",
+			"story": "路遇强盗",
+			"storyBody": "你护送粮草行至荒山野岭。一伙草莽之辈挡在道前，并吆喝：此山是我开，此树是我栽，要想从此过，留下买路钱！\n<color=#FFFFFF00>缩进</color>若在此时厮杀，恐粮草有误，若绕道而行，恐延误军机。你一时进退两难……",
+			"exitText": ">原路返回<",
+			"option1": "杀将过去",
+			"option2": "绕道而行",
+			"option1ToEnding": "54",
+			"option2ToEnding": "55"
+		},
+		{
+			"id": "28",
+			"story": "路遇强盗",
+			"storyBody": "你护送粮草行至荒山野岭。一伙草莽之辈挡在道前，并吆喝：此山是我开，此树是我栽，要想从此过，留下买路钱！\n<color=#FFFFFF00>缩进</color>若在此时厮杀，恐粮草有误，若绕道而行，恐延误军机。你一时进退两难……",
+			"exitText": ">原路返回<",
+			"option1": "奉上钱财",
+			"option2": "绕道而行",
+			"option1ToEnding": "56",
+			"option2ToEnding": "57"
+		},
+		{
+			"id": "29",
+			"story": "瘟疫爆发",
+			"storyBody": "近日，天现异象，南华老仙洞察天机，将有天罚降临。不久之后，夏口一带爆发瘟疫，祸及无辜，百姓惶惶。天下兴亡匹夫有责，如此灾祸迟迟不散，你甚是忧心。",
+			"exitText": ">置之不理<",
+			"option1": "祭拜苍天",
+			"option2": "出资赈灾",
+			"option1ToEnding": "58",
+			"option2ToEnding": "59"
+		},
+		{
+			"id": "30",
+			"story": "徐州之围",
+			"storyBody": "徐州城被围困数日，敌军扬言待城破之日，要屠城三日。城主听闻你乃仁义之师，派使者前来，邀你共解徐州之围。你将欲前往，奈何势单力薄……",
+			"exitText": ">置之不理<",
+			"option1": "前去解围",
+			"option2": "书信推辞",
+			"option1ToEnding": "60",
+			"option2ToEnding": "61"
+		},
+		{
+			"id": "31",
+			"story": "徐州之围",
+			"storyBody": "徐州城被围困数日，敌军扬言待城破之日，要屠城三日。城主听闻你乃仁义之师，派使者前来，邀你共解徐州之围。你将欲前往，奈何势单力薄……",
+			"exitText": ">置之不理<",
+			"option1": "围魏救赵",
+			"option2": "书信推辞",
+			"option1ToEnding": "62",
+			"option2ToEnding": "63"
+		},
+		{
+			"id": "32",
+			"story": "黄巾之乱",
+			"storyBody": "天降大旱久矣，钜鹿人张角称“苍天已死，黄天当立，岁在甲子，天下大吉！”召集信徒数十万，头戴黄巾，揭竿而起。\n<color=#FFFFFF00>缩进</color>黄巾之党烧官府、杀官吏，四处劫掠，为祸天下。朝廷发布告令，召集地方壮士豪杰，共抗黄巾。",
+			"exitText": ">置之不理<",
+			"option1": "讨伐黄巾",
+			"option2": "置若罔闻",
+			"option1ToEnding": "64",
+			"option2ToEnding": "65"
+		},
+		{
+			"id": "33",
+			"story": "黄巾之乱",
+			"storyBody": "天降大旱久矣，钜鹿人张角称“苍天已死，黄天当立，岁在甲子，天下大吉！”召集信徒数十万，头戴黄巾，揭竿而起。\n<color=#FFFFFF00>缩进</color>黄巾之党烧官府、杀官吏，四处劫掠，为祸天下。朝廷发布告令，召集地方壮士豪杰，共抗黄巾。",
+			"exitText": ">置之不理<",
+			"option1": "讨伐黄巾",
+			"option2": "养精蓄锐",
+			"option1ToEnding": "66",
+			"option2ToEnding": "67"
+		},
+		{
+			"id": "34",
+			"story": "守街亭",
+			"storyBody": "欲取长安，街亭乃军事要地。你立下军令状，率军前往。大军行至街亭，有一五路总口。\n<color=#FFFFFF00>缩进</color>你见侧边一山，四面皆不相连，且树木极广，此乃天赐之险也。若贼兵至，凭高视下，势如劈竹，教他片甲不回！",
+			"exitText": ">原路返回<",
+			"option1": "屯兵山上",
+			"option2": "当道扎营",
+			"option1ToEnding": "68",
+			"option2ToEnding": "69"
+		},
+		{
+			"id": "35",
+			"story": "刮骨疗毒",
+			"storyBody": "你率军攻打樊城，被敌军弓箭所伤。待回营寨，发现箭头有药，毒已入骨。\n<color=#FFFFFF00>缩进</color>忽一日，有神医华佗，携青囊而来，愿为你疗伤。只是此法需用尖刀割开皮肉，直至于骨，刮去骨上箭毒，常人无法忍受其痛……",
+			"exitText": ">置之不理<",
+			"option1": "刮骨疗毒",
+			"option2": "暂回荆州",
+			"option1ToEnding": "70",
+			"option2ToEnding": "71"
+		},
+		{
+			"id": "36",
+			"story": "华容道",
+			"storyBody": "敌军大败，正溃逃矣。你受令于敌帅必经之路华容道设伏。军师恐你有失，令你立军令状，万不可动仁义之心。\n<color=#FFFFFF00>缩进</color>你来到华容道，敌帅果至，此乃一故人，昔日有恩与你，如今正狼狈不堪，曰别来无恙？你心生恻隐……",
+			"exitText": ">置之不理<",
+			"option1": "义释恩人",
+			"option2": "大义凌然",
+			"option1ToEnding": "72",
+			"option2ToEnding": "73"
+		},
+		{
+			"id": "37",
+			"story": "传国玉玺",
+			"storyBody": "奸臣作乱，你率军攻入洛阳。某日辰时，皇宫一井中现五彩云气，你从井中获一宫女尸身，其颈上系一小匣，匣内所藏之物乃玉石之印，上刻“受命于天既寿永昌”八字，正是传国玉玺。你惊叹，此乃天意。",
+			"exitText": ">置之不理<",
+			"option1": "据为己有",
+			"option2": "上缴朝廷",
+			"option1ToEnding": "74",
+			"option2ToEnding": "75"
+		},
+		{
+			"id": "38",
+			"story": "军令状",
+			"storyBody": "你欲北伐中原，街亭乃粮草补给之要道，敌军必取。守住街亭，乃奇功一件，众将皆争先恐后。此等重任所托之人，必立下军令状。\n<color=#FFFFFF00>缩进</color>你将此重任委托一爱将，不料此人大意轻敌，损兵折将，丢失街亭，令北伐之计夭折。",
+			"exitText": ">空自嗟叹<",
+			"option1": "挥泪一斩",
+			"option2": "戴罪立功",
+			"option1ToEnding": "76",
+			"option2ToEnding": "77"
+		},
+		{
+			"id": "39",
+			"story": "兵法云云",
+			"storyBody": "你率大军抵至南郡，围城数日，久攻不下。敌将凭借其城池坚固，粮草充裕，死守不出。待敌方援军至，你将腹背受敌。时至雨季，大雨连绵。你该作何打算？",
+			"exitText": ">原路返回<",
+			"option1": "水淹南郡",
+			"option2": "火烧南郡",
+			"option1ToEnding": "78",
+			"option2ToEnding": "79"
+		},
+		{
+			"id": "40",
+			"story": "兵法云云",
+			"storyBody": "你率大军抵至南郡，围城数日，久攻不下。敌将凭借其城池坚固，粮草充裕，死守不出。待敌方援军至，你将腹背受敌。时至旱季，天干物燥。你该作何打算？",
+			"exitText": ">原路返回<",
+			"option1": "水淹南郡",
+			"option2": "火烧南郡",
+			"option1ToEnding": "80",
+			"option2ToEnding": "81"
+		},
+		{
+			"id": "41",
+			"story": "困鸟归林",
+			"storyBody": "权臣当道，王权衰落。忽一日，丞相心血来潮，令你率领大军前去讨伐叛逆。你窃喜，此乃丞相失计矣。\n<color=#FFFFFF00>缩进</color>你率领大军紧忙上路，如困鸟归林，岂不乐哉。行至半路，忽有一将追来，曰奉丞相之名，令你速速班师回朝。",
+			"exitText": ">置之不理<",
+			"option1": "不受军令",
+			"option2": "班师回朝",
+			"option1ToEnding": "82",
+			"option2ToEnding": "83"
+		},
+		{
+			"id": "42",
+			"story": "衣带诏",
+			"storyBody": "权臣当道，王权衰落。你蛰伏于丞相威严之下，不得施展，只得以种菜读书为业，消磨时日。\n<color=#FFFFFF00>缩进</color>夜半，车骑将军董承前来拜会。酒过半巡，董承忽取出一物，你大惊，此乃黄帝钦赐衣带，内藏诏书一份，令你诛杀权臣。",
+			"exitText": ">置之不理<",
+			"option1": "临危受命",
+			"option2": "借故推辞",
+			"option1ToEnding": "84",
+			"option2ToEnding": "85"
+		},
+		{
+			"id": "43",
+			"story": "欲加之罪",
+			"storyBody": "你征讨黄巾有功，奈何得一县尉。上任不久，适督邮而至，以查处滥官污吏为由，咄咄逼人。\n<color=#FFFFFF00>缩进</color>你知督邮作威，无非要贿赂耳。然你与民秋毫无犯，那得财物与他？为此事，你煞为苦恼。",
+			"exitText": ">置之不理<",
+			"option1": "孝敬督邮",
+			"option2": "弃官而去",
+			"option1ToEnding": "86",
+			"option2ToEnding": "87"
+		},
+		{
+			"id": "44",
+			"story": "危楼之上",
+			"storyBody": "紫微陨落，长蛇悬梁，天现异象，汉室衰微。\n<color=#FFFFFF00>缩进</color>叛军围城数日，你率军顽强抵抗，然城中已水尽粮绝，援军久久不至。你不禁叹息，此乃天亡我矣。",
+			"exitText": ">置之不理<",
+			"option1": "另投他处",
+			"option2": "死守孤城",
+			"option1ToEnding": "88",
+			"option2ToEnding": "89"
+		},
+		{
+			"id": "45",
+			"story": "良禽择木",
+			"storyBody": "大敌当前，城中粮草尚可维持数日。你本想与敌方死战，奈何主公不战而降。\n<color=#FFFFFF00>缩进</color>你因不降而被推至白门楼，行刑之前，敌帅观你是大丈夫，有痛惜之意，愿收你为麾下。当此时，你该如何？",
+			"exitText": ">置之不理<",
+			"option1": "识时务者",
+			"option2": "不失气节",
+			"option1ToEnding": "90",
+			"option2ToEnding": "91"
+		},
+		{
+			"id": "46",
+			"story": "良禽择木",
+			"storyBody": "大敌当前，城中粮草尚可维持数日。你本想与敌方死战，奈何主公不战而降。\n<color=#FFFFFF00>缩进</color>你因不降而被推至白门楼，行刑之前，敌帅观你是大丈夫，有痛惜之意，愿收你为麾下。当此时，你该如何？",
+			"exitText": ">置之不理<",
+			"option1": "识时务者",
+			"option2": "不失气节",
+			"option1ToEnding": "92",
+			"option2ToEnding": "93"
+		},
+		{
+			"id": "47",
+			"story": "来者不善",
+			"storyBody": "两军相遇，相持已久。夜半，一黑衣人携书信前来营帐，并献上稀世珍宝一件。\n<color=#FFFFFF00>缩进</color>你知晓其意，此乃敌方说客耳，大战在即，主公优柔寡断，当当机立断。",
+			"exitText": ">置之不理<",
+			"option1": "当为内应",
+			"option2": "断然拒绝",
+			"option1ToEnding": "94",
+			"option2ToEnding": "95"
+		},
+		{
+			"id": "48",
+			"story": "来者不善",
+			"storyBody": "两军相遇，相持已久。夜半，一黑衣人携书信前来营帐，并献上稀世珍宝一件。\n<color=#FFFFFF00>缩进</color>你知晓其意，此乃敌方说客耳，主公待你不薄，大战在即，当当机立断。",
+			"exitText": ">置之不理<",
+			"option1": "将计就计",
+			"option2": "断然拒绝",
+			"option1ToEnding": "96",
+			"option2ToEnding": "97"
+		},
+		{
+			"id": "49",
+			"story": "狭路相逢",
+			"storyBody": "大军行至巫山，于蜿蜒狭道之间与敌相遇。\n<color=#FFFFFF00>缩进</color>你观其地势，两侧皆是高山峻岭，悬崖峭壁，无险可依，更无处隐蔽。当此时，我军士气正旺，该作何打算？",
+			"exitText": ">置之不理<",
+			"option1": "激励三军",
+			"option2": "避其锋芒",
+			"option1ToEnding": "98",
+			"option2ToEnding": "99"
+		},
+		{
+			"id": "50",
+			"story": "狭路相逢",
+			"storyBody": "大军行至巫山，于蜿蜒狭道之间与敌相遇。\n<color=#FFFFFF00>缩进</color>你观其地势，两侧皆是高山峻岭，悬崖峭壁，无险可依，更无处隐蔽。当此时，我军长途跋涉，疲惫不堪，该作何打算？",
+			"exitText": ">置之不理<",
+			"option1": "后退着斩",
+			"option2": "避其锋芒",
+			"option1ToEnding": "100",
+			"option2ToEnding": "101"
+		},
+		{
+			"id": "51",
+			"story": "狭路相逢",
+			"storyBody": "大军行至巫山，于蜿蜒狭道之间与敌相遇。\n<color=#FFFFFF00>缩进</color>你观其地势，两侧皆是高山峻岭，悬崖峭壁，无险可依，更无处隐蔽。当此时，我军长途跋涉，疲惫不堪，该作何打算？",
+			"exitText": ">置之不理<",
+			"option1": "后退着斩",
+			"option2": "避其锋芒",
+			"option1ToEnding": "102",
+			"option2ToEnding": "103"
+		},
+		{
+			"id": "52",
+			"story": "唇亡齿寒",
+			"storyBody": "自刘备入川称帝，天下已成三足鼎立之势。曹魏兴兵伐蜀国，蜀国派来使者商议联手抗曹。当此时，魏国也派来使者，商议联手灭蜀，并许诺事成以后加封你为东吴国主。\n<color=#FFFFFF00>缩进</color>此时魏国势强而蜀国势弱，你该作何打算？",
+			"exitText": ">置之不理<",
+			"option1": "前去救援",
+			"option2": "隔岸观火",
+			"option1ToEnding": "104",
+			"option2ToEnding": "105"
+		},
+		{
+			"id": "53",
+			"story": "唇亡齿寒",
+			"storyBody": "自刘备入川称帝，天下已成三足鼎立之势。曹魏兴兵伐蜀国，蜀国派来使者商议联手抗曹。当此时，魏国也派来使者，商议联手灭蜀，并许诺事成以后加封你为东吴国主。\n<color=#FFFFFF00>缩进</color>此时魏国势强而蜀国势弱，你该作何打算？",
+			"exitText": ">置之不理<",
+			"option1": "前去救援",
+			"option2": "静观其变",
+			"option1ToEnding": "106",
+			"option2ToEnding": "107"
+		},
+		{
+			"id": "54",
+			"story": "腹背受敌",
+			"storyBody": "你率大军围城数十日，不克。将士们远征在外，思乡久矣。你观其士气不振，只得率军撤回。不料敌方援军已至，而城中敌人也蜂拥而出。\n<color=#FFFFFF00>缩进</color>前有坚城，后有强兵，令你腹背受敌。情况危急，你该作何打算？",
+			"exitText": ">置之不理<",
+			"option1": "向前突袭",
+			"option2": "向后突袭",
+			"option1ToEnding": "108",
+			"option2ToEnding": "109"
+		},
+		{
+			"id": "55",
+			"story": "背水一战",
+			"storyBody": "你率大军围城数十日，不克。将士们远征在外，思乡久矣。你观其士气不振，只得率军撤回。不料敌方援军已至，而城中仍旧坚守不出。\n<color=#FFFFFF00>缩进</color>前有坚城，后有强兵，令你腹背受敌。情况危急，你该作何打算？",
+			"exitText": ">置之不理<",
+			"option1": "向前突袭",
+			"option2": "向后突袭",
+			"option1ToEnding": "110",
+			"option2ToEnding": "111"
+		}
+	]
+}

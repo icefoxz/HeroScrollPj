@@ -1,0 +1,14 @@
+{
+	"SupplyTable": [
+		{
+			"id": "0",
+			"recover": "20",
+			"cost": "2"
+		},
+		{
+			"id": "1",
+			"recover": "50",
+			"cost": "0"
+		}
+	]
+}
