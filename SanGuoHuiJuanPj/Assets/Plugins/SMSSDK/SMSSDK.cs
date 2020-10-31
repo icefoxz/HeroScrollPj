@@ -69,13 +69,13 @@ namespace cn.SMSSDK.Unity
             {
                 case 1:
                     {
-                        //Debug.Log(callBackData);
                         object resp = res["res"];
+                        //Debug.Log("SMSSDKcallBackData:"+ resp.ToString());
                         //					print ("回调成功"+resp);
                         if (handler != null)
                         {
                             //SMSSDK成功回调
-                            //handler.onComplete(action, resp);
+                            handler.onComplete(action, resp);
                         }
                         break;
                     }
