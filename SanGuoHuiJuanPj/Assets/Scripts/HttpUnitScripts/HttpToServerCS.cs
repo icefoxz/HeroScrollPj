@@ -7,14 +7,21 @@ using wode.HTTP;
 public class HttpToServerCS : MonoBehaviour
 {
 #if UNITY_EDITOR
-
     private static readonly string CreateQuickAccountName = "http://127.0.0.1:8080/login/createQuickAccountName";
     private static readonly string CreateAccount = "http://127.0.0.1:8080/login/createAccount?name={0}&pw={1}&isPhone=0";
     private static readonly string BindPhone = "http://127.0.0.1:8080/login/bindPhone?name={0}&pw={1}&phone={2}";
     private static readonly string PhoneNameLogin = "http://127.0.0.1:8080/login/nameLogin?name={0}&pw={1}&isPhone=1";
     private static readonly string AccountNameLogin = "http://127.0.0.1:8080/login/nameLogin?name={0}&pw={1}&isPhone=0";
-    //private static readonly string Get_UploadArchive = "http://127.0.0.1:8080/login/upload?name={0}&pw={1}&isPhone=0&data={2}&data2={3}&data3={4}&data4={5}";
     private static readonly string Post_UploadArchive = "http://127.0.0.1:8080/login/upload";
+#elif UNITY_ANDROID && !UNITY_EDITOR
+    private static readonly string CreateQuickAccountName = "http://123.57.201.250:8080/login/createQuickAccountName";
+    private static readonly string CreateAccount = "http://123.57.201.250:8080/login/createAccount?name={0}&pw={1}&isPhone=0";
+    private static readonly string BindPhone = "http://123.57.201.250:8080/login/bindPhone?name={0}&pw={1}&phone={2}";
+    private static readonly string PhoneNameLogin = "http://123.57.201.250:8080/login/nameLogin?name={0}&pw={1}&isPhone=1";
+    private static readonly string AccountNameLogin = "http://123.57.201.250:8080/login/nameLogin?name={0}&pw={1}&isPhone=0";
+    private static readonly string Post_UploadArchive = "http://123.57.201.250:8080/login/upload";
+#endif
+
     //private static readonly string Post_UploadArchive_Data = "{name:\\\"{0}\\\",pw:\\\"{1}\\\",isPhone:\\\"0\\\",data:\\\"{2}\\\",data2:\\\"{3}\\\",data3:\\\"{4}\\\",data4:\\\"{5}\\\"}";
     private static readonly string[] Post_UploadArchive_KeyName = new string[7] {
         "name",
@@ -25,10 +32,6 @@ public class HttpToServerCS : MonoBehaviour
         "data3",
         "data4"
     };
-
-#elif UNITY_ANDROID && !UNITY_EDITOR
-
-#endif
 
     public static HttpToServerCS instance;
 
