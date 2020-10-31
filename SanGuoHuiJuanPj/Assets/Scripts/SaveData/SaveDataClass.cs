@@ -307,6 +307,15 @@ public class RewardsCardClass
 
 #region 服务器返回数据类
 
+public class ErrorBackClass
+{
+    /// <summary>
+    /// 查错码
+    /// </summary>
+    public int error { get; set; }
+}
+
+
 /// <summary>
 /// 短信验证码类
 /// </summary>
@@ -385,4 +394,26 @@ public class UploadArchiveToServerClass
     public string data3 { get; set; }
     public string data4 { get; set; }
 }
+
+/// <summary>
+/// 登录返回的数据类
+/// </summary>
+public class BackForLoginClass
+{
+    /// <summary>
+    /// 账户名
+    /// </summary>
+    public string name { get; set; }
+    /// <summary>
+    /// 手机号
+    /// </summary>
+    public string phone { get; set; }
+    public string data { get; set; }
+    public string data4 { get; set; }
+    public string data3 { get; set; }
+    public string data2 { get; set; }
+    public string updateTime { get; set; }
+    public int error { get; set; }
+}
+
 #endregion

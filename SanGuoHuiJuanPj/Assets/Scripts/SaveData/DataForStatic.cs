@@ -228,4 +228,78 @@ public static class StringForEditor
     /// 错误
     /// </summary>
     public static readonly string ERROR = "ERROR";
+
+    
+}
+
+/// <summary>
+/// 登录相关方法索引
+/// </summary>
+public enum LoginFunIndex
+{
+    /// <summary>
+    /// 0 申请一个账号
+    /// </summary>
+    CREATE_ACCOUNT_NAME,
+    /// <summary>
+    /// 1 创建账号
+    /// </summary>
+    CREATE_ACCOUNT,
+    /// <summary>
+    /// 2 绑定手机
+    /// </summary>
+    BIND_PHONE,
+    /// <summary>
+    /// 3 手机号登陆
+    /// </summary>
+    PHONE_NAME_LOGIN,
+    /// <summary>
+    /// 4 游戏账号登陆
+    /// </summary>
+    ACCOUNT_NAME_LOGIN,
+    /// <summary>
+    /// 5 上传存档
+    /// </summary>
+    UPLOAD_ARCHIVE
+}
+
+/// <summary>
+/// 服务器返回的状态码
+/// </summary>
+public enum ServerBackCode
+{
+    SUCCESS = 0,
+    ERR_NAME_EXIST = 1001,
+    ERR_NAME_SHORT = 1002,
+    /// <summary>
+    /// 密码过短
+    /// </summary>
+    ERR_PASS_SHORT = 1003,
+    /// <summary>
+    /// 账号不存在
+    /// </summary>
+    ERR_NAME_NOT_EXIST = 1004,
+    ERR_DATA_NOT_EXIST = 1005,
+    ERR_PHONE_SHORT = 1006,
+    /// <summary>
+    /// 重复绑定手机
+    /// </summary>
+    ERR_ACCOUNT_BIND_OTHER_PHONE = 1007,
+    ERR_NAME_ILLEGAL = 1008,
+    /// <summary>
+    /// 手机号错误 
+    /// </summary>
+    ERR_PHONE_ILLEGAL = 1009,
+    /// <summary>
+    /// 密码错误
+    /// </summary>
+    ERR_PW_ERROR = 1010,
+    /// <summary>
+    /// 该手机号绑定了其他账号
+    /// </summary>
+    ERR_PHONE_BIND_OTHER_ACCOUNT = 1011,
+    /// <summary>
+    /// 已经绑定过
+    /// </summary>
+    ERR_PHONE_ALREADY_BINDED = 1012
 }

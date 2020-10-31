@@ -187,7 +187,10 @@ public class LoadSaveData : MonoBehaviour
             Debug.LogError("存档备份失败 " + e.ToString());
         }
 
-        UploadArchiveToServer(pyDataStr, hSTDataStr, warsDataStr, gbocDataStr);
+        if (PlayerDataForGame.instance.atData.phoneNumber != "")
+        {
+            UploadArchiveToServer(pyDataStr, hSTDataStr, warsDataStr, gbocDataStr);
+        }
     }
 
     /// <summary>
@@ -208,9 +211,10 @@ public class LoadSaveData : MonoBehaviour
         //uploadArchiveToServerClass.data3 = warsDataStr;
         //uploadArchiveToServerClass.data4 = gbocDataStr;
 
-        string[] arrs = new string[6] {
-            PlayerDataForGame.instance.atData.accountName,
+        object[] arrobjs = new object[7] {
+            PlayerDataForGame.instance.atData.phoneNumber,
             PlayerDataForGame.instance.atData.passwordStr,
+            1,
             pyDataStr,
             hSTDataStr,
             warsDataStr,
@@ -221,18 +225,26 @@ public class LoadSaveData : MonoBehaviour
         {
             //string jsonData = JsonConvert.SerializeObject(uploadArchiveToServerClass);
             //上传存档到服务器
-            string replyStr = HttpToServerCS.instance.LoginRelatedFunsForPost(LoginFunIndex.UPLOAD_ARCHIVE, arrs);
+            string replyStr = HttpToServerCS.instance.LoginRelatedFunsForPost(LoginFunIndex.UPLOAD_ARCHIVE, arrobjs);
             if (replyStr != StringForEditor.ERROR)
             {
-                BackForUploadArchiveClass backForUploadArchiveClass = new BackForUploadArchiveClass();
                 try
                 {
+                    BackForUploadArchiveClass backForUploadArchiveClass = new BackForUploadArchiveClass();
                     backForUploadArchiveClass = JsonConvert.DeserializeObject<BackForUploadArchiveClass>(replyStr);
+
+                    if (backForUploadArchiveClass.error != (int)ServerBackCode.SUCCESS)
+                    {
+                        string serverBackStr = HttpToServerCS.instance.ErrorAnalysisFun(null, backForUploadArchiveClass.error);
+                        Debug.LogError(serverBackStr);
+                        return;
+                    }
                 }
                 catch (System.Exception e)
                 {
-                    Debug.Log(replyStr);
                     Debug.LogError(e.ToString());
+                    string serverBackStr = HttpToServerCS.instance.ErrorAnalysisFun(replyStr);
+                    Debug.LogError(serverBackStr);
                     return;
                 }
             }

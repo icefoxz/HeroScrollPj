@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Text;
@@ -53,13 +54,70 @@ namespace wode.HTTP
         }
 
         /// <summary>
-        /// Post请求可用
+        /// Post请求可用-键值对格式
+        /// </summary>
+        /// <param name="Url"></param>
+        /// <param name="dic"></param>
+        /// <returns></returns>
+        public static string PostForValue(string Url, Dictionary<string, object> dic)
+        {
+            string retString = string.Empty;
+            try
+            {
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(Url);
+                request.Method = "POST";
+                //request.Referer = Referer;
+                request.ContentType = "application/x-www-form-urlencoded";  //窗体数据被编码为名称/值对形式
+
+                //添加Post参数
+                StringBuilder builder = new StringBuilder();
+                int i = 0;
+                foreach (var item in dic)
+                {
+                    if (i > 0)
+                    {
+                        builder.Append("&");
+                    }
+                    builder.AppendFormat("{0}={1}", item.Key, item.Value);
+                    i++;
+                }
+
+                byte[] bytes = Encoding.UTF8.GetBytes(builder.ToString());
+                request.ContentLength = bytes.Length;
+                Stream myResponseStream = request.GetRequestStream();
+                myResponseStream.Write(bytes, 0, bytes.Length);
+                myResponseStream.Close();
+
+                HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+                StreamReader myStreamReader = new StreamReader(response.GetResponseStream(), Encoding.UTF8);
+                retString = myStreamReader.ReadToEnd();
+                myStreamReader.Close();
+
+                if (response != null)
+                {
+                    response.Close();
+                }
+                if (request != null)
+                {
+                    request.Abort();
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.LogError(e.ToString());
+                retString = StringForEditor.ERROR;
+            }
+            return retString;
+        }
+
+        /// <summary>
+        /// Post请求可用-json格式
         /// </summary>
         /// <param name="Url"></param>
         /// <param name="Data"></param>
         /// <param name="Referer"></param>
         /// <returns></returns>
-        public static string Post(string Url, string Data)
+        public static string PostForJson(string Url, string Data, string Referer)
         {
             string retString = string.Empty;
             try

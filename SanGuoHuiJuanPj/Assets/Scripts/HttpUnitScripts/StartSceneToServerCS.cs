@@ -24,6 +24,8 @@ public class StartSceneToServerCS : MonoBehaviour
             instance = this;
         }
 
+        InfoButtonOnClickFun();
+
         //PlayerPrefs.SetString(accountNamePrefsStr, "");
     }
 
@@ -31,6 +33,16 @@ public class StartSceneToServerCS : MonoBehaviour
     {
         AccountDataInfoFun();
         LoginGameInfoFun();
+    }
+
+    private void InfoButtonOnClickFun()
+    {
+        accountBtn.GetComponent<Button>().onClick.AddListener(TakeChackAccountBtnFun);
+        createAccountBtn.onClick.AddListener(CreateAccountFun);
+        hadAccountNumBtn.onClick.AddListener(HadAccountOnClickFun);
+        backCreateAccountBtn.onClick.AddListener(BackCreateBtnOnClickFun);
+        loginAccountBtn.onClick.AddListener(TakeLoginAccountBtnFun);
+        closeBtn.onClick.AddListener(CloseLoginInfoObjFun);
     }
 
     /// <summary>
@@ -44,19 +56,31 @@ public class StartSceneToServerCS : MonoBehaviour
     }
 
     [SerializeField]
+    Button closeBtn;    //关闭按钮
+
+    [SerializeField]
     Button loginBtn;    //登录按钮
+
+    [SerializeField]
+    GameObject accountTextObj;   //账号textObj
+
+    [SerializeField]
+    GameObject phoneNumberObj;  //手机号显示obj
 
     [SerializeField]
     Text accountText;   //账号text
 
     [SerializeField]
+    GameObject registerAccountObj;  //创建账号密码输入窗口
+
+    [SerializeField]
     GameObject loginInfoObj;    //账号登录信息框
 
     [SerializeField]
-    GameObject registerAccountObj;  //密码输入窗口
+    GameObject accountBtn;  //查看账号按钮obj
 
     [SerializeField]
-    GameObject accountBtn;  //账号按钮obj
+    GameObject bindPhoneBtnObj;  //绑定手机按钮obj
 
     /// <summary>
     /// 游戏登陆方法初始化
@@ -64,35 +88,47 @@ public class StartSceneToServerCS : MonoBehaviour
     public void LoginGameInfoFun()
     {
         loginBtn.onClick.RemoveAllListeners();
-        //判断本地是否有存档
+        //判断本地是否有存档，或者播放过剧情故事
         if (LoadSaveData.instance.isHadSaveData || StartSceneUIManager.instance.isPlayedStory)
         {
             if (PlayerDataForGame.instance.atData.accountName == "")
             {
                 //登录按钮添加创建账号方法
                 loginBtn.onClick.AddListener(LoginGameCreateAccount);
-                createAccountBtn.onClick.RemoveAllListeners();
-                createAccountBtn.onClick.AddListener(CreateAccountFun);
                 accountBtn.SetActive(false);
             }
             else
             {
                 //登录按钮添加进入游戏方法
                 loginBtn.onClick.AddListener(delegate () { StartSceneUIManager.instance.LoadingScene(1, true); });
-                accountBtn.GetComponent<Button>().onClick.RemoveAllListeners();
-                accountBtn.GetComponent<Button>().onClick.AddListener(TakeChackAccountBtnFun);
                 accountBtn.SetActive(true);
-            }
-            if (PlayerDataForGame.instance.atData.phoneNumber == "")
-            {
-                jumpBindBtn.onClick.RemoveAllListeners();
-                jumpBindBtn.onClick.AddListener(JumpBindPhoneFun);
             }
         }
         else
         {
             StartSceneUIManager.instance.DontHaveSaveDataPlayStory(loginBtn);
         }
+    }
+
+    /// <summary>
+    /// 点击查看账号按钮方法
+    /// </summary>
+    private void TakeChackAccountBtnFun()
+    {
+        accountText.text = PlayerDataForGame.instance.atData.accountName;
+        accountTextObj.SetActive(true);
+        if (PlayerDataForGame.instance.atData.phoneNumber != "")
+        {
+            phoneNumberObj.transform.GetChild(0).GetComponent<Text>().text = PlayerDataForGame.instance.atData.phoneNumber;
+            bindPhoneBtnObj.SetActive(false);
+        }
+        else
+        {
+            bindPhoneBtnObj.SetActive(true);
+        }
+        phoneNumberObj.SetActive(true);
+        chackAccountObj.SetActive(true);
+        loginInfoObj.SetActive(true);
     }
 
     /// <summary>
@@ -108,17 +144,27 @@ public class StartSceneToServerCS : MonoBehaviour
             try
             {
                 backAccountClass = JsonConvert.DeserializeObject<BackAccountClass>(replyStr);
+
+                if (backAccountClass.error != (int)ServerBackCode.SUCCESS)
+                {
+                    string serverBackStr = HttpToServerCS.instance.ErrorAnalysisFun(null, backAccountClass.error);
+                    StartSceneUIManager.instance.ShowStringTips(serverBackStr);
+                    return;
+                }
             }
             catch (Exception e)
             {
-                Debug.Log(replyStr);
                 Debug.LogError(e.ToString());
-                StartSceneUIManager.instance.ShowStringTips("服务器响应错误");
+                string serverBackStr = HttpToServerCS.instance.ErrorAnalysisFun(replyStr);
+                StartSceneUIManager.instance.ShowStringTips(serverBackStr);
                 return;
             }
             accountText.text = backAccountClass.name;
-            loginInfoObj.SetActive(true);
+            accountTextObj.SetActive(true);
+            passwordInput.text = "";
+            passwordInput1.text = "";
             registerAccountObj.SetActive(true);
+            loginInfoObj.SetActive(true);
         }
         else
         {
@@ -134,15 +180,6 @@ public class StartSceneToServerCS : MonoBehaviour
     InputField passwordInput;   //密码输入框
     [SerializeField]
     InputField passwordInput1;  //密码输入框1
-
-    [SerializeField]
-    GameObject phoneNumberObj;  //手机号显示obj
-
-    [SerializeField]
-    GameObject bindPhoneObj;  //绑定手机obj
-
-    [SerializeField]
-    Button jumpBindBtn;  //跳过绑定手机Btn
 
     [SerializeField]
     GameObject chackAccountObj;  //查看账户修改密码obj
@@ -174,14 +211,22 @@ public class StartSceneToServerCS : MonoBehaviour
                     try
                     {
                         backAccountClass = JsonConvert.DeserializeObject<BackAccountClass>(replyStr);
+
+                        if (backAccountClass.error != (int)ServerBackCode.SUCCESS)
+                        {
+                            string serverBackStr = HttpToServerCS.instance.ErrorAnalysisFun(null, backAccountClass.error);
+                            StartSceneUIManager.instance.ShowStringTips(serverBackStr);
+                            return;
+                        }
                     }
                     catch (Exception e)
                     {
-                        Debug.Log(replyStr);
                         Debug.LogError(e.ToString());
-                        StartSceneUIManager.instance.ShowStringTips("服务器响应错误");
+                        string serverBackStr = HttpToServerCS.instance.ErrorAnalysisFun(replyStr);
+                        StartSceneUIManager.instance.ShowStringTips(serverBackStr);
                         return;
                     }
+
                     //给游戏中存放账户名和密码
                     PlayerDataForGame.instance.atData.accountName = backAccountClass.name;
                     PlayerDataForGame.instance.atData.passwordStr = passwordInput.text;
@@ -191,8 +236,9 @@ public class StartSceneToServerCS : MonoBehaviour
                     passwordInput.text = "";
                     passwordInput1.text = "";
                     StartSceneUIManager.instance.ShowStringTips("注册成功");
+
                     phoneNumberObj.SetActive(true);
-                    bindPhoneObj.SetActive(true);
+                    chackAccountObj.SetActive(true);
                 }
                 else
                 {
@@ -232,20 +278,27 @@ public class StartSceneToServerCS : MonoBehaviour
             try
             {
                 backPhoneToAccountClass = JsonConvert.DeserializeObject<BackPhoneToAccountClass>(replyStr);
+
+                if (backPhoneToAccountClass.error != (int)ServerBackCode.SUCCESS)
+                {
+                    string serverBackStr = HttpToServerCS.instance.ErrorAnalysisFun(null, backPhoneToAccountClass.error);
+                    StartSceneUIManager.instance.ShowStringTips(serverBackStr);
+                    return;
+                }
             }
             catch (Exception e)
             {
-                Debug.Log(replyStr);
                 Debug.LogError(e.ToString());
-                StartSceneUIManager.instance.ShowStringTips("服务器响应错误");
+                string serverBackStr = HttpToServerCS.instance.ErrorAnalysisFun(replyStr);
+                StartSceneUIManager.instance.ShowStringTips(serverBackStr);
                 return;
             }
             //设置手机号存储到游戏中
             phoneNumberObj.transform.GetChild(0).GetComponent<Text>().text = backPhoneToAccountClass.phone;
             PlayerDataForGame.instance.atData.phoneNumber = backPhoneToAccountClass.phone;
             PlayerPrefs.SetString(phoneNumberPrefsStr, backPhoneToAccountClass.phone);
-            bindPhoneObj.SetActive(false);
-            chackAccountObj.SetActive(true);
+
+            bindPhoneBtnObj.SetActive(false);
             StartSceneUIManager.instance.ShowStringTips("绑定手机成功");
         }
         else
@@ -253,34 +306,123 @@ public class StartSceneToServerCS : MonoBehaviour
             Debug.Log("服务器响应错误");
             StartSceneUIManager.instance.ShowStringTips("服务器响应错误");
         }
-
     }
 
-    /// <summary>
-    /// 跳过绑定手机界面
-    /// </summary>
-    private void JumpBindPhoneFun()
+    private void CloseLoginInfoObjFun()
     {
+        registerAccountObj.SetActive(false);
+        chackAccountObj.SetActive(false);
+        changeAccountObj.SetActive(false);
         loginInfoObj.SetActive(false);
         LoginGameInfoFun();
     }
 
+    ////////////////登陆其他账号相关//////////////////////////////////
+
+    [SerializeField]
+    Button hadAccountNumBtn;    //已有帐号点击按钮
+
+    [SerializeField]
+    Button backCreateAccountBtn;    //返回创建账号界面按钮
+
+    [SerializeField]
+    GameObject changeAccountObj;    //切换账号登录界面
+
     /// <summary>
-    /// 点击查看账号按钮方法
+    /// 点击已有账号按钮
     /// </summary>
-    private void TakeChackAccountBtnFun()
+    private void HadAccountOnClickFun()
     {
-        accountText.text = PlayerDataForGame.instance.atData.accountName;
-        if (PlayerDataForGame.instance.atData.phoneNumber != "")
+        accountInput.text = "";
+        pwInput.text = "";
+        accountTextObj.SetActive(false);
+        registerAccountObj.SetActive(false);
+        changeAccountObj.SetActive(true);
+    }
+
+    /// <summary>
+    /// 返回创建账号界面
+    /// </summary>
+    private void BackCreateBtnOnClickFun()
+    {
+        changeAccountObj.SetActive(false);
+        accountTextObj.SetActive(true);
+        registerAccountObj.SetActive(true);
+    }
+
+    [SerializeField]
+    InputField accountInput;    //账号输入框
+
+    [SerializeField]
+    InputField pwInput;         //密码输入框
+
+    [SerializeField]
+    Button loginAccountBtn; //切换账号里面的登录按钮
+
+    /// <summary>
+    /// 切换账号登陆
+    /// </summary>
+    private void TakeLoginAccountBtnFun()
+    {
+        if (accountInput.text=="")
         {
-            phoneNumberObj.transform.GetChild(0).GetComponent<Text>().text = PlayerDataForGame.instance.atData.phoneNumber;
-            chackAccountObj.SetActive(true);
+            StartSceneUIManager.instance.ShowStringTips("请输入账号");
         }
         else
         {
-            bindPhoneObj.SetActive(true);
+            if (pwInput.text=="")
+            {
+                StartSceneUIManager.instance.ShowStringTips("请输入密码");
+            }
+            else
+            {
+                bool isPhone = false;
+                if (accountInput.text.Length==11)
+                {
+                    isPhone = true;
+                }
+                string[] arrStr = new string[2] { accountInput.text, pwInput.text };
+                //提交账号密码手机号，申请绑定手机
+                string replyStr = HttpToServerCS.instance.LoginRelatedFunsForGet(isPhone ? LoginFunIndex.PHONE_NAME_LOGIN : LoginFunIndex.ACCOUNT_NAME_LOGIN, arrStr);
+                if (replyStr != StringForEditor.ERROR)
+                {
+                    BackForLoginClass backForLoginClass = new BackForLoginClass();
+                    try
+                    {
+                        backForLoginClass = JsonConvert.DeserializeObject<BackForLoginClass>(replyStr);
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.LogError(e.ToString());
+                        string serverBackStr = HttpToServerCS.instance.ErrorAnalysisFun(replyStr);
+                        StartSceneUIManager.instance.ShowStringTips(serverBackStr);
+                        return;
+                    }
+                    //设置账号数据存储到游戏中
+                    if (isPhone)
+                    {
+                        phoneNumberObj.transform.GetChild(0).GetComponent<Text>().text = accountInput.text;
+                        PlayerDataForGame.instance.atData.phoneNumber = accountInput.text;
+                        PlayerPrefs.SetString(phoneNumberPrefsStr, accountInput.text);
+                        PlayerPrefs.SetString(accountNamePrefsStr, "");
+                    }
+                    else
+                    {
+                        accountText.text = accountInput.text;
+                        PlayerDataForGame.instance.atData.accountName = accountInput.text;
+                        PlayerPrefs.SetString(accountNamePrefsStr, accountInput.text);
+                        PlayerPrefs.SetString(phoneNumberPrefsStr, "");
+                    }
+
+                    changeAccountObj.SetActive(false);
+
+                }
+                else
+                {
+                    Debug.Log("服务器响应错误");
+                    StartSceneUIManager.instance.ShowStringTips("服务器响应错误");
+                }
+            }
         }
-        phoneNumberObj.SetActive(true);
-        loginInfoObj.SetActive(true);
     }
 }
