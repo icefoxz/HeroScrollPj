@@ -190,6 +190,7 @@ public class LoadSaveData : MonoBehaviour
         if (PlayerDataForGame.instance.atData.phoneNumber != "")
         {
             UploadArchiveToServer(pyDataStr, hSTDataStr, warsDataStr, gbocDataStr);
+            Debug.Log("上传存档到服务器成功");
         }
     }
 

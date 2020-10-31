@@ -19,6 +19,8 @@ namespace cn.SMSSDK.Unity
 
         private void Awake()
         {
+            isCanCallBack = true;
+
             print("print: [SMSSDK]  ===>>>  Awake");
             smssdk = gameObject.GetComponent<SMSSDK>();
 
@@ -76,6 +78,12 @@ namespace cn.SMSSDK.Unity
 
         private string result = null;   //回调消息
 
+        private bool isCanCallBack;  //是否可以接受回调响应
+        private void ReplyCanCallBack()
+        {
+            isCanCallBack = true;
+        }
+
         public void onComplete(int action, object resp)
         {
             ActionType act = (ActionType)action;
@@ -99,7 +107,6 @@ namespace cn.SMSSDK.Unity
             }
             else if (act == ActionType.GetSupportedCountries)
             {
-
                 string responseString = (string)resp;
                 //Debug.Log("zoneString :" + responseString);
 
@@ -115,23 +122,25 @@ namespace cn.SMSSDK.Unity
                 string responseString = (string)resp;
                 //Debug.Log("commitCodeString :" + responseString);
                 //start场景短信验证绑定手机
-                StartSceneToServerCS.instance.SMSVerifiedSuccessedFun(responseString);
+                if (isCanCallBack)
+                {
+                    isCanCallBack = false;
+                    StartSceneToServerCS.instance.SMSVerifiedSuccessedFun(responseString);
+                    Invoke("ReplyCanCallBack", 3f);
+                }
             }
             else if (act == ActionType.SubmitUserInfo)
             {
-
                 string responseString = (string)resp;
                 //Debug.Log("submitString :" + responseString);
             }
             else if (act == ActionType.ShowRegisterView)
             {
-
                 string responseString = (string)resp;
                 //Debug.Log("showRegisterView :" + responseString);
             }
             else if (act == ActionType.ShowContractFriendsView)
             {
-
                 string responseString = (string)resp;
                 //Debug.Log("showContractFriendsView :" + responseString);
             }

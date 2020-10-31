@@ -5,7 +5,7 @@ public class AppDebugClass
 {
 #if UNITY_EDITOR
     
-    private static readonly string logFileUrl = Application.dataPath + "/StreamingAssets/DebugFileV1.79.txt";
+    private static readonly string logFileUrl = Application.dataPath + "/StreamingAssets/DebugFileV1.8.txt";
 
     //现有存档
     public static readonly string playerDataString = Application.dataPath + "/StreamingAssets/PlayerDataSave.json";
@@ -25,7 +25,7 @@ public class AppDebugClass
 
 #elif UNITY_ANDROID  && !UNITY_EDITOR
 
-    private static readonly string logFileUrl = Application.persistentDataPath + "/DebugFileV1.79.txt";
+    private static readonly string logFileUrl = Application.persistentDataPath + "/DebugFileV1.8.txt";
 
     public static readonly string playerDataString = Application.persistentDataPath + "/PlayerDataSave.json";
     public static readonly string pyDataString = Application.persistentDataPath + "/PyDataSave.json";

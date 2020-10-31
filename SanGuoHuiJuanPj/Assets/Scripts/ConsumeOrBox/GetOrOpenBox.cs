@@ -91,8 +91,8 @@ public class GetOrOpenBox : MonoBehaviour
         Button getFreeBoxBtn = UIManager.instance.adBtnForFreeBox.transform.parent.GetChild(1).GetComponent<Button>();
         UIManager.instance.adBtnForFreeBox.enabled = false;
         getFreeBoxBtn.enabled = false;
-        //if (!DoNewAdController.instance.GetReWardVideo(
-        if (!AdController.instance.ShowVideo(
+        if (!DoNewAdController.instance.GetReWardVideo(
+        //if (!AdController.instance.ShowVideo(
             delegate ()
             {
                 int index = openJiuTanYBNums;

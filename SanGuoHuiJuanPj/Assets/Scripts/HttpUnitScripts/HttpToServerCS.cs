@@ -91,9 +91,9 @@ public class HttpToServerCS : MonoBehaviour
             Debug.LogError(e.ToString());
             return StringForEditor.ERROR;
         }
-        Debug.Log("getUrlStr: " + getUrlStr);
+        //Debug.Log("getUrlStr: " + getUrlStr);
         string replyStr = HttpUitls.Get(getUrlStr);
-        Debug.Log("reply: " + replyStr);
+        //Debug.Log("reply: " + replyStr);
 
         return replyStr;
     }
@@ -123,9 +123,9 @@ public class HttpToServerCS : MonoBehaviour
             dic.Add(Post_UploadArchive_KeyName[i], contentStrs[i]);
         }
 
-        Debug.Log("postUrlStr: " + postUrlStr);
+        //Debug.Log("postUrlStr: " + postUrlStr);
         string replyStr = HttpUitls.PostForValue(postUrlStr, dic);
-        Debug.Log("reply: " + replyStr);
+        //Debug.Log("reply: " + replyStr);
 
         return replyStr;
     }

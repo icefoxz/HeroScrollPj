@@ -13,6 +13,16 @@ public class StartSceneToServerCS : MonoBehaviour
 
     public static StartSceneToServerCS instance;
 
+    /// <summary>
+    /// 清除帐户
+    /// </summary>
+    public void ClearAccountData()
+    {
+        PlayerDataForGame.instance.atData.accountName = "";
+        PlayerPrefs.SetString(accountNamePrefsStr, "");
+        LoginGameInfoFun();
+    }
+
     private void Awake()
     {
         if (instance != null)
@@ -26,7 +36,6 @@ public class StartSceneToServerCS : MonoBehaviour
 
         InfoButtonOnClickFun();
 
-        //PlayerPrefs.SetString(accountNamePrefsStr, "");
     }
 
     private void Start()
@@ -119,7 +128,7 @@ public class StartSceneToServerCS : MonoBehaviour
         accountTextObj.SetActive(true);
         if (PlayerDataForGame.instance.atData.phoneNumber != "")
         {
-            phoneNumberObj.transform.GetChild(0).GetComponent<Text>().text = PlayerDataForGame.instance.atData.phoneNumber;
+            phoneNumberObj.transform.GetChild(0).GetChild(0).GetComponent<Text>().text = PlayerDataForGame.instance.atData.phoneNumber;
             bindPhoneBtnObj.SetActive(false);
         }
         else
@@ -278,7 +287,6 @@ public class StartSceneToServerCS : MonoBehaviour
             try
             {
                 backPhoneToAccountClass = JsonConvert.DeserializeObject<BackPhoneToAccountClass>(replyStr);
-
                 if (backPhoneToAccountClass.error != (int)ServerBackCode.SUCCESS)
                 {
                     string serverBackStr = HttpToServerCS.instance.ErrorAnalysisFun(null, backPhoneToAccountClass.error);
@@ -294,7 +302,7 @@ public class StartSceneToServerCS : MonoBehaviour
                 return;
             }
             //设置手机号存储到游戏中
-            phoneNumberObj.transform.GetChild(0).GetComponent<Text>().text = backPhoneToAccountClass.phone;
+            phoneNumberObj.transform.GetChild(0).GetChild(0).GetComponent<Text>().text = backPhoneToAccountClass.phone;
             PlayerDataForGame.instance.atData.phoneNumber = backPhoneToAccountClass.phone;
             PlayerPrefs.SetString(phoneNumberPrefsStr, backPhoneToAccountClass.phone);
 
@@ -401,7 +409,7 @@ public class StartSceneToServerCS : MonoBehaviour
                     //设置账号数据存储到游戏中
                     if (isPhone)
                     {
-                        phoneNumberObj.transform.GetChild(0).GetComponent<Text>().text = accountInput.text;
+                        phoneNumberObj.transform.GetChild(0).GetChild(0).GetComponent<Text>().text = accountInput.text;
                         PlayerDataForGame.instance.atData.phoneNumber = accountInput.text;
                         PlayerPrefs.SetString(phoneNumberPrefsStr, accountInput.text);
                         PlayerPrefs.SetString(accountNamePrefsStr, "");

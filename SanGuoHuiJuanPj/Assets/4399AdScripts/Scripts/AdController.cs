@@ -20,7 +20,6 @@ public class AdController : MonoBehaviour
     DelForOverVideo delForOverVideo;            //成功观看视频后应执行的事件
     DelForOverVideo delForOverVideoForError;    //失败观看视频后应执行的事件
 
-
     private void Awake()
     {
         if (instance != null)

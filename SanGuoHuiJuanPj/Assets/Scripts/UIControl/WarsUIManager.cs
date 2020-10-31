@@ -803,8 +803,8 @@ public class WarsUIManager : MonoBehaviour
                     adBtn.onClick.AddListener(delegate ()
                     {
                         adBtn.enabled = false;
-                        //if (!DoNewAdController.instance.GetReWardVideo(
-                        if (!AdController.instance.ShowVideo(
+                        if (!DoNewAdController.instance.GetReWardVideo(
+                        //if (!AdController.instance.ShowVideo(
                             delegate ()
                             {
                                 GetOrBuyCards(true, needMoney, cardType, cardId, cardLevel, btnIndex);
@@ -926,8 +926,8 @@ public class WarsUIManager : MonoBehaviour
     {
         Button adBtn = eventsWindows[3].transform.GetChild(0).GetChild(5).GetComponent<Button>();
         adBtn.enabled = false;
-        //if (!DoNewAdController.instance.GetReWardVideo(
-        if (!AdController.instance.ShowVideo(
+        if (!DoNewAdController.instance.GetReWardVideo(
+        //if (!AdController.instance.ShowVideo(
             delegate ()
             {
                 adBtn.gameObject.SetActive(false);
