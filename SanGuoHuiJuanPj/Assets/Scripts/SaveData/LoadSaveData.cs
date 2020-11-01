@@ -186,11 +186,10 @@ public class LoadSaveData : MonoBehaviour
         {
             Debug.LogError("存档备份失败 " + e.ToString());
         }
-
+        
         if (PlayerDataForGame.instance.atData.phoneNumber != "")
         {
             UploadArchiveToServer(pyDataStr, hSTDataStr, warsDataStr, gbocDataStr);
-            Debug.Log("上传存档到服务器成功");
         }
     }
 
@@ -248,6 +247,7 @@ public class LoadSaveData : MonoBehaviour
                     Debug.LogError(serverBackStr);
                     return;
                 }
+                Debug.Log("上传存档到服务器成功");
             }
             else
             {
@@ -270,177 +270,72 @@ public class LoadSaveData : MonoBehaviour
 
         if (isHadSaveData)
         {
-            string filePath = AppDebugClass.playerDataString;
-            string filePath00 = AppDebugClass.pyDataString;
-            PlayerDataClass save = new PlayerDataClass();
-            PyDataClass save00 = new PyDataClass();
-            string jsonStr = string.Empty;
-
-            string filePath0 = AppDebugClass.plyDataString;
-            string filePath1 = AppDebugClass.hstDataString;
-            string filePath2 = AppDebugClass.warUnlockDataString;
-            string filePath3 = AppDebugClass.gbocDataString;
-
-            PlyDataClass save0 = new PlyDataClass();
-            HSTDataClass save1 = new HSTDataClass();
-            WarsDataClass save2 = new WarsDataClass();
-            GetBoxOrCodeData save3 = new GetBoxOrCodeData();
-
-            string jsonStr0 = string.Empty;
-            string jsonStr1 = string.Empty;
-            string jsonStr2 = string.Empty;
-            string jsonStr3 = string.Empty;
-
-            try
+            if (!PlayerDataForGame.instance.isHadNewSaveData)
             {
-                //玩家数据读档
-                if (File.Exists(filePath) || File.Exists(filePath00))  //存在老玩家数据存档的话
-                {
-                    AppDebugClass.DeleteAppLog();   //删除原先DebugFile
+                string filePath = AppDebugClass.playerDataString;
+                string filePath00 = AppDebugClass.pyDataString;
+                PlayerDataClass save = new PlayerDataClass();
+                PyDataClass save00 = new PyDataClass();
+                string jsonStr = string.Empty;
 
-                    if (File.Exists(filePath))
-                    {
-                        jsonStr = File.ReadAllText(filePath);
-                        jsonStr = InspectionAndCorrectionString(jsonStr, new string[] { "true}]}", "false}]}" }, filePath);
-                        save = JsonConvert.DeserializeObject<PlayerDataClass>(jsonStr);
+                string filePath0 = AppDebugClass.plyDataString;
+                string filePath1 = AppDebugClass.hstDataString;
+                string filePath2 = AppDebugClass.warUnlockDataString;
+                string filePath3 = AppDebugClass.gbocDataString;
 
-                        File.Delete(filePath);
-                        if (File.Exists(AppDebugClass.playerDataString1))
-                        {
-                            File.Delete(AppDebugClass.playerDataString1);
-                        }
-                        {
-                            save0.level = save.level;
-                            save0.exp = save.exp;
-                            save0.yuanbao = save.yuanbao;
-                            save0.yvque = save.yvque;
-                            save0.forceId = save.forceId;
-                            SaveByJson(save0);
-                        }
-                        {
-                            save3.fightBoxs = save.fightBoxs;
-                            save3.redemptionCodeGotList = save.redemptionCodeGotList;
-                            SaveByJson(save3);
-                        }
-                    }
-                    if (File.Exists(filePath00))
-                    {
-                        jsonStr = File.ReadAllText(filePath00);
-                        jsonStr = InspectionAndCorrectionString(jsonStr, new string[] { "true}]}", "false}]}" }, filePath00);
-                        save00 = JsonConvert.DeserializeObject<PyDataClass>(jsonStr);
+                PlyDataClass save0 = new PlyDataClass();
+                HSTDataClass save1 = new HSTDataClass();
+                WarsDataClass save2 = new WarsDataClass();
+                GetBoxOrCodeData save3 = new GetBoxOrCodeData();
 
-                        File.Delete(filePath00);
-                        if (File.Exists(AppDebugClass.pyDataString1))
-                        {
-                            File.Delete(AppDebugClass.pyDataString1);
-                        }
-                        {
-                            save0.level = save00.level;
-                            save0.exp = save00.exp;
-                            save0.yuanbao = save00.yuanbao;
-                            save0.yvque = save00.yvque;
-                            save0.forceId = save00.forceId;
-                            SaveByJson(save0);
-                        }
-                        {
-                            save3.fightBoxs = save00.fightBoxs;
-                            save3.redemptionCodeGotList = save00.redemptionCodeGotList;
-                            SaveByJson(save3);
-                        }
-                    }
+                string jsonStr0 = string.Empty;
+                string jsonStr1 = string.Empty;
+                string jsonStr2 = string.Empty;
+                string jsonStr3 = string.Empty;
 
-                    Debug.Log("读老版玩家档成功，删除并建立新档成功");
-
-                    jsonStr0 = File.ReadAllText(filePath0);
-                    jsonStr3 = File.ReadAllText(filePath3);
-                }
-                else
-                {
-                    jsonStr0 = File.ReadAllText(filePath0);                 //读取文件
-                    if (isEncrypted != 0)
-                        jsonStr0 = EncryptDecipherTool.DESDecrypt(jsonStr0);    //解密json
-                    jsonStr0 = InspectionAndCorrectionString(jsonStr0, new string[] { "}" }, filePath0);    //修正json
-                    save0 = JsonConvert.DeserializeObject<PlyDataClass>(jsonStr0);                          //解析json
-
-                    jsonStr3 = File.ReadAllText(filePath3);
-                    if (isEncrypted != 0)
-                        jsonStr3 = EncryptDecipherTool.DESDecrypt(jsonStr3);
-                    jsonStr3 = InspectionAndCorrectionString(jsonStr3, new string[] { "}]}" }, filePath3);
-                    save3 = ArchiveCorrection(JsonConvert.DeserializeObject<GetBoxOrCodeData>(jsonStr3));
-                }
-
-                //武将士兵塔数据读档
-                jsonStr1 = File.ReadAllText(filePath1);
-                if (isEncrypted != 0)
-                    jsonStr1 = EncryptDecipherTool.DESDecrypt(jsonStr1);
-                jsonStr1 = InspectionAndCorrectionString(jsonStr1, new string[] { ":0}]}" }, filePath1);
-                save1 = ArchiveCorrection(JsonConvert.DeserializeObject<HSTDataClass>(jsonStr1));
-
-                //关卡解锁进度数据读档
-                jsonStr2 = File.ReadAllText(filePath2);
-                if (isEncrypted != 0)
-                    jsonStr2 = EncryptDecipherTool.DESDecrypt(jsonStr2);
-                jsonStr2 = InspectionAndCorrectionString(jsonStr2, new string[] { "true}]}", "false}]}" }, filePath2);
-                save2 = ArchiveCorrection(JsonConvert.DeserializeObject<WarsDataClass>(jsonStr2));
-
-                Debug.Log("读档成功");
-
-                //备份存档
-                BackupArchiveForGame(jsonStr0, jsonStr1, jsonStr2, jsonStr3);
-
-                if (isEncrypted == 0)
-                {
-                    File.WriteAllText(filePath0, EncryptDecipherTool.DESEncrypt(jsonStr0));
-                    File.WriteAllText(filePath1, EncryptDecipherTool.DESEncrypt(jsonStr1));
-                    File.WriteAllText(filePath2, EncryptDecipherTool.DESEncrypt(jsonStr2));
-                    File.WriteAllText(filePath3, EncryptDecipherTool.DESEncrypt(jsonStr3));
-                    isEncrypted = 1;
-                    PlayerPrefs.SetInt(ISNEEDENCRYPT, isEncrypted);
-                }
-            }
-            catch (System.Exception e)
-            {
-                Debug.LogError("读档失败 " + e.ToString());
-
-                filePath0 = AppDebugClass.plyDataString1;
-                filePath1 = AppDebugClass.hstDataString1;
-                filePath2 = AppDebugClass.warUnlockDataString1;
-                filePath3 = AppDebugClass.gbocDataString1;
-
-                //尝试获取备份存档
                 try
                 {
-                    if (File.Exists(AppDebugClass.playerDataString1))
+                    //玩家数据读档
+                    if (File.Exists(filePath) || File.Exists(filePath00))  //存在老玩家数据存档的话
                     {
-                        jsonStr = File.ReadAllText(AppDebugClass.playerDataString1);
-                        jsonStr = InspectionAndCorrectionString(jsonStr, new string[] { "true}]}", "false}]}" }, AppDebugClass.playerDataString1);
-                        save = JsonConvert.DeserializeObject<PlayerDataClass>(jsonStr);
-                        {
-                            save0.level = save.level;
-                            save0.exp = save.exp;
-                            save0.yuanbao = save.yuanbao;
-                            save0.yvque = save.yvque;
-                            save0.forceId = save.forceId;
-                            SaveByJson(save0);
-                        }
-                        {
-                            save3.fightBoxs = save.fightBoxs;
-                            save3.redemptionCodeGotList = save.redemptionCodeGotList;
-                            SaveByJson(save3);
-                        }
-                        File.Delete(AppDebugClass.playerDataString1);
+                        AppDebugClass.DeleteAppLog();   //删除原先DebugFile
+
                         if (File.Exists(filePath))
                         {
+                            jsonStr = File.ReadAllText(filePath);
+                            jsonStr = InspectionAndCorrectionString(jsonStr, new string[] { "true}]}", "false}]}" }, filePath);
+                            save = JsonConvert.DeserializeObject<PlayerDataClass>(jsonStr);
+
                             File.Delete(filePath);
+                            if (File.Exists(AppDebugClass.playerDataString1))
+                            {
+                                File.Delete(AppDebugClass.playerDataString1);
+                            }
+                            {
+                                save0.level = save.level;
+                                save0.exp = save.exp;
+                                save0.yuanbao = save.yuanbao;
+                                save0.yvque = save.yvque;
+                                save0.forceId = save.forceId;
+                                SaveByJson(save0);
+                            }
+                            {
+                                save3.fightBoxs = save.fightBoxs;
+                                save3.redemptionCodeGotList = save.redemptionCodeGotList;
+                                SaveByJson(save3);
+                            }
                         }
-                    }
-                    else
-                    {
-                        if (File.Exists(AppDebugClass.pyDataString1))
+                        if (File.Exists(filePath00))
                         {
-                            jsonStr = File.ReadAllText(AppDebugClass.pyDataString1);
-                            jsonStr = InspectionAndCorrectionString(jsonStr, new string[] { "true}]}", "false}]}" }, AppDebugClass.pyDataString1);
+                            jsonStr = File.ReadAllText(filePath00);
+                            jsonStr = InspectionAndCorrectionString(jsonStr, new string[] { "true}]}", "false}]}" }, filePath00);
                             save00 = JsonConvert.DeserializeObject<PyDataClass>(jsonStr);
+
+                            File.Delete(filePath00);
+                            if (File.Exists(AppDebugClass.pyDataString1))
+                            {
+                                File.Delete(AppDebugClass.pyDataString1);
+                            }
                             {
                                 save0.level = save00.level;
                                 save0.exp = save00.exp;
@@ -454,47 +349,155 @@ public class LoadSaveData : MonoBehaviour
                                 save3.redemptionCodeGotList = save00.redemptionCodeGotList;
                                 SaveByJson(save3);
                             }
-                            File.Delete(AppDebugClass.pyDataString1);
-                            if (File.Exists(filePath00))
-                            {
-                                File.Delete(filePath00);
-                            }
                         }
-                        else
-                        {
-                            jsonStr0 = File.ReadAllText(filePath0);
-                            if (isEncrypted != 0)
-                                jsonStr0 = EncryptDecipherTool.DESDecrypt(jsonStr0);
-                            save0 = JsonConvert.DeserializeObject<PlyDataClass>(jsonStr0);
 
-                            jsonStr3 = File.ReadAllText(filePath3);
-                            if (isEncrypted != 0)
-                                jsonStr3 = EncryptDecipherTool.DESDecrypt(jsonStr3);
-                            save3 = ArchiveCorrection(JsonConvert.DeserializeObject<GetBoxOrCodeData>(jsonStr3));
-                        }
+                        Debug.Log("读老版玩家档成功，删除并建立新档成功");
+
+                        jsonStr0 = File.ReadAllText(filePath0);
+                        jsonStr3 = File.ReadAllText(filePath3);
                     }
+                    else
+                    {
+                        jsonStr0 = File.ReadAllText(filePath0);                 //读取文件
+                        if (isEncrypted != 0)
+                            jsonStr0 = EncryptDecipherTool.DESDecrypt(jsonStr0);    //解密json
+                        jsonStr0 = InspectionAndCorrectionString(jsonStr0, new string[] { "}" }, filePath0);    //修正json
+                        save0 = JsonConvert.DeserializeObject<PlyDataClass>(jsonStr0);                          //解析json
+
+                        jsonStr3 = File.ReadAllText(filePath3);
+                        if (isEncrypted != 0)
+                            jsonStr3 = EncryptDecipherTool.DESDecrypt(jsonStr3);
+                        jsonStr3 = InspectionAndCorrectionString(jsonStr3, new string[] { "}]}" }, filePath3);
+                        save3 = ArchiveCorrection(JsonConvert.DeserializeObject<GetBoxOrCodeData>(jsonStr3));
+                    }
+
+                    //武将士兵塔数据读档
                     jsonStr1 = File.ReadAllText(filePath1);
                     if (isEncrypted != 0)
                         jsonStr1 = EncryptDecipherTool.DESDecrypt(jsonStr1);
                     jsonStr1 = InspectionAndCorrectionString(jsonStr1, new string[] { ":0}]}" }, filePath1);
                     save1 = ArchiveCorrection(JsonConvert.DeserializeObject<HSTDataClass>(jsonStr1));
 
+                    //关卡解锁进度数据读档
                     jsonStr2 = File.ReadAllText(filePath2);
                     if (isEncrypted != 0)
                         jsonStr2 = EncryptDecipherTool.DESDecrypt(jsonStr2);
                     jsonStr2 = InspectionAndCorrectionString(jsonStr2, new string[] { "true}]}", "false}]}" }, filePath2);
                     save2 = ArchiveCorrection(JsonConvert.DeserializeObject<WarsDataClass>(jsonStr2));
 
-                    Debug.Log("读取备份存档成功");
-                }
-                catch (System.Exception ex)
-                {
-                    Debug.LogError("备份存档损坏 " + ex.ToString());
-                }
-            }
+                    Debug.Log("读档成功");
 
-            //存档数据提取到游戏中
-            SetGamePlayerBasicData(save0, save1, save2, save3);
+                    //备份存档
+                    BackupArchiveForGame(jsonStr0, jsonStr1, jsonStr2, jsonStr3);
+
+                    if (isEncrypted == 0)
+                    {
+                        File.WriteAllText(filePath0, EncryptDecipherTool.DESEncrypt(jsonStr0));
+                        File.WriteAllText(filePath1, EncryptDecipherTool.DESEncrypt(jsonStr1));
+                        File.WriteAllText(filePath2, EncryptDecipherTool.DESEncrypt(jsonStr2));
+                        File.WriteAllText(filePath3, EncryptDecipherTool.DESEncrypt(jsonStr3));
+                        isEncrypted = 1;
+                        PlayerPrefs.SetInt(ISNEEDENCRYPT, isEncrypted);
+                    }
+                }
+                catch (System.Exception e)
+                {
+                    Debug.LogError("读档失败 " + e.ToString());
+
+                    filePath0 = AppDebugClass.plyDataString1;
+                    filePath1 = AppDebugClass.hstDataString1;
+                    filePath2 = AppDebugClass.warUnlockDataString1;
+                    filePath3 = AppDebugClass.gbocDataString1;
+
+                    //尝试获取备份存档
+                    try
+                    {
+                        if (File.Exists(AppDebugClass.playerDataString1))
+                        {
+                            jsonStr = File.ReadAllText(AppDebugClass.playerDataString1);
+                            jsonStr = InspectionAndCorrectionString(jsonStr, new string[] { "true}]}", "false}]}" }, AppDebugClass.playerDataString1);
+                            save = JsonConvert.DeserializeObject<PlayerDataClass>(jsonStr);
+                            {
+                                save0.level = save.level;
+                                save0.exp = save.exp;
+                                save0.yuanbao = save.yuanbao;
+                                save0.yvque = save.yvque;
+                                save0.forceId = save.forceId;
+                                SaveByJson(save0);
+                            }
+                            {
+                                save3.fightBoxs = save.fightBoxs;
+                                save3.redemptionCodeGotList = save.redemptionCodeGotList;
+                                SaveByJson(save3);
+                            }
+                            File.Delete(AppDebugClass.playerDataString1);
+                            if (File.Exists(filePath))
+                            {
+                                File.Delete(filePath);
+                            }
+                        }
+                        else
+                        {
+                            if (File.Exists(AppDebugClass.pyDataString1))
+                            {
+                                jsonStr = File.ReadAllText(AppDebugClass.pyDataString1);
+                                jsonStr = InspectionAndCorrectionString(jsonStr, new string[] { "true}]}", "false}]}" }, AppDebugClass.pyDataString1);
+                                save00 = JsonConvert.DeserializeObject<PyDataClass>(jsonStr);
+                                {
+                                    save0.level = save00.level;
+                                    save0.exp = save00.exp;
+                                    save0.yuanbao = save00.yuanbao;
+                                    save0.yvque = save00.yvque;
+                                    save0.forceId = save00.forceId;
+                                    SaveByJson(save0);
+                                }
+                                {
+                                    save3.fightBoxs = save00.fightBoxs;
+                                    save3.redemptionCodeGotList = save00.redemptionCodeGotList;
+                                    SaveByJson(save3);
+                                }
+                                File.Delete(AppDebugClass.pyDataString1);
+                                if (File.Exists(filePath00))
+                                {
+                                    File.Delete(filePath00);
+                                }
+                            }
+                            else
+                            {
+                                jsonStr0 = File.ReadAllText(filePath0);
+                                if (isEncrypted != 0)
+                                    jsonStr0 = EncryptDecipherTool.DESDecrypt(jsonStr0);
+                                save0 = JsonConvert.DeserializeObject<PlyDataClass>(jsonStr0);
+
+                                jsonStr3 = File.ReadAllText(filePath3);
+                                if (isEncrypted != 0)
+                                    jsonStr3 = EncryptDecipherTool.DESDecrypt(jsonStr3);
+                                save3 = ArchiveCorrection(JsonConvert.DeserializeObject<GetBoxOrCodeData>(jsonStr3));
+                            }
+                        }
+                        jsonStr1 = File.ReadAllText(filePath1);
+                        if (isEncrypted != 0)
+                            jsonStr1 = EncryptDecipherTool.DESDecrypt(jsonStr1);
+                        jsonStr1 = InspectionAndCorrectionString(jsonStr1, new string[] { ":0}]}" }, filePath1);
+                        save1 = ArchiveCorrection(JsonConvert.DeserializeObject<HSTDataClass>(jsonStr1));
+
+                        jsonStr2 = File.ReadAllText(filePath2);
+                        if (isEncrypted != 0)
+                            jsonStr2 = EncryptDecipherTool.DESDecrypt(jsonStr2);
+                        jsonStr2 = InspectionAndCorrectionString(jsonStr2, new string[] { "true}]}", "false}]}" }, filePath2);
+                        save2 = ArchiveCorrection(JsonConvert.DeserializeObject<WarsDataClass>(jsonStr2));
+
+                        Debug.Log("读取备份存档成功");
+                    }
+                    catch (System.Exception ex)
+                    {
+                        Debug.LogError("备份存档损坏 " + ex.ToString());
+                    }
+                }
+
+                //存档数据提取到游戏中
+                SetGamePlayerBasicData(save0, save1, save2, save3);
+            }
             //初始化新手指引
             InitGuideData(false);
         }
@@ -828,12 +831,13 @@ public class LoadSaveData : MonoBehaviour
     /// <param name="save">玩家数据存档</param>
     /// <param name="save1">卡牌数据存档</param>
     /// <param name="save2">战役数据存档</param>
-    private void SetGamePlayerBasicData(PlyDataClass save, HSTDataClass save1, WarsDataClass save2, GetBoxOrCodeData save3)
+    public void SetGamePlayerBasicData(PlyDataClass save, HSTDataClass save1, WarsDataClass save2, GetBoxOrCodeData save3)
     {
         PlayerDataForGame.instance.pyData = save;
         PlayerDataForGame.instance.hstData = save1;
         PlayerDataForGame.instance.warsData = save2;
         PlayerDataForGame.instance.gbocData = save3;
+        PlayerDataForGame.instance.isHadNewSaveData = true;
     }
 
     /// <summary>

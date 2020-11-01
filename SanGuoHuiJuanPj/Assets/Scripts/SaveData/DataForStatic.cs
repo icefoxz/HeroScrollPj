@@ -250,15 +250,11 @@ public enum LoginFunIndex
     /// </summary>
     BIND_PHONE,
     /// <summary>
-    /// 3 手机号登陆
+    /// 3 账号登陆
     /// </summary>
-    PHONE_NAME_LOGIN,
+    ACCOUNT_LOGIN,
     /// <summary>
-    /// 4 游戏账号登陆
-    /// </summary>
-    ACCOUNT_NAME_LOGIN,
-    /// <summary>
-    /// 5 上传存档
+    /// 4 上传存档
     /// </summary>
     UPLOAD_ARCHIVE
 }

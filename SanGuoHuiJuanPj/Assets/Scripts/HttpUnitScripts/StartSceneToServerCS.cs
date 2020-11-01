@@ -368,30 +368,31 @@ public class StartSceneToServerCS : MonoBehaviour
     Button loginAccountBtn; //切换账号里面的登录按钮
 
     /// <summary>
-    /// 切换账号登陆
+    /// 账号登陆
     /// </summary>
     private void TakeLoginAccountBtnFun()
     {
-        if (accountInput.text=="")
+        if (accountInput.text == "")
         {
             StartSceneUIManager.instance.ShowStringTips("请输入账号");
         }
         else
         {
-            if (pwInput.text=="")
+            if (pwInput.text == "")
             {
                 StartSceneUIManager.instance.ShowStringTips("请输入密码");
             }
             else
             {
-                bool isPhone = false;
-                if (accountInput.text.Length==11)
+                int isPhone = 0;
+                //判断是否是手机号登录
+                if (accountInput.text.Length == 11)
                 {
-                    isPhone = true;
+                    isPhone = 1;
                 }
-                string[] arrStr = new string[2] { accountInput.text, pwInput.text };
-                //提交账号密码手机号，申请绑定手机
-                string replyStr = HttpToServerCS.instance.LoginRelatedFunsForGet(isPhone ? LoginFunIndex.PHONE_NAME_LOGIN : LoginFunIndex.ACCOUNT_NAME_LOGIN, arrStr);
+                string[] arrStr = new string[3] { accountInput.text, pwInput.text, isPhone.ToString() };
+
+                string replyStr = HttpToServerCS.instance.LoginRelatedFunsForGet(LoginFunIndex.ACCOUNT_LOGIN, arrStr);
                 if (replyStr != StringForEditor.ERROR)
                 {
                     BackForLoginClass backForLoginClass = new BackForLoginClass();
@@ -406,24 +407,49 @@ public class StartSceneToServerCS : MonoBehaviour
                         StartSceneUIManager.instance.ShowStringTips(serverBackStr);
                         return;
                     }
+
+
                     //设置账号数据存储到游戏中
-                    if (isPhone)
+
+                    PlyDataClass save0 = new PlyDataClass();
+                    HSTDataClass save1 = new HSTDataClass();
+                    WarsDataClass save2 = new WarsDataClass();
+                    GetBoxOrCodeData save3 = new GetBoxOrCodeData();
+                    try
                     {
-                        phoneNumberObj.transform.GetChild(0).GetChild(0).GetComponent<Text>().text = accountInput.text;
-                        PlayerDataForGame.instance.atData.phoneNumber = accountInput.text;
-                        PlayerPrefs.SetString(phoneNumberPrefsStr, accountInput.text);
-                        PlayerPrefs.SetString(accountNamePrefsStr, "");
+                        save0 = JsonConvert.DeserializeObject<PlyDataClass>(backForLoginClass.data);
+                        save1 = JsonConvert.DeserializeObject<HSTDataClass>(backForLoginClass.data2);
+                        save2 = JsonConvert.DeserializeObject<WarsDataClass>(backForLoginClass.data3);
+                        save3 = JsonConvert.DeserializeObject<GetBoxOrCodeData>(backForLoginClass.data4);
                     }
-                    else
+                    catch (Exception e)
                     {
-                        accountText.text = accountInput.text;
-                        PlayerDataForGame.instance.atData.accountName = accountInput.text;
-                        PlayerPrefs.SetString(accountNamePrefsStr, accountInput.text);
-                        PlayerPrefs.SetString(phoneNumberPrefsStr, "");
+                        Debug.LogError("服务器存档解析失败：" + e.ToString());
+                        StartSceneUIManager.instance.ShowStringTips("服务器存档解析失败");
+                        return;
                     }
+                    LoadSaveData.instance.SetGamePlayerBasicData(save0, save1, save2, save3);
+                    LoadSaveData.instance.SaveGameData();
+
+                    accountText.text = backForLoginClass.name;
+                    accountTextObj.SetActive(true);
+                    phoneNumberObj.transform.GetChild(0).GetChild(0).GetComponent<Text>().text = backForLoginClass.phone;
+                    phoneNumberObj.SetActive(true);
+
+                    PlayerDataForGame.instance.atData.accountName = backForLoginClass.name;
+                    PlayerDataForGame.instance.atData.passwordStr = pwInput.text;
+                    PlayerDataForGame.instance.atData.phoneNumber = backForLoginClass.phone;
+
+                    PlayerPrefs.SetString(accountNamePrefsStr, PlayerDataForGame.instance.atData.accountName);
+                    PlayerPrefs.SetString(passwordStrPrefsStr, PlayerDataForGame.instance.atData.passwordStr);
+                    PlayerPrefs.SetString(phoneNumberPrefsStr, PlayerDataForGame.instance.atData.phoneNumber);
+
+                    bindPhoneBtnObj.SetActive(false);
+                    chackAccountObj.SetActive(true);
 
                     changeAccountObj.SetActive(false);
-
+                    pwInput.text = "";
+                    StartSceneUIManager.instance.ShowStringTips("登录账号成功");
                 }
                 else
                 {

@@ -11,7 +11,10 @@ public class PlayerDataForGame : MonoBehaviour
 
     [HideInInspector]
     public bool isNeedSaveData; //记录是否需要存档
-    
+
+    [HideInInspector]
+    public bool isHadNewSaveData; //记录游戏内是否有最新的读档数据
+
     public AccountDataClass atData = new AccountDataClass();  //玩家账户信息
 
     public PlyDataClass pyData = new PlyDataClass();  //玩家基本信息
@@ -74,6 +77,7 @@ public class PlayerDataForGame : MonoBehaviour
         lastSenceIndex = 0;
         getBackTiLiNums = 0;
         isNeedSaveData = false;
+        isHadNewSaveData = false;
 
         garbageStationObjs = new List<GameObject>();
         StartCoroutine(FadeTransitionEffect(0));

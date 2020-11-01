@@ -10,15 +10,13 @@ public class HttpToServerCS : MonoBehaviour
     private static readonly string CreateQuickAccountName = "http://127.0.0.1:8080/login/createQuickAccountName";
     private static readonly string CreateAccount = "http://127.0.0.1:8080/login/createAccount?name={0}&pw={1}&isPhone=0";
     private static readonly string BindPhone = "http://127.0.0.1:8080/login/bindPhone?name={0}&pw={1}&phone={2}";
-    private static readonly string PhoneNameLogin = "http://127.0.0.1:8080/login/nameLogin?name={0}&pw={1}&isPhone=1";
-    private static readonly string AccountNameLogin = "http://127.0.0.1:8080/login/nameLogin?name={0}&pw={1}&isPhone=0";
+    private static readonly string AccountNameOrPhoneLogin = "http://127.0.0.1:8080/login/nameLogin?name={0}&pw={1}&isPhone={2}";
     private static readonly string Post_UploadArchive = "http://127.0.0.1:8080/login/upload";
 #elif UNITY_ANDROID && !UNITY_EDITOR
     private static readonly string CreateQuickAccountName = "http://123.57.201.250:8080/login/createQuickAccountName";
     private static readonly string CreateAccount = "http://123.57.201.250:8080/login/createAccount?name={0}&pw={1}&isPhone=0";
     private static readonly string BindPhone = "http://123.57.201.250:8080/login/bindPhone?name={0}&pw={1}&phone={2}";
-    private static readonly string PhoneNameLogin = "http://123.57.201.250:8080/login/nameLogin?name={0}&pw={1}&isPhone=1";
-    private static readonly string AccountNameLogin = "http://123.57.201.250:8080/login/nameLogin?name={0}&pw={1}&isPhone=0";
+    private static readonly string AccountNameOrPhoneLogin = "http://127.0.0.1:8080/login/nameLogin?name={0}&pw={1}&isPhone={2}";
     private static readonly string Post_UploadArchive = "http://123.57.201.250:8080/login/upload";
 #endif
 
@@ -69,11 +67,8 @@ public class HttpToServerCS : MonoBehaviour
             case LoginFunIndex.BIND_PHONE:
                 getUrlStr = BindPhone;
                 break;
-            case LoginFunIndex.PHONE_NAME_LOGIN:
-                getUrlStr = PhoneNameLogin;
-                break;
-            case LoginFunIndex.ACCOUNT_NAME_LOGIN:
-                getUrlStr = AccountNameLogin;
+            case LoginFunIndex.ACCOUNT_LOGIN:
+                getUrlStr = AccountNameOrPhoneLogin;
                 break;
             default:
                 break;
