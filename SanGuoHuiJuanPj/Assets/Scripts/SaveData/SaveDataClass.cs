@@ -400,18 +400,12 @@ public class UploadArchiveToServerClass
 /// </summary>
 public class BackForLoginClass
 {
-    /// <summary>
-    /// 账户名
-    /// </summary>
     public string name { get; set; }
-    /// <summary>
-    /// 手机号
-    /// </summary>
     public string phone { get; set; }
     public string data { get; set; }
-    public string data4 { get; set; }
-    public string data3 { get; set; }
     public string data2 { get; set; }
+    public string data3 { get; set; }
+    public string data4 { get; set; }
     public string updateTime { get; set; }
     public int error { get; set; }
 }

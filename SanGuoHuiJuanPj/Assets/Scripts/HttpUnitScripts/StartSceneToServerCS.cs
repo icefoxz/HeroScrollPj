@@ -399,6 +399,12 @@ public class StartSceneToServerCS : MonoBehaviour
                     try
                     {
                         backForLoginClass = JsonConvert.DeserializeObject<BackForLoginClass>(replyStr);
+                        if (backForLoginClass.error != (int)ServerBackCode.SUCCESS)
+                        {
+                            string serverBackStr = HttpToServerCS.instance.ErrorAnalysisFun(null, backForLoginClass.error);
+                            StartSceneUIManager.instance.ShowStringTips(serverBackStr);
+                            return;
+                        }
                     }
                     catch (Exception e)
                     {
@@ -408,9 +414,7 @@ public class StartSceneToServerCS : MonoBehaviour
                         return;
                     }
 
-
                     //设置账号数据存储到游戏中
-
                     PlyDataClass save0 = new PlyDataClass();
                     HSTDataClass save1 = new HSTDataClass();
                     WarsDataClass save2 = new WarsDataClass();
@@ -429,7 +433,9 @@ public class StartSceneToServerCS : MonoBehaviour
                         return;
                     }
                     LoadSaveData.instance.SetGamePlayerBasicData(save0, save1, save2, save3);
+                    PlayerDataForGame.instance.isNeedSaveData = true;
                     LoadSaveData.instance.SaveGameData();
+                    LoadSaveData.instance.isHadSaveData = true;
 
                     accountText.text = backForLoginClass.name;
                     accountTextObj.SetActive(true);
