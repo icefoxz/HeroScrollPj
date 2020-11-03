@@ -10,6 +10,12 @@ public class FightControlForStart : MonoBehaviour
 
     StateOfFight stateOfFight;  //战斗状态
 
+    //跳过战斗
+    public void TiaoGuoZD()
+    {
+        recordWinner = 1;
+    }
+
     [HideInInspector]
     public int recordWinner;    //标记胜负-1.0.1
 
