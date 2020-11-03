@@ -6748,7 +6748,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: v 1.79
+  m_Text: v 1.8
 --- !u!222 &573429883
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -8083,7 +8083,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e96df91d8871ba9479ffbfe23771aad0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  testInput: {fileID: 0}
   closeBtn: {fileID: 116243771}
   loginBtn: {fileID: 1477689249}
   accountTextObj: {fileID: 1661191041}
