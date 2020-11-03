@@ -35,7 +35,6 @@ public class StartSceneToServerCS : MonoBehaviour
         }
 
         InfoButtonOnClickFun();
-
     }
 
     private void Start()
@@ -419,6 +418,7 @@ public class StartSceneToServerCS : MonoBehaviour
                     HSTDataClass save1 = new HSTDataClass();
                     WarsDataClass save2 = new WarsDataClass();
                     GetBoxOrCodeData save3 = new GetBoxOrCodeData();
+                    //拉取服务器的存档文件
                     try
                     {
                         save0 = JsonConvert.DeserializeObject<PlyDataClass>(backForLoginClass.data);

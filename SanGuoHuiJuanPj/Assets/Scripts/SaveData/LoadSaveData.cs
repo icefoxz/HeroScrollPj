@@ -211,6 +211,12 @@ public class LoadSaveData : MonoBehaviour
         //uploadArchiveToServerClass.data3 = warsDataStr;
         //uploadArchiveToServerClass.data4 = gbocDataStr;
 
+        //压缩存档
+        //pyDataStr = CharacterCompresCS.CompressString(pyDataStr);
+        //hSTDataStr = CharacterCompresCS.CompressString(hSTDataStr);
+        //warsDataStr = CharacterCompresCS.CompressString(warsDataStr);
+        //gbocDataStr = CharacterCompresCS.CompressString(gbocDataStr);
+
         object[] arrobjs = new object[7] {
             PlayerDataForGame.instance.atData.phoneNumber,
             PlayerDataForGame.instance.atData.passwordStr,
