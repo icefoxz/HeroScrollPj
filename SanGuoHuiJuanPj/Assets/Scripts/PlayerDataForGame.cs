@@ -418,4 +418,18 @@ public class PlayerDataForGame : MonoBehaviour
             Debug.LogError(e.ToString());
         }
     }
+
+    [SerializeField]
+    GameObject textTipsObj;     //文本提示obj 
+
+    /// <summary>
+    /// 场景底部文本提示
+    /// </summary>
+    /// <param name="str"></param>
+    public void ShowStringTips(string str)
+    {
+        textTipsObj.SetActive(false);
+        textTipsObj.transform.GetComponent<Text>().text = str;
+        textTipsObj.SetActive(true);
+    }
 }

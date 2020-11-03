@@ -726,7 +726,7 @@ public class TimeSystemControl : MonoBehaviour
         }
         else
         {
-            UIManager.instance.ShowStringTips("尚未灌满酒坛");
+            PlayerDataForGame.instance.ShowStringTips("尚未灌满酒坛");
             return false;
         }
     }

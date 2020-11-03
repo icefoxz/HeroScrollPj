@@ -24,9 +24,6 @@ public class StartSceneUIManager : MonoBehaviour
     GameObject EffectPoolManagerObj;   //特效组
     bool isJumping; //是否在跳转
 
-    [SerializeField]
-    GameObject textTipsObj;     //文本提示obj 
-
     private void Awake()
     {
         if (instance == null)
@@ -149,16 +146,5 @@ public class StartSceneUIManager : MonoBehaviour
         powerIntroText.color = new Color(powerIntroText.color.r, powerIntroText.color.g, powerIntroText.color.b, 0);
         powerIntroText.DOFade(1, 2.5f);
         powerIntroText.DOText(("\u2000\u2000\u2000\u2000" + LoadJsonFile.playerInitialTableDatas[forceId][5]), 2.5f).SetEase(Ease.Linear).SetAutoKill(false);
-    }
-
-    /// <summary>
-    /// start场景底部文本提示
-    /// </summary>
-    /// <param name="str"></param>
-    public void ShowStringTips(string str)
-    {
-        textTipsObj.SetActive(false);
-        textTipsObj.transform.GetComponent<Text>().text = str;
-        textTipsObj.SetActive(true);
     }
 }

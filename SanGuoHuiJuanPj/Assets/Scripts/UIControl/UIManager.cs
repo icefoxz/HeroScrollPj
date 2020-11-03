@@ -36,8 +36,6 @@ public class UIManager : MonoBehaviour
     [SerializeField]
     GameObject heImgObj;        //合成文字图片
     [SerializeField]
-    GameObject textTipsObj;     //文本提示obj 
-    [SerializeField]
     GameObject rewardsShowObj;  //奖品展示UI
     [SerializeField]
     GameObject[] zhuChengInterFaces;    //主城切换页面0桃园1主城2战役
@@ -143,7 +141,7 @@ public class UIManager : MonoBehaviour
         if (PlayerDataForGame.instance.lastSenceIndex == 2 && PlayerDataForGame.instance.getBackTiLiNums > 0)
         {
             AddTiLiNums(PlayerDataForGame.instance.getBackTiLiNums);
-            ShowStringTips(string.Format(LoadJsonFile.GetStringText(25), PlayerDataForGame.instance.getBackTiLiNums));
+            PlayerDataForGame.instance.ShowStringTips(string.Format(LoadJsonFile.GetStringText(25), PlayerDataForGame.instance.getBackTiLiNums));
         }
         PlayerDataForGame.instance.lastSenceIndex = 1;
         PlayerDataForGame.instance.getBackTiLiNums = 0;
@@ -174,7 +172,7 @@ public class UIManager : MonoBehaviour
                 chonseWarDifTran.GetChild(i).GetComponentInChildren<Text>().color = Color.gray;
                 chonseWarDifTran.GetChild(i).GetComponent<Button>().onClick.AddListener(delegate ()
                 {
-                    ShowStringTips(LoadJsonFile.choseWarTableDatas[index][5]);
+                    PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.choseWarTableDatas[index][5]);
                     PlayOnClickMusic();
                 });
                 break;
@@ -326,7 +324,7 @@ public class UIManager : MonoBehaviour
                 {
                     box.GetChild(0).GetComponent<Button>().onClick.AddListener(delegate ()
                     {
-                        ShowStringTips(LoadJsonFile.GetStringText(26));
+                        PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(26));
                     });
                 }
             }
@@ -418,7 +416,7 @@ public class UIManager : MonoBehaviour
             else
             {
                 PlayOnClickMusic();
-                ShowStringTips(LoadJsonFile.GetStringText(27));
+                PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(27));
                 //Debug.Log("体力不足，无法战斗");
             }
         }
@@ -1235,14 +1233,14 @@ public class UIManager : MonoBehaviour
             else
             {
                 //Debug.Log("元宝不足，合成失败");
-                ShowStringTips(LoadJsonFile.GetStringText(36));
+                PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(36));
                 PlayOnClickMusic();
             }
         }
         else
         {
             //Debug.Log("碎片不足，合成失败");
-            ShowStringTips(LoadJsonFile.GetStringText(37));
+            PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(37));
             PlayOnClickMusic();
         }
     }
@@ -1289,7 +1287,7 @@ public class UIManager : MonoBehaviour
             }
             else
             {
-                ShowStringTips(LoadJsonFile.GetStringText(38));
+                PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(38));
 
                 PlayOnClickMusic();
             }
@@ -1319,17 +1317,6 @@ public class UIManager : MonoBehaviour
         listCard.GetChild(4).GetComponent<Image>().sprite = Resources.Load("Image/gradeImage/" + selectCardData.level, typeof(Sprite)) as Sprite;
         listCard.GetChild(8).gameObject.SetActive(false);
         listCard.GetComponent<Button>().onClick.Invoke();
-    }
-
-    /// <summary>
-    /// main场景底部文本提示
-    /// </summary>
-    /// <param name="str"></param>
-    public void ShowStringTips(string str)
-    {
-        textTipsObj.SetActive(false);
-        textTipsObj.transform.GetComponent<Text>().text = str;
-        textTipsObj.SetActive(true);
     }
 
     /// <summary>
@@ -1578,10 +1565,10 @@ public class UIManager : MonoBehaviour
             {
                 PlayerDataForGame.instance.pyData.exp -= int.Parse(LoadJsonFile.playerLevelTableDatas[PlayerDataForGame.instance.pyData.level][1]);
                 PlayerDataForGame.instance.pyData.level++;
-                ShowStringTips(LoadJsonFile.GetStringText(39));
+                PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(39));
                 if (PlayerDataForGame.instance.pyData.level >= LoadJsonFile.playerLevelTableDatas.Count)
                 {
-                    ShowStringTips(LoadJsonFile.GetStringText(40));
+                    PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(40));
                     break;
                 }
             }
@@ -1801,7 +1788,7 @@ public class UIManager : MonoBehaviour
                                     ConsumeManager.instance.AddYuanBao(addYuanBaoNums);
                                 if (addTiLiNums > 0)
                                     TimeSystemControl.instance.AddTiLiNums(addTiLiNums);
-                                ShowStringTips(LoadJsonFile.GetStringText(43));
+                                PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(43));
                                 jinNangWindowObj.SetActive(false);
                             });
                             //点击广告双倍奖励
@@ -1825,13 +1812,13 @@ public class UIManager : MonoBehaviour
                                     },
                                     delegate ()
                                     {
-                                        ShowStringTips(LoadJsonFile.GetStringText(6));
+                                        PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(6));
                                         jinNangBackBtn.enabled = true;
                                         watchAdFordoubleBtn.enabled = true;
                                     }
                                     ))
                                 {
-                                    ShowStringTips(LoadJsonFile.GetStringText(6));
+                                    PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(6));
                                     jinNangBackBtn.enabled = true;
                                     watchAdFordoubleBtn.enabled = true;
                                 }
@@ -1847,7 +1834,7 @@ public class UIManager : MonoBehaviour
         else
         {
             PlayOnClickMusic();
-            ShowStringTips(LoadJsonFile.GetStringText(44));
+            PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(44));
         }
     }
 
@@ -1892,14 +1879,14 @@ public class UIManager : MonoBehaviour
         string str = rtInputField.text;
         if (str == "")
         {
-            ShowStringTips(LoadJsonFile.GetStringText(45));
+            PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(45));
             PlayOnClickMusic();
         }
         else
         {
             if (!TimeSystemControl.instance.isGetNetworkTime)
             {
-                ShowStringTips(LoadJsonFile.GetStringText(46));
+                PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(46));
                 PlayOnClickMusic();
             }
             else
@@ -1923,7 +1910,7 @@ public class UIManager : MonoBehaviour
                     if (nowTime < startTime || nowTime > endTime)
                     {
                         rtInputField.text = "";
-                        ShowStringTips(LoadJsonFile.GetStringText(47));
+                        PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(47));
                         PlayOnClickMusic();
                     }
                     else
@@ -1968,7 +1955,7 @@ public class UIManager : MonoBehaviour
                             LoadSaveData.instance.SaveGameData(4);
 
                             rtInputField.text = "";
-                            ShowStringTips(LoadJsonFile.rCodeTableDatas[indexId][3]);
+                            PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.rCodeTableDatas[indexId][3]);
                             rtCloseBtn.onClick.Invoke();
                             AudioController0.instance.ChangeAudioClip(AudioController0.instance.audioClips[0], AudioController0.instance.audioVolumes[0]);
                             AudioController0.instance.PlayAudioSource(0);
@@ -1976,7 +1963,7 @@ public class UIManager : MonoBehaviour
                         else
                         {
                             rtInputField.text = "";
-                            ShowStringTips(LoadJsonFile.GetStringText(48));
+                            PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(48));
                             PlayOnClickMusic();
                         }
                     }
@@ -1984,7 +1971,7 @@ public class UIManager : MonoBehaviour
                 else
                 {
                     rtInputField.text = "";
-                    ShowStringTips(LoadJsonFile.GetStringText(49));
+                    PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(49));
                     PlayOnClickMusic();
                 }
             }
@@ -2082,25 +2069,25 @@ public class UIManager : MonoBehaviour
                     delegate ()
                     {
                         GetTiLiForChicken(needYvQueNums, getTiLiNums);
-                        ShowStringTips(string.Format(LoadJsonFile.GetStringText(50), getTiLiNums));
+                        PlayerDataForGame.instance.ShowStringTips(string.Format(LoadJsonFile.GetStringText(50), getTiLiNums));
                         GetCkChangeTimeAndWindow();
                         AudioController0.instance.ChangeAudioClip(AudioController0.instance.audioClips[25], AudioController0.instance.audioVolumes[25]);
                         AudioController0.instance.PlayAudioSource(0);
                     },
                     delegate ()
                     {
-                        ShowStringTips(LoadJsonFile.GetStringText(6));
+                        PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(6));
                         OpenOrCloseChickenBtn(true);
                     }))
                 {
-                    ShowStringTips(LoadJsonFile.GetStringText(6));
+                    PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(6));
                     OpenOrCloseChickenBtn(true);
                 }
                 break;
             case 1:
                 if (GetTiLiForChicken(needYvQueNums, getTiLiNums))
                 {
-                    ShowStringTips(string.Format(LoadJsonFile.GetStringText(51), getTiLiNums));
+                    PlayerDataForGame.instance.ShowStringTips(string.Format(LoadJsonFile.GetStringText(51), getTiLiNums));
                     GetCkChangeTimeAndWindow();
                     AudioController0.instance.ChangeAudioClip(AudioController0.instance.audioClips[25], AudioController0.instance.audioVolumes[25]);
                 }
@@ -2112,7 +2099,7 @@ public class UIManager : MonoBehaviour
             case 2:
                 if (GetTiLiForChicken(needYvQueNums, getTiLiNums))
                 {
-                    ShowStringTips(string.Format(LoadJsonFile.GetStringText(51), getTiLiNums));
+                    PlayerDataForGame.instance.ShowStringTips(string.Format(LoadJsonFile.GetStringText(51), getTiLiNums));
                     GetCkChangeTimeAndWindow();
                     AudioController0.instance.ChangeAudioClip(AudioController0.instance.audioClips[25], AudioController0.instance.audioVolumes[25]);
                 }
@@ -2384,7 +2371,7 @@ public class UIManager : MonoBehaviour
             return;
         isCanTakeZY = false;
         int rand = UnityEngine.Random.Range(0, zhongYiStr.Length);
-        ShowStringTips(zhongYiStr[rand]);
+        PlayerDataForGame.instance.ShowStringTips(zhongYiStr[rand]);
         AudioController0.instance.RandomPlayGuZhengAudio();
         Invoke("HuiFuZhongYiBtn", 2f);
     }
@@ -2405,7 +2392,7 @@ public class UIManager : MonoBehaviour
             else
             {
                 isShowQuitTips = true;
-                ShowStringTips(LoadJsonFile.GetStringText(52));
+                PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(52));
                 Invoke("ResetQuitBool", 2f);
             }
         }

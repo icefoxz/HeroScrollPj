@@ -99,19 +99,19 @@ public class GetOrOpenBox : MonoBehaviour
                 openJiuTanYBNums = 0;
                 OpenTaoYuanBox(0);
                 openJiuTanYBNums = index;
-                UIManager.instance.ShowStringTips(LoadJsonFile.GetStringText(5));
+                PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(5));
                 UIManager.instance.adBtnForFreeBox.enabled = true;
                 getFreeBoxBtn.enabled = true;
             },
             delegate ()
             {
-                UIManager.instance.ShowStringTips(LoadJsonFile.GetStringText(6));
+                PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(6));
                 UIManager.instance.adBtnForFreeBox.enabled = true;
                 getFreeBoxBtn.enabled = true;
             }
             ))
         {
-            UIManager.instance.ShowStringTips(LoadJsonFile.GetStringText(6));
+            PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(6));
             UIManager.instance.adBtnForFreeBox.enabled = true;
             getFreeBoxBtn.enabled = true;
         }
@@ -143,7 +143,7 @@ public class GetOrOpenBox : MonoBehaviour
             {
                 if (openJiuTanYBNums > PlayerDataForGame.instance.pyData.yuanbao)
                 {
-                    UIManager.instance.ShowStringTips(LoadJsonFile.GetStringText(0));
+                    PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(0));
                 }
                 AudioController0.instance.PlayAudioSource(0);
                 return;
@@ -183,7 +183,7 @@ public class GetOrOpenBox : MonoBehaviour
                 isZyBox = true;
                 if (PlayerDataForGame.instance.gbocData.fightBoxs.Count <= 0)
                 {
-                    UIManager.instance.ShowStringTips(LoadJsonFile.GetStringText(7));
+                    PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(7));
                     AudioController0.instance.PlayAudioSource(0);
                     return;
                 }

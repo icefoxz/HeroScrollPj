@@ -35,7 +35,7 @@ public class ConsumeManager : MonoBehaviour
     {
         if (nums > PlayerDataForGame.instance.pyData.yuanbao)
         {
-            UIManager.instance.ShowStringTips(LoadJsonFile.GetStringText(0));
+            PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(0));
             //Debug.Log("元宝不足");
             return false;
         }
@@ -51,7 +51,7 @@ public class ConsumeManager : MonoBehaviour
     {
         if (isAdd)
         {
-            UIManager.instance.ShowStringTips(string.Format(LoadJsonFile.GetStringText(1), nums));
+            PlayerDataForGame.instance.ShowStringTips(string.Format(LoadJsonFile.GetStringText(1), nums));
             PlayerDataForGame.instance.pyData.yuanbao += nums;
         }
         else
@@ -84,7 +84,7 @@ public class ConsumeManager : MonoBehaviour
     {
         if (nums > PlayerDataForGame.instance.pyData.yvque)
         {
-            UIManager.instance.ShowStringTips(LoadJsonFile.GetStringText(2));
+            PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(2));
             return false;
         }
         else
@@ -99,7 +99,7 @@ public class ConsumeManager : MonoBehaviour
     {
         if (isAdd)
         {
-            UIManager.instance.ShowStringTips(string.Format(LoadJsonFile.GetStringText(3), nums));
+            PlayerDataForGame.instance.ShowStringTips(string.Format(LoadJsonFile.GetStringText(3), nums));
             PlayerDataForGame.instance.pyData.yvque += nums;
         }
         else

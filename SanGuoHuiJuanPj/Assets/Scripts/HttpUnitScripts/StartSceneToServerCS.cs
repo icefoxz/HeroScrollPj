@@ -157,7 +157,7 @@ public class StartSceneToServerCS : MonoBehaviour
                 if (backAccountClass.error != (int)ServerBackCode.SUCCESS)
                 {
                     string serverBackStr = HttpToServerCS.instance.ErrorAnalysisFun(null, backAccountClass.error);
-                    StartSceneUIManager.instance.ShowStringTips(serverBackStr);
+                    PlayerDataForGame.instance.ShowStringTips(serverBackStr);
                     return;
                 }
             }
@@ -165,7 +165,7 @@ public class StartSceneToServerCS : MonoBehaviour
             {
                 Debug.LogError(e.ToString());
                 string serverBackStr = HttpToServerCS.instance.ErrorAnalysisFun(replyStr);
-                StartSceneUIManager.instance.ShowStringTips(serverBackStr);
+                PlayerDataForGame.instance.ShowStringTips(serverBackStr);
                 return;
             }
             accountText.text = backAccountClass.name;
@@ -178,7 +178,7 @@ public class StartSceneToServerCS : MonoBehaviour
         else
         {
             Debug.Log("服务器响应错误");
-            StartSceneUIManager.instance.ShowStringTips("服务器响应错误");
+            PlayerDataForGame.instance.ShowStringTips("服务器响应错误");
         }
     }
 
@@ -200,14 +200,14 @@ public class StartSceneToServerCS : MonoBehaviour
     {
         if (passwordInput.text == "")
         {
-            StartSceneUIManager.instance.ShowStringTips("请输入密码");
+            PlayerDataForGame.instance.ShowStringTips("请输入密码");
         }
         else
         {
             if (passwordInput1.text != passwordInput.text)
             {
                 passwordInput1.text = "";
-                StartSceneUIManager.instance.ShowStringTips("请确认密码");
+                PlayerDataForGame.instance.ShowStringTips("请确认密码");
             }
             else
             {
@@ -224,7 +224,7 @@ public class StartSceneToServerCS : MonoBehaviour
                         if (backAccountClass.error != (int)ServerBackCode.SUCCESS)
                         {
                             string serverBackStr = HttpToServerCS.instance.ErrorAnalysisFun(null, backAccountClass.error);
-                            StartSceneUIManager.instance.ShowStringTips(serverBackStr);
+                            PlayerDataForGame.instance.ShowStringTips(serverBackStr);
                             return;
                         }
                     }
@@ -232,7 +232,7 @@ public class StartSceneToServerCS : MonoBehaviour
                     {
                         Debug.LogError(e.ToString());
                         string serverBackStr = HttpToServerCS.instance.ErrorAnalysisFun(replyStr);
-                        StartSceneUIManager.instance.ShowStringTips(serverBackStr);
+                        PlayerDataForGame.instance.ShowStringTips(serverBackStr);
                         return;
                     }
 
@@ -244,7 +244,7 @@ public class StartSceneToServerCS : MonoBehaviour
                     registerAccountObj.SetActive(false);
                     passwordInput.text = "";
                     passwordInput1.text = "";
-                    StartSceneUIManager.instance.ShowStringTips("注册成功");
+                    PlayerDataForGame.instance.ShowStringTips("注册成功");
 
                     phoneNumberObj.SetActive(true);
                     chackAccountObj.SetActive(true);
@@ -252,7 +252,7 @@ public class StartSceneToServerCS : MonoBehaviour
                 else
                 {
                     Debug.Log("服务器响应错误");
-                    StartSceneUIManager.instance.ShowStringTips("服务器响应错误");
+                    PlayerDataForGame.instance.ShowStringTips("服务器响应错误");
                 }
             }
         }
@@ -274,7 +274,7 @@ public class StartSceneToServerCS : MonoBehaviour
         {
             Debug.Log("responseString: " + responseString);
             Debug.LogError(e.ToString());
-            StartSceneUIManager.instance.ShowStringTips("短信验证失败");
+            PlayerDataForGame.instance.ShowStringTips("短信验证失败");
             return;
         }
 
@@ -290,7 +290,7 @@ public class StartSceneToServerCS : MonoBehaviour
                 if (backPhoneToAccountClass.error != (int)ServerBackCode.SUCCESS)
                 {
                     string serverBackStr = HttpToServerCS.instance.ErrorAnalysisFun(null, backPhoneToAccountClass.error);
-                    StartSceneUIManager.instance.ShowStringTips(serverBackStr);
+                    PlayerDataForGame.instance.ShowStringTips(serverBackStr);
                     return;
                 }
             }
@@ -298,7 +298,7 @@ public class StartSceneToServerCS : MonoBehaviour
             {
                 Debug.LogError(e.ToString());
                 string serverBackStr = HttpToServerCS.instance.ErrorAnalysisFun(replyStr);
-                StartSceneUIManager.instance.ShowStringTips(serverBackStr);
+                PlayerDataForGame.instance.ShowStringTips(serverBackStr);
                 return;
             }
             //设置手机号存储到游戏中
@@ -307,12 +307,12 @@ public class StartSceneToServerCS : MonoBehaviour
             PlayerPrefs.SetString(phoneNumberPrefsStr, backPhoneToAccountClass.phone);
 
             bindPhoneBtnObj.SetActive(false);
-            StartSceneUIManager.instance.ShowStringTips("绑定手机成功");
+            PlayerDataForGame.instance.ShowStringTips("绑定手机成功");
         }
         else
         {
             Debug.Log("服务器响应错误");
-            StartSceneUIManager.instance.ShowStringTips("服务器响应错误");
+            PlayerDataForGame.instance.ShowStringTips("服务器响应错误");
         }
     }
 
@@ -374,13 +374,13 @@ public class StartSceneToServerCS : MonoBehaviour
     {
         if (accountInput.text == "")
         {
-            StartSceneUIManager.instance.ShowStringTips("请输入账号");
+            PlayerDataForGame.instance.ShowStringTips("请输入账号");
         }
         else
         {
             if (pwInput.text == "")
             {
-                StartSceneUIManager.instance.ShowStringTips("请输入密码");
+                PlayerDataForGame.instance.ShowStringTips("请输入密码");
             }
             else
             {
@@ -402,7 +402,7 @@ public class StartSceneToServerCS : MonoBehaviour
                         if (backForLoginClass.error != (int)ServerBackCode.SUCCESS)
                         {
                             string serverBackStr = HttpToServerCS.instance.ErrorAnalysisFun(null, backForLoginClass.error);
-                            StartSceneUIManager.instance.ShowStringTips(serverBackStr);
+                            PlayerDataForGame.instance.ShowStringTips(serverBackStr);
                             return;
                         }
                     }
@@ -410,7 +410,7 @@ public class StartSceneToServerCS : MonoBehaviour
                     {
                         Debug.LogError(e.ToString());
                         string serverBackStr = HttpToServerCS.instance.ErrorAnalysisFun(replyStr);
-                        StartSceneUIManager.instance.ShowStringTips(serverBackStr);
+                        PlayerDataForGame.instance.ShowStringTips(serverBackStr);
                         return;
                     }
 
@@ -429,7 +429,7 @@ public class StartSceneToServerCS : MonoBehaviour
                     catch (Exception e)
                     {
                         Debug.LogError("服务器存档解析失败：" + e.ToString());
-                        StartSceneUIManager.instance.ShowStringTips("服务器存档解析失败");
+                        PlayerDataForGame.instance.ShowStringTips("服务器存档解析失败");
                         return;
                     }
                     LoadSaveData.instance.SetGamePlayerBasicData(save0, save1, save2, save3);
@@ -455,12 +455,12 @@ public class StartSceneToServerCS : MonoBehaviour
 
                     changeAccountObj.SetActive(false);
                     pwInput.text = "";
-                    StartSceneUIManager.instance.ShowStringTips("登录账号成功");
+                    PlayerDataForGame.instance.ShowStringTips("登录账号成功");
                 }
                 else
                 {
                     Debug.Log("服务器响应错误");
-                    StartSceneUIManager.instance.ShowStringTips("服务器响应错误");
+                    PlayerDataForGame.instance.ShowStringTips("服务器响应错误");
                 }
             }
         }

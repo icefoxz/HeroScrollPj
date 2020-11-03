@@ -62,8 +62,7 @@ public class WarsUIManager : MonoBehaviour
     [SerializeField]
     Text battleScheduleText;    //战役进度文本
     int nowGuanQiaIndex;    //记录当前关卡进度
-    [SerializeField]
-    GameObject textTipsObj; //底部提示文本
+
     bool isEnteredLevel;    //记录是否进入了关卡
 
     private void Awake()
@@ -683,7 +682,7 @@ public class WarsUIManager : MonoBehaviour
 
         if (updateMoney != 0 && updateMoney > goldForCity)
         {
-            ShowStringTips(LoadJsonFile.GetStringText(56));
+            PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(56));
             return false;
         }
         else
@@ -809,16 +808,16 @@ public class WarsUIManager : MonoBehaviour
                             {
                                 GetOrBuyCards(true, needMoney, cardType, cardId, cardLevel, btnIndex);
                                 getBtnTran.GetChild(2).gameObject.SetActive(false);
-                                ShowStringTips(LoadJsonFile.GetStringText(57));
+                                PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(57));
                                 adBtn.enabled = true;
                             },
                             delegate ()
                             {
-                                ShowStringTips(LoadJsonFile.GetStringText(6));
+                                PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(6));
                                 adBtn.enabled = true;
                             }))
                         {
-                            ShowStringTips(LoadJsonFile.GetStringText(6));
+                            PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(6));
                             adBtn.enabled = true;
                         }
                     });
@@ -936,12 +935,12 @@ public class WarsUIManager : MonoBehaviour
             },
             delegate ()
             {
-                ShowStringTips(LoadJsonFile.GetStringText(6));
+                PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(6));
                 adBtn.enabled = true;
             }
             ))
         {
-            ShowStringTips(LoadJsonFile.GetStringText(6));
+            PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(6));
             adBtn.enabled = true;
         }
     }
@@ -1128,7 +1127,7 @@ public class WarsUIManager : MonoBehaviour
             PlayAudioClip(13);
             if (money > goldForCity)
             {
-                ShowStringTips(LoadJsonFile.GetStringText(56));
+                PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(56));
                 return;
             }
             else
@@ -1262,17 +1261,6 @@ public class WarsUIManager : MonoBehaviour
         });
     }
 
-    /// <summary>
-    /// 场景底部文本提示
-    /// </summary>
-    /// <param name="str"></param>
-    public void ShowStringTips(string str)
-    {
-        textTipsObj.SetActive(false);
-        textTipsObj.transform.GetComponent<Text>().text = str;
-        textTipsObj.SetActive(true);
-    }
-
     //初始化答题界面
     private void InitializeDaTi()
     {
@@ -1341,7 +1329,7 @@ public class WarsUIManager : MonoBehaviour
             rewardStr = LoadJsonFile.GetStringText(59);
             eventsWindows[2].transform.GetChild(btnIndex).GetChild(0).GetComponent<Text>().color = Color.red;
         }
-        ShowStringTips(rewardStr);
+        PlayerDataForGame.instance.ShowStringTips(rewardStr);
         eventsWindows[2].transform.GetChild(6).gameObject.SetActive(true);
     }
 
@@ -1608,14 +1596,14 @@ public class WarsUIManager : MonoBehaviour
         int needGold = int.Parse(LoadJsonFile.cityLevelTableDatas[cityLevel - 1][1]);
         if (goldForCity < needGold)
         {
-            ShowStringTips(LoadJsonFile.GetStringText(56));
+            PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(56));
             PlayAudioClip(20);
         }
         else
         {
             goldForCity -= needGold;
             cityLevel++;
-            ShowStringTips(LoadJsonFile.GetStringText(60));
+            PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(60));
             playerInfoObj.transform.GetChild(1).GetChild(0).GetComponent<Text>().text = goldForCity.ToString();
             UpdateLevelInfo();
             //满级
@@ -1624,7 +1612,7 @@ public class WarsUIManager : MonoBehaviour
                 upLevelBtn.GetComponent<Button>().enabled = false;
                 upLevelBtn.transform.GetChild(0).gameObject.SetActive(false);
                 upLevelBtn.transform.GetChild(1).GetComponent<Text>().text = LoadJsonFile.GetStringText(61);
-                ShowStringTips(LoadJsonFile.GetStringText(62));
+                PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(62));
             }
             FightForManager.instance.UpdateFightNumTextShow();
             PlayAudioClip(19);
@@ -1809,7 +1797,7 @@ public class WarsUIManager : MonoBehaviour
             else
             {
                 isShowQuitTips = true;
-                ShowStringTips(LoadJsonFile.GetStringText(52));
+                PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(52));
                 Invoke("ResetQuitBool", 2f);
             }
         }
