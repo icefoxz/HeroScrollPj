@@ -418,11 +418,11 @@ public class StartSceneToServerCS : MonoBehaviour
                     HSTDataClass save1 = new HSTDataClass();
                     WarsDataClass save2 = new WarsDataClass();
                     GetBoxOrCodeData save3 = new GetBoxOrCodeData();
-                    Debug.Log("下拉数据：");
-                    Debug.Log(backForLoginClass.data);
-                    Debug.Log(backForLoginClass.data2);
-                    Debug.Log(backForLoginClass.data3);
-                    Debug.Log(backForLoginClass.data4);
+                    //Debug.Log("下拉数据：");
+                    //Debug.Log(backForLoginClass.data);
+                    //Debug.Log(backForLoginClass.data2);
+                    //Debug.Log(backForLoginClass.data3);
+                    //Debug.Log(backForLoginClass.data4);
                     //拉取服务器的存档文件
                     try
                     {

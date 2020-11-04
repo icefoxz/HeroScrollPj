@@ -112,11 +112,11 @@ public class HttpToServerCS : MonoBehaviour
                 break;
         }
 
-        Debug.Log("上传数据：");
+        //Debug.Log("上传数据：");
         Dictionary<string, object> dic = new Dictionary<string, object>();
         for (int i = 0; i < contentStrs.Length; i++)
         {
-            Debug.Log(contentStrs[i]);
+            //Debug.Log(contentStrs[i]);
             dic.Add(Post_UploadArchive_KeyName[i], contentStrs[i]);
         }
 
