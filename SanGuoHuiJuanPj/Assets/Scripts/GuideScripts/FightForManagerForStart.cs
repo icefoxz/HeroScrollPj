@@ -647,6 +647,8 @@ public class FightForManagerForStart : MonoBehaviour
                 data.hpr = int.Parse(LoadJsonFile.heroTableDatas[data.cardId][9]);
                 data.fullHp = data.nowHp = int.Parse(LoadJsonFile.heroTableDatas[data.cardId][8].Split(',')[data.cardGrade - 1]);
                 data.activeUnit = true;
+                data.cardMoveType = int.Parse(LoadJsonFile.heroTableDatas[data.cardId][17]);
+                data.cardDamageType = int.Parse(LoadJsonFile.heroTableDatas[data.cardId][18]);
                 break;
             case 1:
                 data.cardObj.transform.GetChild(1).GetComponent<Image>().sprite = Resources.Load("Image/Cards/FuZhu/" + LoadJsonFile.soldierTableDatas[data.cardId][13], typeof(Sprite)) as Sprite;
@@ -680,6 +682,8 @@ public class FightForManagerForStart : MonoBehaviour
                 data.hpr = int.Parse(LoadJsonFile.towerTableDatas[data.cardId][8]);
                 data.fullHp = data.nowHp = int.Parse(LoadJsonFile.towerTableDatas[data.cardId][7].Split(',')[data.cardGrade - 1]);
                 data.activeUnit = (data.cardId == 0 || data.cardId == 1 || data.cardId == 2 || data.cardId == 3 || data.cardId == 6);
+                data.cardMoveType = 1;
+                data.cardDamageType = 0;
                 break;
             case 3:
                 data.cardObj.transform.GetChild(1).GetComponent<Image>().sprite = Resources.Load("Image/Cards/FuZhu/" + LoadJsonFile.trapTableDatas[data.cardId][8], typeof(Sprite)) as Sprite;
@@ -697,6 +701,8 @@ public class FightForManagerForStart : MonoBehaviour
                 data.hpr = int.Parse(LoadJsonFile.trapTableDatas[data.cardId][10]);
                 data.fullHp = data.nowHp = int.Parse(LoadJsonFile.trapTableDatas[data.cardId][7].Split(',')[data.cardGrade - 1]);
                 data.activeUnit = false;
+                data.cardMoveType = 0;
+                data.cardDamageType = 0;
                 break;
         }
         return data;
@@ -845,7 +851,10 @@ public class FightForManagerForStart : MonoBehaviour
         }
     }
 
-    //投石台攻击
+    /// <summary>
+    /// 投石台攻击,对位与周围单位
+    /// </summary>
+    /// <param name="cardData"></param>
     private void TouShiTaiAttackFun(FightCardData cardData)
     {
         FightCardData[] attackedUnits = cardData.isPlayerCard ? enemyFightCardsDatas : playerFightCardsDatas;
@@ -1144,7 +1153,7 @@ public class FightForManagerForStart : MonoBehaviour
                         cardData.fightState.fenghuotaiAddtion += addtionNums;
                         break;
                     case 10://号角台
-                        if (LoadJsonFile.heroTableDatas[cardData.cardId][17] == "0")   //近战
+                        if (cardData.cardMoveType == 0)   //近战
                         {
                             if (cardData.fightState.zhangutaiAddtion <= 0)
                             {
@@ -1154,7 +1163,7 @@ public class FightForManagerForStart : MonoBehaviour
                         }
                         break;
                     case 11://瞭望台
-                        if (LoadJsonFile.heroTableDatas[cardData.cardId][17] == "1")   //远程
+                        if (cardData.cardMoveType == 1)   //远程
                         {
                             if (cardData.fightState.zhangutaiAddtion <= 0)
                             {
@@ -1164,7 +1173,7 @@ public class FightForManagerForStart : MonoBehaviour
                         }
                         break;
                     case 12://七星坛
-                        if (LoadJsonFile.heroTableDatas[cardData.cardId][18] == "1") //法术
+                        if (cardData.cardDamageType == 1) //法术
                         {
                             if (cardData.fightState.zhangutaiAddtion <= 0)
                             {
@@ -1174,7 +1183,7 @@ public class FightForManagerForStart : MonoBehaviour
                         }
                         break;
                     case 13://斗神台
-                        if (LoadJsonFile.heroTableDatas[cardData.cardId][18] == "0") //物理
+                        if (cardData.cardDamageType == 0) //物理
                         {
                             if (cardData.fightState.zhangutaiAddtion <= 0)
                             {
@@ -1458,7 +1467,7 @@ public class FightForManagerForStart : MonoBehaviour
                     FightCardData addedFightCard = cardDatas[CardNearbyAdditionForeach[posIndex][i]];
                     if (addedFightCard != null && addedFightCard.cardType == 0 && addedFightCard.nowHp > 0)
                     {
-                        if (LoadJsonFile.heroTableDatas[addedFightCard.cardId][17] == "0")   //近战
+                        if (addedFightCard.cardMoveType == 0)   //近战
                         {
                             DamageTowerAdditionFun(addedFightCard, isAdd, addtionNums);
                         }
@@ -1471,7 +1480,7 @@ public class FightForManagerForStart : MonoBehaviour
                     FightCardData addedFightCard = cardDatas[CardNearbyAdditionForeach[posIndex][i]];
                     if (addedFightCard != null && addedFightCard.cardType == 0 && addedFightCard.nowHp > 0)
                     {
-                        if (LoadJsonFile.heroTableDatas[addedFightCard.cardId][17] == "1")   //远程
+                        if (addedFightCard.cardMoveType == 1)   //远程
                         {
                             DamageTowerAdditionFun(addedFightCard, isAdd, addtionNums);
                         }
@@ -1484,7 +1493,7 @@ public class FightForManagerForStart : MonoBehaviour
                     FightCardData addedFightCard = cardDatas[CardNearbyAdditionForeach[posIndex][i]];
                     if (addedFightCard != null && addedFightCard.cardType == 0 && addedFightCard.nowHp > 0)
                     {
-                        if (LoadJsonFile.heroTableDatas[addedFightCard.cardId][18] == "1") //法术
+                        if (addedFightCard.cardDamageType == 1) //法术
                         {
                             DamageTowerAdditionFun(addedFightCard, isAdd, addtionNums);
                         }
@@ -1497,7 +1506,7 @@ public class FightForManagerForStart : MonoBehaviour
                     FightCardData addedFightCard = cardDatas[CardNearbyAdditionForeach[posIndex][i]];
                     if (addedFightCard != null && addedFightCard.cardType == 0 && addedFightCard.nowHp > 0)
                     {
-                        if (LoadJsonFile.heroTableDatas[addedFightCard.cardId][18] == "0") //物理
+                        if (addedFightCard.cardDamageType == 0) //物理
                         {
                             DamageTowerAdditionFun(addedFightCard, isAdd, addtionNums);
                         }

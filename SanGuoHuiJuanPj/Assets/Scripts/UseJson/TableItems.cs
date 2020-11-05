@@ -36,6 +36,10 @@ public class HeroTableItem
     public string tag2 { get; set; }
     public string chestZyBox { get; set; }
     public string chestBxBox { get; set; }
+    public string chanChu { get; set; }
+    public string fuMianMianYi { get; set; }
+    public string wuLiMianShang { get; set; }
+    public string faShuMianShang { get; set; }
 }
 public class PlayerLevelTableItem
 {
@@ -80,6 +84,7 @@ public class TowerTableItem
     public string chestZyBox { get; set; }
     public string chestBxBox { get; set; }
     public string intro2 { get; set; }
+    public string chanChu { get; set; }
 }
 public class ClassTableItem
 {
@@ -110,6 +115,7 @@ public class TrapTableItem
     public string chestZyBox { get; set; }
     public string chestBxBox { get; set; }
     public string intro2 { get; set; }
+    public string chanChu { get; set; }
 }
 public class SpellTableItem
 {

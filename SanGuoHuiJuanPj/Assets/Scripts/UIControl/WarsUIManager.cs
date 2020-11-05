@@ -1410,6 +1410,9 @@ public class WarsUIManager : MonoBehaviour
         data.hpr = int.Parse(LoadJsonFile.heroTableDatas[data.cardId][9]);
         data.fullHp = data.nowHp = int.Parse(LoadJsonFile.heroTableDatas[data.cardId][8].Split(',')[data.cardGrade - 1]);
         data.activeUnit = true;
+        data.isPlayerCard = true;
+        data.cardMoveType = int.Parse(LoadJsonFile.heroTableDatas[data.cardId][17]);
+        data.cardDamageType = int.Parse(LoadJsonFile.heroTableDatas[data.cardId][18]);
         playerCardsDatas.Add(data);
     }
     //创建玩家士兵卡牌
@@ -1440,6 +1443,7 @@ public class WarsUIManager : MonoBehaviour
         data.hpr = int.Parse(LoadJsonFile.soldierTableDatas[data.cardId][8]);
         data.fullHp = data.nowHp = int.Parse(LoadJsonFile.soldierTableDatas[data.cardId][7].Split(',')[data.cardGrade - 1]);
         data.activeUnit = true;
+        data.isPlayerCard = true;
         playerCardsDatas.Add(data);
     }
     //创建玩家塔卡牌
@@ -1470,6 +1474,9 @@ public class WarsUIManager : MonoBehaviour
         data.hpr = int.Parse(LoadJsonFile.towerTableDatas[data.cardId][8]);
         data.fullHp = data.nowHp = int.Parse(LoadJsonFile.towerTableDatas[data.cardId][7].Split(',')[data.cardGrade - 1]);
         data.activeUnit = (data.cardId == 0 || data.cardId == 1 || data.cardId == 2 || data.cardId == 3 || data.cardId == 6);
+        data.isPlayerCard = true;
+        data.cardMoveType = 1;
+        data.cardDamageType = 0;
         playerCardsDatas.Add(data);
     }
     //创建玩家陷阱卡牌
@@ -1500,6 +1507,9 @@ public class WarsUIManager : MonoBehaviour
         data.hpr = int.Parse(LoadJsonFile.trapTableDatas[data.cardId][10]);
         data.fullHp = data.nowHp = int.Parse(LoadJsonFile.trapTableDatas[data.cardId][7].Split(',')[data.cardGrade - 1]);
         data.activeUnit = false;
+        data.isPlayerCard = true;
+        data.cardMoveType = 0;
+        data.cardDamageType = 0;
         playerCardsDatas.Add(data);
     }
 

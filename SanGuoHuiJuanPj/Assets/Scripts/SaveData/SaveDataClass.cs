@@ -183,7 +183,19 @@ public class FightCardData
     //此回合是否行动
     public bool isActed;
     //是否是玩家卡牌
-    public bool isPlayerCard = true;
+    public bool isPlayerCard;
+    /// <summary>
+    /// 单位伤害类型0物理，1法术
+    /// </summary>
+    public int cardDamageType;
+    /// <summary>
+    /// 单位行动类型0近战，1远程
+    /// </summary>
+    public int cardMoveType;
+    /// <summary>
+    /// 被攻击者的行为，0受击，1防护盾，2闪避，3护盾，4无敌
+    /// </summary>
+    public int attackedBehavior;
 }
 
 //战斗状态类

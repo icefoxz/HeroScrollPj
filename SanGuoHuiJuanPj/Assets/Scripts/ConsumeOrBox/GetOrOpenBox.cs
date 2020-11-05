@@ -317,33 +317,28 @@ public class GetOrOpenBox : MonoBehaviour
         int cardId = -1;
         try
         {
-            List<int> cardIds = new List<int>();
             switch (cardType)
             {
                 case "0":
-                    cardIds = GetMustRarityCardSToList(LoadJsonFile.heroTableDatas, rarity, isZyBox ? 19 : 20);
-                    cardId = cardIds[UnityEngine.Random.Range(0, cardIds.Count)];
+                    cardId = GetBackRandomCardId(LoadJsonFile.heroTableDatas, isZyBox ? 19 : 20, 21);
                     break;
-                case "1":
-                    cardIds = GetMustRarityCardSToList(LoadJsonFile.soldierTableDatas, rarity, 16);
-                    cardId = cardIds[UnityEngine.Random.Range(0, cardIds.Count)];
-                    break;
+                //case "1":
+                //    cardIds = GetMustRarityCardSToList(LoadJsonFile.soldierTableDatas, rarity, 16);
+                //    cardId = cardIds[UnityEngine.Random.Range(0, cardIds.Count)];
+                //    break;
                 case "2":
-                    cardIds = GetMustRarityCardSToList(LoadJsonFile.towerTableDatas, rarity, isZyBox ? 11 : 13);
-                    cardId = cardIds[UnityEngine.Random.Range(0, cardIds.Count)];
+                    cardId = GetBackRandomCardId(LoadJsonFile.towerTableDatas, isZyBox ? 11 : 13, 14);
                     break;
                 case "3":
-                    cardIds = GetMustRarityCardSToList(LoadJsonFile.trapTableDatas, rarity, isZyBox ? 9 : 12);
-                    cardId = cardIds[UnityEngine.Random.Range(0, cardIds.Count)];
+                    cardId = GetBackRandomCardId(LoadJsonFile.trapTableDatas, isZyBox ? 9 : 12, 13);
                     break;
-                case "4":
-                    cardIds = GetMustRarityCardSToList(LoadJsonFile.spellTableDatas, rarity, 7);
-                    cardId = cardIds[UnityEngine.Random.Range(0, cardIds.Count)];
-                    break;
+                //case "4":
+                //    cardIds = GetMustRarityCardSToList(LoadJsonFile.spellTableDatas, rarity, 7);
+                //    cardId = cardIds[UnityEngine.Random.Range(0, cardIds.Count)];
+                //    break;
                 default:
                     break;
             }
-            cardIds.Clear();
         }
         catch (Exception e)
         {
@@ -352,23 +347,55 @@ public class GetOrOpenBox : MonoBehaviour
         return cardId;
     }
 
-    /// <summary>
-    /// 根据条件获取到符合条件的卡牌列表
-    /// </summary>
-    /// <param name="dataLists">父集</param>
-    /// <param name="rarity">稀有度</param>
-    /// <param name="indexOnShow">限制列号</param>
-    /// <returns></returns>
-    private List<int> GetMustRarityCardSToList(List<List<string>> dataLists, string rarity, int indexOnShow)
+    //卡牌和权重类
+    private class CardIdAndWeights
     {
-        List<int> cardIds = new List<int>();
+        public int cardId;
+        public int weights;
+    }
+
+    /// <summary>
+    /// 返回随机选中卡牌id
+    /// </summary>
+    /// <param name="dataLists"></param>
+    /// <param name="indexColumn"></param>
+    /// <returns></returns>
+    private int GetBackRandomCardId(List<List<string>> dataLists, int indexColumn, int indexChanChu)
+    {
+        List<CardIdAndWeights> cwList = new List<CardIdAndWeights>();
         for (int i = 0; i < dataLists.Count; i++)
         {
-            if (dataLists[i][indexOnShow] == "1" && dataLists[i][3] == rarity)
+            if (dataLists[i][indexChanChu] != "0")
             {
-                cardIds.Add(int.Parse(dataLists[i][0]));
+                string[] arrs = dataLists[i][indexColumn].Split(',');
+                if (int.Parse(arrs[0]) <= PlayerDataForGame.instance.pyData.level)
+                {
+                    CardIdAndWeights cw = new CardIdAndWeights();
+                    cw.cardId = i;
+                    cw.weights = int.Parse(arrs[1]);
+                    cwList.Add(cw);
+                }
             }
         }
-        return cardIds;
+        return BackCardIdByWeightValue(cwList);
+    }
+
+    //根据权重得到随机id
+    private int BackCardIdByWeightValue(List<CardIdAndWeights> datas)
+    {
+        int weightValueSum = 0;
+        for (int i = 0; i < datas.Count; i++)
+        {
+            weightValueSum += datas[i].weights;
+        }
+        int randNum = UnityEngine.Random.Range(0, weightValueSum);
+        int indexTest = 0;
+        while (randNum >= 0)
+        {
+            randNum -= datas[indexTest].weights;
+            indexTest++;
+        }
+        indexTest -= 1;
+        return indexTest;
     }
 }
