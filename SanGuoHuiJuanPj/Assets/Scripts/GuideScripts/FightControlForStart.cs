@@ -3087,7 +3087,7 @@ public class FightControlForStart : MonoBehaviour
             }
             effectObj = EffectsPoolingControl.instance.GetEffectToFight("spellTextH", 1.5f, fightCardObj.transform);
             effectObj.GetComponentInChildren<Text>().text = showTextName;
-            effectObj.GetComponentInChildren<Text>().color = isRed ? Color.red : Color.green;
+            effectObj.GetComponentInChildren<Text>().color = isRed ? Color.red : ColorDataStatic.huiFu_green;
         }
         else
         {

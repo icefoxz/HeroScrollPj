@@ -283,6 +283,7 @@ public class GetOrOpenBox : MonoBehaviour
     /// <returns></returns>
     private void GetAndSaveCardChips(string cardType, int cardId, int chips)
     {
+        Debug.Log("cardId:" + cardId);
         switch (cardType)
         {
             case "0":
@@ -396,6 +397,6 @@ public class GetOrOpenBox : MonoBehaviour
             indexTest++;
         }
         indexTest -= 1;
-        return indexTest;
+        return datas[indexTest].cardId;
     }
 }
