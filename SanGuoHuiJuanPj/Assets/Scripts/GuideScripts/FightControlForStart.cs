@@ -2988,7 +2988,7 @@ public class FightControlForStart : MonoBehaviour
         if (isAdd)
         {
             effectObj.GetComponentInChildren<Text>().text = "+" + Mathf.Abs(cutHpNum);
-            effectObj.GetComponentInChildren<Text>().color = Color.green;
+            effectObj.GetComponentInChildren<Text>().color = ColorDataStatic.huiFu_green;
         }
         else
         {

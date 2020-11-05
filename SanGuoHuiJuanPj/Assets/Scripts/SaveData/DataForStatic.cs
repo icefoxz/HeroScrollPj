@@ -60,6 +60,10 @@ public static class ColorDataStatic
     /// </summary>
     public static readonly Color light_gray = new Color(75f / 255f, 75f / 255f, 75f / 255f, 1);
 
+    /// <summary>
+    /// 回复生命绿色
+    /// </summary>
+    public static readonly Color huiFu_green = new Color(0f / 255f, 152f / 255f, 0f / 255f, 1);
 }
 
 /// <summary>
