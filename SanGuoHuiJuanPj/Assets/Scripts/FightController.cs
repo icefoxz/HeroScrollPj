@@ -3271,7 +3271,7 @@ public class FightController : MonoBehaviour
         }
     }
 
-    //全屏技能特效展示,会心一击
+    //全屏技能特效展示,会心一击,羁绊
     private void ShowAllScreenFightEffect(FullScreenEffectName fullScreenEffectName, int indexResPic = 0)
     {
         GameObject effectObj = fullScreenEffectObjs[(int)fullScreenEffectName];
@@ -3285,7 +3285,8 @@ public class FightController : MonoBehaviour
                 PlayAudioForSecondClip(92, 0);
                 break;
             case FullScreenEffectName.JiBanEffect:
-                PlayAudioForSecondClip(92, 0);
+                effectObj.GetComponentInChildren<Image>().sprite = Resources.Load("Image/JiBan/" + indexResPic, typeof(Sprite)) as Sprite;
+                PlayAudioForSecondClip(100, 0);
                 break;
             default:
                 break;
@@ -3424,13 +3425,12 @@ public class FightController : MonoBehaviour
         timerForFight = 0;
         stateOfFight = StateOfFight.ReadyForFight;
 
-        Debug.Log("回合开始后行动的间隔");
         float updateStateTime = 0;  //刷新状态需等待的时间
         updateStateTime = UpdateCardDataBeforeRound();
         yield return new WaitForSeconds(updateStateTime);
 
-        updateStateTime = InitJiBanForStartFight();
-        yield return new WaitForSeconds(updateStateTime);
+        //羁绊部分的战前附加
+        yield return StartCoroutine(InitJiBanForStartFight());
 
         CardMoveToFight();
     }
@@ -3438,25 +3438,26 @@ public class FightController : MonoBehaviour
     /// <summary>
     /// 战斗开始羁绊数据附加到卡牌上
     /// </summary>
-    private float InitJiBanForStartFight()
+    IEnumerator InitJiBanForStartFight()
     {
-        int activedNums = 0;
         //玩家部分
         foreach (var item in playerJiBanAllTypes)
         {
             if (item.Value.isActived)
             {
-                activedNums++;
-                ShowAllScreenFightEffect(FullScreenEffectName.JiBanEffect);
+                Debug.Log("触发羁绊： " + item.Value.jiBanIndex);
+                ShowAllScreenFightEffect(FullScreenEffectName.JiBanEffect, item.Value.jiBanIndex);
+                yield return new WaitForSeconds(1f);
                 JiBanAddStateForCard(item.Value);
+                yield return new WaitForSeconds(1f);
             }
         }
-        return activedNums * 1.5f;
     }
 
     //给卡牌上附加羁绊属性
     private void JiBanAddStateForCard(JiBanActivedClass jiBanActivedClass)
     {
+        FightCardData fightCardData;
         switch ((JiBanSkillName)jiBanActivedClass.jiBanIndex)
         {
             case JiBanSkillName.TaoYuanJieYi:
@@ -3465,15 +3466,17 @@ public class FightController : MonoBehaviour
                 {
                     for (int j = 0; j < jiBanActivedClass.cardTypeLists[i].cardLists.Count; j++)
                     {
-                        if (jiBanActivedClass.cardTypeLists[i].cardLists[j] != null && jiBanActivedClass.cardTypeLists[i].cardLists[j].nowHp > 0)
+                        fightCardData = jiBanActivedClass.cardTypeLists[i].cardLists[j];
+                        if (fightCardData != null && fightCardData.nowHp > 0)
                         {
+                            AttackToEffectShow(fightCardData, false, jiBanActivedClass.jiBanIndex + "JB");
                             if (TakeSpecialAttack(30))
                             {
-                                if (jiBanActivedClass.cardTypeLists[i].cardLists[j].fightState.shenzhuNums <= 0)
+                                if (fightCardData.fightState.shenzhuNums <= 0)
                                 {
-                                    FightForManager.instance.CreateSateIcon(jiBanActivedClass.cardTypeLists[i].cardLists[j].cardObj.transform.GetChild(7), StringNameStatic.StateIconPath_shenzhu, false);
+                                    FightForManager.instance.CreateSateIcon(fightCardData.cardObj.transform.GetChild(7), StringNameStatic.StateIconPath_shenzhu, false);
                                 }
-                                jiBanActivedClass.cardTypeLists[i].cardLists[j].fightState.shenzhuNums++;
+                                fightCardData.fightState.shenzhuNums++;
                             }
                         }
                     }
@@ -3485,15 +3488,17 @@ public class FightController : MonoBehaviour
                 {
                     for (int j = 0; j < jiBanActivedClass.cardTypeLists[i].cardLists.Count; j++)
                     {
-                        if (jiBanActivedClass.cardTypeLists[i].cardLists[j] != null && jiBanActivedClass.cardTypeLists[i].cardLists[j].nowHp > 0)
+                        fightCardData = jiBanActivedClass.cardTypeLists[i].cardLists[j];
+                        if (fightCardData != null && fightCardData.nowHp > 0)
                         {
+                            AttackToEffectShow(fightCardData, false, jiBanActivedClass.jiBanIndex + "JB");
                             if (TakeSpecialAttack(50))
                             {
-                                if (jiBanActivedClass.cardTypeLists[i].cardLists[j].fightState.neizhuNums <= 0)
+                                if (fightCardData.fightState.neizhuNums <= 0)
                                 {
-                                    FightForManager.instance.CreateSateIcon(jiBanActivedClass.cardTypeLists[i].cardLists[j].cardObj.transform.GetChild(7), StringNameStatic.StateIconPath_neizhu, false);
+                                    FightForManager.instance.CreateSateIcon(fightCardData.cardObj.transform.GetChild(7), StringNameStatic.StateIconPath_neizhu, false);
                                 }
-                                jiBanActivedClass.cardTypeLists[i].cardLists[j].fightState.neizhuNums++;
+                                fightCardData.fightState.neizhuNums++;
                             }
                         }
                     }
@@ -3505,15 +3510,17 @@ public class FightController : MonoBehaviour
                 {
                     for (int j = 0; j < jiBanActivedClass.cardTypeLists[i].cardLists.Count; j++)
                     {
-                        if (jiBanActivedClass.cardTypeLists[i].cardLists[j] != null && jiBanActivedClass.cardTypeLists[i].cardLists[j].nowHp > 0)
+                        fightCardData = jiBanActivedClass.cardTypeLists[i].cardLists[j];
+                        if (fightCardData != null && fightCardData.nowHp > 0)
                         {
+                            AttackToEffectShow(fightCardData, false, jiBanActivedClass.jiBanIndex + "JB");
                             if (TakeSpecialAttack(30))
                             {
-                                if (jiBanActivedClass.cardTypeLists[i].cardLists[j].fightState.withStandNums <= 0)
+                                if (fightCardData.fightState.withStandNums <= 0)
                                 {
-                                    FightForManager.instance.CreateSateIcon(jiBanActivedClass.cardTypeLists[i].cardLists[j].cardObj.transform.GetChild(7), StringNameStatic.StateIconPath_withStand, true);
+                                    FightForManager.instance.CreateSateIcon(fightCardData.cardObj.transform.GetChild(7), StringNameStatic.StateIconPath_withStand, true);
                                 }
-                                jiBanActivedClass.cardTypeLists[i].cardLists[j].fightState.withStandNums++;
+                                fightCardData.fightState.withStandNums++;
                             }
                         }
                     }
@@ -4530,13 +4537,13 @@ public enum JiBanSkillName
     /// <summary>
     /// 桃园结义
     /// </summary>
-    TaoYuanJieYi,
+    TaoYuanJieYi = 0,
     /// <summary>
     /// 五虎上将
     /// </summary>
-    WuHuShangJiang,
+    WuHuShangJiang = 1,
     /// <summary>
     /// 虎痴恶来
     /// </summary>
-    HuChiELai
+    HuChiELai = 3
 }

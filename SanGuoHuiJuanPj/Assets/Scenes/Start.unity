@@ -2244,6 +2244,7 @@ MonoBehaviour:
   - {fileID: 8300000, guid: c745ad2f4f1325c4fa45eb168142603a, type: 3}
   - {fileID: 8300000, guid: fbf451b2d3e147f47aaaff7896fa8643, type: 3}
   - {fileID: 8300000, guid: a00056721876c524e90f7c567994ebe0, type: 3}
+  - {fileID: 8300000, guid: 3826d814365dbd14486c44a7205d9050, type: 3}
   audioVolumeFightEffect:
   - 0.8
   - 0.8
@@ -2338,6 +2339,7 @@ MonoBehaviour:
   - 1
   - 1
   - 0.8
+  - 1
   - 1
   - 1
   - 1
@@ -28459,6 +28461,9 @@ MonoBehaviour:
   - 55A0
   - 59A
   - 60A
+  - 0JB
+  - 1JB
+  - 3JB
   iconNameStr:
   - stateIcon
   - bleedState

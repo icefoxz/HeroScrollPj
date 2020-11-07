@@ -3233,23 +3233,27 @@ public class FightControlForStart : MonoBehaviour
         }
     }
 
-    //全屏技能特效展示,会心一击
-    private void ShowAllScreenFightEffect(FullScreenEffectName fullScreenEffectName)
+    //全屏技能特效展示,会心一击,羁绊
+    private void ShowAllScreenFightEffect(FullScreenEffectName fullScreenEffectName, int indexResPic = 0)
     {
-        int indexEffect = (int)fullScreenEffectName;
-        if (fullScreenEffectObjs[indexEffect].activeSelf)
+        GameObject effectObj = fullScreenEffectObjs[(int)fullScreenEffectName];
+        if (effectObj.activeSelf)
         {
-            fullScreenEffectObjs[indexEffect].SetActive(false);
+            effectObj.SetActive(false);
         }
-        switch (indexEffect)
+        switch (fullScreenEffectName)
         {
-            case 0:
+            case FullScreenEffectName.HuiXinEffect:
                 PlayAudioForSecondClip(92, 0);
+                break;
+            case FullScreenEffectName.JiBanEffect:
+                effectObj.GetComponentInChildren<Image>().sprite = Resources.Load("Image/JiBan/" + indexResPic, typeof(Sprite)) as Sprite;
+                PlayAudioForSecondClip(100, 0);
                 break;
             default:
                 break;
         }
-        fullScreenEffectObjs[indexEffect].SetActive(true);
+        effectObj.SetActive(true);
     }
 
     /// <summary>
@@ -3388,7 +3392,107 @@ public class FightControlForStart : MonoBehaviour
         float updateStateTime = 0;  //刷新状态需等待的时间
         updateStateTime = UpdateCardDataBeforeRound();
         yield return new WaitForSeconds(updateStateTime);
+
+        //羁绊部分的战前附加
+        yield return StartCoroutine(InitJiBanForStartFight());
+
         CardMoveToFight();
+    }
+
+    /// <summary>
+    /// 战斗开始羁绊数据附加到卡牌上
+    /// </summary>
+    IEnumerator InitJiBanForStartFight()
+    {
+        //玩家部分
+        foreach (var item in playerJiBanAllTypes)
+        {
+            if (item.Value.isActived)
+            {
+                Debug.Log("触发羁绊： " + item.Value.jiBanIndex);
+                ShowAllScreenFightEffect(FullScreenEffectName.JiBanEffect, item.Value.jiBanIndex);
+                yield return new WaitForSeconds(1f);
+                JiBanAddStateForCard(item.Value);
+                yield return new WaitForSeconds(1f);
+            }
+        }
+    }
+
+    //给卡牌上附加羁绊属性
+    private void JiBanAddStateForCard(JiBanActivedClass jiBanActivedClass)
+    {
+        FightCardData fightCardData;
+        switch ((JiBanSkillName)jiBanActivedClass.jiBanIndex)
+        {
+            case JiBanSkillName.TaoYuanJieYi:
+                //30%概率分别为羁绊武将增加1层【神助】
+                for (int i = 0; i < jiBanActivedClass.cardTypeLists.Count; i++)
+                {
+                    for (int j = 0; j < jiBanActivedClass.cardTypeLists[i].cardLists.Count; j++)
+                    {
+                        fightCardData = jiBanActivedClass.cardTypeLists[i].cardLists[j];
+                        if (fightCardData != null && fightCardData.nowHp > 0)
+                        {
+                            AttackToEffectShow(fightCardData, false, jiBanActivedClass.jiBanIndex + "JB");
+                            if (TakeSpecialAttack(30))
+                            {
+                                if (fightCardData.fightState.shenzhuNums <= 0)
+                                {
+                                    FightForManagerForStart.instance.CreateSateIcon(fightCardData.cardObj.transform.GetChild(7), StringNameStatic.StateIconPath_shenzhu, false);
+                                }
+                                fightCardData.fightState.shenzhuNums++;
+                            }
+                        }
+                    }
+                }
+                break;
+            case JiBanSkillName.WuHuShangJiang:
+                //50%概率分别为羁绊武将增加1层【内助】
+                for (int i = 0; i < jiBanActivedClass.cardTypeLists.Count; i++)
+                {
+                    for (int j = 0; j < jiBanActivedClass.cardTypeLists[i].cardLists.Count; j++)
+                    {
+                        fightCardData = jiBanActivedClass.cardTypeLists[i].cardLists[j];
+                        if (fightCardData != null && fightCardData.nowHp > 0)
+                        {
+                            AttackToEffectShow(fightCardData, false, jiBanActivedClass.jiBanIndex + "JB");
+                            if (TakeSpecialAttack(50))
+                            {
+                                if (fightCardData.fightState.neizhuNums <= 0)
+                                {
+                                    FightForManagerForStart.instance.CreateSateIcon(fightCardData.cardObj.transform.GetChild(7), StringNameStatic.StateIconPath_neizhu, false);
+                                }
+                                fightCardData.fightState.neizhuNums++;
+                            }
+                        }
+                    }
+                }
+                break;
+            case JiBanSkillName.HuChiELai:
+                //30 % 概率分别为羁绊武将增加1层【护盾】
+                for (int i = 0; i < jiBanActivedClass.cardTypeLists.Count; i++)
+                {
+                    for (int j = 0; j < jiBanActivedClass.cardTypeLists[i].cardLists.Count; j++)
+                    {
+                        fightCardData = jiBanActivedClass.cardTypeLists[i].cardLists[j];
+                        if (fightCardData != null && fightCardData.nowHp > 0)
+                        {
+                            AttackToEffectShow(fightCardData, false, jiBanActivedClass.jiBanIndex + "JB");
+                            if (TakeSpecialAttack(30))
+                            {
+                                if (fightCardData.fightState.withStandNums <= 0)
+                                {
+                                    FightForManagerForStart.instance.CreateSateIcon(fightCardData.cardObj.transform.GetChild(7), StringNameStatic.StateIconPath_withStand, true);
+                                }
+                                fightCardData.fightState.withStandNums++;
+                            }
+                        }
+                    }
+                }
+                break;
+            default:
+                break;
+        }
     }
 
     //回合开始状态等统一处理
