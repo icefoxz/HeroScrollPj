@@ -3482,7 +3482,7 @@ public class FightController : MonoBehaviour
                         if (fightCardData != null && fightCardData.nowHp > 0)
                         {
                             AttackToEffectShow(fightCardData, false, jiBanActivedClass.jiBanIndex + "JB");
-                            if (TakeSpecialAttack(30))
+                            if (TakeSpecialAttack(LoadJsonFile.GetGameValue(134)))
                             {
                                 if (fightCardData.fightState.shenzhuNums <= 0)
                                 {
@@ -3504,7 +3504,7 @@ public class FightController : MonoBehaviour
                         if (fightCardData != null && fightCardData.nowHp > 0)
                         {
                             AttackToEffectShow(fightCardData, false, jiBanActivedClass.jiBanIndex + "JB");
-                            if (TakeSpecialAttack(50))
+                            if (TakeSpecialAttack(LoadJsonFile.GetGameValue(135)))
                             {
                                 if (fightCardData.fightState.neizhuNums <= 0)
                                 {
@@ -3526,7 +3526,7 @@ public class FightController : MonoBehaviour
                         if (fightCardData != null && fightCardData.nowHp > 0)
                         {
                             AttackToEffectShow(fightCardData, false, jiBanActivedClass.jiBanIndex + "JB");
-                            if (TakeSpecialAttack(30))
+                            if (TakeSpecialAttack(LoadJsonFile.GetGameValue(137)))
                             {
                                 if (fightCardData.fightState.withStandNums <= 0)
                                 {
