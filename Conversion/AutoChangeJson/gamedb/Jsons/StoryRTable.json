@@ -40,7 +40,7 @@
 			"id": "4",
 			"ending": "难民皆是战乱所害，怎能见死不救……\n<color=#FFFFFF00>缩进</color>你分出一些军粮给难民充饥，难民们感激涕零，皆请愿随你出生入死！",
 			"unitType": "0",
-			"unitId": "800",
+			"unitId": "0",
 			"unitLevel": "1",
 			"unitCount": "3",
 			"goldReward": "0"
@@ -67,7 +67,7 @@
 			"id": "7",
 			"ending": "原来拦路之人并非难民，乃是山贼装扮而成……你大破山贼，俘获壮丁无数，将其充军……",
 			"unitType": "0",
-			"unitId": "805",
+			"unitId": "0",
 			"unitLevel": "1",
 			"unitCount": "3",
 			"goldReward": "0"
@@ -76,7 +76,7 @@
 			"id": "8",
 			"ending": "你朝着古柳道前行，迷雾愈浓，将士们纷纷感到头晕目眩，疑似瘴气入体……\n<color=#FFFFFF00>缩进</color>正当你叫苦之时，一鹤发老者前来求见。你识得此人，乃神医<color=##C70000>华佗</color>……",
 			"unitType": "0",
-			"unitId": "1",
+			"unitId": "0",
 			"unitLevel": "1",
 			"unitCount": "1",
 			"goldReward": "0"
@@ -130,7 +130,7 @@
 			"id": "14",
 			"ending": "城池之中并无防备，你下令全城搜捕，俘获敌军主帅<color=#C70000>诸葛亮</color>……",
 			"unitType": "0",
-			"unitId": "1",
+			"unitId": "0",
 			"unitLevel": "1",
 			"unitCount": "1",
 			"goldReward": "0"
@@ -202,7 +202,7 @@
 			"id": "22",
 			"ending": "你观敌军士气衰竭，召集将士，披坚执锐，打开城门冲入敌营之中。以迅雷不及掩耳之势大破敌军，俘获敌军上将<color=#C70000>夏侯惇</color>。",
 			"unitType": "0",
-			"unitId": "1",
+			"unitId": "0",
 			"unitLevel": "2",
 			"unitCount": "1",
 			"goldReward": "0"
@@ -265,7 +265,7 @@
 			"id": "29",
 			"ending": "你料定此乃敌方诈降之计，按兵不动。不过数日，敌方城门大开，守城将士皆卸甲而出，你招降敌方将领<color=#C70000>臧洪</color>。",
 			"unitType": "0",
-			"unitId": "1",
+			"unitId": "0",
 			"unitLevel": "10",
 			"unitCount": "1",
 			"goldReward": "0"
@@ -337,7 +337,7 @@
 			"id": "37",
 			"ending": "春季正当万物复苏之时，此时狩猎有损天道常理，岂可只顾一时之兴？百姓闻此，无不对你连连称赞……\n不久之后，有一名士前来拜访……",
 			"unitType": "0",
-			"unitId": "1",
+			"unitId": "0",
 			"unitLevel": "3",
 			"unitCount": "1",
 			"goldReward": "0"
@@ -436,7 +436,7 @@
 			"id": "48",
 			"ending": "今日大雪，想必此人必未外出，此去定能成功。你冒雪前往深山之中，求得奇才，你不禁叹曰，得遇此人，真如鱼得水。",
 			"unitType": "0",
-			"unitId": "1",
+			"unitId": "0",
 			"unitLevel": "5",
 			"unitCount": "1",
 			"goldReward": "0"
@@ -454,7 +454,7 @@
 			"id": "50",
 			"ending": "国难当头，大丈夫岂能袖手旁观！你即刻整顿军马，前往会盟之地，与其他诸侯歃血为盟，结为十八路诸侯，共讨国贼，一时声名大作！更是有名士前来投靠……",
 			"unitType": "0",
-			"unitId": "1",
+			"unitId": "0",
 			"unitLevel": "5",
 			"unitCount": "1",
 			"goldReward": "0"
@@ -481,7 +481,7 @@
 			"id": "53",
 			"ending": "若大军前往，必使城防空虚，鸡鸣狗盗之徒将乘虚而入。天下将变，不如乘此时修筑城墙，安抚民心。\n不久之后，有一壮汉前来拜访……",
 			"unitType": "0",
-			"unitId": "1",
+			"unitId": "0",
 			"unitLevel": "1",
 			"unitCount": "1",
 			"goldReward": "0"
@@ -535,7 +535,7 @@
 			"id": "59",
 			"ending": "你将家中金银细软一并献出，换草药等物资，发往夏口。百姓皆称你为大贤，天下归心。\n不久之后，有一名士前来拜访……",
 			"unitType": "0",
-			"unitId": "1",
+			"unitId": "0",
 			"unitLevel": "5",
 			"unitCount": "1",
 			"goldReward": "0"
@@ -580,7 +580,7 @@
 			"id": "64",
 			"ending": "天下兴亡匹夫有责！你相应官府号召，变卖家资，举起义旗，召集壮勇数千。时黄巾来犯，你出兵迎击，大获全胜。\n不久之后，有一壮士前来投靠……",
 			"unitType": "0",
-			"unitId": "1",
+			"unitId": "0",
 			"unitLevel": "5",
 			"unitCount": "1",
 			"goldReward": "0"
@@ -607,7 +607,7 @@
 			"id": "67",
 			"ending": "大旱数年，天下民不聊生久矣，乃黄巾之乱根源，乱党岂能一战而灭？你一边招兵买马，修筑城防，一边开仓赈灾，收复民心。黄巾乱党闻之，不敢侵犯。\n不久之后，有一壮士前来投靠……",
 			"unitType": "0",
-			"unitId": "1",
+			"unitId": "0",
 			"unitLevel": "5",
 			"unitCount": "1",
 			"goldReward": "0"
@@ -634,7 +634,7 @@
 			"id": "70",
 			"ending": "你饮数杯酒毕，一面仍与人弈棋，伸臂令佗医之。华佗割开皮肉，用刀刮骨，悉悉有声……军帐之内，无不叹息，将军真乃神人矣。",
 			"unitType": "0",
-			"unitId": "1",
+			"unitId": "0",
 			"unitLevel": "5",
 			"unitCount": "1",
 			"goldReward": "0"
@@ -706,7 +706,7 @@
 			"id": "78",
 			"ending": "大雨倾盆，河水泛滥。你掘开河道，将洪水引入城池之中。待城中之水没过腰部，敌军不战而降。\n俘获敌军主帅……",
 			"unitType": "0",
-			"unitId": "1",
+			"unitId": "0",
 			"unitLevel": "5",
 			"unitCount": "1",
 			"goldReward": "0"
@@ -805,7 +805,7 @@
 			"id": "89",
 			"ending": "若城破，必将生灵涂炭。当此为难时刻怎能弃民不顾？城在我在，城亡我亡！\n不久之后，有一壮士前来投靠……",
 			"unitType": "0",
-			"unitId": "1",
+			"unitId": "0",
 			"unitLevel": "5",
 			"unitCount": "1",
 			"goldReward": "0"
@@ -850,7 +850,7 @@
 			"id": "94",
 			"ending": "天下苦于战乱久矣，主公优柔寡断，乃非英明贤主，若不能早作打算，恐命不久矣。你与来者约定，待得胜，不可屠杀俘虏，不可骚扰百姓。对方赞你为大贤之人，愿意投靠……",
 			"unitType": "0",
-			"unitId": "1",
+			"unitId": "0",
 			"unitLevel": "5",
 			"unitCount": "1",
 			"goldReward": "0"

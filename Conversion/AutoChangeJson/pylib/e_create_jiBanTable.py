@@ -6,19 +6,17 @@ def export_json(xls, fn):
     f = create_file(fn)
     if f != None:
         reader = xls_reader.XLSReader()
-        cfgs = reader.GetSheetByIndex(xls, 4, 2)
+        cfgs = reader.GetSheetByIndex(xls, 32, 2)
         if cfgs != None:
             f.write("{\n")
-            s = "\t\"ClassTable\": [\n"
+            s = "\t\"JiBanTable\": [\n"
             for c in cfgs:
                 ri = RowIndex(len(c))
                 ss = "\t\t{\n"
                 ss += "\t\t\t\"id\": \"" + conv_int(c[ri.Next()]) + "\",\n"
-                ss += "\t\t\t\"type\": \"" + conv_str_bin(c[ri.Next()]) + "\",\n"
-                ss += "\t\t\t\"skill\": \"" + conv_str_bin(c[ri.Next()]) + "\",\n"
-                ss += "\t\t\t\"shortName\": \"" + conv_str_bin(c[ri.Next()]) + "\",\n"
-                ss += "\t\t\t\"info\": \"" + conv_str_bin(c[ri.Next()]) + "\",\n"
-                ss += "\t\t\t\"bingZhongXi\": \"" + conv_int(c[ri.Next()]) + "\"\n"
+                ss += "\t\t\t\"jiBanMing\": \"" + conv_str_bin(c[ri.Next()]) + "\",\n"
+                ss += "\t\t\t\"isOpen\": \"" + conv_int(c[ri.Next()]) + "\",\n"
+                ss += "\t\t\t\"heroId\": \"" + conv_str_bin(c[ri.Next()]) + "\"\n"
                 ss += "\t\t},\n"
                 s += ss
             s = s[:-2]
