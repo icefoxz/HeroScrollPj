@@ -3742,6 +3742,9 @@ public class FightControlForStart : MonoBehaviour
                 {
                     if (FightForManagerForStart.instance.playerFightCardsDatas[i].cardType == 0)
                     {
+                        //羁绊消除
+                        FightForManagerForStart.instance.TryToActivatedBond(FightForManagerForStart.instance.playerFightCardsDatas[i], false);
+
                         switch (LoadJsonFile.heroTableDatas[FightForManagerForStart.instance.playerFightCardsDatas[i].cardId][5])
                         {
                             case "58": //铁骑阵亡
@@ -3776,6 +3779,9 @@ public class FightControlForStart : MonoBehaviour
                 {
                     if (FightForManagerForStart.instance.enemyFightCardsDatas[i].cardType == 0)
                     {
+                        //羁绊消除
+                        FightForManagerForStart.instance.TryToActivatedBond(FightForManagerForStart.instance.playerFightCardsDatas[i], false);
+
                         switch (LoadJsonFile.heroTableDatas[FightForManagerForStart.instance.enemyFightCardsDatas[i].cardId][5])
                         {
                             case "58": //铁骑阵亡

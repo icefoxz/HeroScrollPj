@@ -442,7 +442,7 @@ public class FightForManager : MonoBehaviour
     /// <param name="cardData">行动卡牌</param>
     /// <param name="cardDatas">上阵卡牌集合</param>
     /// <param name="isAdd">是否上阵</param>
-    private void TryToActivatedBond(FightCardData cardData, bool isAdd)
+    public void TryToActivatedBond(FightCardData cardData, bool isAdd)
     {
         if (LoadJsonFile.heroTableDatas[cardData.cardId][25] != "")
         {

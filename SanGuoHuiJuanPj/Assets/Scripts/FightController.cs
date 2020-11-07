@@ -3445,7 +3445,19 @@ public class FightController : MonoBehaviour
         {
             if (item.Value.isActived)
             {
-                Debug.Log("触发羁绊： " + item.Value.jiBanIndex);
+                Debug.Log("玩家触发羁绊： " + item.Value.jiBanIndex);
+                ShowAllScreenFightEffect(FullScreenEffectName.JiBanEffect, item.Value.jiBanIndex);
+                yield return new WaitForSeconds(1f);
+                JiBanAddStateForCard(item.Value);
+                yield return new WaitForSeconds(1f);
+            }
+        }
+        //敌人部分
+        foreach (var item in enemyJiBanAllTypes)
+        {
+            if (item.Value.isActived)
+            {
+                Debug.Log("敌方触发羁绊： " + item.Value.jiBanIndex);
                 ShowAllScreenFightEffect(FullScreenEffectName.JiBanEffect, item.Value.jiBanIndex);
                 yield return new WaitForSeconds(1f);
                 JiBanAddStateForCard(item.Value);
@@ -3779,6 +3791,9 @@ public class FightController : MonoBehaviour
                 {
                     if (FightForManager.instance.playerFightCardsDatas[i].cardType == 0)
                     {
+                        //羁绊消除
+                        FightForManager.instance.TryToActivatedBond(FightForManager.instance.playerFightCardsDatas[i], false);
+
                         switch (LoadJsonFile.heroTableDatas[FightForManager.instance.playerFightCardsDatas[i].cardId][5])
                         {
                             case "58": //铁骑阵亡
@@ -3815,6 +3830,9 @@ public class FightController : MonoBehaviour
                 {
                     if (FightForManager.instance.enemyFightCardsDatas[i].cardType == 0)
                     {
+                        //羁绊消除
+                        FightForManager.instance.TryToActivatedBond(FightForManager.instance.enemyFightCardsDatas[i], false);
+
                         switch (LoadJsonFile.heroTableDatas[FightForManager.instance.enemyFightCardsDatas[i].cardId][5])
                         {
                             case "58": //铁骑阵亡
