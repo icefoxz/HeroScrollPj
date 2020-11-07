@@ -52,9 +52,6 @@ public class FightControlForStart : MonoBehaviour
     Transform transferStation;  //卡牌中转站
 
     [SerializeField]
-    GameObject huiXinObj;   //会心一击特效
-
-    [SerializeField]
     Toggle autoFightTog;    //自动战斗勾选控件
 
     bool isNeedToAttack;    //记录特殊远程兵种这次攻击是否是普攻
@@ -70,6 +67,15 @@ public class FightControlForStart : MonoBehaviour
     private List<FightCardData> gunMuCards; //滚木列表
     private List<FightCardData> gunShiCards;//滚石列表
 
+    /// <summary>
+    /// 玩家所有羁绊激活情况
+    /// </summary>
+    public Dictionary<int, JiBanActivedClass> playerJiBanAllTypes;
+    /// <summary>
+    /// 敌方所有羁绊激活情况
+    /// </summary>
+    public Dictionary<int, JiBanActivedClass> enemyJiBanAllTypes;
+
     private void Awake()
     {
         if (instance == null)
@@ -78,6 +84,9 @@ public class FightControlForStart : MonoBehaviour
         }
         gunMuCards = new List<FightCardData>();
         gunShiCards = new List<FightCardData>();
+
+        playerJiBanAllTypes = new Dictionary<int, JiBanActivedClass>();
+        enemyJiBanAllTypes = new Dictionary<int, JiBanActivedClass>();
 
         stateOfFight = StateOfFight.ReadyForFight;
 
@@ -3101,18 +3110,6 @@ public class FightControlForStart : MonoBehaviour
         }
     }
 
-    //会心一击特效展示
-    private void ShowHuiXinFightEffect()
-    {
-        if (huiXinObj.activeInHierarchy)
-        {
-            huiXinObj.SetActive(false);
-        }
-        PlayAudioForSecondClip(92, 0);
-
-        huiXinObj.SetActive(true);
-    }
-
     /// <summary>
     /// 战斗结束上阵卡牌回复血量消除相关状态
     /// </summary>
@@ -3219,6 +3216,43 @@ public class FightControlForStart : MonoBehaviour
     }
 
     /// <summary>
+    /// 全屏技能特效展示，0会心一击
+    /// </summary>
+    [SerializeField]
+    GameObject[] fullScreenEffectObjs;
+
+    //关闭所有开启的全屏特技
+    private void CloseAllFullScreenEffect()
+    {
+        for (int i = 0; i < fullScreenEffectObjs.Length; i++)
+        {
+            if (fullScreenEffectObjs[i].activeSelf)
+            {
+                fullScreenEffectObjs[i].SetActive(false);
+            }
+        }
+    }
+
+    //全屏技能特效展示,会心一击
+    private void ShowAllScreenFightEffect(FullScreenEffectName fullScreenEffectName)
+    {
+        int indexEffect = (int)fullScreenEffectName;
+        if (fullScreenEffectObjs[indexEffect].activeSelf)
+        {
+            fullScreenEffectObjs[indexEffect].SetActive(false);
+        }
+        switch (indexEffect)
+        {
+            case 0:
+                PlayAudioForSecondClip(92, 0);
+                break;
+            default:
+                break;
+        }
+        fullScreenEffectObjs[indexEffect].SetActive(true);
+    }
+
+    /// <summary>
     /// ////////////////战斗主线逻辑//////////////////////////////////////////////////
     /// </summary>
 
@@ -3245,7 +3279,7 @@ public class FightControlForStart : MonoBehaviour
         isRoundBegin = false;
         recordWinner = 0;
         roundNums = 0;
-        huiXinObj.SetActive(false);
+        CloseAllFullScreenEffect();
         timer = 0;
         startFightBtn.GetComponent<Button>().interactable = true;
         startFightBtn.GetComponent<Animator>().SetBool("isShow", true);
@@ -4069,7 +4103,7 @@ public class FightControlForStart : MonoBehaviour
             {
                 indexAttackType = 1;
                 needTime = 1.2f;
-                ShowHuiXinFightEffect();
+                ShowAllScreenFightEffect(FullScreenEffectName.HuiXinEffect);
             }
             else
             {

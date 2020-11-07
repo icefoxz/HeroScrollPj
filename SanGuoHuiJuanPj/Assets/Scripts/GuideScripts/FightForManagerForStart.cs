@@ -528,6 +528,10 @@ public class FightForManagerForStart : MonoBehaviour
     //更新故事战斗数据
     private void UpdateCardDataForStory()
     {
+        //羁绊数据重置
+        InitJiBanTypeListFun(FightControlForStart.instance.playerJiBanAllTypes);
+        InitJiBanTypeListFun(FightControlForStart.instance.enemyJiBanAllTypes);
+
         if (playerFightCardsDatas[17] == null)
         {
             CreatePlayerHomeCard();
@@ -994,12 +998,104 @@ public class FightForManagerForStart : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 初始化羁绊集合
+    /// </summary>
+    private void InitJiBanTypeListFun(Dictionary<int, JiBanActivedClass> jiBanActivedClasses)
+    {
+        jiBanActivedClasses.Clear();
+        for (int i = 0; i < LoadJsonFile.jiBanTableDatas.Count; i++)
+        {
+            if (LoadJsonFile.jiBanTableDatas[i][2] != "0")
+            {
+                JiBanActivedClass jiBanActivedClass = new JiBanActivedClass();
+                jiBanActivedClass.jiBanIndex = i;
+                jiBanActivedClass.isActived = false;
+                jiBanActivedClass.cardTypeLists = new List<JiBanCardTypeClass>();
+                string[] arrs = LoadJsonFile.jiBanTableDatas[i][3].Split(';');
+                for (int j = 0; j < arrs.Length; j++)
+                {
+                    if (arrs[j] != "")
+                    {
+                        JiBanCardTypeClass jiBanCardTypeClass = new JiBanCardTypeClass();
+                        string[] arrss = arrs[j].Split(',');
+                        jiBanCardTypeClass.cardType = int.Parse(arrss[0]);
+                        jiBanCardTypeClass.cardId = int.Parse(arrss[1]);
+                        jiBanCardTypeClass.cardLists = new List<FightCardData>();
+                        jiBanActivedClass.cardTypeLists.Add(jiBanCardTypeClass);
+                    }
+                }
+                jiBanActivedClasses.Add(i, jiBanActivedClass);
+            }
+        }
+    }
+
+    /// <summary>
+    /// 尝试激活或取消羁绊
+    /// </summary>
+    /// <param name="cardData">行动卡牌</param>
+    /// <param name="cardDatas">上阵卡牌集合</param>
+    /// <param name="isAdd">是否上阵</param>
+    private void TryToActivatedBond(FightCardData cardData, bool isAdd)
+    {
+        if (LoadJsonFile.heroTableDatas[cardData.cardId][25] != "")
+        {
+            Dictionary<int, JiBanActivedClass> jiBanActivedClasses = cardData.isPlayerCard ? FightControlForStart.instance.playerJiBanAllTypes : FightControlForStart.instance.enemyJiBanAllTypes;
+
+            string[] arrs = LoadJsonFile.heroTableDatas[cardData.cardId][25].Split(',');
+            //遍历所属羁绊
+            for (int i = 0; i < arrs.Length; i++)
+            {
+                if (arrs[i] != "" && LoadJsonFile.jiBanTableDatas[int.Parse(arrs[i])][2] != "0")
+                {
+                    JiBanActivedClass jiBanActivedClass = jiBanActivedClasses[int.Parse(arrs[i])];
+                    bool isActived = true;
+                    for (int j = 0; j < jiBanActivedClass.cardTypeLists.Count; j++)
+                    {
+                        if (jiBanActivedClass.cardTypeLists[j].cardType == cardData.cardType && jiBanActivedClass.cardTypeLists[j].cardId == cardData.cardId)
+                        {
+                            if (isAdd)
+                            {
+                                if (!jiBanActivedClass.cardTypeLists[j].cardLists.Exists(t => t == cardData))
+                                {
+                                    jiBanActivedClass.cardTypeLists[j].cardLists.Add(cardData);
+                                }
+                            }
+                            else
+                            {
+                                jiBanActivedClass.cardTypeLists[j].cardLists.Remove(cardData);
+                            }
+                        }
+                        if (jiBanActivedClass.cardTypeLists[j].cardLists.Count <= 0)
+                        {
+                            isActived = false;
+                        }
+                    }
+                    if (!jiBanActivedClass.isActived && isActived)
+                    {
+                        for (int k = 0; k < jiBanActivedClass.cardTypeLists.Count; k++)
+                        {
+                            for (int s = 0; s < jiBanActivedClass.cardTypeLists[k].cardLists.Count; s++)
+                            {
+                                jiBanActivedClass.cardTypeLists[k].cardLists[s].cardObj.transform.GetChild(10).gameObject.SetActive(false);
+                                jiBanActivedClass.cardTypeLists[k].cardLists[s].cardObj.transform.GetChild(10).gameObject.SetActive(true);
+                            }
+                        }
+                    }
+                    jiBanActivedClass.isActived = isActived;
+                }
+            }
+        }
+    }
+
     //上阵卡牌特殊相关处理
     public void CardGoIntoBattleProcess(FightCardData cardData, int posIndex, FightCardData[] cardDatas, bool isAdd)
     {
         switch (cardData.cardType)
         {
             case 0:
+                TryToActivatedBond(cardData, isAdd);
+
                 switch (LoadJsonFile.heroTableDatas[cardData.cardId][5])
                 {
                     case "4"://盾兵

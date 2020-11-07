@@ -303,6 +303,26 @@ public class FightState
     public int miWuZhenAddtion { get; set; }
 }
 
+/// <summary>
+/// 羁绊判断激活类
+/// </summary>
+public class JiBanActivedClass
+{
+    public int jiBanIndex { get; set; }
+    public bool isActived { get; set; }
+    public List<JiBanCardTypeClass> cardTypeLists { get; set; }
+}
+
+/// <summary>
+/// 单个羁绊中卡牌小类
+/// </summary>
+public class JiBanCardTypeClass
+{
+    public int cardType { get; set; }
+    public int cardId { get; set; }
+    public List<FightCardData> cardLists { get; set; }
+}
+
 #endregion
 
 #region 游戏内容相关类

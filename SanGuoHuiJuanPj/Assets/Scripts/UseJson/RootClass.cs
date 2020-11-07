@@ -129,4 +129,8 @@ public class Roots
     /// 游戏数值表
     /// </summary>
     public List<NumParametersTableItem> NumParametersTable { get; set; }
+    /// <summary>
+    /// 羁绊表
+    /// </summary>
+    public List<JiBanTableItem> JiBanTable { get; set; }
 }

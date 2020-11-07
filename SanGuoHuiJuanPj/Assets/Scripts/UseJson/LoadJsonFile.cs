@@ -14,7 +14,7 @@ public class LoadJsonFile : MonoBehaviour
     private static readonly string tableNameStrs = "PlayerInitialTable;AssetTable;HeroTable;PlayerLevelTable;SoldierTable;" +
         "TowerTable;ClassTable;UpGradeTable;TrapTable;SpellTable;WarChestTable;WarTable;CityLevelTable;PointTable;" +
         "BattleEventTable;EnemyTable;EnemyUnitTable;StoryTable;StoryRTable;TestTable;TestRTable;EncounterTable;" +
-        "ShoppingTable;ChoseWarTable;GuideTable;KnowledgeTable;RCodeTable;TiLiStoreTable;EnemyBOSSTable;StringTextTable;NumParametersTable";
+        "ShoppingTable;ChoseWarTable;GuideTable;KnowledgeTable;RCodeTable;TiLiStoreTable;EnemyBOSSTable;StringTextTable;NumParametersTable;JiBanTable";
 
 
     /// <summary>
@@ -173,6 +173,11 @@ public class LoadJsonFile : MonoBehaviour
     private static List<List<string>> numParametersTableDatas;
 
     /// <summary>
+    /// 羁绊数据表
+    /// </summary>
+    public static List<List<string>> jiBanTableDatas;
+
+    /// <summary>
     /// 加载json文件获取数据至链表中
     /// </summary>
     private void JsonDataToSheets(string[] tableNames)
@@ -250,7 +255,8 @@ public class LoadJsonFile : MonoBehaviour
                 heroTableDatas[i].Add(root.HeroTable[i].chanChu);
                 heroTableDatas[i].Add(root.HeroTable[i].fuMianMianYi);
                 heroTableDatas[i].Add(root.HeroTable[i].wuLiMianShang);
-                heroTableDatas[i].Add(root.HeroTable[i].faShuMianShang);
+                heroTableDatas[i].Add(root.HeroTable[i].faShuMianShang); 
+                heroTableDatas[i].Add(root.HeroTable[i].fettersRelated); 
             }
             //Debug.Log("Json文件加载成功---" + tableNames[indexTable] + ".Json");
             indexTable++;
@@ -339,7 +345,8 @@ public class LoadJsonFile : MonoBehaviour
                 classTableDatas[i].Add(root.ClassTable[i].type);
                 classTableDatas[i].Add(root.ClassTable[i].skill);
                 classTableDatas[i].Add(root.ClassTable[i].shortName);
-                classTableDatas[i].Add(root.ClassTable[i].info);
+                classTableDatas[i].Add(root.ClassTable[i].info); 
+                classTableDatas[i].Add(root.ClassTable[i].bingZhongXi); 
             }
             //Debug.Log("Json文件加载成功---" + tableNames[indexTable] + ".Json");
             indexTable++;
@@ -859,6 +866,22 @@ public class LoadJsonFile : MonoBehaviour
                 numParametersTableDatas.Add(new List<string>());
                 numParametersTableDatas[i].Add(root.NumParametersTable[i].id);
                 numParametersTableDatas[i].Add(root.NumParametersTable[i].numContent);
+            }
+            //Debug.Log("Json文件加载成功---" + tableNames[indexTable] + ".Json");
+            indexTable++;
+        }
+        //加载羁绊数据表数据：JiBanTable
+        {
+            jsonData = LoadJsonByName(tableNames[indexTable]);
+            root = JsonConvert.DeserializeObject<Roots>(jsonData);
+            jiBanTableDatas = new List<List<string>>(root.JiBanTable.Count);
+            for (int i = 0; i < root.JiBanTable.Count; i++)
+            {
+                jiBanTableDatas.Add(new List<string>());
+                jiBanTableDatas[i].Add(root.JiBanTable[i].id);
+                jiBanTableDatas[i].Add(root.JiBanTable[i].jiBanMing);
+                jiBanTableDatas[i].Add(root.JiBanTable[i].isOpen);
+                jiBanTableDatas[i].Add(root.JiBanTable[i].heroId);
             }
             //Debug.Log("Json文件加载成功---" + tableNames[indexTable] + ".Json");
             indexTable++;

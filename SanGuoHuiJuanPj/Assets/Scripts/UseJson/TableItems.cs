@@ -40,6 +40,7 @@ public class HeroTableItem
     public string fuMianMianYi { get; set; }
     public string wuLiMianShang { get; set; }
     public string faShuMianShang { get; set; }
+    public string fettersRelated { get; set; }
 }
 public class PlayerLevelTableItem
 {
@@ -93,6 +94,7 @@ public class ClassTableItem
     public string skill { get; set; }
     public string shortName { get; set; }
     public string info { get; set; }
+    public string bingZhongXi { get; set; }
 }
 public class UpGradeTableItem
 {
@@ -396,4 +398,11 @@ public class NumParametersTableItem
 {
     public string id { get; set; }
     public string numContent { get; set; }
+}
+public class JiBanTableItem
+{
+    public string id { get; set; }
+    public string jiBanMing { get; set; }
+    public string isOpen { get; set; }
+    public string heroId { get; set; }
 }

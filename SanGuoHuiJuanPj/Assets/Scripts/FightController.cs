@@ -46,9 +46,6 @@ public class FightController : MonoBehaviour
     Transform transferStation;  //卡牌中转站
 
     [SerializeField]
-    GameObject huiXinObj;   //会心一击特效
-
-    [SerializeField]
     Toggle autoFightTog;    //自动战斗勾选控件
 
     bool isNeedToAttack;    //记录特殊远程兵种这次攻击是否是普攻
@@ -66,6 +63,14 @@ public class FightController : MonoBehaviour
     int getGold = 0;    //本场战斗获得金币数
     List<int> getBoxsList = new List<int>();    //本场战斗获得宝箱
 
+    /// <summary>
+    /// 玩家所有羁绊激活情况
+    /// </summary>
+    public Dictionary<int, JiBanActivedClass> playerJiBanAllTypes;
+    /// <summary>
+    /// 敌方所有羁绊激活情况
+    /// </summary>
+    public Dictionary<int, JiBanActivedClass> enemyJiBanAllTypes;
 
     private void Awake()
     {
@@ -75,6 +80,9 @@ public class FightController : MonoBehaviour
         }
         gunMuCards = new List<FightCardData>();
         gunShiCards = new List<FightCardData>();
+
+        playerJiBanAllTypes = new Dictionary<int, JiBanActivedClass>();
+        enemyJiBanAllTypes = new Dictionary<int, JiBanActivedClass>();
 
         stateOfFight = StateOfFight.ReadyForFight;
 
@@ -3140,18 +3148,6 @@ public class FightController : MonoBehaviour
         }
     }
 
-    //会心一击特效展示
-    private void ShowHuiXinFightEffect()
-    {
-        if (huiXinObj.activeInHierarchy)
-        {
-            huiXinObj.SetActive(false);
-        }
-        PlayAudioForSecondClip(92, 0);
-
-        huiXinObj.SetActive(true);
-    }
-
     /// <summary>
     /// 战斗结束上阵卡牌回复血量消除相关状态
     /// </summary>
@@ -3258,6 +3254,47 @@ public class FightController : MonoBehaviour
     }
 
     /// <summary>
+    /// 全屏技能特效展示，0会心一击
+    /// </summary>
+    [SerializeField]
+    GameObject[] fullScreenEffectObjs;
+
+    //关闭所有开启的全屏特技
+    private void CloseAllFullScreenEffect()
+    {
+        for (int i = 0; i < fullScreenEffectObjs.Length; i++)
+        {
+            if (fullScreenEffectObjs[i].activeSelf)
+            {
+                fullScreenEffectObjs[i].SetActive(false);
+            }
+        }
+    }
+
+    //全屏技能特效展示,会心一击
+    private void ShowAllScreenFightEffect(FullScreenEffectName fullScreenEffectName, int indexResPic = 0)
+    {
+        GameObject effectObj = fullScreenEffectObjs[(int)fullScreenEffectName];
+        if (effectObj.activeSelf)
+        {
+            effectObj.SetActive(false);
+        }
+        switch (fullScreenEffectName)
+        {
+            case FullScreenEffectName.HuiXinEffect:
+                PlayAudioForSecondClip(92, 0);
+                break;
+            case FullScreenEffectName.JiBanEffect:
+                PlayAudioForSecondClip(92, 0);
+                break;
+            default:
+                break;
+        }
+        effectObj.SetActive(true);
+    }
+
+
+    /// <summary>
     /// ////////////////战斗主线逻辑//////////////////////////////////////////////////
     /// </summary>
 
@@ -3284,7 +3321,7 @@ public class FightController : MonoBehaviour
         isRoundBegin = false;
         recordWinner = 0;
         roundNums = 0;
-        huiXinObj.SetActive(false);
+        CloseAllFullScreenEffect();
         timer = 0;
         startFightBtn.GetComponent<Button>().interactable = true;
         startFightBtn.GetComponent<Animator>().SetBool("isShow", true);
@@ -3361,7 +3398,9 @@ public class FightController : MonoBehaviour
         }
     }
 
-    //回合开始方法
+    /// <summary>
+    /// 回合开始方法
+    /// </summary>
     private void RoundBeginFun()
     {
         timer = 0;
@@ -3378,17 +3417,111 @@ public class FightController : MonoBehaviour
     IEnumerator LiteForStartRound()
     {
         yield return new WaitForSeconds(1f);
-        //FightForManager.instance.UpdateCardDataBeforeRound();
         roundNums++;
         targetIndex = -1;
         fightUnitIndex = 0;
         isPlayerRound = true;
         timerForFight = 0;
         stateOfFight = StateOfFight.ReadyForFight;
+
+        Debug.Log("回合开始后行动的间隔");
         float updateStateTime = 0;  //刷新状态需等待的时间
         updateStateTime = UpdateCardDataBeforeRound();
         yield return new WaitForSeconds(updateStateTime);
+
+        updateStateTime = InitJiBanForStartFight();
+        yield return new WaitForSeconds(updateStateTime);
+
         CardMoveToFight();
+    }
+
+    /// <summary>
+    /// 战斗开始羁绊数据附加到卡牌上
+    /// </summary>
+    private float InitJiBanForStartFight()
+    {
+        int activedNums = 0;
+        //玩家部分
+        foreach (var item in playerJiBanAllTypes)
+        {
+            if (item.Value.isActived)
+            {
+                activedNums++;
+                ShowAllScreenFightEffect(FullScreenEffectName.JiBanEffect);
+                JiBanAddStateForCard(item.Value);
+            }
+        }
+        return activedNums * 1.5f;
+    }
+
+    //给卡牌上附加羁绊属性
+    private void JiBanAddStateForCard(JiBanActivedClass jiBanActivedClass)
+    {
+        switch ((JiBanSkillName)jiBanActivedClass.jiBanIndex)
+        {
+            case JiBanSkillName.TaoYuanJieYi:
+                //30%概率分别为羁绊武将增加1层【神助】
+                for (int i = 0; i < jiBanActivedClass.cardTypeLists.Count; i++)
+                {
+                    for (int j = 0; j < jiBanActivedClass.cardTypeLists[i].cardLists.Count; j++)
+                    {
+                        if (jiBanActivedClass.cardTypeLists[i].cardLists[j] != null && jiBanActivedClass.cardTypeLists[i].cardLists[j].nowHp > 0)
+                        {
+                            if (TakeSpecialAttack(30))
+                            {
+                                if (jiBanActivedClass.cardTypeLists[i].cardLists[j].fightState.shenzhuNums <= 0)
+                                {
+                                    FightForManager.instance.CreateSateIcon(jiBanActivedClass.cardTypeLists[i].cardLists[j].cardObj.transform.GetChild(7), StringNameStatic.StateIconPath_shenzhu, false);
+                                }
+                                jiBanActivedClass.cardTypeLists[i].cardLists[j].fightState.shenzhuNums++;
+                            }
+                        }
+                    }
+                }
+                break;
+            case JiBanSkillName.WuHuShangJiang:
+                //50%概率分别为羁绊武将增加1层【内助】
+                for (int i = 0; i < jiBanActivedClass.cardTypeLists.Count; i++)
+                {
+                    for (int j = 0; j < jiBanActivedClass.cardTypeLists[i].cardLists.Count; j++)
+                    {
+                        if (jiBanActivedClass.cardTypeLists[i].cardLists[j] != null && jiBanActivedClass.cardTypeLists[i].cardLists[j].nowHp > 0)
+                        {
+                            if (TakeSpecialAttack(50))
+                            {
+                                if (jiBanActivedClass.cardTypeLists[i].cardLists[j].fightState.neizhuNums <= 0)
+                                {
+                                    FightForManager.instance.CreateSateIcon(jiBanActivedClass.cardTypeLists[i].cardLists[j].cardObj.transform.GetChild(7), StringNameStatic.StateIconPath_neizhu, false);
+                                }
+                                jiBanActivedClass.cardTypeLists[i].cardLists[j].fightState.neizhuNums++;
+                            }
+                        }
+                    }
+                }
+                break;
+            case JiBanSkillName.HuChiELai:
+                //30 % 概率分别为羁绊武将增加1层【护盾】
+                for (int i = 0; i < jiBanActivedClass.cardTypeLists.Count; i++)
+                {
+                    for (int j = 0; j < jiBanActivedClass.cardTypeLists[i].cardLists.Count; j++)
+                    {
+                        if (jiBanActivedClass.cardTypeLists[i].cardLists[j] != null && jiBanActivedClass.cardTypeLists[i].cardLists[j].nowHp > 0)
+                        {
+                            if (TakeSpecialAttack(30))
+                            {
+                                if (jiBanActivedClass.cardTypeLists[i].cardLists[j].fightState.withStandNums <= 0)
+                                {
+                                    FightForManager.instance.CreateSateIcon(jiBanActivedClass.cardTypeLists[i].cardLists[j].cardObj.transform.GetChild(7), StringNameStatic.StateIconPath_withStand, true);
+                                }
+                                jiBanActivedClass.cardTypeLists[i].cardLists[j].fightState.withStandNums++;
+                            }
+                        }
+                    }
+                }
+                break;
+            default:
+                break;
+        }
     }
 
     //回合开始状态等统一处理
@@ -3621,6 +3754,7 @@ public class FightController : MonoBehaviour
         }
         return showRounds;
     }
+
 
     //回合结束更新卡牌特殊状态
     private void UpdateCardStateAfterRound()
@@ -4125,7 +4259,7 @@ public class FightController : MonoBehaviour
             {
                 indexAttackType = 1;
                 needTime = 1.2f;
-                ShowHuiXinFightEffect();
+                ShowAllScreenFightEffect(FullScreenEffectName.HuiXinEffect);
             }
             else
             {
@@ -4362,10 +4496,47 @@ public class FightController : MonoBehaviour
     }
 }
 
-public enum StateOfFight   //战斗机状态
+/// <summary>
+/// 战斗机状态
+/// </summary>
+public enum StateOfFight   
 {
     ReadyForFight,  //0备战
     MoveNow,       //1攻击前摇
     FightInterval,  //2攻击间
     FightOver       //3攻击后摇
+}
+
+/// <summary>
+/// 全屏特技名索引
+/// </summary>
+public enum FullScreenEffectName
+{
+    /// <summary>
+    /// 会心一击特效
+    /// </summary>
+    HuiXinEffect,
+    /// <summary>
+    /// 羁绊特效
+    /// </summary>
+    JiBanEffect
+}
+
+/// <summary>
+/// 羁绊名索引
+/// </summary>
+public enum JiBanSkillName
+{
+    /// <summary>
+    /// 桃园结义
+    /// </summary>
+    TaoYuanJieYi,
+    /// <summary>
+    /// 五虎上将
+    /// </summary>
+    WuHuShangJiang,
+    /// <summary>
+    /// 虎痴恶来
+    /// </summary>
+    HuChiELai
 }
