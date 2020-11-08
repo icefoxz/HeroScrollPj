@@ -96,6 +96,9 @@ public class UIManager : MonoBehaviour
     [SerializeField]
     Text chickenCloseText;  //鸡坛关闭时间Text
 
+    [SerializeField]
+    GameObject cutTiLiTextObj;  //扣除体力动画Obj
+
     private void Awake()
     {
         if (instance == null)
@@ -128,7 +131,7 @@ public class UIManager : MonoBehaviour
         AudioController1.instance.ChangeBackMusic();
         TimeSystemControl.instance.isOpenMainScene = true;
 
-        GetBackTiLiForFight();
+        Invoke("GetBackTiLiForFight", 2f);
     }
     private void OnDisable()
     {
@@ -140,6 +143,10 @@ public class UIManager : MonoBehaviour
     {
         if (PlayerDataForGame.instance.lastSenceIndex == 2 && PlayerDataForGame.instance.getBackTiLiNums > 0)
         {
+            cutTiLiTextObj.SetActive(false);
+            cutTiLiTextObj.GetComponent<Text>().color = ColorDataStatic.deep_green;
+            cutTiLiTextObj.GetComponent<Text>().text = "+" + PlayerDataForGame.instance.getBackTiLiNums;
+            cutTiLiTextObj.SetActive(true);
             AddTiLiNums(PlayerDataForGame.instance.getBackTiLiNums);
             PlayerDataForGame.instance.ShowStringTips(string.Format(LoadJsonFile.GetStringText(25), PlayerDataForGame.instance.getBackTiLiNums));
         }
@@ -407,7 +414,11 @@ public class UIManager : MonoBehaviour
                 PlayerPrefs.SetInt(TimeSystemControl.staminaStr, (PlayerPrefs.GetInt(TimeSystemControl.staminaStr) - cutStaminaNums));
                 showTiLiNums = PlayerPrefs.GetInt(TimeSystemControl.staminaStr);
                 tiLiNumText.text = showTiLiNums + "/90";
-                
+                cutTiLiTextObj.SetActive(false);
+                cutTiLiTextObj.GetComponent<Text>().color = ColorDataStatic.name_red;
+                cutTiLiTextObj.GetComponent<Text>().text = "-"+ cutStaminaNums;
+                cutTiLiTextObj.SetActive(true);
+
                 PlayerDataForGame.instance.getBackTiLiNums = int.Parse(tiLiCostArr[1]);
                 PlayerDataForGame.instance.boxForTiLiNums = int.Parse(tiLiCostArr[2]);
 
@@ -428,7 +439,7 @@ public class UIManager : MonoBehaviour
 
     IEnumerator LateGoToFightScene()
     {
-        yield return new WaitForSeconds(0.3f);
+        yield return new WaitForSeconds(1f);
         if (!PlayerDataForGame.instance.isJumping)
         {
             PlayerDataForGame.instance.JumpSceneFun(2, false);
@@ -1472,6 +1483,11 @@ public class UIManager : MonoBehaviour
     /// <param name="index"></param>
     public void ZhuChengInterfaceSwitching(int index)
     {
+        if (isJumping)
+        {
+            return;
+        }
+
         PlayOnClickMusic();
 
         for (int i = 0; i < zhuChengInterFaces.Length; i++)
