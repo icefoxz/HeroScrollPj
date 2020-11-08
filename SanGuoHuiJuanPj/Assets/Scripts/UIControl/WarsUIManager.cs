@@ -576,6 +576,14 @@ public class WarsUIManager : MonoBehaviour
         }
     }
 
+    //private void FixedUpdate()
+    //{
+    //    if (Input.GetKeyDown(KeyCode.P))
+    //    {
+    //        PassGuanQia();
+    //    }
+    //}
+
     /// <summary>
     /// 通关
     /// </summary>

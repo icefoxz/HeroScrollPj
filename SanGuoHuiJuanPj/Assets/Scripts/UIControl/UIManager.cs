@@ -230,36 +230,39 @@ public class UIManager : MonoBehaviour
 
         List<RewardsCardClass> rewards = new List<RewardsCardClass>();
 
-        string[] arrs = rewardsStr.Split(',');
-        int cardType = int.Parse(arrs[0]);
-        int cardId = int.Parse(arrs[1]);
-        int cardChips = int.Parse(arrs[2]);
-
-        switch (cardType)
+        if (rewardsStr != "")
         {
-            case 0:
-                PlayerDataForGame.instance.hstData.heroSaveData[FindIndexFromData(PlayerDataForGame.instance.hstData.heroSaveData, cardId)].chips += cardChips;
-                break;
-            case 2:
-                PlayerDataForGame.instance.hstData.towerSaveData[FindIndexFromData(PlayerDataForGame.instance.hstData.towerSaveData, cardId)].chips += cardChips;
-                break;
-            case 3:
-                PlayerDataForGame.instance.hstData.trapSaveData[FindIndexFromData(PlayerDataForGame.instance.hstData.trapSaveData, cardId)].chips += cardChips;
-                break;
-            default:
-                break;
+            string[] arrs = rewardsStr.Split(',');
+            int cardType = int.Parse(arrs[0]);
+            int cardId = int.Parse(arrs[1]);
+            int cardChips = int.Parse(arrs[2]);
+
+            switch (cardType)
+            {
+                case 0:
+                    PlayerDataForGame.instance.hstData.heroSaveData[FindIndexFromData(PlayerDataForGame.instance.hstData.heroSaveData, cardId)].chips += cardChips;
+                    break;
+                case 2:
+                    PlayerDataForGame.instance.hstData.towerSaveData[FindIndexFromData(PlayerDataForGame.instance.hstData.towerSaveData, cardId)].chips += cardChips;
+                    break;
+                case 3:
+                    PlayerDataForGame.instance.hstData.trapSaveData[FindIndexFromData(PlayerDataForGame.instance.hstData.trapSaveData, cardId)].chips += cardChips;
+                    break;
+                default:
+                    break;
+            }
+            RewardsCardClass rewardCard = new RewardsCardClass();
+            rewardCard.cardType = cardType;
+            rewardCard.cardId = cardId;
+            rewardCard.cardChips = cardChips;
+            rewards.Add(rewardCard);
+            PlayerDataForGame.instance.isNeedSaveData = true;
+            LoadSaveData.instance.SaveGameData(2);
         }
+
         PlayerDataForGame.instance.warsData.warUnlockSaveData[jb].isTakeReward = true;
         PlayerDataForGame.instance.isNeedSaveData = true;
         LoadSaveData.instance.SaveGameData(3);
-
-        RewardsCardClass rewardCard = new RewardsCardClass();
-        rewardCard.cardType = cardType;
-        rewardCard.cardId = cardId;
-        rewardCard.cardChips = cardChips;
-        rewards.Add(rewardCard);
-        PlayerDataForGame.instance.isNeedSaveData = true;
-        LoadSaveData.instance.SaveGameData(2);
 
         ShowRewardsThings(yuanBaoNums, yuQueNums, 0, tiLiNums, rewards, 0);
     }
