@@ -3445,7 +3445,7 @@ public class FightController : MonoBehaviour
         {
             if (item.Value.isActived)
             {
-                Debug.Log("玩家触发羁绊： " + item.Value.jiBanIndex);
+                //Debug.Log("玩家触发羁绊： " + item.Value.jiBanIndex);
                 ShowAllScreenFightEffect(FullScreenEffectName.JiBanEffect, item.Value.jiBanIndex);
                 yield return new WaitForSeconds(1f);
                 JiBanAddStateForCard(item.Value);
@@ -3457,7 +3457,7 @@ public class FightController : MonoBehaviour
         {
             if (item.Value.isActived)
             {
-                Debug.Log("敌方触发羁绊： " + item.Value.jiBanIndex);
+                //Debug.Log("敌方触发羁绊： " + item.Value.jiBanIndex);
                 ShowAllScreenFightEffect(FullScreenEffectName.JiBanEffect, item.Value.jiBanIndex);
                 yield return new WaitForSeconds(1f);
                 JiBanAddStateForCard(item.Value);

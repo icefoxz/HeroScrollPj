@@ -283,7 +283,7 @@ public class GetOrOpenBox : MonoBehaviour
     /// <returns></returns>
     private void GetAndSaveCardChips(string cardType, int cardId, int chips)
     {
-        Debug.Log("cardId:" + cardId);
+        //Debug.Log("cardId:" + cardId);
         switch (cardType)
         {
             case "0":

@@ -3409,7 +3409,7 @@ public class FightControlForStart : MonoBehaviour
         {
             if (item.Value.isActived)
             {
-                Debug.Log("触发羁绊： " + item.Value.jiBanIndex);
+                //Debug.Log("触发羁绊： " + item.Value.jiBanIndex);
                 ShowAllScreenFightEffect(FullScreenEffectName.JiBanEffect, item.Value.jiBanIndex);
                 yield return new WaitForSeconds(1f);
                 JiBanAddStateForCard(item.Value);

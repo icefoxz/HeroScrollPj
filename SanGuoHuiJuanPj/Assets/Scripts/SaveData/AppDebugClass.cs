@@ -5,7 +5,8 @@ public class AppDebugClass
 {
 #if UNITY_EDITOR
     
-    private static readonly string logFileUrl = Application.dataPath + "/StreamingAssets/DebugFileV1.8.txt";
+    private static readonly string logFileUrl = Application.dataPath + "/StreamingAssets/DebugFileV1.82.txt";
+    private static readonly string logFileUrlOld = Application.dataPath + "/StreamingAssets/DebugFileV1.81.txt";
 
     //现有存档
     public static readonly string playerDataString = Application.dataPath + "/StreamingAssets/PlayerDataSave.json";
@@ -25,7 +26,8 @@ public class AppDebugClass
 
 #elif UNITY_ANDROID  && !UNITY_EDITOR
 
-    private static readonly string logFileUrl = Application.persistentDataPath + "/DebugFileV1.8.txt";
+    private static readonly string logFileUrl = Application.persistentDataPath + "/DebugFileV1.82.txt";
+    private static readonly string logFileUrlOld = Application.persistentDataPath + "/DebugFileV1.81.txt";
 
     public static readonly string playerDataString = Application.persistentDataPath + "/PlayerDataSave.json";
     public static readonly string pyDataString = Application.persistentDataPath + "/PyDataSave.json";
@@ -89,12 +91,14 @@ public class AppDebugClass
         }
     }
 
-    //删除Log文件
-    public static void DeleteAppLog()
+    /// <summary>
+    /// 删除老debug文件
+    /// </summary>
+    public static void DeleteOldAppLog()
     {
-        if (System.IO.File.Exists(logFileUrl))
+        if (System.IO.File.Exists(logFileUrlOld))
         {
-            System.IO.File.WriteAllText(logFileUrl, "");
+            System.IO.File.Delete(logFileUrlOld);
         }
     }
 

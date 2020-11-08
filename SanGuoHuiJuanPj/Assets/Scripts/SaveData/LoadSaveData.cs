@@ -47,6 +47,8 @@ public class LoadSaveData : MonoBehaviour
         Application.logMessageReceived += AppDebugClass.LogForUnityLog;
 
         isEncrypted = PlayerPrefs.GetInt(ISNEEDENCRYPT);
+
+        AppDebugClass.DeleteOldAppLog();   //删除原先DebugFile
     }
 
     /// <summary>
@@ -304,8 +306,6 @@ public class LoadSaveData : MonoBehaviour
                     //玩家数据读档
                     if (File.Exists(filePath) || File.Exists(filePath00))  //存在老玩家数据存档的话
                     {
-                        AppDebugClass.DeleteAppLog();   //删除原先DebugFile
-
                         if (File.Exists(filePath))
                         {
                             jsonStr = File.ReadAllText(filePath);

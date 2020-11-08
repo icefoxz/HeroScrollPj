@@ -492,7 +492,7 @@ public class FightForManager : MonoBehaviour
                         }
                     }
                     jiBanActivedClass.isActived = isActived;
-                    Debug.Log("羁绊: " + jiBanActivedClass.jiBanIndex+ ", isActived: " + jiBanActivedClass.isActived);
+                    //Debug.Log("羁绊: " + jiBanActivedClass.jiBanIndex+ ", isActived: " + jiBanActivedClass.isActived);
                 }
             }
         }
