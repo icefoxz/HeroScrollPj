@@ -491,6 +491,16 @@ public class FightForManager : MonoBehaviour
                                 }
                             }
                         }
+                        if (!isActived)
+                        {
+                            for (int k = 0; k < jiBanActivedClass.cardTypeLists.Count; k++)
+                            {
+                                for (int s = 0; s < jiBanActivedClass.cardTypeLists[k].cardLists.Count; s++)
+                                {
+                                    jiBanActivedClass.cardTypeLists[k].cardLists[s].cardObj.transform.GetChild(10).gameObject.SetActive(false);
+                                }
+                            }
+                        }
                     }
                     jiBanActivedClass.isActived = isActived;
                     //Debug.Log("羁绊: " + jiBanActivedClass.jiBanIndex+ ", isActived: " + jiBanActivedClass.isActived);
