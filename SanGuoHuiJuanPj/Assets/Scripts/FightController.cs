@@ -11,7 +11,7 @@ public class FightController : MonoBehaviour
     StateOfFight stateOfFight;  //战斗状态
 
     [HideInInspector]
-    public int recordWinner;    //标记胜负-1.0.1
+    public int recordWinner;    //标记胜负-1输.0.1胜
 
     private int roundNums;
 

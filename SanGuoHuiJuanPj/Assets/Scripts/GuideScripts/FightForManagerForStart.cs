@@ -417,6 +417,7 @@ public class FightForManagerForStart : MonoBehaviour
         playerHomeData.hpr = 0;
         playerHomeData.cardType = 522;
         playerHomeData.posIndex = 17;
+        playerHomeData.isPlayerCard = true;
         playerHomeData.activeUnit = false;
         playerHomeData.fightState = new FightState();
         playerFightCardsDatas[17] = playerHomeData;
