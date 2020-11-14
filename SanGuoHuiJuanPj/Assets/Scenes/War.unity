@@ -3854,9 +3854,18 @@ MonoBehaviour:
   - 55A0
   - 59A
   - 60A
-  - 0JB
-  - 1JB
-  - 3JB
+  - JB0
+  - JB1
+  - JB2
+  - JB3
+  - JB4
+  - JB5
+  - JB6
+  - JB7
+  - JB8
+  - JB9
+  - JB10
+  - JB11
   iconNameStr:
   - stateIcon
   - bleedState

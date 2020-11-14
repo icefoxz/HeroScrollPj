@@ -84,14 +84,8 @@ public class PlyDataClass
     public int yuanbao { get; set; }
     //玉阙
     public int yvque { get; set; }
-    //体力
-    //public int stamina { get; set; }
     //玩家初始势力id
     public int forceId { get; set; }
-    //战役宝箱
-    //public List<int> fightBoxs;
-    //兑换码
-    //public List<RedemptionCodeGot> redemptionCodeGotList;
 }
 
 public class GetBoxOrCodeData

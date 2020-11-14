@@ -3412,14 +3412,26 @@ public class FightControlForStart : MonoBehaviour
                 //Debug.Log("触发羁绊： " + item.Value.jiBanIndex);
                 ShowAllScreenFightEffect(FullScreenEffectName.JiBanEffect, item.Value.jiBanIndex);
                 yield return new WaitForSeconds(1f);
-                JiBanAddStateForCard(item.Value);
+                JiBanAddStateForCard(item.Value, true);
+                yield return new WaitForSeconds(1f);
+            }
+        }
+        //敌人部分
+        foreach (var item in enemyJiBanAllTypes)
+        {
+            if (item.Value.isActived)
+            {
+                //Debug.Log("敌方触发羁绊： " + item.Value.jiBanIndex);
+                ShowAllScreenFightEffect(FullScreenEffectName.JiBanEffect, item.Value.jiBanIndex);
+                yield return new WaitForSeconds(1f);
+                JiBanAddStateForCard(item.Value, false);
                 yield return new WaitForSeconds(1f);
             }
         }
     }
 
     //给卡牌上附加羁绊属性
-    private void JiBanAddStateForCard(JiBanActivedClass jiBanActivedClass)
+    private void JiBanAddStateForCard(JiBanActivedClass jiBanActivedClass, bool isPlayer)
     {
         FightCardData fightCardData;
         switch ((JiBanSkillName)jiBanActivedClass.jiBanIndex)
@@ -3433,7 +3445,7 @@ public class FightControlForStart : MonoBehaviour
                         fightCardData = jiBanActivedClass.cardTypeLists[i].cardLists[j];
                         if (fightCardData != null && fightCardData.nowHp > 0)
                         {
-                            AttackToEffectShow(fightCardData, false, jiBanActivedClass.jiBanIndex + "JB");
+                            AttackToEffectShow(fightCardData, false, "JB" + jiBanActivedClass.jiBanIndex);
                             if (TakeSpecialAttack(LoadJsonFile.GetGameValue(134)))
                             {
                                 if (fightCardData.fightState.shenzhuNums <= 0)
@@ -3455,8 +3467,31 @@ public class FightControlForStart : MonoBehaviour
                         fightCardData = jiBanActivedClass.cardTypeLists[i].cardLists[j];
                         if (fightCardData != null && fightCardData.nowHp > 0)
                         {
-                            AttackToEffectShow(fightCardData, false, jiBanActivedClass.jiBanIndex + "JB");
+                            AttackToEffectShow(fightCardData, false, "JB" + jiBanActivedClass.jiBanIndex);
                             if (TakeSpecialAttack(LoadJsonFile.GetGameValue(135)))
+                            {
+                                if (fightCardData.fightState.neizhuNums <= 0)
+                                {
+                                    FightForManagerForStart.instance.CreateSateIcon(fightCardData.cardObj.transform.GetChild(7), StringNameStatic.StateIconPath_neizhu, false);
+                                }
+                                fightCardData.fightState.neizhuNums++;
+                            }
+                        }
+                    }
+                }
+                break;
+            case JiBanSkillName.WoLongFengChu:
+                //20%概率分别为统御（兵种系）武将增加1层【内助】 // 统御id:11
+                FightCardData[] cardDatas = isPlayer ? FightForManagerForStart.instance.playerFightCardsDatas : FightForManagerForStart.instance.enemyFightCardsDatas;
+                for (int i = 0; i < cardDatas.Length; i++)
+                {
+                    fightCardData = cardDatas[i];
+                    if (fightCardData != null && fightCardData.nowHp > 0)
+                    {
+                        if (LoadJsonFile.classTableDatas[int.Parse(LoadJsonFile.heroTableDatas[fightCardData.cardId][5])][5] == "11")
+                        {
+                            AttackToEffectShow(fightCardData, false, "JB" + jiBanActivedClass.jiBanIndex);
+                            if (TakeSpecialAttack(20))
                             {
                                 if (fightCardData.fightState.neizhuNums <= 0)
                                 {
@@ -3477,7 +3512,7 @@ public class FightControlForStart : MonoBehaviour
                         fightCardData = jiBanActivedClass.cardTypeLists[i].cardLists[j];
                         if (fightCardData != null && fightCardData.nowHp > 0)
                         {
-                            AttackToEffectShow(fightCardData, false, jiBanActivedClass.jiBanIndex + "JB");
+                            AttackToEffectShow(fightCardData, false, "JB" + jiBanActivedClass.jiBanIndex);
                             if (TakeSpecialAttack(LoadJsonFile.GetGameValue(137)))
                             {
                                 if (fightCardData.fightState.withStandNums <= 0)

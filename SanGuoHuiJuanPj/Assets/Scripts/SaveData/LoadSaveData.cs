@@ -170,6 +170,15 @@ public class LoadSaveData : MonoBehaviour
     /// <param name="warsDataStr"></param>
     private void BackupArchiveForGame(string pyDataStr, string hSTDataStr, string warsDataStr, string gbocDataStr)
     {
+        //string plyDataString1 = Application.dataPath + "/StreamingAssets/data.json";
+        //string gbocDataString1 = Application.dataPath + "/StreamingAssets/data2.json";
+        //string hstDataString1 = Application.dataPath + "/StreamingAssets/data3.json";
+        //string warUnlockDataString1 = Application.dataPath + "/StreamingAssets/data4.json";
+        //File.WriteAllText(plyDataString1, pyDataStr);
+        //File.WriteAllText(gbocDataString1, hSTDataStr);
+        //File.WriteAllText(hstDataString1, warsDataStr);
+        //File.WriteAllText(warUnlockDataString1, gbocDataStr);
+
         string filePath0 = AppDebugClass.plyDataString1;
         string filePath1 = AppDebugClass.hstDataString1;
         string filePath2 = AppDebugClass.warUnlockDataString1;
