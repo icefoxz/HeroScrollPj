@@ -26,7 +26,7 @@
 			"fuMianMianYi": "0",
 			"wuLiMianShang": "0",
 			"faShuMianShang": "0",
-			"fettersRelated": ""
+			"fettersRelated": "7,8,"
 		},
 		{
 			"id": "1",
@@ -54,7 +54,7 @@
 			"fuMianMianYi": "0",
 			"wuLiMianShang": "20",
 			"faShuMianShang": "0",
-			"fettersRelated": ""
+			"fettersRelated": "6,8,"
 		},
 		{
 			"id": "2",
@@ -82,7 +82,7 @@
 			"fuMianMianYi": "0",
 			"wuLiMianShang": "20",
 			"faShuMianShang": "20",
-			"fettersRelated": ""
+			"fettersRelated": "6,"
 		},
 		{
 			"id": "3",
@@ -110,7 +110,7 @@
 			"fuMianMianYi": "0",
 			"wuLiMianShang": "20",
 			"faShuMianShang": "0",
-			"fettersRelated": ""
+			"fettersRelated": "7,"
 		},
 		{
 			"id": "4",
@@ -194,7 +194,7 @@
 			"fuMianMianYi": "0",
 			"wuLiMianShang": "20",
 			"faShuMianShang": "0",
-			"fettersRelated": ""
+			"fettersRelated": "4,"
 		},
 		{
 			"id": "7",
@@ -222,7 +222,7 @@
 			"fuMianMianYi": "0",
 			"wuLiMianShang": "0",
 			"faShuMianShang": "0",
-			"fettersRelated": ""
+			"fettersRelated": "5,"
 		},
 		{
 			"id": "8",
@@ -362,7 +362,7 @@
 			"fuMianMianYi": "0",
 			"wuLiMianShang": "0",
 			"faShuMianShang": "0",
-			"fettersRelated": ""
+			"fettersRelated": "2,"
 		},
 		{
 			"id": "13",
@@ -530,7 +530,7 @@
 			"fuMianMianYi": "0",
 			"wuLiMianShang": "0",
 			"faShuMianShang": "0",
-			"fettersRelated": ""
+			"fettersRelated": "11,"
 		},
 		{
 			"id": "19",
@@ -558,7 +558,7 @@
 			"fuMianMianYi": "0",
 			"wuLiMianShang": "20",
 			"faShuMianShang": "0",
-			"fettersRelated": ""
+			"fettersRelated": "10,"
 		},
 		{
 			"id": "20",
@@ -586,7 +586,7 @@
 			"fuMianMianYi": "0",
 			"wuLiMianShang": "0",
 			"faShuMianShang": "0",
-			"fettersRelated": ""
+			"fettersRelated": "10,"
 		},
 		{
 			"id": "21",
@@ -670,7 +670,7 @@
 			"fuMianMianYi": "0",
 			"wuLiMianShang": "20",
 			"faShuMianShang": "0",
-			"fettersRelated": ""
+			"fettersRelated": "9,"
 		},
 		{
 			"id": "24",
@@ -698,7 +698,7 @@
 			"fuMianMianYi": "0",
 			"wuLiMianShang": "20",
 			"faShuMianShang": "0",
-			"fettersRelated": ""
+			"fettersRelated": "9,"
 		},
 		{
 			"id": "25",
@@ -748,13 +748,13 @@
 			"icon": "13",
 			"tag1": "0",
 			"tag2": "0",
-			"chestZyBox": "10,15",
+			"chestZyBox": "10,7",
 			"chestBxBox": "0,0",
 			"chanChu": "1",
 			"fuMianMianYi": "0",
 			"wuLiMianShang": "20",
 			"faShuMianShang": "20",
-			"fettersRelated": ""
+			"fettersRelated": "6,"
 		},
 		{
 			"id": "27",
@@ -782,7 +782,7 @@
 			"fuMianMianYi": "0",
 			"wuLiMianShang": "0",
 			"faShuMianShang": "0",
-			"fettersRelated": ""
+			"fettersRelated": "7,"
 		},
 		{
 			"id": "28",
@@ -810,7 +810,7 @@
 			"fuMianMianYi": "0",
 			"wuLiMianShang": "0",
 			"faShuMianShang": "0",
-			"fettersRelated": ""
+			"fettersRelated": "8,"
 		},
 		{
 			"id": "29",
@@ -838,7 +838,7 @@
 			"fuMianMianYi": "0",
 			"wuLiMianShang": "0",
 			"faShuMianShang": "0",
-			"fettersRelated": ""
+			"fettersRelated": "7,"
 		},
 		{
 			"id": "30",
@@ -1112,7 +1112,7 @@
 			"icon": "13",
 			"tag1": "0",
 			"tag2": "0",
-			"chestZyBox": "10,15",
+			"chestZyBox": "10,7",
 			"chestBxBox": "0,0",
 			"chanChu": "1",
 			"fuMianMianYi": "0",
@@ -1174,7 +1174,7 @@
 			"fuMianMianYi": "0",
 			"wuLiMianShang": "0",
 			"faShuMianShang": "0",
-			"fettersRelated": ""
+			"fettersRelated": "5,"
 		},
 		{
 			"id": "42",
@@ -1230,7 +1230,7 @@
 			"fuMianMianYi": "0",
 			"wuLiMianShang": "0",
 			"faShuMianShang": "0",
-			"fettersRelated": ""
+			"fettersRelated": "5,"
 		},
 		{
 			"id": "44",
@@ -1286,7 +1286,7 @@
 			"fuMianMianYi": "0",
 			"wuLiMianShang": "0",
 			"faShuMianShang": "0",
-			"fettersRelated": ""
+			"fettersRelated": "5,"
 		},
 		{
 			"id": "46",
@@ -1426,7 +1426,7 @@
 			"fuMianMianYi": "0",
 			"wuLiMianShang": "20",
 			"faShuMianShang": "0",
-			"fettersRelated": ""
+			"fettersRelated": "4,9,"
 		},
 		{
 			"id": "51",
@@ -1454,7 +1454,7 @@
 			"fuMianMianYi": "0",
 			"wuLiMianShang": "20",
 			"faShuMianShang": "0",
-			"fettersRelated": ""
+			"fettersRelated": "4,"
 		},
 		{
 			"id": "52",
@@ -1538,7 +1538,7 @@
 			"fuMianMianYi": "0",
 			"wuLiMianShang": "20",
 			"faShuMianShang": "0",
-			"fettersRelated": ""
+			"fettersRelated": "4,"
 		},
 		{
 			"id": "55",
@@ -1594,7 +1594,7 @@
 			"fuMianMianYi": "0",
 			"wuLiMianShang": "0",
 			"faShuMianShang": "0",
-			"fettersRelated": ""
+			"fettersRelated": "5,"
 		},
 		{
 			"id": "57",
@@ -1622,7 +1622,7 @@
 			"fuMianMianYi": "0",
 			"wuLiMianShang": "20",
 			"faShuMianShang": "20",
-			"fettersRelated": ""
+			"fettersRelated": "4,"
 		},
 		{
 			"id": "58",
@@ -1672,7 +1672,7 @@
 			"icon": "13",
 			"tag1": "0",
 			"tag2": "0",
-			"chestZyBox": "10,15",
+			"chestZyBox": "10,7",
 			"chestBxBox": "0,0",
 			"chanChu": "1",
 			"fuMianMianYi": "0",
@@ -1762,7 +1762,7 @@
 			"fuMianMianYi": "0",
 			"wuLiMianShang": "0",
 			"faShuMianShang": "0",
-			"fettersRelated": ""
+			"fettersRelated": "2,"
 		},
 		{
 			"id": "63",
@@ -1846,7 +1846,7 @@
 			"fuMianMianYi": "0",
 			"wuLiMianShang": "0",
 			"faShuMianShang": "0",
-			"fettersRelated": ""
+			"fettersRelated": "11,"
 		},
 		{
 			"id": "66",
@@ -2238,7 +2238,7 @@
 			"fuMianMianYi": "0",
 			"wuLiMianShang": "0",
 			"faShuMianShang": "0",
-			"fettersRelated": ""
+			"fettersRelated": "8,"
 		},
 		{
 			"id": "80",
@@ -5038,7 +5038,7 @@
 			"fuMianMianYi": "0",
 			"wuLiMianShang": "15",
 			"faShuMianShang": "15",
-			"fettersRelated": ""
+			"fettersRelated": "9,"
 		},
 		{
 			"id": "180",
@@ -10162,7 +10162,7 @@
 			"fuMianMianYi": "0",
 			"wuLiMianShang": "0",
 			"faShuMianShang": "0",
-			"fettersRelated": ""
+			"fettersRelated": "11,"
 		},
 		{
 			"id": "363",

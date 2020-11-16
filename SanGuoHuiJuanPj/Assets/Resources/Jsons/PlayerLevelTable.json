@@ -107,6 +107,18 @@
 			"exp": "3000",
 			"heroLimit": "15",
 			"companionLimit": "5"
+		},
+		{
+			"level": "19",
+			"exp": "4500",
+			"heroLimit": "16",
+			"companionLimit": "5"
+		},
+		{
+			"level": "20",
+			"exp": "6000",
+			"heroLimit": "16",
+			"companionLimit": "6"
 		}
 	]
 }
