@@ -16,7 +16,8 @@ def export_json(xls, fn):
                 ss += "\t\t\t\"id\": \"" + conv_int(c[ri.Next()]) + "\",\n"
                 ss += "\t\t\t\"jiBanMing\": \"" + conv_str_bin(c[ri.Next()]) + "\",\n"
                 ss += "\t\t\t\"isOpen\": \"" + conv_int(c[ri.Next()]) + "\",\n"
-                ss += "\t\t\t\"heroId\": \"" + conv_str_bin(c[ri.Next()]) + "\"\n"
+                ss += "\t\t\t\"heroId\": \"" + conv_str_bin(c[ri.Next()]) + "\",\n"
+                ss += "\t\t\t\"jiBanXiaoGuo\": \"" + conv_str_bin(c[ri.Next()]) + "\"\n"
                 ss += "\t\t},\n"
                 s += ss
             s = s[:-2]
