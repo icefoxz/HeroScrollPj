@@ -882,6 +882,7 @@ public class LoadJsonFile : MonoBehaviour
                 jiBanTableDatas[i].Add(root.JiBanTable[i].jiBanMing);
                 jiBanTableDatas[i].Add(root.JiBanTable[i].isOpen);
                 jiBanTableDatas[i].Add(root.JiBanTable[i].heroId);
+                jiBanTableDatas[i].Add(root.JiBanTable[i].jiBanXiaoGuo);
             }
             //Debug.Log("Json文件加载成功---" + tableNames[indexTable] + ".Json");
             indexTable++;

@@ -405,4 +405,5 @@ public class JiBanTableItem
     public string jiBanMing { get; set; }
     public string isOpen { get; set; }
     public string heroId { get; set; }
+    public string jiBanXiaoGuo { get; set; }
 }

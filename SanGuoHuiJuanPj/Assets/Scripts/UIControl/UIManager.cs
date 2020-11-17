@@ -121,6 +121,7 @@ public class UIManager : MonoBehaviour
 
         InitChickenOpenTs();
         InitChickenBtnFun();
+        InitJiBanForMainFun();
 
         PlayerDataForGame.instance.ClearGarbageStationObj();
     }
@@ -136,6 +137,113 @@ public class UIManager : MonoBehaviour
     private void OnDisable()
     {
         TimeSystemControl.instance.isOpenMainScene = false;
+    }
+
+    [SerializeField]
+    GameObject huiJuanWinObj;   //绘卷窗口obj
+
+    [SerializeField]
+    GameObject jiBanBtnsConObj;  //羁绊按钮集合窗口obj
+
+    [SerializeField]
+    GameObject jiBanInfoConObj; //羁绊详情窗口obj
+
+    [SerializeField]
+    Transform jibanBtnBoxTran;  //羁绊按钮集合
+
+    [SerializeField]
+    Transform jibanHeroBoxTran; //羁绊详情武将集合
+
+    [SerializeField]
+    Button jiBanWinCloseBtn;    //羁绊界面关闭按钮
+
+    //main场景羁绊内容的初始化
+    private void InitJiBanForMainFun()
+    {
+        for (int i = 0; i < LoadJsonFile.jiBanTableDatas.Count; i++)
+        {
+            if (LoadJsonFile.jiBanTableDatas[i][2] == "1")
+            {
+                Transform tran = jibanBtnBoxTran.GetChild(i);
+                if (tran != null)
+                {
+                    int index = i;
+                    tran.GetChild(0).GetChild(0).GetComponent<Image>().sprite = Resources.Load("Image/JiBan/name_v/" + i, typeof(Sprite)) as Sprite;
+                    tran.GetChild(0).GetChild(0).GetComponent<Button>().onClick.AddListener(delegate() {
+                        ShowJiBanInfoOnClick(index);
+                    });
+                    tran.gameObject.SetActive(true);
+                }
+            }
+        }
+        jiBanWinCloseBtn.onClick.AddListener(CloseHuiJuanWinObjFun);
+    }
+
+    //点击单个羁绊按钮展示详细信息
+    private void ShowJiBanInfoOnClick(int indexId)
+    {
+        for (int i = 0; i < jibanHeroBoxTran.childCount; i++)
+        {
+            jibanHeroBoxTran.transform.GetChild(i).gameObject.SetActive(false);
+        }
+
+        string[] arrs = LoadJsonFile.jiBanTableDatas[indexId][3].Split(';');
+        for (int i = 0; i < arrs.Length; i++)
+        {
+            if (arrs[i] != "")
+            {
+                string[] arr = arrs[i].Split(',');
+                if (arr[0] == "0")
+                {
+                    int heroId = int.Parse(arr[1]);
+                    Transform tran = jibanHeroBoxTran.GetChild(i);
+                    GameObject obj = tran.GetChild(0).gameObject;
+                    //名字
+                    ShowNameTextRules(obj.transform.GetChild(2).GetComponent<Text>(), LoadJsonFile.heroTableDatas[heroId][1]);
+                    //名字颜色根据稀有度
+                    obj.transform.GetChild(2).GetComponent<Text>().color = NameColorChoose(LoadJsonFile.heroTableDatas[heroId][3]);
+                    //卡牌
+                    obj.transform.GetChild(1).GetComponent<Image>().sprite = Resources.Load("Image/Cards/Hero/" + LoadJsonFile.heroTableDatas[heroId][16], typeof(Sprite)) as Sprite;
+                    //兵种名
+                    obj.transform.GetChild(4).GetComponentInChildren<Text>().text = LoadJsonFile.classTableDatas[int.Parse(LoadJsonFile.heroTableDatas[heroId][5])][3];
+                    //兵种框
+                    obj.transform.GetChild(4).GetComponent<Image>().sprite = Resources.Load("Image/classImage/" + 0, typeof(Sprite)) as Sprite;
+                    tran.gameObject.SetActive(true);
+                }
+            }
+        }
+        jiBanInfoConObj.transform.GetChild(0).GetChild(0).GetComponent<Text>().text = LoadJsonFile.jiBanTableDatas[indexId][4];
+        jiBanInfoConObj.transform.GetChild(0).GetChild(1).GetChild(0).GetComponent<Image>().sprite = Resources.Load("Image/JiBan/name_h/" + indexId, typeof(Sprite)) as Sprite;
+
+
+        jiBanBtnsConObj.SetActive(false);
+        jiBanInfoConObj.SetActive(true);
+        jiBanWinCloseBtn.onClick.RemoveAllListeners();
+        jiBanWinCloseBtn.onClick.AddListener(delegate() {
+            jiBanInfoConObj.SetActive(false);
+            jiBanBtnsConObj.SetActive(true);
+            jiBanWinCloseBtn.onClick.RemoveAllListeners();
+            jiBanWinCloseBtn.onClick.AddListener(CloseHuiJuanWinObjFun);
+        });
+    }
+
+    /// <summary>
+    /// 打开绘卷界面
+    /// </summary>
+    public void OpenHuiJuanWinObjFun()
+    {
+        jiBanBtnsConObj.SetActive(true);
+        huiJuanWinObj.SetActive(true);
+    }
+
+    /// <summary>
+    /// 关闭绘卷界面
+    /// </summary>
+    private void CloseHuiJuanWinObjFun()
+    {
+        huiJuanWinObj.SetActive(false);
+        jiBanBtnsConObj.SetActive(false);
+        jiBanInfoConObj.SetActive(false);
     }
 
     //获取战役返还的体力

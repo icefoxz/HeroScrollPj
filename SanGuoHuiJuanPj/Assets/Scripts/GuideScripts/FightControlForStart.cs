@@ -3434,6 +3434,8 @@ public class FightControlForStart : MonoBehaviour
     private void JiBanAddStateForCard(JiBanActivedClass jiBanActivedClass, bool isPlayer)
     {
         FightCardData fightCardData;
+        FightCardData[] cardDatas = isPlayer ? FightForManagerForStart.instance.playerFightCardsDatas : FightForManagerForStart.instance.enemyFightCardsDatas;
+
         switch ((JiBanSkillName)jiBanActivedClass.jiBanIndex)
         {
             case JiBanSkillName.TaoYuanJieYi:
@@ -3481,17 +3483,16 @@ public class FightControlForStart : MonoBehaviour
                 }
                 break;
             case JiBanSkillName.WoLongFengChu:
-                //20%概率分别为统御（兵种系）武将增加1层【内助】 // 统御id:11
-                FightCardData[] cardDatas = isPlayer ? FightForManagerForStart.instance.playerFightCardsDatas : FightForManagerForStart.instance.enemyFightCardsDatas;
+                //20%概率分别为统御（兵种系）武将增加1层【内助】  统御11
                 for (int i = 0; i < cardDatas.Length; i++)
                 {
                     fightCardData = cardDatas[i];
-                    if (fightCardData != null && fightCardData.nowHp > 0)
+                    if (fightCardData != null && fightCardData.cardType == 0 && fightCardData.nowHp > 0)
                     {
                         if (LoadJsonFile.classTableDatas[int.Parse(LoadJsonFile.heroTableDatas[fightCardData.cardId][5])][5] == "11")
                         {
                             AttackToEffectShow(fightCardData, false, "JB" + jiBanActivedClass.jiBanIndex);
-                            if (TakeSpecialAttack(20))
+                            if (TakeSpecialAttack(LoadJsonFile.GetGameValue(136)))
                             {
                                 if (fightCardData.fightState.neizhuNums <= 0)
                                 {
@@ -3520,6 +3521,182 @@ public class FightControlForStart : MonoBehaviour
                                     FightForManagerForStart.instance.CreateSateIcon(fightCardData.cardObj.transform.GetChild(7), StringNameStatic.StateIconPath_withStand, true);
                                 }
                                 fightCardData.fightState.withStandNums++;
+                            }
+                        }
+                    }
+                }
+                break;
+            case JiBanSkillName.WuZiLiangJiang:
+                //40%概率分别为羁绊武将增加1层【内助】
+                for (int i = 0; i < jiBanActivedClass.cardTypeLists.Count; i++)
+                {
+                    for (int j = 0; j < jiBanActivedClass.cardTypeLists[i].cardLists.Count; j++)
+                    {
+                        fightCardData = jiBanActivedClass.cardTypeLists[i].cardLists[j];
+                        if (fightCardData != null && fightCardData.nowHp > 0)
+                        {
+                            AttackToEffectShow(fightCardData, false, "JB" + jiBanActivedClass.jiBanIndex);
+                            if (TakeSpecialAttack(LoadJsonFile.GetGameValue(138)))
+                            {
+                                if (fightCardData.fightState.neizhuNums <= 0)
+                                {
+                                    FightForManagerForStart.instance.CreateSateIcon(fightCardData.cardObj.transform.GetChild(7), StringNameStatic.StateIconPath_neizhu, false);
+                                }
+                                fightCardData.fightState.neizhuNums++;
+                            }
+                        }
+                    }
+                }
+                break;
+            case JiBanSkillName.WeiWuMouShi:
+                //50%概率分别为干扰（兵种系）武将增加1层【内助】 干扰系12
+                for (int i = 0; i < cardDatas.Length; i++)
+                {
+                    fightCardData = cardDatas[i];
+                    if (fightCardData != null && fightCardData.cardType == 0 && fightCardData.nowHp > 0)
+                    {
+                        if (LoadJsonFile.classTableDatas[int.Parse(LoadJsonFile.heroTableDatas[fightCardData.cardId][5])][5] == "12")
+                        {
+                            AttackToEffectShow(fightCardData, false, "JB" + jiBanActivedClass.jiBanIndex);
+                            if (TakeSpecialAttack(LoadJsonFile.GetGameValue(139)))
+                            {
+                                if (fightCardData.fightState.neizhuNums <= 0)
+                                {
+                                    FightForManagerForStart.instance.CreateSateIcon(fightCardData.cardObj.transform.GetChild(7), StringNameStatic.StateIconPath_neizhu, false);
+                                }
+                                fightCardData.fightState.neizhuNums++;
+                            }
+                        }
+                    }
+                }
+                break;
+            case JiBanSkillName.HuJuJiangDong:
+                //20%概率分别为吴国（阵营）武将增加1层【内助】 吴国3
+                for (int i = 0; i < cardDatas.Length; i++)
+                {
+                    fightCardData = cardDatas[i];
+                    if (fightCardData != null && fightCardData.cardType == 0 && fightCardData.nowHp > 0)
+                    {
+                        if (LoadJsonFile.classTableDatas[int.Parse(LoadJsonFile.heroTableDatas[fightCardData.cardId][5])][6] == "3")
+                        {
+                            AttackToEffectShow(fightCardData, false, "JB" + jiBanActivedClass.jiBanIndex);
+                            if (TakeSpecialAttack(LoadJsonFile.GetGameValue(140)))
+                            {
+                                if (fightCardData.fightState.neizhuNums <= 0)
+                                {
+                                    FightForManagerForStart.instance.CreateSateIcon(fightCardData.cardObj.transform.GetChild(7), StringNameStatic.StateIconPath_neizhu, false);
+                                }
+                                fightCardData.fightState.neizhuNums++;
+                            }
+                        }
+                    }
+                }
+                break;
+            case JiBanSkillName.ShuiShiDouDu:
+                //40%概率分别为战船（兵种系）武将增加1层【内助】 战船8
+                for (int i = 0; i < cardDatas.Length; i++)
+                {
+                    fightCardData = cardDatas[i];
+                    if (fightCardData != null && fightCardData.cardType == 0 && fightCardData.nowHp > 0)
+                    {
+                        if (LoadJsonFile.classTableDatas[int.Parse(LoadJsonFile.heroTableDatas[fightCardData.cardId][5])][5] == "8")
+                        {
+                            AttackToEffectShow(fightCardData, false, "JB" + jiBanActivedClass.jiBanIndex);
+                            if (TakeSpecialAttack(LoadJsonFile.GetGameValue(141)))
+                            {
+                                if (fightCardData.fightState.neizhuNums <= 0)
+                                {
+                                    FightForManagerForStart.instance.CreateSateIcon(fightCardData.cardObj.transform.GetChild(7), StringNameStatic.StateIconPath_neizhu, false);
+                                }
+                                fightCardData.fightState.neizhuNums++;
+                            }
+                        }
+                    }
+                }
+                break;
+            case JiBanSkillName.TianZuoZhiHe:
+                //40%概率分别为羁绊武将增加1层【内助】
+                for (int i = 0; i < jiBanActivedClass.cardTypeLists.Count; i++)
+                {
+                    for (int j = 0; j < jiBanActivedClass.cardTypeLists[i].cardLists.Count; j++)
+                    {
+                        fightCardData = jiBanActivedClass.cardTypeLists[i].cardLists[j];
+                        if (fightCardData != null && fightCardData.nowHp > 0)
+                        {
+                            AttackToEffectShow(fightCardData, false, "JB" + jiBanActivedClass.jiBanIndex);
+                            if (TakeSpecialAttack(LoadJsonFile.GetGameValue(142)))
+                            {
+                                if (fightCardData.fightState.neizhuNums <= 0)
+                                {
+                                    FightForManagerForStart.instance.CreateSateIcon(fightCardData.cardObj.transform.GetChild(7), StringNameStatic.StateIconPath_neizhu, false);
+                                }
+                                fightCardData.fightState.neizhuNums++;
+                            }
+                        }
+                    }
+                }
+                break;
+            case JiBanSkillName.HeBeiSiTingZhu:
+                //30%概率分别为羁绊武将增加1层【护盾】
+                for (int i = 0; i < jiBanActivedClass.cardTypeLists.Count; i++)
+                {
+                    for (int j = 0; j < jiBanActivedClass.cardTypeLists[i].cardLists.Count; j++)
+                    {
+                        fightCardData = jiBanActivedClass.cardTypeLists[i].cardLists[j];
+                        if (fightCardData != null && fightCardData.nowHp > 0)
+                        {
+                            AttackToEffectShow(fightCardData, false, "JB" + jiBanActivedClass.jiBanIndex);
+                            if (TakeSpecialAttack(LoadJsonFile.GetGameValue(143)))
+                            {
+                                if (fightCardData.fightState.withStandNums <= 0)
+                                {
+                                    FightForManagerForStart.instance.CreateSateIcon(fightCardData.cardObj.transform.GetChild(7), StringNameStatic.StateIconPath_withStand, true);
+                                }
+                                fightCardData.fightState.withStandNums++;
+                            }
+                        }
+                    }
+                }
+                break;
+            case JiBanSkillName.JueShiWuShuang:
+                //50%概率分别为羁绊武将增加1层【神助】
+                for (int i = 0; i < jiBanActivedClass.cardTypeLists.Count; i++)
+                {
+                    for (int j = 0; j < jiBanActivedClass.cardTypeLists[i].cardLists.Count; j++)
+                    {
+                        fightCardData = jiBanActivedClass.cardTypeLists[i].cardLists[j];
+                        if (fightCardData != null && fightCardData.nowHp > 0)
+                        {
+                            AttackToEffectShow(fightCardData, false, "JB" + jiBanActivedClass.jiBanIndex);
+                            if (TakeSpecialAttack(LoadJsonFile.GetGameValue(144)))
+                            {
+                                if (fightCardData.fightState.shenzhuNums <= 0)
+                                {
+                                    FightForManagerForStart.instance.CreateSateIcon(fightCardData.cardObj.transform.GetChild(7), StringNameStatic.StateIconPath_shenzhu, false);
+                                }
+                                fightCardData.fightState.shenzhuNums++;
+                            }
+                        }
+                    }
+                }
+                break;
+            case JiBanSkillName.HanMoSanXian:
+                //30%概率分别为羁绊武将增加1层【神助】
+                for (int i = 0; i < jiBanActivedClass.cardTypeLists.Count; i++)
+                {
+                    for (int j = 0; j < jiBanActivedClass.cardTypeLists[i].cardLists.Count; j++)
+                    {
+                        fightCardData = jiBanActivedClass.cardTypeLists[i].cardLists[j];
+                        if (fightCardData != null && fightCardData.nowHp > 0)
+                        {
+                            AttackToEffectShow(fightCardData, false, "JB" + jiBanActivedClass.jiBanIndex);
+                            if (TakeSpecialAttack(LoadJsonFile.GetGameValue(145)))
+                            {
+                                if (fightCardData.fightState.shenzhuNums <= 0)
+                                {
+                                    FightForManagerForStart.instance.CreateSateIcon(fightCardData.cardObj.transform.GetChild(7), StringNameStatic.StateIconPath_shenzhu, false);
+                                }
+                                fightCardData.fightState.shenzhuNums++;
                             }
                         }
                     }
