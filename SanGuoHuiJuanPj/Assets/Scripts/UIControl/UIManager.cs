@@ -212,6 +212,7 @@ public class UIManager : MonoBehaviour
                 }
             }
         }
+        jiBanInfoConObj.transform.GetChild(0).GetComponent<Image>().sprite = Resources.Load("Image/JiBan/art/" + indexId, typeof(Sprite)) as Sprite;
         jiBanInfoConObj.transform.GetChild(0).GetChild(0).GetComponent<Text>().text = LoadJsonFile.jiBanTableDatas[indexId][4];
         jiBanInfoConObj.transform.GetChild(0).GetChild(1).GetChild(0).GetComponent<Image>().sprite = Resources.Load("Image/JiBan/name_h/" + indexId, typeof(Sprite)) as Sprite;
 

@@ -3285,6 +3285,7 @@ public class FightController : MonoBehaviour
                 PlayAudioForSecondClip(92, 0);
                 break;
             case FullScreenEffectName.JiBanEffect:
+                effectObj.transform.GetChild(0).GetComponent<Image>().sprite = Resources.Load("Image/JiBan/art/" + indexResPic, typeof(Sprite)) as Sprite;
                 effectObj.transform.GetChild(0).GetChild(1).GetComponent<Image>().sprite = Resources.Load("Image/JiBan/name_h/" + indexResPic, typeof(Sprite)) as Sprite;
                 PlayAudioForSecondClip(100, 0);
                 break;
@@ -3293,7 +3294,6 @@ public class FightController : MonoBehaviour
         }
         effectObj.SetActive(true);
     }
-
 
     /// <summary>
     /// ////////////////战斗主线逻辑//////////////////////////////////////////////////
