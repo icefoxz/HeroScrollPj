@@ -3247,7 +3247,7 @@ public class FightControlForStart : MonoBehaviour
                 PlayAudioForSecondClip(92, 0);
                 break;
             case FullScreenEffectName.JiBanEffect:
-                effectObj.GetComponentInChildren<Image>().sprite = Resources.Load("Image/JiBan/" + indexResPic, typeof(Sprite)) as Sprite;
+                effectObj.transform.GetChild(0).GetChild(1).GetComponent<Image>().sprite = Resources.Load("Image/JiBan/name_h/" + indexResPic, typeof(Sprite)) as Sprite;
                 PlayAudioForSecondClip(100, 0);
                 break;
             default:
