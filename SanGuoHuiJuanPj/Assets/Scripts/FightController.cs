@@ -735,10 +735,16 @@ public class FightController : MonoBehaviour
                     case "56":
                         ManZuSkill(attackUnit, attackedUnit);
                         break;
+                    case "57":
+                        PlayAudioForSecondClip(57, 0);
+                        AttackToEffectShow(attackedUnit, false, "57A");
+                        break;
                     case "58":
                         finalDamage = TieQiSkill(finalDamage, attackUnit, attackedUnit);
                         break;
-
+                    case "65":
+                        finalDamage = HuangJinSkill(finalDamage, attackUnit, attackedUnit);
+                        break;
                     default:
                         //isNeedToAttack = false;
                         PlayAudioForSecondClip(0, 0);
@@ -1206,6 +1212,33 @@ public class FightController : MonoBehaviour
             attackedUnit.nowHp -= damage;
             AttackedAnimShow(attackedUnit, damage, false);
         }
+    }
+
+    /// <summary>
+    /// 黄巾群起技能
+    /// </summary>
+    /// <param name="finalDamage"></param>
+    /// <param name="attackUnit"></param>
+    /// <param name="attackedUnit"></param>
+    /// <returns></returns>
+    private int HuangJinSkill(int finalDamage, FightCardData attackUnit, FightCardData attackedUnit)
+    {
+        FightCardData[] fightCardDatas = attackUnit.isPlayerCard ? FightForManager.instance.playerFightCardsDatas : FightForManager.instance.enemyFightCardsDatas;
+
+        PlayAudioForSecondClip(65, 0);
+        ShowSpellTextObj(attackUnit.cardObj, "65", false);
+        AttackToEffectShow(attackedUnit, false, "65A");
+
+        int sameTypeHeroNums = 0;
+        for (int i = 0; i < fightCardDatas.Length; i++)
+        {
+            if (fightCardDatas[i] != null && fightCardDatas[i].nowHp > 0 && fightCardDatas[i].cardType == 0 && LoadJsonFile.heroTableDatas[fightCardDatas[i].cardId][5] == "65")
+            {
+                sameTypeHeroNums++;
+            }
+        }
+        finalDamage = (int)(sameTypeHeroNums * finalDamage * LoadJsonFile.GetGameValue(146) / 100f);
+        return finalDamage;
     }
 
     /// <summary>
@@ -2234,11 +2267,14 @@ public class FightController : MonoBehaviour
         if (attackedUnit.cardType == 0)
         {
             ShowSpellTextObj(attackUnit.cardObj, "25", false);
-            if (attackedUnit.fightState.bleedNums <= 0)
+            if (TakeSpecialAttack(LoadJsonFile.GetGameValue(147)))
             {
-                FightForManager.instance.CreateSateIcon(attackedUnit.cardObj.transform.GetChild(7), StringNameStatic.StateIconPath_bleed, true);
+                if (attackedUnit.fightState.bleedNums <= 0)
+                {
+                    FightForManager.instance.CreateSateIcon(attackedUnit.cardObj.transform.GetChild(7), StringNameStatic.StateIconPath_bleed, true);
+                }
+                attackedUnit.fightState.bleedNums++;
             }
-            attackedUnit.fightState.bleedNums++;
             ShowSpellTextObj(attackUnit.cardObj, LoadJsonFile.GetStringText(16), true, true);
         }
     }
@@ -2640,6 +2676,11 @@ public class FightController : MonoBehaviour
                                 finalDamage = (int)((100f - defPropNums) / 100f * finalDamage);
                             }
 
+                            //藤甲免疫物理伤害
+                            if (LoadJsonFile.heroTableDatas[attackedUnit.cardId][5] == "57" && attackUnit.cardDamageType == 0)
+                            {
+                                finalDamage = 0;
+                            }
 
                             //流血状态加成
                             if (attackedUnit.fightState.bleedNums > 0)
@@ -2652,7 +2693,7 @@ public class FightController : MonoBehaviour
                     }
                 }
             }
-            if (attackUnit.cardType == 0 && attackedUnit.cardType == 0)
+            if (attackedUnit.cardType == 0)
             {
                 switch (LoadJsonFile.heroTableDatas[attackedUnit.cardId][5])
                 {
@@ -2679,7 +2720,7 @@ public class FightController : MonoBehaviour
                         if (attackedUnit.fightState.willFightNums < 10)
                         {
                             attackedUnit.fightState.willFightNums++;
-                            attackedUnit.cardObj.transform.Find(StringNameStatic.StateIconPath_willFight + "Din").GetComponent<Image>().color = new Color(1, 1, 1, 0.4f + 0.6f * (attackUnit.fightState.willFightNums / 10f));
+                            attackedUnit.cardObj.transform.Find(StringNameStatic.StateIconPath_willFight + "Din").GetComponent<Image>().color = new Color(1, 1, 1, 0.4f + 0.6f * (attackedUnit.fightState.willFightNums / 10f));
                         }
                         ShowSpellTextObj(attackedUnit.cardObj, "12", false);
                         break;
@@ -2819,7 +2860,7 @@ public class FightController : MonoBehaviour
                 {
                     FightForManager.instance.CreateSateIcon(attackedUnit.cardObj.transform.GetChild(7), StringNameStatic.StateIconPath_imprisoned, true);
                 }
-                attackedUnit.fightState.imprisonedNums += 2;
+                attackedUnit.fightState.imprisonedNums += 1;
                 ShowSpellTextObj(attackedUnit.cardObj, LoadJsonFile.GetStringText(11), true, true);
             }
         }
@@ -2836,7 +2877,7 @@ public class FightController : MonoBehaviour
                 {
                     FightForManager.instance.CreateSateIcon(attackedUnit.cardObj.transform.GetChild(7), StringNameStatic.StateIconPath_removeArmor, true);
                 }
-                attackedUnit.fightState.removeArmorNums++;
+                attackedUnit.fightState.removeArmorNums += 1;
             }
         }
     }
@@ -2903,7 +2944,7 @@ public class FightController : MonoBehaviour
                 {
                     FightForManager.instance.CreateSateIcon(attackedUnit.cardObj.transform.GetChild(7), StringNameStatic.StateIconPath_cowardly, true);
                 }
-                attackedUnit.fightState.cowardlyNums += 2;
+                attackedUnit.fightState.cowardlyNums += 1;
                 ShowSpellTextObj(attackedUnit.cardObj, LoadJsonFile.GetStringText(21), true, true);
             }
         }

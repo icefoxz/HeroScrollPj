@@ -1187,6 +1187,12 @@ public class FightForManagerForStart : MonoBehaviour
                     case 18://迷雾阵
                         miWuZhenAddtionFun(cardData, posIndex, cardDatas, isAdd);
                         break;
+                    case 19://骑兵营
+                        ZhanGuTaiAddtionFun(cardData, posIndex, cardDatas, isAdd);
+                        break;
+                    case 20://弓弩营
+                        ZhanGuTaiAddtionFun(cardData, posIndex, cardDatas, isAdd);
+                        break;
                     default:
                         break;
                 }
@@ -1332,6 +1338,26 @@ public class FightForManagerForStart : MonoBehaviour
                             CreateSateIcon(cardData.cardObj.transform.GetChild(7), StringNameStatic.StateIconPath_miWuZhenAddtion, false);
                         }
                         cardData.fightState.miWuZhenAddtion += addtionNums;
+                        break;
+                    case 19://骑兵营
+                        if (LoadJsonFile.classTableDatas[int.Parse(LoadJsonFile.heroTableDatas[cardData.cardId][5])][5] == "5")
+                        {
+                            if (cardData.fightState.zhangutaiAddtion <= 0)
+                            {
+                                CreateSateIcon(cardData.cardObj.transform.GetChild(7), StringNameStatic.StateIconPath_zhangutaiAddtion, false);
+                            }
+                            cardData.fightState.zhangutaiAddtion += addtionNums;
+                        }
+                        break;
+                    case 20://弓弩营
+                        if (LoadJsonFile.classTableDatas[int.Parse(LoadJsonFile.heroTableDatas[cardData.cardId][5])][5] == "9")
+                        {
+                            if (cardData.fightState.zhangutaiAddtion <= 0)
+                            {
+                                CreateSateIcon(cardData.cardObj.transform.GetChild(7), StringNameStatic.StateIconPath_zhangutaiAddtion, false);
+                            }
+                            cardData.fightState.zhangutaiAddtion += addtionNums;
+                        }
                         break;
                     default:
                         break;
@@ -1643,6 +1669,32 @@ public class FightForManagerForStart : MonoBehaviour
                     if (addedFightCard != null && addedFightCard.cardType == 0 && addedFightCard.nowHp > 0)
                     {
                         if (LoadJsonFile.heroTableDatas[addedFightCard.cardId][6] == "3") //吴势力
+                        {
+                            DamageTowerAdditionFun(addedFightCard, isAdd, addtionNums);
+                        }
+                    }
+                }
+                break;
+            case 19://骑兵营
+                for (int i = 0; i < CardNearbyAdditionForeach[posIndex].Length; i++)
+                {
+                    FightCardData addedFightCard = cardDatas[CardNearbyAdditionForeach[posIndex][i]];
+                    if (addedFightCard != null && addedFightCard.cardType == 0 && addedFightCard.nowHp > 0)
+                    {
+                        if (LoadJsonFile.classTableDatas[int.Parse(LoadJsonFile.heroTableDatas[addedFightCard.cardId][5])][5] == "5")
+                        {
+                            DamageTowerAdditionFun(addedFightCard, isAdd, addtionNums);
+                        }
+                    }
+                }
+                break;
+            case 20://弓弩营
+                for (int i = 0; i < CardNearbyAdditionForeach[posIndex].Length; i++)
+                {
+                    FightCardData addedFightCard = cardDatas[CardNearbyAdditionForeach[posIndex][i]];
+                    if (addedFightCard != null && addedFightCard.cardType == 0 && addedFightCard.nowHp > 0)
+                    {
+                        if (LoadJsonFile.classTableDatas[int.Parse(LoadJsonFile.heroTableDatas[addedFightCard.cardId][5])][5] == "9")
                         {
                             DamageTowerAdditionFun(addedFightCard, isAdd, addtionNums);
                         }

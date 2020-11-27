@@ -6752,7 +6752,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: v 1.84
+  m_Text: v 1.85
 --- !u!222 &573429883
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -28475,6 +28475,8 @@ MonoBehaviour:
   - JB9
   - JB10
   - JB11
+  - 57A
+  - 65A
   iconNameStr:
   - stateIcon
   - bleedState

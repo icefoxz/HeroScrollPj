@@ -267,7 +267,8 @@ public class UIManager : MonoBehaviour
     private void InitWarDifBtnShow()
     {
         int indexLastDifCanChoose = 0;
-        for (int i = 0; i < LoadJsonFile.choseWarTableDatas.Count - 1; i++)
+        //新手-困难关卡入口初始化
+        for (int i = 0; i < 4; i++)
         {
             int index = i;
             chonseWarDifTran.GetChild(i).gameObject.SetActive(true);
@@ -296,25 +297,143 @@ public class UIManager : MonoBehaviour
         }
         InitWarsListInfo(indexLastDifCanChoose);
 
-        //隐藏魔王关卡入口
-        chonseWarDifTran.GetChild(5).gameObject.SetActive(false);
-
         //远征关卡
-        int unlockWarId_Yz = int.Parse(LoadJsonFile.choseWarTableDatas[6][3]);
+        int unlockWarId_Yz = int.Parse(LoadJsonFile.choseWarTableDatas[4][3]);
         if (unlockWarId_Yz == 0 || PlayerDataForGame.instance.warsData.warUnlockSaveData[unlockWarId_Yz].unLockCount >= int.Parse(LoadJsonFile.warTableDatas[unlockWarId_Yz][4]))
         {
-            chonseWarDifTran.GetChild(6).gameObject.SetActive(true);
-            chonseWarDifTran.GetChild(6).GetComponentInChildren<Text>().text = LoadJsonFile.choseWarTableDatas[6][1];
-            chonseWarDifTran.GetChild(6).GetComponentInChildren<Text>().color = Color.white;
-            chonseWarDifTran.GetChild(6).GetComponent<Button>().onClick.AddListener(delegate ()
+            chonseWarDifTran.GetChild(4).gameObject.SetActive(true);
+            chonseWarDifTran.GetChild(4).GetComponentInChildren<Text>().text = LoadJsonFile.choseWarTableDatas[4][1];
+            chonseWarDifTran.GetChild(4).GetComponentInChildren<Text>().color = Color.white;
+            chonseWarDifTran.GetChild(4).GetComponent<Button>().onClick.AddListener(delegate ()
             {
-                InitWarsListInfo(6);
+                InitWarsListInfo(4);
+                PlayOnClickMusic();
+            });
+        }
+
+        //炼狱关卡
+        int unlockWarId_Ly = int.Parse(LoadJsonFile.choseWarTableDatas[5][3]);
+        if (unlockWarId_Ly == 0 || PlayerDataForGame.instance.warsData.warUnlockSaveData[unlockWarId_Ly].unLockCount >= int.Parse(LoadJsonFile.warTableDatas[unlockWarId_Ly][4]))
+        {
+            chonseWarDifTran.GetChild(5).gameObject.SetActive(true);
+            //chonseWarDifTran.GetChild(5).GetComponentInChildren<Text>().text = LoadJsonFile.choseWarTableDatas[5][1];
+            chonseWarDifTran.GetChild(5).GetComponentInChildren<Text>().color = Color.white;
+            chonseWarDifTran.GetChild(5).GetComponent<Button>().onClick.AddListener(delegate ()
+            {
+                InitWarsListInfoOfLy(5);
                 PlayOnClickMusic();
             });
         }
     }
 
-    //领取战役首通宝箱
+    /// <summary>
+    /// 初始化炼狱关卡列表
+    /// </summary>
+    private void InitWarsListInfoOfLy(int indexBtn)
+    {
+        //防止跳转界面时切换关卡
+        if (isJumping)
+            return;
+
+        //右侧难度选择按钮刷新大小
+        for (int i = 0; i < chonseWarDifTran.childCount; i++)
+        {
+            if (indexBtn == i)
+            {
+                chonseWarDifTran.GetChild(i).transform.localScale = new Vector3(1.2f, 1.2f);
+            }
+            else
+            {
+                chonseWarDifTran.GetChild(i).transform.localScale = new Vector3(1f, 1f);
+            }
+        }
+
+        tiLiCostIndex = indexBtn;
+
+        //删除战役列表
+        for (int i = 0; i < warsChooseListObj.transform.childCount; i++)
+        {
+            Destroy(warsChooseListObj.transform.GetChild(i).gameObject);
+        }
+
+        int firstChooseWarId = -1;
+        GameObject lastObj = new GameObject();
+        PlayerDataForGame.garbageStationObjs.Add(lastObj);
+
+        //展示炼狱战役列表
+        for (int i = 5; i < LoadJsonFile.choseWarTableDatas.Count; i++)
+        {
+            int unlockWarId_Ly = int.Parse(LoadJsonFile.choseWarTableDatas[i][3]);
+            if (PlayerDataForGame.instance.warsData.warUnlockSaveData[unlockWarId_Ly].unLockCount >= int.Parse(LoadJsonFile.warTableDatas[unlockWarId_Ly][4]))
+            {
+                //具体炼狱关的始末关卡
+                int startId, endId;
+                string[] arr = LoadJsonFile.choseWarTableDatas[i][2].Split(',');
+                if (arr.Length != 2)
+                {
+                    continue;
+                }
+                startId = int.Parse(arr[0]);
+                endId = int.Parse(arr[1]);
+
+                int index = startId;
+                for (; index <= endId; index++)
+                {
+                    int specificId = index;
+                    //没有领过首通奖励
+                    if (!PlayerDataForGame.instance.warsData.warUnlockSaveData[specificId].isTakeReward)
+                    {
+                        //战役的起始关卡id
+                        int warIdIndex = PlayerDataForGame.instance.warsData.warUnlockSaveData[specificId].warId;
+                        //战役总关卡数
+                        int warTotalNums = int.Parse(LoadJsonFile.warTableDatas[warIdIndex][4]);
+                        //创建具体战役选择obj
+                        GameObject obj = Instantiate(warsChooseBtnPreObj, warsChooseListObj.transform);
+                        Transform box = obj.transform.GetChild(2);
+
+                        obj.GetComponentInChildren<Text>().text = LoadJsonFile.warTableDatas[warIdIndex][1] + "\u2000\u2000\u2000\u2000" + Mathf.Min(PlayerDataForGame.instance.warsData.warUnlockSaveData[specificId].unLockCount, warTotalNums) + "/" + warTotalNums;
+
+                        if (PlayerDataForGame.instance.warsData.warUnlockSaveData[specificId].unLockCount < warTotalNums)
+                        {
+                            if (firstChooseWarId==-1)
+                            {
+                                firstChooseWarId = specificId;
+                                lastObj = obj;
+                            }
+                            obj.GetComponent<Button>().onClick.AddListener(delegate ()
+                            {
+                                OnClickChangeWarsFun(warIdIndex, obj);
+                                PlayOnClickMusic();
+                            });
+                            break;
+                        }
+                        else
+                        {
+                            //首通宝箱可领取
+                            box.GetChild(1).gameObject.SetActive(false);
+                            box.GetChild(0).gameObject.SetActive(true);
+                            box.GetChild(0).GetComponent<Button>().onClick.AddListener(delegate ()
+                            {
+                                GetWarFirstRewards(specificId);
+                                box.gameObject.SetActive(false);
+                            });
+                        }
+                    }
+                }
+            }
+            else
+            {
+                continue;
+            }
+        }
+        OnClickChangeWarsFun(firstChooseWarId, lastObj);
+        warsChooseListObj.transform.parent.parent.GetComponent<ScrollRect>().DOVerticalNormalizedPos(0f, 0.3f);
+    }
+
+    /// <summary>
+    /// 领取战役首通宝箱
+    /// </summary>
+    /// <param name="jb"></param>
     private void GetWarFirstRewards(int jb)
     {
         int warId = PlayerDataForGame.instance.warsData.warUnlockSaveData[jb].warId;
@@ -385,6 +504,7 @@ public class UIManager : MonoBehaviour
         if (isJumping)
             return;
 
+        //右侧难度选择按钮刷新大小
         for (int i = 0; i < chonseWarDifTran.childCount; i++)
         {
             if (indexBtn == i)
@@ -399,18 +519,34 @@ public class UIManager : MonoBehaviour
 
         tiLiCostIndex = indexBtn;
 
+        //删除战役列表
         for (int i = 0; i < warsChooseListObj.transform.childCount; i++)
         {
             Destroy(warsChooseListObj.transform.GetChild(i).gameObject);
         }
 
-        string[] arr = LoadJsonFile.choseWarTableDatas[indexBtn][2].Split(',');
-        if (arr.Length != 2)
+        int startId, endId;
+
+        switch (indexBtn)
         {
-            return;
+            //远征特殊
+            case 4:
+                startId = endId = int.Parse(LoadJsonFile.playerLevelTableDatas[PlayerDataForGame.instance.pyData.level - 1][5]);
+                break;
+            //炼狱特殊
+            //case 5:
+
+            //    break;
+            default:
+                string[] arr = LoadJsonFile.choseWarTableDatas[indexBtn][2].Split(',');
+                if (arr.Length != 2)
+                {
+                    return;
+                }
+                startId = int.Parse(arr[0]);
+                endId = int.Parse(arr[1]);
+                break;
         }
-        int startId = int.Parse(arr[0]);
-        int endId = int.Parse(arr[1]);
 
         int index = startId;
         GameObject lastObj = new GameObject();
@@ -2457,55 +2593,6 @@ public class UIManager : MonoBehaviour
             }
         }
         return false;
-    }
-
-    string[] zhongYiStr = new string[] {
-        "自古皆有死，人无信不立。",
-        "惟贤惟德，能服于人。",
-        "万事具备，只欠东风。",
-        "有文事必有武备。",
-        "势利之交，难以经远。",
-        "计疑无定事，事疑无成功。",
-        "当断不断，必受其乱。",
-        "大事起于难，小事起于易。",
-        "国之大务，莫先于戒备。",
-        "恢弘志士之气，不宜妄自菲薄。",
-        "静以修身，俭以养德。",
-        "吾心如称，不能为人作轻重。",
-        "志当存高远。",
-        "防奸以政，去奢以俭。",
-        "苟全性命于乱世，不求闻达于诸侯。",
-        "龙能大能小，能升能隐。",
-        "天下英雄，唯使君与操耳。",
-        "人苦无足，既得陇，复望蜀邪!",
-        "不爱尺壁而重爱寸阴，时难遭而易失也。",
-        "胜者随道而修途，败者斜行而失路。",
-        "智者不逆天，亦不逆时，亦不逆人也。",
-        "出师未捷身先死，长使英雄泪满襟！",
-        "本是同根生，相煎何太急。",
-        "不以善小而不为，不以恶小而为之。",
-        "丈夫志四海，万里犹比邻。",
-        "不傲才以骄人，不以宠且作威。",
-        "人生如白驹过隙！",
-        "燕雀戏藩柴，安识鸿鹄游。",
-        "忠义"
-    };
-
-    bool isCanTakeZY = true;
-    //临时方法，点击重义按钮
-    public void OnClickZhongYiBtnFun()
-    {
-        if (!isCanTakeZY)
-            return;
-        isCanTakeZY = false;
-        int rand = UnityEngine.Random.Range(0, zhongYiStr.Length);
-        PlayerDataForGame.instance.ShowStringTips(zhongYiStr[rand]);
-        AudioController0.instance.RandomPlayGuZhengAudio();
-        Invoke("HuiFuZhongYiBtn", 2f);
-    }
-    private void HuiFuZhongYiBtn()
-    {
-        isCanTakeZY = true;
     }
 
     bool isShowQuitTips = false;

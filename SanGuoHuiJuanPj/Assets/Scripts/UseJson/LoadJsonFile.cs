@@ -273,6 +273,8 @@ public class LoadJsonFile : MonoBehaviour
                 playerLevelTableDatas[i].Add(root.PlayerLevelTable[i].exp);
                 playerLevelTableDatas[i].Add(root.PlayerLevelTable[i].heroLimit);
                 playerLevelTableDatas[i].Add(root.PlayerLevelTable[i].companionLimit);
+                playerLevelTableDatas[i].Add(root.PlayerLevelTable[i].homeHp);
+                playerLevelTableDatas[i].Add(root.PlayerLevelTable[i].yuanZheng);
             }
             //Debug.Log("Json文件加载成功---" + tableNames[indexTable] + ".Json");
             indexTable++;

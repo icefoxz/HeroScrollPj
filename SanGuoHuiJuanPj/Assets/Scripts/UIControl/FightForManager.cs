@@ -103,7 +103,7 @@ public class FightForManager : MonoBehaviour
         FightCardData playerHomeData = new FightCardData();
         playerHomeData.cardObj = Instantiate(homeCardObj, playerCardsBox);
         playerHomeData.cardObj.transform.position = playerCardsPos[17].transform.position;
-        playerHomeData.fullHp = playerHomeData.nowHp = int.Parse(LoadJsonFile.cityLevelTableDatas[WarsUIManager.instance.cityLevel - 1][2]);
+        playerHomeData.fullHp = playerHomeData.nowHp = int.Parse(LoadJsonFile.cityLevelTableDatas[WarsUIManager.instance.cityLevel - 1][2]) + int.Parse(LoadJsonFile.playerLevelTableDatas[PlayerDataForGame.instance.pyData.level - 1][4]);
         playerHomeData.hpr = 0;
         playerHomeData.cardType = 522;
         playerHomeData.posIndex = 17;
@@ -124,7 +124,7 @@ public class FightForManager : MonoBehaviour
 
         battleIdIndex = battleId;
 
-        playerFightCardsDatas[17].fullHp = playerFightCardsDatas[17].nowHp = int.Parse(LoadJsonFile.cityLevelTableDatas[WarsUIManager.instance.cityLevel - 1][2]);
+        playerFightCardsDatas[17].fullHp = playerFightCardsDatas[17].nowHp = int.Parse(LoadJsonFile.cityLevelTableDatas[WarsUIManager.instance.cityLevel - 1][2]) + int.Parse(LoadJsonFile.playerLevelTableDatas[PlayerDataForGame.instance.pyData.level - 1][4]);
         FightController.instance.UpdateUnitHpShow(playerFightCardsDatas[17]);
         FightController.instance.ClearEmTieQiCardList();
 
@@ -509,7 +509,6 @@ public class FightForManager : MonoBehaviour
         }
     }
 
-
     //上阵卡牌特殊相关处理
     public void CardGoIntoBattleProcess(FightCardData cardData, int posIndex, FightCardData[] cardDatas, bool isAdd, bool isNeedRefresh = true)
     {
@@ -610,6 +609,12 @@ public class FightForManager : MonoBehaviour
                         break;
                     case 18://迷雾阵
                         miWuZhenAddtionFun(cardData, posIndex, cardDatas, isAdd);
+                        break;
+                    case 19://骑兵营
+                        ZhanGuTaiAddtionFun(cardData, posIndex, cardDatas, isAdd);
+                        break;
+                    case 20://弓弩营
+                        ZhanGuTaiAddtionFun(cardData, posIndex, cardDatas, isAdd);
                         break;
                     default:
                         break;
@@ -756,6 +761,26 @@ public class FightForManager : MonoBehaviour
                             CreateSateIcon(cardData.cardObj.transform.GetChild(7), StringNameStatic.StateIconPath_miWuZhenAddtion, false);
                         }
                         cardData.fightState.miWuZhenAddtion += addtionNums;
+                        break;
+                    case 19://骑兵营
+                        if (LoadJsonFile.classTableDatas[int.Parse(LoadJsonFile.heroTableDatas[cardData.cardId][5])][5] == "5")
+                        {
+                            if (cardData.fightState.zhangutaiAddtion <= 0)
+                            {
+                                CreateSateIcon(cardData.cardObj.transform.GetChild(7), StringNameStatic.StateIconPath_zhangutaiAddtion, false);
+                            }
+                            cardData.fightState.zhangutaiAddtion += addtionNums;
+                        }
+                        break;
+                    case 20://弓弩营
+                        if (LoadJsonFile.classTableDatas[int.Parse(LoadJsonFile.heroTableDatas[cardData.cardId][5])][5] == "9")
+                        {
+                            if (cardData.fightState.zhangutaiAddtion <= 0)
+                            {
+                                CreateSateIcon(cardData.cardObj.transform.GetChild(7), StringNameStatic.StateIconPath_zhangutaiAddtion, false);
+                            }
+                            cardData.fightState.zhangutaiAddtion += addtionNums;
+                        }
                         break;
                     default:
                         break;
@@ -1067,6 +1092,32 @@ public class FightForManager : MonoBehaviour
                     if (addedFightCard != null && addedFightCard.cardType == 0 && addedFightCard.nowHp > 0)
                     {
                         if (LoadJsonFile.heroTableDatas[addedFightCard.cardId][6] == "3") //吴势力
+                        {
+                            DamageTowerAdditionFun(addedFightCard, isAdd, addtionNums);
+                        }
+                    }
+                }
+                break;
+            case 19://骑兵营
+                for (int i = 0; i < CardNearbyAdditionForeach[posIndex].Length; i++)
+                {
+                    FightCardData addedFightCard = cardDatas[CardNearbyAdditionForeach[posIndex][i]];
+                    if (addedFightCard != null && addedFightCard.cardType == 0 && addedFightCard.nowHp > 0)
+                    {
+                        if (LoadJsonFile.classTableDatas[int.Parse(LoadJsonFile.heroTableDatas[addedFightCard.cardId][5])][5] == "5")
+                        {
+                            DamageTowerAdditionFun(addedFightCard, isAdd, addtionNums);
+                        }
+                    }
+                }
+                break;
+            case 20://弓弩营
+                for (int i = 0; i < CardNearbyAdditionForeach[posIndex].Length; i++)
+                {
+                    FightCardData addedFightCard = cardDatas[CardNearbyAdditionForeach[posIndex][i]];
+                    if (addedFightCard != null && addedFightCard.cardType == 0 && addedFightCard.nowHp > 0)
+                    {
+                        if (LoadJsonFile.classTableDatas[int.Parse(LoadJsonFile.heroTableDatas[addedFightCard.cardId][5])][5] == "9") 
                         {
                             DamageTowerAdditionFun(addedFightCard, isAdd, addtionNums);
                         }

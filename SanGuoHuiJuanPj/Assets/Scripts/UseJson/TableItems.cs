@@ -48,6 +48,8 @@ public class PlayerLevelTableItem
     public string exp { get; set; }
     public string heroLimit { get; set; }
     public string companionLimit { get; set; }
+    public string homeHp { get; set; }
+    public string yuanZheng { get; set; }
 }
 public class SoldierTableItem
 {
