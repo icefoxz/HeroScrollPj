@@ -519,6 +519,14 @@
 			"shortName": "帼",
 			"info": "",
 			"bingZhongXi": "5"
+		},
+		{
+			"id": "65",
+			"type": "黄巾",
+			"skill": "群起",
+			"shortName": "黄",
+			"info": "水能载舟，亦能覆舟。场上黄巾数量越多，攻击越高。",
+			"bingZhongXi": "2"
 		}
 	]
 }

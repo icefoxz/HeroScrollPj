@@ -3481,6 +3481,7 @@ public class FightController : MonoBehaviour
     /// </summary>
     IEnumerator InitJiBanForStartFight()
     {
+        float waitTime = 0;
         //玩家部分
         foreach (var item in playerJiBanAllTypes)
         {
@@ -3489,8 +3490,8 @@ public class FightController : MonoBehaviour
                 //Debug.Log("玩家触发羁绊： " + item.Value.jiBanIndex);
                 ShowAllScreenFightEffect(FullScreenEffectName.JiBanEffect, item.Value.jiBanIndex);
                 yield return new WaitForSeconds(1f);
-                JiBanAddStateForCard(item.Value, true);
-                yield return new WaitForSeconds(1f);
+                waitTime = JiBanAddStateForCard(item.Value, true);
+                yield return new WaitForSeconds(waitTime);
             }
         }
         //敌人部分
@@ -3501,18 +3502,18 @@ public class FightController : MonoBehaviour
                 //Debug.Log("敌方触发羁绊： " + item.Value.jiBanIndex);
                 ShowAllScreenFightEffect(FullScreenEffectName.JiBanEffect, item.Value.jiBanIndex);
                 yield return new WaitForSeconds(1f);
-                JiBanAddStateForCard(item.Value, false);
-                yield return new WaitForSeconds(1f);
+                waitTime = JiBanAddStateForCard(item.Value, false);
+                yield return new WaitForSeconds(waitTime);
             }
         }
     }
 
     //给卡牌上附加羁绊属性
-    private void JiBanAddStateForCard(JiBanActivedClass jiBanActivedClass, bool isPlayer)
+    private float JiBanAddStateForCard(JiBanActivedClass jiBanActivedClass, bool isPlayer)
     {
         FightCardData fightCardData;
         FightCardData[] cardDatas = isPlayer ? FightForManager.instance.playerFightCardsDatas : FightForManager.instance.enemyFightCardsDatas;
-
+        float waitTime = 0f;
         switch ((JiBanSkillName)jiBanActivedClass.jiBanIndex)
         {
             case JiBanSkillName.TaoYuanJieYi:
@@ -3536,6 +3537,7 @@ public class FightController : MonoBehaviour
                         }
                     }
                 }
+                waitTime = 1f;
                 break;
             case JiBanSkillName.WuHuShangJiang:
                 //50%概率分别为羁绊武将增加1层【内助】
@@ -3558,6 +3560,7 @@ public class FightController : MonoBehaviour
                         }
                     }
                 }
+                waitTime = 1f;
                 break;
             case JiBanSkillName.WoLongFengChu:
                 //20%概率分别为统御（兵种系）武将增加1层【内助】  统御11
@@ -3580,6 +3583,7 @@ public class FightController : MonoBehaviour
                         }
                     }
                 }
+                waitTime = 1f;
                 break;
             case JiBanSkillName.HuChiELai:
                 //30 % 概率分别为羁绊武将增加1层【护盾】
@@ -3602,6 +3606,7 @@ public class FightController : MonoBehaviour
                         }
                     }
                 }
+                waitTime = 1f;
                 break;
             case JiBanSkillName.WuZiLiangJiang:
                 //40%概率分别为羁绊武将增加1层【内助】
@@ -3624,6 +3629,7 @@ public class FightController : MonoBehaviour
                         }
                     }
                 }
+                waitTime = 1f;
                 break;
             case JiBanSkillName.WeiWuMouShi:
                 //50%概率分别为干扰（兵种系）武将增加1层【内助】 干扰系12
@@ -3646,6 +3652,7 @@ public class FightController : MonoBehaviour
                         }
                     }
                 }
+                waitTime = 1f;
                 break;
             case JiBanSkillName.HuJuJiangDong:
                 //20%概率分别为吴国（阵营）武将增加1层【内助】 吴国3
@@ -3668,6 +3675,7 @@ public class FightController : MonoBehaviour
                         }
                     }
                 }
+                waitTime = 1f;
                 break;
             case JiBanSkillName.ShuiShiDouDu:
                 //40%概率分别为战船（兵种系）武将增加1层【内助】 战船8
@@ -3690,6 +3698,7 @@ public class FightController : MonoBehaviour
                         }
                     }
                 }
+                waitTime = 1f;
                 break;
             case JiBanSkillName.TianZuoZhiHe:
                 //40%概率分别为羁绊武将增加1层【内助】
@@ -3712,6 +3721,7 @@ public class FightController : MonoBehaviour
                         }
                     }
                 }
+                waitTime = 1f;
                 break;
             case JiBanSkillName.HeBeiSiTingZhu:
                 //30%概率分别为羁绊武将增加1层【护盾】
@@ -3734,6 +3744,7 @@ public class FightController : MonoBehaviour
                         }
                     }
                 }
+                waitTime = 1f;
                 break;
             case JiBanSkillName.JueShiWuShuang:
                 //50%概率分别为羁绊武将增加1层【神助】
@@ -3756,6 +3767,7 @@ public class FightController : MonoBehaviour
                         }
                     }
                 }
+                waitTime = 1f;
                 break;
             case JiBanSkillName.HanMoSanXian:
                 //30%概率分别为羁绊武将增加1层【神助】
@@ -3778,10 +3790,12 @@ public class FightController : MonoBehaviour
                         }
                     }
                 }
+                waitTime = 1f;
                 break;
             default:
                 break;
         }
+        return waitTime;
     }
 
     //回合开始状态等统一处理

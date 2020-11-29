@@ -268,7 +268,7 @@ public class UIManager : MonoBehaviour
     {
         int indexLastDifCanChoose = 0;
         //新手-困难关卡入口初始化
-        for (int i = 0; i < 4; i++)
+        for (int i = 0; i < 5; i++)
         {
             int index = i;
             chonseWarDifTran.GetChild(i).gameObject.SetActive(true);
@@ -298,32 +298,32 @@ public class UIManager : MonoBehaviour
         InitWarsListInfo(indexLastDifCanChoose);
 
         //远征关卡
-        int unlockWarId_Yz = int.Parse(LoadJsonFile.choseWarTableDatas[4][3]);
+        int unlockWarId_Yz = int.Parse(LoadJsonFile.choseWarTableDatas[6][3]);
         if (unlockWarId_Yz == 0 || PlayerDataForGame.instance.warsData.warUnlockSaveData[unlockWarId_Yz].unLockCount >= int.Parse(LoadJsonFile.warTableDatas[unlockWarId_Yz][4]))
         {
-            chonseWarDifTran.GetChild(4).gameObject.SetActive(true);
-            chonseWarDifTran.GetChild(4).GetComponentInChildren<Text>().text = LoadJsonFile.choseWarTableDatas[4][1];
-            chonseWarDifTran.GetChild(4).GetComponentInChildren<Text>().color = Color.white;
-            chonseWarDifTran.GetChild(4).GetComponent<Button>().onClick.AddListener(delegate ()
+            chonseWarDifTran.GetChild(6).gameObject.SetActive(true);
+            chonseWarDifTran.GetChild(6).GetComponentInChildren<Text>().text = LoadJsonFile.choseWarTableDatas[6][1];
+            chonseWarDifTran.GetChild(6).GetComponentInChildren<Text>().color = Color.white;
+            chonseWarDifTran.GetChild(6).GetComponent<Button>().onClick.AddListener(delegate ()
             {
-                InitWarsListInfo(4);
+                InitWarsListInfo(6);
                 PlayOnClickMusic();
             });
         }
 
-        //炼狱关卡
-        int unlockWarId_Ly = int.Parse(LoadJsonFile.choseWarTableDatas[5][3]);
-        if (unlockWarId_Ly == 0 || PlayerDataForGame.instance.warsData.warUnlockSaveData[unlockWarId_Ly].unLockCount >= int.Parse(LoadJsonFile.warTableDatas[unlockWarId_Ly][4]))
-        {
-            chonseWarDifTran.GetChild(5).gameObject.SetActive(true);
-            //chonseWarDifTran.GetChild(5).GetComponentInChildren<Text>().text = LoadJsonFile.choseWarTableDatas[5][1];
-            chonseWarDifTran.GetChild(5).GetComponentInChildren<Text>().color = Color.white;
-            chonseWarDifTran.GetChild(5).GetComponent<Button>().onClick.AddListener(delegate ()
-            {
-                InitWarsListInfoOfLy(5);
-                PlayOnClickMusic();
-            });
-        }
+        ////炼狱关卡
+        //int unlockWarId_Ly = int.Parse(LoadJsonFile.choseWarTableDatas[5][3]);
+        //if (unlockWarId_Ly == 0 || PlayerDataForGame.instance.warsData.warUnlockSaveData[unlockWarId_Ly].unLockCount >= int.Parse(LoadJsonFile.warTableDatas[unlockWarId_Ly][4]))
+        //{
+        //    chonseWarDifTran.GetChild(5).gameObject.SetActive(true);
+        //    //chonseWarDifTran.GetChild(5).GetComponentInChildren<Text>().text = LoadJsonFile.choseWarTableDatas[5][1];
+        //    chonseWarDifTran.GetChild(5).GetComponentInChildren<Text>().color = Color.white;
+        //    chonseWarDifTran.GetChild(5).GetComponent<Button>().onClick.AddListener(delegate ()
+        //    {
+        //        InitWarsListInfoOfLy(5);
+        //        PlayOnClickMusic();
+        //    });
+        //}
     }
 
     /// <summary>
@@ -530,7 +530,7 @@ public class UIManager : MonoBehaviour
         switch (indexBtn)
         {
             //远征特殊
-            case 4:
+            case 6:
                 startId = endId = int.Parse(LoadJsonFile.playerLevelTableDatas[PlayerDataForGame.instance.pyData.level - 1][5]);
                 break;
             //炼狱特殊
