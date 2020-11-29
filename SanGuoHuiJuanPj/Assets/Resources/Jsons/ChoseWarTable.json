@@ -12,7 +12,7 @@
 			"id": "1",
 			"difficulty": "简单",
 			"warList": "21,40",
-			"unlock": "0",
+			"unlock": "11",
 			"tiliCost": "6,3,3",
 			"instructions": "通关新手【赤壁之战】解锁"
 		},
@@ -20,7 +20,7 @@
 			"id": "2",
 			"difficulty": "普通",
 			"warList": "41,60",
-			"unlock": "0",
+			"unlock": "31",
 			"tiliCost": "6,3,3",
 			"instructions": "通关简单【赤壁之战】解锁"
 		},
@@ -28,7 +28,7 @@
 			"id": "3",
 			"difficulty": "困难",
 			"warList": "61,80",
-			"unlock": "0",
+			"unlock": "51",
 			"tiliCost": "6,3,3",
 			"instructions": "通关普通【赤壁之战】解锁"
 		},
@@ -52,7 +52,7 @@
 			"id": "6",
 			"difficulty": "远征",
 			"warList": "",
-			"unlock": "0",
+			"unlock": "31",
 			"tiliCost": "45,40,6",
 			"instructions": "通关简单【赤壁之战】解锁"
 		},
