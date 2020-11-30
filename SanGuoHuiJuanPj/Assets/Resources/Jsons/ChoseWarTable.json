@@ -3,7 +3,7 @@
 		{
 			"id": "0",
 			"difficulty": "新手",
-			"warList": "1,20",
+			"warList": "0,19",
 			"unlock": "0",
 			"tiliCost": "6,3,3",
 			"instructions": "新手训练"
@@ -11,32 +11,32 @@
 		{
 			"id": "1",
 			"difficulty": "简单",
-			"warList": "21,40",
-			"unlock": "11",
+			"warList": "20,39",
+			"unlock": "10",
 			"tiliCost": "6,3,3",
 			"instructions": "通关新手【赤壁之战】解锁"
 		},
 		{
 			"id": "2",
 			"difficulty": "普通",
-			"warList": "41,60",
-			"unlock": "31",
+			"warList": "40,59",
+			"unlock": "30",
 			"tiliCost": "6,3,3",
 			"instructions": "通关简单【赤壁之战】解锁"
 		},
 		{
 			"id": "3",
 			"difficulty": "困难",
-			"warList": "61,80",
-			"unlock": "51",
+			"warList": "60,79",
+			"unlock": "50",
 			"tiliCost": "6,3,3",
 			"instructions": "通关普通【赤壁之战】解锁"
 		},
 		{
 			"id": "4",
 			"difficulty": "炼狱",
-			"warList": "81,88",
-			"unlock": "71",
+			"warList": "80,87",
+			"unlock": "70",
 			"tiliCost": "12,6,6",
 			"instructions": "通关困难【赤壁之战】解锁"
 		},
@@ -52,7 +52,7 @@
 			"id": "6",
 			"difficulty": "远征",
 			"warList": "",
-			"unlock": "31",
+			"unlock": "20",
 			"tiliCost": "45,40,6",
 			"instructions": "通关简单【赤壁之战】解锁"
 		},
@@ -91,7 +91,7 @@
 		{
 			"id": "11",
 			"difficulty": "挑战1",
-			"warList": "101,110",
+			"warList": "120,129",
 			"unlock": "0",
 			"tiliCost": "",
 			"instructions": ""
@@ -99,152 +99,152 @@
 		{
 			"id": "12",
 			"difficulty": "挑战2",
-			"warList": "111,120",
-			"unlock": "101",
+			"warList": "130,139",
+			"unlock": "0",
 			"tiliCost": "",
 			"instructions": ""
 		},
 		{
 			"id": "13",
 			"difficulty": "挑战3",
-			"warList": "121,130",
-			"unlock": "111",
+			"warList": "140,149",
+			"unlock": "0",
 			"tiliCost": "",
 			"instructions": ""
 		},
 		{
 			"id": "14",
 			"difficulty": "挑战4",
-			"warList": "131,140",
-			"unlock": "121",
+			"warList": "150,159",
+			"unlock": "0",
 			"tiliCost": "",
 			"instructions": ""
 		},
 		{
 			"id": "15",
 			"difficulty": "挑战5",
-			"warList": "141,150",
-			"unlock": "131",
+			"warList": "160,169",
+			"unlock": "0",
 			"tiliCost": "",
 			"instructions": ""
 		},
 		{
 			"id": "16",
 			"difficulty": "挑战6",
-			"warList": "151,160",
-			"unlock": "141",
+			"warList": "170,179",
+			"unlock": "0",
 			"tiliCost": "",
 			"instructions": ""
 		},
 		{
 			"id": "17",
 			"difficulty": "挑战7",
-			"warList": "161,170",
-			"unlock": "151",
+			"warList": "180,189",
+			"unlock": "0",
 			"tiliCost": "",
 			"instructions": ""
 		},
 		{
 			"id": "18",
 			"difficulty": "挑战8",
-			"warList": "171,180",
-			"unlock": "161",
+			"warList": "190,199",
+			"unlock": "0",
 			"tiliCost": "",
 			"instructions": ""
 		},
 		{
 			"id": "19",
 			"difficulty": "挑战9",
-			"warList": "181,190",
-			"unlock": "171",
+			"warList": "200,209",
+			"unlock": "0",
 			"tiliCost": "",
 			"instructions": ""
 		},
 		{
 			"id": "20",
 			"difficulty": "挑战10",
-			"warList": "191,200",
-			"unlock": "181",
+			"warList": "210,219",
+			"unlock": "0",
 			"tiliCost": "",
 			"instructions": ""
 		},
 		{
 			"id": "21",
 			"difficulty": "挑战11",
-			"warList": "201,210",
-			"unlock": "191",
+			"warList": "220,229",
+			"unlock": "0",
 			"tiliCost": "",
 			"instructions": ""
 		},
 		{
 			"id": "22",
 			"difficulty": "挑战12",
-			"warList": "211,220",
-			"unlock": "201",
+			"warList": "230,239",
+			"unlock": "0",
 			"tiliCost": "",
 			"instructions": ""
 		},
 		{
 			"id": "23",
 			"difficulty": "挑战13",
-			"warList": "221,230",
-			"unlock": "211",
+			"warList": "240,249",
+			"unlock": "0",
 			"tiliCost": "",
 			"instructions": ""
 		},
 		{
 			"id": "24",
 			"difficulty": "挑战14",
-			"warList": "231,240",
-			"unlock": "221",
+			"warList": "250,259",
+			"unlock": "0",
 			"tiliCost": "",
 			"instructions": ""
 		},
 		{
 			"id": "25",
 			"difficulty": "挑战15",
-			"warList": "241,250",
-			"unlock": "231",
+			"warList": "260,269",
+			"unlock": "0",
 			"tiliCost": "",
 			"instructions": ""
 		},
 		{
 			"id": "26",
 			"difficulty": "挑战16",
-			"warList": "251,260",
-			"unlock": "241",
+			"warList": "270,279",
+			"unlock": "0",
 			"tiliCost": "",
 			"instructions": ""
 		},
 		{
 			"id": "27",
 			"difficulty": "挑战17",
-			"warList": "261,270",
-			"unlock": "251",
+			"warList": "280,289",
+			"unlock": "0",
 			"tiliCost": "",
 			"instructions": ""
 		},
 		{
 			"id": "28",
 			"difficulty": "挑战18",
-			"warList": "271,280",
-			"unlock": "261",
+			"warList": "290,299",
+			"unlock": "0",
 			"tiliCost": "",
 			"instructions": ""
 		},
 		{
 			"id": "29",
 			"difficulty": "挑战19",
-			"warList": "281,290",
-			"unlock": "271",
+			"warList": "300,309",
+			"unlock": "0",
 			"tiliCost": "",
 			"instructions": ""
 		},
 		{
 			"id": "30",
 			"difficulty": "挑战20",
-			"warList": "291,300",
-			"unlock": "281",
+			"warList": "310,319",
+			"unlock": "0",
 			"tiliCost": "",
 			"instructions": ""
 		},

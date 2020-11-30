@@ -208,6 +208,53 @@ public class FightController : MonoBehaviour
                     break;
             }
         }
+        //羁绊相关伤害
+        Dictionary<int, JiBanActivedClass> jiBanAllTypes = fightCardData.isPlayerCard ? playerJiBanAllTypes : enemyJiBanAllTypes;
+        //判断势力
+        switch (LoadJsonFile.heroTableDatas[fightCardData.cardId][6])
+        {
+            //蜀国
+            case "2":
+                if (jiBanAllTypes[(int)JiBanSkillName.TaoYuanJieYi].isActived)
+                {
+                    //桃园结义激活，蜀国武将伤害提升
+                    damage = (int)(damage * (LoadJsonFile.GetGameValue(148) + 100) / 100f);
+                }
+                break;
+
+            default:
+                break;
+        }
+        //判断兵系
+        switch (LoadJsonFile.classTableDatas[int.Parse(LoadJsonFile.heroTableDatas[fightCardData.cardId][5])][5])
+        {
+            //统御系
+            case "11":
+                if (jiBanAllTypes[(int)JiBanSkillName.WoLongFengChu].isActived)
+                {
+                    //卧龙凤雏激活时统御系武将伤害加成30%
+                    damage = (int)(damage * (LoadJsonFile.GetGameValue(151) + 100) / 100f);
+                }
+                break;
+            default:
+                break;
+        }
+        //判断近战远程
+        switch (fightCardData.cardMoveType)
+        {
+            //近战
+            case 0:
+                if (jiBanAllTypes[(int)JiBanSkillName.HuChiELai].isActived)
+                {
+                    //虎痴恶来激活时近战武将伤害加成30%
+                    damage = (int)(damage * (LoadJsonFile.GetGameValue(152) + 100) / 100f);
+                }
+                break;
+            default:
+                break;
+        }
+
+
         if (fightCardData.cardType == 0 && fightCardData.fightState.removeArmorNums > 0)
         {
             //若攻击者有卸甲状态伤害降低30%
@@ -905,7 +952,7 @@ public class FightController : MonoBehaviour
             {
                 if (fightCardDatas[GoalGfSetFireRound[burnRoundIndex][i]] != null && fightCardDatas[GoalGfSetFireRound[burnRoundIndex][i]].cardType == 0 && fightCardDatas[GoalGfSetFireRound[burnRoundIndex][i]].nowHp > 0)
                 {
-                    TakeToBurn(fightCardDatas[GoalGfSetFireRound[burnRoundIndex][i]], LoadJsonFile.GetGameValue(33));
+                    TakeToBurn(fightCardDatas[GoalGfSetFireRound[burnRoundIndex][i]], LoadJsonFile.GetGameValue(33), attackUnit);
                 }
                 Transform obj = posListToSetBurn[GoalGfSetFireRound[burnRoundIndex][i]].transform.Find(StringNameStatic.StateIconPath_burned);
                 if (obj != null)
@@ -958,7 +1005,7 @@ public class FightController : MonoBehaviour
                 {
                     if (fightCardDatas[targets[i]].cardType == 0)
                     {
-                        TakeToBurn(fightCardDatas[targets[i]], classType == 32 ? LoadJsonFile.GetGameValue(35) : LoadJsonFile.GetGameValue(36));
+                        TakeToBurn(fightCardDatas[targets[i]], classType == 32 ? LoadJsonFile.GetGameValue(35) : LoadJsonFile.GetGameValue(36), attackUnit);
                     }
                 }
             }
@@ -1037,7 +1084,7 @@ public class FightController : MonoBehaviour
                 }
                 else
                 {
-                    TakeOneUnitDizzed(fightCardDatas[attackedIndexList[i]], LoadJsonFile.GetGameValue(40));
+                    TakeOneUnitDizzed(fightCardDatas[attackedIndexList[i]], LoadJsonFile.GetGameValue(40), attackUnit);
                 }
             }
         }
@@ -1234,6 +1281,8 @@ public class FightController : MonoBehaviour
         {
             if (fightCardDatas[i] != null && fightCardDatas[i].nowHp > 0 && fightCardDatas[i].cardType == 0 && LoadJsonFile.heroTableDatas[fightCardDatas[i].cardId][5] == "65")
             {
+                AttackToEffectShow(fightCardDatas[i], false, "65B");
+
                 sameTypeHeroNums++;
             }
         }
@@ -1420,7 +1469,7 @@ public class FightController : MonoBehaviour
                     }
                     if (attackedUnits.cardType == 0 && attackedUnits.nowHp > 0)
                     {
-                        TakeToBurn(attackedUnits, takeBurnPro);
+                        TakeToBurn(attackedUnits, takeBurnPro, attackUnit);
                     }
                 }
             }
@@ -1432,7 +1481,7 @@ public class FightController : MonoBehaviour
             ShowSpellTextObj(attackUnit.cardObj, "55", false);
             AttackToEffectShow(attackedUnit, false, "55A");
         }
-        TakeToBurn(attackedUnit, takeBurnPro);
+        TakeToBurn(attackedUnit, takeBurnPro, attackUnit);
     }
 
     //军师技能
@@ -1523,7 +1572,7 @@ public class FightController : MonoBehaviour
         {
             //Debug.Log("-----水兵卸甲技能");
             ShowSpellTextObj(attackUnit.cardObj, "44", false);
-            TakeToRemoveArmor(attackedUnit, LoadJsonFile.GetGameValue(64));
+            TakeToRemoveArmor(attackedUnit, LoadJsonFile.GetGameValue(64), attackUnit);
         }
     }
 
@@ -1599,7 +1648,8 @@ public class FightController : MonoBehaviour
                 TakeToImprisoned(fightCardDatas[attackedIndexList[i]],
                     indexAttackType == 1 ?
                     LoadJsonFile.GetGameValue(66) :
-                    (LoadJsonFile.GetGameValue(68) * attackUnit.cardGrade + LoadJsonFile.GetGameValue(67)));
+                    (LoadJsonFile.GetGameValue(68) * attackUnit.cardGrade + LoadJsonFile.GetGameValue(67)),
+                    attackUnit);
             }
         }
     }
@@ -1638,7 +1688,8 @@ public class FightController : MonoBehaviour
                 TakeToCowardly(fightCardDatas[attackedIndexList[i]],
                     indexAttackType == 1 ?
                     LoadJsonFile.GetGameValue(69) :
-                    (LoadJsonFile.GetGameValue(71) * attackUnit.cardGrade + LoadJsonFile.GetGameValue(70)));
+                    (LoadJsonFile.GetGameValue(71) * attackUnit.cardGrade + LoadJsonFile.GetGameValue(70)),
+                    attackUnit);
             }
         }
     }
@@ -2182,7 +2233,7 @@ public class FightController : MonoBehaviour
             for (int i = 0; i < attackedIndexList.Count; i++)
             {
                 AttackToEffectShow(fightCardDatas[attackedIndexList[i]], false, effectStr);
-                TakeOneUnitDizzed(fightCardDatas[attackedIndexList[i]], propNums);
+                TakeOneUnitDizzed(fightCardDatas[attackedIndexList[i]], propNums, attackUnit);
             }
         }
     }
@@ -2237,7 +2288,7 @@ public class FightController : MonoBehaviour
             for (int i = 0; i < attackedIndexList.Count; i++)
             {
                 AttackToEffectShow(fightCardDatas[attackedIndexList[i]], false, effectStr);
-                TakeToPoisoned(fightCardDatas[attackedIndexList[i]], prop);
+                TakeToPoisoned(fightCardDatas[attackedIndexList[i]], prop, attackUnit);
 
                 int backDamage = DefDamageProcessFun(attackUnit, fightCardDatas[attackedIndexList[i]], finalDamage);
                 fightCardDatas[attackedIndexList[i]].nowHp -= backDamage;
@@ -2267,14 +2318,7 @@ public class FightController : MonoBehaviour
         if (attackedUnit.cardType == 0)
         {
             ShowSpellTextObj(attackUnit.cardObj, "25", false);
-            if (TakeSpecialAttack(LoadJsonFile.GetGameValue(147)))
-            {
-                if (attackedUnit.fightState.bleedNums <= 0)
-                {
-                    FightForManager.instance.CreateSateIcon(attackedUnit.cardObj.transform.GetChild(7), StringNameStatic.StateIconPath_bleed, true);
-                }
-                attackedUnit.fightState.bleedNums++;
-            }
+            TakeToBleed(attackedUnit, LoadJsonFile.GetGameValue(147), attackUnit);
             ShowSpellTextObj(attackUnit.cardObj, LoadJsonFile.GetStringText(16), true, true);
         }
     }
@@ -2333,7 +2377,7 @@ public class FightController : MonoBehaviour
         {
             finalDamage = (int)(finalDamage * LoadJsonFile.GetGameValue(92) / 100f);
         }
-        TakeOneUnitDizzed(attackedUnit, LoadJsonFile.GetGameValue(91));
+        TakeOneUnitDizzed(attackedUnit, LoadJsonFile.GetGameValue(91), attackUnit);
         return finalDamage;
     }
 
@@ -2500,7 +2544,7 @@ public class FightController : MonoBehaviour
 
         PlayAudioForSecondClip(8, 0);
         AttackToEffectShow(attackedUnit, false, "8A");
-        TakeOneUnitDizzed(attackedUnit, LoadJsonFile.GetGameValue(102));
+        TakeOneUnitDizzed(attackedUnit, LoadJsonFile.GetGameValue(102), attackUnit);
     }
 
     //刺甲兵种反伤-护盾闪避无效
@@ -2606,7 +2650,7 @@ public class FightController : MonoBehaviour
             else
             {
                 //远程攻击者，判断远程闪避
-                if (attackUnit.cardType == 0 && attackUnit.cardMoveType == 1 && TakeSpecialAttack(attackedUnit.fightState.miWuZhenAddtion))
+                if (attackUnit != null && attackUnit.cardType == 0 && attackUnit.cardMoveType == 1 && TakeSpecialAttack(attackedUnit.fightState.miWuZhenAddtion))
                 {
                     finalDamage = 0;
                     ShowSpellTextObj(attackedUnit.cardObj, LoadJsonFile.GetStringText(19), false);
@@ -2626,7 +2670,7 @@ public class FightController : MonoBehaviour
                     else
                     {
                         //判断护盾//不可抵挡法术
-                        if ((attackUnit.cardType != 0 || attackUnit.cardDamageType == 0) && OffsetWithStand(attackedUnit))
+                        if (attackUnit != null && (attackUnit.cardType != 0 || attackUnit.cardDamageType == 0) && OffsetWithStand(attackedUnit))
                         {
                             finalDamage = 0;
                             ShowSpellTextObj(attackedUnit.cardObj, LoadJsonFile.GetStringText(18), false);
@@ -2669,15 +2713,24 @@ public class FightController : MonoBehaviour
                                     default:
                                         break;
                                 }
+                                //羁绊相关免伤
+                                Dictionary<int, JiBanActivedClass> jiBanAllTypes = attackedUnit.isPlayerCard ? playerJiBanAllTypes : enemyJiBanAllTypes;
+                                //五子良将激活时所受伤害减免30%
+                                if (jiBanAllTypes[(int)JiBanSkillName.WuZiLiangJiang].isActived)
+                                {
+                                    defPropNums = defPropNums + LoadJsonFile.GetGameValue(153);
+                                }
+
+
                                 defPropNums = defPropNums > LoadJsonFile.GetGameValue(116) ? LoadJsonFile.GetGameValue(116) : defPropNums;
                                 finalDamage = (int)((100f - defPropNums) / 100f * finalDamage);
                                 //判断攻击者的伤害类型，获得被攻击者的物理或法术免伤百分比
-                                defPropNums = int.Parse(LoadJsonFile.heroTableDatas[attackedUnit.cardId][attackUnit.cardDamageType == 0 ? 23 : 24]);
+                                defPropNums = int.Parse(LoadJsonFile.heroTableDatas[attackedUnit.cardId][(attackUnit != null && attackUnit.cardDamageType == 0) ? 23 : 24]);
                                 finalDamage = (int)((100f - defPropNums) / 100f * finalDamage);
                             }
 
                             //藤甲免疫物理伤害
-                            if (LoadJsonFile.heroTableDatas[attackedUnit.cardId][5] == "57" && attackUnit.cardDamageType == 0)
+                            if (LoadJsonFile.heroTableDatas[attackedUnit.cardId][5] == "57" && attackUnit != null && attackUnit.cardDamageType == 0)
                             {
                                 finalDamage = 0;
                             }
@@ -2731,7 +2784,7 @@ public class FightController : MonoBehaviour
                     default:
                         break;
                 }
-                if (attackUnit.fightState.dizzyNums <= 0 && attackUnit.fightState.imprisonedNums <= 0)
+                if (attackUnit != null && attackUnit.fightState.dizzyNums <= 0 && attackUnit.fightState.imprisonedNums <= 0)
                 {
                     switch (LoadJsonFile.heroTableDatas[attackUnit.cardId][5])
                     {
@@ -2832,13 +2885,51 @@ public class FightController : MonoBehaviour
         }
     }
 
-    //触发眩晕
-    private void TakeOneUnitDizzed(FightCardData attackedUnit, int prob)
+    /// <summary>
+    /// 获得武将免疫减益效果成功几率
+    /// </summary>
+    /// <param name="cardData"></param>
+    /// <returns></returns>
+    private int GetCardDebuffSuccessRate(FightCardData cardData)
     {
+        int prop = int.Parse(LoadJsonFile.heroTableDatas[cardData.cardId][22]);
+        ////羁绊相关减益
+        //Dictionary<int, JiBanActivedClass> jiBanAllTypes = cardData.isPlayerCard ? playerJiBanAllTypes : enemyJiBanAllTypes;
+        ////魏五奇谋激活时武将减益成功率提升10%
+        //if (jiBanAllTypes[(int)JiBanSkillName.WuZiLiangJiang].isActived)
+        //{
+        //    defPropNums = defPropNums + LoadJsonFile.GetGameValue(153);
+        //}
+        return prop;
+    }
+
+    /// <summary>
+    /// 获得武将减益效果成功几率
+    /// </summary>
+    /// <param name="cardData"></param>
+    /// <returns></returns>
+    private int GetCardTakeDebuffSuccessRate(FightCardData cardData, int prop)
+    {
+        int props = prop;
+        //羁绊相关减益
+        Dictionary<int, JiBanActivedClass> jiBanAllTypes = cardData.isPlayerCard ? playerJiBanAllTypes : enemyJiBanAllTypes;
+        //魏五奇谋激活时武将减益成功率提升10%
+        if (jiBanAllTypes[(int)JiBanSkillName.WeiWuMouShi].isActived)
+        {
+            props += LoadJsonFile.GetGameValue(156);
+        }
+        return props;
+    }
+
+    //触发眩晕
+    private void TakeOneUnitDizzed(FightCardData attackedUnit, int prob, FightCardData attackUnit = null)
+    {
+        if (attackUnit != null)
+            prob = GetCardTakeDebuffSuccessRate(attackUnit, prob);
         if (attackedUnit.cardType == 0 && TakeSpecialAttack(prob))
         {
             //判断免疫负面状效果触发
-            if (!TakeSpecialAttack(int.Parse(LoadJsonFile.heroTableDatas[attackedUnit.cardId][22])))
+            if (!TakeSpecialAttack(GetCardDebuffSuccessRate(attackedUnit)))
             {
                 if (attackedUnit.fightState.dizzyNums <= 0)
                 {
@@ -2850,11 +2941,13 @@ public class FightController : MonoBehaviour
     }
 
     //触发禁锢
-    private void TakeToImprisoned(FightCardData attackedUnit, int prob)
+    private void TakeToImprisoned(FightCardData attackedUnit, int prob, FightCardData attackUnit = null)
     {
+        if (attackUnit != null)
+            prob = GetCardTakeDebuffSuccessRate(attackUnit, prob);
         if (attackedUnit.cardType == 0 && TakeSpecialAttack(prob))
         {
-            if (!TakeSpecialAttack(int.Parse(LoadJsonFile.heroTableDatas[attackedUnit.cardId][22])))
+            if (!TakeSpecialAttack(GetCardDebuffSuccessRate(attackedUnit)))
             {
                 if (attackedUnit.fightState.imprisonedNums <= 0)
                 {
@@ -2867,11 +2960,13 @@ public class FightController : MonoBehaviour
     }
 
     //触发卸甲
-    private void TakeToRemoveArmor(FightCardData attackedUnit, int prob)
+    private void TakeToRemoveArmor(FightCardData attackedUnit, int prob, FightCardData attackUnit = null)
     {
+        if (attackUnit != null)
+            prob = GetCardTakeDebuffSuccessRate(attackUnit, prob);
         if (attackedUnit.cardType == 0 && TakeSpecialAttack(prob))
         {
-            if (!TakeSpecialAttack(int.Parse(LoadJsonFile.heroTableDatas[attackedUnit.cardId][22])))
+            if (!TakeSpecialAttack(GetCardDebuffSuccessRate(attackedUnit)))
             {
                 if (attackedUnit.fightState.removeArmorNums <= 0)
                 {
@@ -2883,11 +2978,13 @@ public class FightController : MonoBehaviour
     }
 
     //触发流血
-    private void TakeToBleed(FightCardData attackedUnit, int prob)
+    private void TakeToBleed(FightCardData attackedUnit, int prob, FightCardData attackUnit = null)
     {
+        if (attackUnit != null)
+            prob = GetCardTakeDebuffSuccessRate(attackUnit, prob);
         if (attackedUnit.cardType == 0 && TakeSpecialAttack(prob))
         {
-            if (!TakeSpecialAttack(int.Parse(LoadJsonFile.heroTableDatas[attackedUnit.cardId][22])))
+            if (!TakeSpecialAttack(GetCardDebuffSuccessRate(attackedUnit)))
             {
                 if (attackedUnit.fightState.bleedNums <= 0)
                 {
@@ -2900,11 +2997,13 @@ public class FightController : MonoBehaviour
     }
 
     //触发中毒
-    private void TakeToPoisoned(FightCardData attackedUnit, int prob)
+    private void TakeToPoisoned(FightCardData attackedUnit, int prob, FightCardData attackUnit = null)
     {
+        if (attackUnit != null)
+            prob = GetCardTakeDebuffSuccessRate(attackUnit, prob);
         if (attackedUnit.cardType == 0 && TakeSpecialAttack(prob))
         {
-            if (!TakeSpecialAttack(int.Parse(LoadJsonFile.heroTableDatas[attackedUnit.cardId][22])))
+            if (!TakeSpecialAttack(GetCardDebuffSuccessRate(attackedUnit)))
             {
                 if (attackedUnit.fightState.poisonedNums <= 0)
                 {
@@ -2917,11 +3016,13 @@ public class FightController : MonoBehaviour
     }
 
     //触发灼烧
-    private void TakeToBurn(FightCardData attackedUnit, int prob)
+    private void TakeToBurn(FightCardData attackedUnit, int prob, FightCardData attackUnit = null)
     {
+        if (attackUnit != null)
+            prob = GetCardTakeDebuffSuccessRate(attackUnit, prob);
         if (attackedUnit.cardType == 0 && TakeSpecialAttack(prob))
         {
-            if (!TakeSpecialAttack(int.Parse(LoadJsonFile.heroTableDatas[attackedUnit.cardId][22])))
+            if (!TakeSpecialAttack(GetCardDebuffSuccessRate(attackedUnit)))
             {
                 if (attackedUnit.fightState.burnedNums <= 0)
                 {
@@ -2934,11 +3035,13 @@ public class FightController : MonoBehaviour
     }
 
     //触发怯战
-    private void TakeToCowardly(FightCardData attackedUnit, int prob)
+    private void TakeToCowardly(FightCardData attackedUnit, int prob, FightCardData attackUnit = null)
     {
+        if (attackUnit != null)
+            prob = GetCardTakeDebuffSuccessRate(attackUnit, prob);
         if (attackedUnit.cardType == 0 && TakeSpecialAttack(prob))
         {
-            if (!TakeSpecialAttack(int.Parse(LoadJsonFile.heroTableDatas[attackedUnit.cardId][22])))
+            if (!TakeSpecialAttack(GetCardDebuffSuccessRate(attackedUnit)))
             {
                 if (attackedUnit.fightState.cowardlyNums <= 0)
                 {
@@ -3513,6 +3616,7 @@ public class FightController : MonoBehaviour
     {
         FightCardData fightCardData;
         FightCardData[] cardDatas = isPlayer ? FightForManager.instance.playerFightCardsDatas : FightForManager.instance.enemyFightCardsDatas;
+        FightCardData[] otherCardDatas = isPlayer ? FightForManager.instance.enemyFightCardsDatas : FightForManager.instance.playerFightCardsDatas;
         float waitTime = 0f;
         switch ((JiBanSkillName)jiBanActivedClass.jiBanIndex)
         {
@@ -3540,7 +3644,38 @@ public class FightController : MonoBehaviour
                 waitTime = 1f;
                 break;
             case JiBanSkillName.WuHuShangJiang:
-                //50%概率分别为羁绊武将增加1层【内助】
+                //对敌方全体武将造成一次物理攻击（平均*0.5），并有75%概率造成【怯战】
+                int damage = 0; //记录总伤害
+                int heroNums = 0;
+                for (int i = 0; i < jiBanActivedClass.cardTypeLists.Count; i++)
+                {
+                    for (int j = 0; j < jiBanActivedClass.cardTypeLists[i].cardLists.Count; j++)
+                    {
+                        fightCardData = jiBanActivedClass.cardTypeLists[i].cardLists[j];
+                        if (fightCardData != null && fightCardData.nowHp > 0)
+                        {
+                            damage += fightCardData.damage;
+                            heroNums++;
+                            AttackToEffectShow(fightCardData, false, "JB" + jiBanActivedClass.jiBanIndex);
+                        }
+                    }
+                }
+                damage = (int)(damage * LoadJsonFile.GetGameValue(149) / heroNums / 100f);
+                for (int i = 0; i < otherCardDatas.Length; i++)
+                {
+                    if (otherCardDatas[i] != null && otherCardDatas[i].cardType == 0 && otherCardDatas[i].nowHp > 0)
+                    {
+                        int nowDamage = DefDamageProcessFun(null, otherCardDatas[i], damage);
+                        otherCardDatas[i].nowHp -= nowDamage;
+                        AttackToEffectShow(otherCardDatas[i], true);
+                        AttackedAnimShow(otherCardDatas[i], nowDamage, false);
+                        TakeToCowardly(otherCardDatas[i], LoadJsonFile.GetGameValue(150));
+                    }
+                }
+                waitTime = 2f;
+                break;
+            case JiBanSkillName.WoLongFengChu:
+                //概率分别为羁绊武将增加1层【神助】
                 for (int i = 0; i < jiBanActivedClass.cardTypeLists.Count; i++)
                 {
                     for (int j = 0; j < jiBanActivedClass.cardTypeLists[i].cardLists.Count; j++)
@@ -3549,36 +3684,13 @@ public class FightController : MonoBehaviour
                         if (fightCardData != null && fightCardData.nowHp > 0)
                         {
                             AttackToEffectShow(fightCardData, false, "JB" + jiBanActivedClass.jiBanIndex);
-                            if (TakeSpecialAttack(LoadJsonFile.GetGameValue(135)))
-                            {
-                                if (fightCardData.fightState.neizhuNums <= 0)
-                                {
-                                    FightForManager.instance.CreateSateIcon(fightCardData.cardObj.transform.GetChild(7), StringNameStatic.StateIconPath_neizhu, false);
-                                }
-                                fightCardData.fightState.neizhuNums++;
-                            }
-                        }
-                    }
-                }
-                waitTime = 1f;
-                break;
-            case JiBanSkillName.WoLongFengChu:
-                //20%概率分别为统御（兵种系）武将增加1层【内助】  统御11
-                for (int i = 0; i < cardDatas.Length; i++)
-                {
-                    fightCardData = cardDatas[i];
-                    if (fightCardData != null && fightCardData.cardType == 0 && fightCardData.nowHp > 0)
-                    {
-                        if (LoadJsonFile.classTableDatas[int.Parse(LoadJsonFile.heroTableDatas[fightCardData.cardId][5])][5] == "11")
-                        {
-                            AttackToEffectShow(fightCardData, false, "JB" + jiBanActivedClass.jiBanIndex);
                             if (TakeSpecialAttack(LoadJsonFile.GetGameValue(136)))
                             {
-                                if (fightCardData.fightState.neizhuNums <= 0)
+                                if (fightCardData.fightState.shenzhuNums <= 0)
                                 {
-                                    FightForManager.instance.CreateSateIcon(fightCardData.cardObj.transform.GetChild(7), StringNameStatic.StateIconPath_neizhu, false);
+                                    FightForManager.instance.CreateSateIcon(fightCardData.cardObj.transform.GetChild(7), StringNameStatic.StateIconPath_shenzhu, false);
                                 }
-                                fightCardData.fightState.neizhuNums++;
+                                fightCardData.fightState.shenzhuNums++;
                             }
                         }
                     }
@@ -3609,7 +3721,7 @@ public class FightController : MonoBehaviour
                 waitTime = 1f;
                 break;
             case JiBanSkillName.WuZiLiangJiang:
-                //40%概率分别为羁绊武将增加1层【内助】
+                //30 % 概率分别为羁绊武将增加1层【护盾】
                 for (int i = 0; i < jiBanActivedClass.cardTypeLists.Count; i++)
                 {
                     for (int j = 0; j < jiBanActivedClass.cardTypeLists[i].cardLists.Count; j++)
@@ -3620,11 +3732,11 @@ public class FightController : MonoBehaviour
                             AttackToEffectShow(fightCardData, false, "JB" + jiBanActivedClass.jiBanIndex);
                             if (TakeSpecialAttack(LoadJsonFile.GetGameValue(138)))
                             {
-                                if (fightCardData.fightState.neizhuNums <= 0)
+                                if (fightCardData.fightState.withStandNums <= 0)
                                 {
-                                    FightForManager.instance.CreateSateIcon(fightCardData.cardObj.transform.GetChild(7), StringNameStatic.StateIconPath_neizhu, false);
+                                    FightForManager.instance.CreateSateIcon(fightCardData.cardObj.transform.GetChild(7), StringNameStatic.StateIconPath_withStand, true);
                                 }
-                                fightCardData.fightState.neizhuNums++;
+                                fightCardData.fightState.withStandNums++;
                             }
                         }
                     }
@@ -3632,27 +3744,35 @@ public class FightController : MonoBehaviour
                 waitTime = 1f;
                 break;
             case JiBanSkillName.WeiWuMouShi:
-                //50%概率分别为干扰（兵种系）武将增加1层【内助】 干扰系12
-                for (int i = 0; i < cardDatas.Length; i++)
+                //对敌方全体武将造成一次物理攻击（平均*0.5），并有20%概率造成【眩晕】
+                int damage1 = 0; //记录总伤害
+                int heroNums1 = 0;
+                for (int i = 0; i < jiBanActivedClass.cardTypeLists.Count; i++)
                 {
-                    fightCardData = cardDatas[i];
-                    if (fightCardData != null && fightCardData.cardType == 0 && fightCardData.nowHp > 0)
+                    for (int j = 0; j < jiBanActivedClass.cardTypeLists[i].cardLists.Count; j++)
                     {
-                        if (LoadJsonFile.classTableDatas[int.Parse(LoadJsonFile.heroTableDatas[fightCardData.cardId][5])][5] == "12")
+                        fightCardData = jiBanActivedClass.cardTypeLists[i].cardLists[j];
+                        if (fightCardData != null && fightCardData.nowHp > 0)
                         {
+                            damage1 += fightCardData.damage;
+                            heroNums1++;
                             AttackToEffectShow(fightCardData, false, "JB" + jiBanActivedClass.jiBanIndex);
-                            if (TakeSpecialAttack(LoadJsonFile.GetGameValue(139)))
-                            {
-                                if (fightCardData.fightState.neizhuNums <= 0)
-                                {
-                                    FightForManager.instance.CreateSateIcon(fightCardData.cardObj.transform.GetChild(7), StringNameStatic.StateIconPath_neizhu, false);
-                                }
-                                fightCardData.fightState.neizhuNums++;
-                            }
                         }
                     }
                 }
-                waitTime = 1f;
+                damage1 = (int)(damage1 * LoadJsonFile.GetGameValue(154) / heroNums1 / 100f);
+                for (int i = 0; i < otherCardDatas.Length; i++)
+                {
+                    if (otherCardDatas[i] != null && otherCardDatas[i].cardType == 0 && otherCardDatas[i].nowHp > 0)
+                    {
+                        int nowDamage = DefDamageProcessFun(null, otherCardDatas[i], damage1);
+                        otherCardDatas[i].nowHp -= nowDamage;
+                        AttackToEffectShow(otherCardDatas[i], true);
+                        AttackedAnimShow(otherCardDatas[i], nowDamage, false);
+                        TakeOneUnitDizzed(otherCardDatas[i], LoadJsonFile.GetGameValue(155));
+                    }
+                }
+                waitTime = 2f;
                 break;
             case JiBanSkillName.HuJuJiangDong:
                 //20%概率分别为吴国（阵营）武将增加1层【内助】 吴国3

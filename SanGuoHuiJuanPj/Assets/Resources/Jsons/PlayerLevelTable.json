@@ -6,7 +6,7 @@
 			"heroLimit": "2",
 			"companionLimit": "1",
 			"homeHp": "0",
-			"yuanZheng": "301"
+			"yuanZheng": "320"
 		},
 		{
 			"level": "2",
@@ -14,7 +14,7 @@
 			"heroLimit": "3",
 			"companionLimit": "1",
 			"homeHp": "90",
-			"yuanZheng": "301"
+			"yuanZheng": "320"
 		},
 		{
 			"level": "3",
@@ -22,7 +22,7 @@
 			"heroLimit": "4",
 			"companionLimit": "1",
 			"homeHp": "180",
-			"yuanZheng": "301"
+			"yuanZheng": "320"
 		},
 		{
 			"level": "4",
@@ -30,7 +30,7 @@
 			"heroLimit": "4",
 			"companionLimit": "2",
 			"homeHp": "270",
-			"yuanZheng": "301"
+			"yuanZheng": "320"
 		},
 		{
 			"level": "5",
@@ -38,7 +38,7 @@
 			"heroLimit": "5",
 			"companionLimit": "2",
 			"homeHp": "360",
-			"yuanZheng": "301"
+			"yuanZheng": "320"
 		},
 		{
 			"level": "6",
@@ -46,7 +46,7 @@
 			"heroLimit": "6",
 			"companionLimit": "2",
 			"homeHp": "450",
-			"yuanZheng": "302"
+			"yuanZheng": "321"
 		},
 		{
 			"level": "7",
@@ -54,7 +54,7 @@
 			"heroLimit": "7",
 			"companionLimit": "2",
 			"homeHp": "540",
-			"yuanZheng": "302"
+			"yuanZheng": "321"
 		},
 		{
 			"level": "8",
@@ -62,7 +62,7 @@
 			"heroLimit": "7",
 			"companionLimit": "3",
 			"homeHp": "630",
-			"yuanZheng": "302"
+			"yuanZheng": "321"
 		},
 		{
 			"level": "9",
@@ -70,7 +70,7 @@
 			"heroLimit": "8",
 			"companionLimit": "3",
 			"homeHp": "720",
-			"yuanZheng": "302"
+			"yuanZheng": "321"
 		},
 		{
 			"level": "10",
@@ -78,7 +78,7 @@
 			"heroLimit": "9",
 			"companionLimit": "3",
 			"homeHp": "810",
-			"yuanZheng": "303"
+			"yuanZheng": "322"
 		},
 		{
 			"level": "11",
@@ -86,7 +86,7 @@
 			"heroLimit": "10",
 			"companionLimit": "3",
 			"homeHp": "900",
-			"yuanZheng": "303"
+			"yuanZheng": "322"
 		},
 		{
 			"level": "12",
@@ -94,7 +94,7 @@
 			"heroLimit": "10",
 			"companionLimit": "4",
 			"homeHp": "990",
-			"yuanZheng": "303"
+			"yuanZheng": "322"
 		},
 		{
 			"level": "13",
@@ -102,7 +102,7 @@
 			"heroLimit": "11",
 			"companionLimit": "4",
 			"homeHp": "1080",
-			"yuanZheng": "304"
+			"yuanZheng": "323"
 		},
 		{
 			"level": "14",
@@ -110,7 +110,7 @@
 			"heroLimit": "12",
 			"companionLimit": "4",
 			"homeHp": "1170",
-			"yuanZheng": "304"
+			"yuanZheng": "323"
 		},
 		{
 			"level": "15",
@@ -118,7 +118,7 @@
 			"heroLimit": "13",
 			"companionLimit": "4",
 			"homeHp": "1260",
-			"yuanZheng": "304"
+			"yuanZheng": "323"
 		},
 		{
 			"level": "16",
@@ -126,7 +126,7 @@
 			"heroLimit": "13",
 			"companionLimit": "5",
 			"homeHp": "1350",
-			"yuanZheng": "305"
+			"yuanZheng": "324"
 		},
 		{
 			"level": "17",
@@ -134,7 +134,7 @@
 			"heroLimit": "14",
 			"companionLimit": "5",
 			"homeHp": "1440",
-			"yuanZheng": "305"
+			"yuanZheng": "324"
 		},
 		{
 			"level": "18",
@@ -142,7 +142,7 @@
 			"heroLimit": "15",
 			"companionLimit": "5",
 			"homeHp": "1530",
-			"yuanZheng": "306"
+			"yuanZheng": "325"
 		},
 		{
 			"level": "19",
@@ -150,7 +150,7 @@
 			"heroLimit": "16",
 			"companionLimit": "5",
 			"homeHp": "1620",
-			"yuanZheng": "307"
+			"yuanZheng": "326"
 		},
 		{
 			"level": "20",
@@ -158,7 +158,7 @@
 			"heroLimit": "16",
 			"companionLimit": "6",
 			"homeHp": "1710",
-			"yuanZheng": "308"
+			"yuanZheng": "327"
 		}
 	]
 }

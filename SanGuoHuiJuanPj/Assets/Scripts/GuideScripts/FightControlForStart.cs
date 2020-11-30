@@ -1226,6 +1226,7 @@ public class FightControlForStart : MonoBehaviour
         {
             if (fightCardDatas[i] != null && fightCardDatas[i].nowHp > 0 && fightCardDatas[i].cardType == 0 && LoadJsonFile.heroTableDatas[fightCardDatas[i].cardId][5] == "65")
             {
+                AttackToEffectShow(fightCardDatas[i], false, "65B");
                 sameTypeHeroNums++;
             }
         }

@@ -1850,7 +1850,7 @@
 			"enemyPower": "黄巾",
 			"enemyId": "1021,1022,1023,1024,1025",
 			"homeHp": "1500",
-			"warChest": "21,",
+			"warChest": "31,",
 			"goldReward": "2",
 			"type": "0"
 		},
@@ -1895,7 +1895,7 @@
 			"enemyPower": "董卓",
 			"enemyId": "1046,1047,1048,1049,1050",
 			"homeHp": "1688",
-			"warChest": "22,",
+			"warChest": "32,",
 			"goldReward": "2",
 			"type": "0"
 		},
@@ -1940,7 +1940,7 @@
 			"enemyPower": "吕布",
 			"enemyId": "1071,1072,1073,1074,1075",
 			"homeHp": "1899",
-			"warChest": "23,",
+			"warChest": "33,",
 			"goldReward": "2",
 			"type": "0"
 		},
@@ -1985,7 +1985,7 @@
 			"enemyPower": "袁绍",
 			"enemyId": "1096,1097,1098,1099,1100",
 			"homeHp": "2137",
-			"warChest": "24,",
+			"warChest": "34,",
 			"goldReward": "2",
 			"type": "0"
 		},
@@ -2030,7 +2030,7 @@
 			"enemyPower": "曹操",
 			"enemyId": "1121,1122,1123,1124,1125",
 			"homeHp": "2405",
-			"warChest": "25,",
+			"warChest": "35,",
 			"goldReward": "2",
 			"type": "0"
 		},
@@ -2075,7 +2075,7 @@
 			"enemyPower": "袁绍",
 			"enemyId": "1146,1147,1148,1149,1150",
 			"homeHp": "2706",
-			"warChest": "26,",
+			"warChest": "36,",
 			"goldReward": "2",
 			"type": "0"
 		},
@@ -2120,7 +2120,7 @@
 			"enemyPower": "乌桓",
 			"enemyId": "1171,1172,1173,1174,1175",
 			"homeHp": "3045",
-			"warChest": "27,",
+			"warChest": "37,",
 			"goldReward": "2",
 			"type": "0"
 		},
@@ -2165,7 +2165,7 @@
 			"enemyPower": "张绣",
 			"enemyId": "1196,1197,1198,1199,1200",
 			"homeHp": "3426",
-			"warChest": "28,",
+			"warChest": "38,",
 			"goldReward": "2",
 			"type": "0"
 		},
@@ -2210,7 +2210,7 @@
 			"enemyPower": "于吉",
 			"enemyId": "1221,1222,1223,1224,1225",
 			"homeHp": "3855",
-			"warChest": "29,",
+			"warChest": "39,",
 			"goldReward": "2",
 			"type": "0"
 		},
@@ -2255,7 +2255,7 @@
 			"enemyPower": "曹操",
 			"enemyId": "1246,1247,1248,1249,1250",
 			"homeHp": "4337",
-			"warChest": "30,",
+			"warChest": "40,",
 			"goldReward": "2",
 			"type": "0"
 		},
@@ -3650,7 +3650,7 @@
 			"enemyPower": "黄巾",
 			"enemyId": "2021,2022,2023,2024,2025",
 			"homeHp": "1500",
-			"warChest": "31,",
+			"warChest": "51,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -3695,7 +3695,7 @@
 			"enemyPower": "董卓",
 			"enemyId": "2046,2047,2048,2049,2050",
 			"homeHp": "1688",
-			"warChest": "32,",
+			"warChest": "52,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -3740,7 +3740,7 @@
 			"enemyPower": "吕布",
 			"enemyId": "2071,2072,2073,2074,2075",
 			"homeHp": "1899",
-			"warChest": "33,",
+			"warChest": "53,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -3785,7 +3785,7 @@
 			"enemyPower": "袁绍",
 			"enemyId": "2096,2097,2098,2099,2100",
 			"homeHp": "2137",
-			"warChest": "34,",
+			"warChest": "54,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -3830,7 +3830,7 @@
 			"enemyPower": "曹操",
 			"enemyId": "2121,2122,2123,2124,2125",
 			"homeHp": "2405",
-			"warChest": "35,",
+			"warChest": "55,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -3875,7 +3875,7 @@
 			"enemyPower": "袁绍",
 			"enemyId": "2146,2147,2148,2149,2150",
 			"homeHp": "2706",
-			"warChest": "36,",
+			"warChest": "56,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -3920,7 +3920,7 @@
 			"enemyPower": "乌桓",
 			"enemyId": "2171,2172,2173,2174,2175",
 			"homeHp": "3045",
-			"warChest": "37,",
+			"warChest": "57,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -3965,7 +3965,7 @@
 			"enemyPower": "张绣",
 			"enemyId": "2196,2197,2198,2199,2200",
 			"homeHp": "3426",
-			"warChest": "38,",
+			"warChest": "58,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -4010,7 +4010,7 @@
 			"enemyPower": "于吉",
 			"enemyId": "2221,2222,2223,2224,2225",
 			"homeHp": "3855",
-			"warChest": "39,",
+			"warChest": "59,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -4055,7 +4055,7 @@
 			"enemyPower": "曹操",
 			"enemyId": "2246,2247,2248,2249,2250",
 			"homeHp": "4337",
-			"warChest": "40,",
+			"warChest": "60,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -5450,7 +5450,7 @@
 			"enemyPower": "黄巾",
 			"enemyId": "3021,3022,3023,3024,3025",
 			"homeHp": "1500",
-			"warChest": "41,",
+			"warChest": "71,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -5495,7 +5495,7 @@
 			"enemyPower": "董卓",
 			"enemyId": "3046,3047,3048,3049,3050",
 			"homeHp": "1688",
-			"warChest": "42,",
+			"warChest": "72,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -5540,7 +5540,7 @@
 			"enemyPower": "吕布",
 			"enemyId": "3071,3072,3073,3074,3075",
 			"homeHp": "1899",
-			"warChest": "43,",
+			"warChest": "73,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -5585,7 +5585,7 @@
 			"enemyPower": "袁绍",
 			"enemyId": "3096,3097,3098,3099,3100",
 			"homeHp": "2137",
-			"warChest": "44,",
+			"warChest": "74,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -5630,7 +5630,7 @@
 			"enemyPower": "曹操",
 			"enemyId": "3121,3122,3123,3124,3125",
 			"homeHp": "2405",
-			"warChest": "45,",
+			"warChest": "75,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -5675,7 +5675,7 @@
 			"enemyPower": "袁绍",
 			"enemyId": "3146,3147,3148,3149,3150",
 			"homeHp": "2706",
-			"warChest": "46,",
+			"warChest": "76,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -5720,7 +5720,7 @@
 			"enemyPower": "乌桓",
 			"enemyId": "3171,3172,3173,3174,3175",
 			"homeHp": "3045",
-			"warChest": "47,",
+			"warChest": "77,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -5765,7 +5765,7 @@
 			"enemyPower": "张绣",
 			"enemyId": "3196,3197,3198,3199,3200",
 			"homeHp": "3426",
-			"warChest": "48,",
+			"warChest": "78,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -5810,7 +5810,7 @@
 			"enemyPower": "于吉",
 			"enemyId": "3221,3222,3223,3224,3225",
 			"homeHp": "3855",
-			"warChest": "49,",
+			"warChest": "79,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -5855,7 +5855,7 @@
 			"enemyPower": "曹操",
 			"enemyId": "3246,3247,3248,3249,3250",
 			"homeHp": "4337",
-			"warChest": "50,",
+			"warChest": "80,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -7250,7 +7250,7 @@
 			"enemyPower": "黄巾",
 			"enemyId": "4021,4022,4023,4024,4025",
 			"homeHp": "1500",
-			"warChest": "51,",
+			"warChest": "91,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -7295,7 +7295,7 @@
 			"enemyPower": "董卓",
 			"enemyId": "4046,4047,4048,4049,4050",
 			"homeHp": "1688",
-			"warChest": "52,",
+			"warChest": "92,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -7340,7 +7340,7 @@
 			"enemyPower": "吕布",
 			"enemyId": "4071,4072,4073,4074,4075",
 			"homeHp": "1899",
-			"warChest": "53,",
+			"warChest": "93,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -7385,7 +7385,7 @@
 			"enemyPower": "袁绍",
 			"enemyId": "4096,4097,4098,4099,4100",
 			"homeHp": "2137",
-			"warChest": "54,",
+			"warChest": "94,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -7430,7 +7430,7 @@
 			"enemyPower": "曹操",
 			"enemyId": "4121,4122,4123,4124,4125",
 			"homeHp": "2405",
-			"warChest": "55,",
+			"warChest": "95,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -7475,7 +7475,7 @@
 			"enemyPower": "袁绍",
 			"enemyId": "4146,4147,4148,4149,4150",
 			"homeHp": "2706",
-			"warChest": "56,",
+			"warChest": "96,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -7520,7 +7520,7 @@
 			"enemyPower": "乌桓",
 			"enemyId": "4171,4172,4173,4174,4175",
 			"homeHp": "3045",
-			"warChest": "57,",
+			"warChest": "97,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -7565,7 +7565,7 @@
 			"enemyPower": "张绣",
 			"enemyId": "4196,4197,4198,4199,4200",
 			"homeHp": "3426",
-			"warChest": "58,",
+			"warChest": "98,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -7610,7 +7610,7 @@
 			"enemyPower": "于吉",
 			"enemyId": "4221,4222,4223,4224,4225",
 			"homeHp": "3855",
-			"warChest": "59,",
+			"warChest": "99,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -7655,7 +7655,7 @@
 			"enemyPower": "曹操",
 			"enemyId": "4246,4247,4248,4249,4250",
 			"homeHp": "4337",
-			"warChest": "60,",
+			"warChest": "100,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -10904,7 +10904,7 @@
 			"enemyPower": "黄巾",
 			"enemyId": "51,52,53,54,55",
 			"homeHp": "5000",
-			"warChest": "61,",
+			"warChest": "131,",
 			"goldReward": "0",
 			"type": "1"
 		},
@@ -10913,7 +10913,7 @@
 			"enemyPower": "黄巾",
 			"enemyId": "56,57,58,59,60",
 			"homeHp": "5500",
-			"warChest": "62,",
+			"warChest": "132,",
 			"goldReward": "0",
 			"type": "1"
 		},
@@ -10922,7 +10922,7 @@
 			"enemyPower": "黄巾",
 			"enemyId": "61,62,63,64,65",
 			"homeHp": "6000",
-			"warChest": "63,",
+			"warChest": "133,",
 			"goldReward": "0",
 			"type": "1"
 		},
@@ -10931,7 +10931,7 @@
 			"enemyPower": "黄巾",
 			"enemyId": "66,67,68,69,70",
 			"homeHp": "6500",
-			"warChest": "64,",
+			"warChest": "134,",
 			"goldReward": "0",
 			"type": "1"
 		},
@@ -10940,7 +10940,7 @@
 			"enemyPower": "黄巾",
 			"enemyId": "71,72,73,74,75",
 			"homeHp": "7000",
-			"warChest": "65,",
+			"warChest": "135,",
 			"goldReward": "0",
 			"type": "1"
 		},
@@ -10949,7 +10949,7 @@
 			"enemyPower": "黄巾",
 			"enemyId": "76,77,78,79,80",
 			"homeHp": "7500",
-			"warChest": "66,",
+			"warChest": "136,",
 			"goldReward": "0",
 			"type": "1"
 		},
@@ -10958,7 +10958,7 @@
 			"enemyPower": "黄巾",
 			"enemyId": "81,82,83,84,85",
 			"homeHp": "8000",
-			"warChest": "67,",
+			"warChest": "137,",
 			"goldReward": "0",
 			"type": "1"
 		},
@@ -10967,7 +10967,7 @@
 			"enemyPower": "黄巾",
 			"enemyId": "86,87,88,89,90",
 			"homeHp": "8500",
-			"warChest": "68,",
+			"warChest": "138,",
 			"goldReward": "0",
 			"type": "1"
 		},
@@ -10976,7 +10976,7 @@
 			"enemyPower": "黄巾",
 			"enemyId": "91,92,93,94,95",
 			"homeHp": "9000",
-			"warChest": "69,",
+			"warChest": "139,",
 			"goldReward": "0",
 			"type": "1"
 		},
@@ -10985,7 +10985,7 @@
 			"enemyPower": "黄巾",
 			"enemyId": "96,97,98,99,100",
 			"homeHp": "10000",
-			"warChest": "70,",
+			"warChest": "140,",
 			"goldReward": "0",
 			"type": "1"
 		},
@@ -11084,7 +11084,7 @@
 			"enemyPower": "董卓",
 			"enemyId": "151,152,153,154,155",
 			"homeHp": "5000",
-			"warChest": "61,",
+			"warChest": "131,",
 			"goldReward": "0",
 			"type": "1"
 		},
@@ -11093,7 +11093,7 @@
 			"enemyPower": "董卓",
 			"enemyId": "156,157,158,159,160",
 			"homeHp": "5500",
-			"warChest": "62,",
+			"warChest": "132,",
 			"goldReward": "0",
 			"type": "1"
 		},
@@ -11102,7 +11102,7 @@
 			"enemyPower": "董卓",
 			"enemyId": "161,162,163,164,165",
 			"homeHp": "6000",
-			"warChest": "63,",
+			"warChest": "133,",
 			"goldReward": "0",
 			"type": "1"
 		},
@@ -11111,7 +11111,7 @@
 			"enemyPower": "董卓",
 			"enemyId": "166,167,168,169,170",
 			"homeHp": "6500",
-			"warChest": "64,",
+			"warChest": "134,",
 			"goldReward": "0",
 			"type": "1"
 		},
@@ -11120,7 +11120,7 @@
 			"enemyPower": "董卓",
 			"enemyId": "171,172,173,174,175",
 			"homeHp": "7000",
-			"warChest": "65,",
+			"warChest": "135,",
 			"goldReward": "0",
 			"type": "1"
 		},
@@ -11129,7 +11129,7 @@
 			"enemyPower": "董卓",
 			"enemyId": "176,177,178,179,180",
 			"homeHp": "7500",
-			"warChest": "66,",
+			"warChest": "136,",
 			"goldReward": "0",
 			"type": "1"
 		},
@@ -11138,7 +11138,7 @@
 			"enemyPower": "董卓",
 			"enemyId": "181,182,183,184,185",
 			"homeHp": "8000",
-			"warChest": "67,",
+			"warChest": "137,",
 			"goldReward": "0",
 			"type": "1"
 		},
@@ -11147,7 +11147,7 @@
 			"enemyPower": "董卓",
 			"enemyId": "186,187,188,189,190",
 			"homeHp": "8500",
-			"warChest": "68,",
+			"warChest": "138,",
 			"goldReward": "0",
 			"type": "1"
 		},
@@ -11156,7 +11156,7 @@
 			"enemyPower": "董卓",
 			"enemyId": "191,192,193,194,195",
 			"homeHp": "9000",
-			"warChest": "69,",
+			"warChest": "139,",
 			"goldReward": "0",
 			"type": "1"
 		},
@@ -11165,7 +11165,7 @@
 			"enemyPower": "董卓",
 			"enemyId": "196,197,198,199,200",
 			"homeHp": "10000",
-			"warChest": "70,",
+			"warChest": "140,",
 			"goldReward": "0",
 			"type": "1"
 		},
@@ -11264,7 +11264,7 @@
 			"enemyPower": "吕布",
 			"enemyId": "251,252,253,254,255",
 			"homeHp": "5000",
-			"warChest": "61,",
+			"warChest": "131,",
 			"goldReward": "0",
 			"type": "1"
 		},
@@ -11273,7 +11273,7 @@
 			"enemyPower": "吕布",
 			"enemyId": "256,257,258,259,260",
 			"homeHp": "5500",
-			"warChest": "62,",
+			"warChest": "132,",
 			"goldReward": "0",
 			"type": "1"
 		},
@@ -11282,7 +11282,7 @@
 			"enemyPower": "吕布",
 			"enemyId": "261,262,263,264,265",
 			"homeHp": "6000",
-			"warChest": "63,",
+			"warChest": "133,",
 			"goldReward": "0",
 			"type": "1"
 		},
@@ -11291,7 +11291,7 @@
 			"enemyPower": "吕布",
 			"enemyId": "266,267,268,269,270",
 			"homeHp": "6500",
-			"warChest": "64,",
+			"warChest": "134,",
 			"goldReward": "0",
 			"type": "1"
 		},
@@ -11300,7 +11300,7 @@
 			"enemyPower": "吕布",
 			"enemyId": "271,272,273,274,275",
 			"homeHp": "7000",
-			"warChest": "65,",
+			"warChest": "135,",
 			"goldReward": "0",
 			"type": "1"
 		},
@@ -11309,7 +11309,7 @@
 			"enemyPower": "吕布",
 			"enemyId": "276,277,278,279,280",
 			"homeHp": "7500",
-			"warChest": "66,",
+			"warChest": "136,",
 			"goldReward": "0",
 			"type": "1"
 		},
@@ -11318,7 +11318,7 @@
 			"enemyPower": "吕布",
 			"enemyId": "281,282,283,284,285",
 			"homeHp": "8000",
-			"warChest": "67,",
+			"warChest": "137,",
 			"goldReward": "0",
 			"type": "1"
 		},
@@ -11327,7 +11327,7 @@
 			"enemyPower": "吕布",
 			"enemyId": "286,287,288,289,290",
 			"homeHp": "8500",
-			"warChest": "68,",
+			"warChest": "138,",
 			"goldReward": "0",
 			"type": "1"
 		},
@@ -11336,7 +11336,7 @@
 			"enemyPower": "吕布",
 			"enemyId": "291,292,293,294,295",
 			"homeHp": "9000",
-			"warChest": "69,",
+			"warChest": "139,",
 			"goldReward": "0",
 			"type": "1"
 		},
@@ -11345,7 +11345,7 @@
 			"enemyPower": "吕布",
 			"enemyId": "296,297,298,299,300",
 			"homeHp": "10000",
-			"warChest": "70,",
+			"warChest": "140,",
 			"goldReward": "0",
 			"type": "1"
 		},
@@ -11444,7 +11444,7 @@
 			"enemyPower": "袁绍",
 			"enemyId": "351,352,353,354,355",
 			"homeHp": "5000",
-			"warChest": "61,",
+			"warChest": "131,",
 			"goldReward": "0",
 			"type": "1"
 		},
@@ -11453,7 +11453,7 @@
 			"enemyPower": "袁绍",
 			"enemyId": "356,357,358,359,360",
 			"homeHp": "5500",
-			"warChest": "62,",
+			"warChest": "132,",
 			"goldReward": "0",
 			"type": "1"
 		},
@@ -11462,7 +11462,7 @@
 			"enemyPower": "袁绍",
 			"enemyId": "361,362,363,364,365",
 			"homeHp": "6000",
-			"warChest": "63,",
+			"warChest": "133,",
 			"goldReward": "0",
 			"type": "1"
 		},
@@ -11471,7 +11471,7 @@
 			"enemyPower": "袁绍",
 			"enemyId": "366,367,368,369,370",
 			"homeHp": "6500",
-			"warChest": "64,",
+			"warChest": "134,",
 			"goldReward": "0",
 			"type": "1"
 		},
@@ -11480,7 +11480,7 @@
 			"enemyPower": "袁绍",
 			"enemyId": "371,372,373,374,375",
 			"homeHp": "7000",
-			"warChest": "65,",
+			"warChest": "135,",
 			"goldReward": "0",
 			"type": "1"
 		},
@@ -11489,7 +11489,7 @@
 			"enemyPower": "袁绍",
 			"enemyId": "376,377,378,379,380",
 			"homeHp": "7500",
-			"warChest": "66,",
+			"warChest": "136,",
 			"goldReward": "0",
 			"type": "1"
 		},
@@ -11498,7 +11498,7 @@
 			"enemyPower": "袁绍",
 			"enemyId": "381,382,383,384,385",
 			"homeHp": "8000",
-			"warChest": "67,",
+			"warChest": "137,",
 			"goldReward": "0",
 			"type": "1"
 		},
@@ -11507,7 +11507,7 @@
 			"enemyPower": "袁绍",
 			"enemyId": "386,387,388,389,390",
 			"homeHp": "8500",
-			"warChest": "68,",
+			"warChest": "138,",
 			"goldReward": "0",
 			"type": "1"
 		},
@@ -11516,7 +11516,7 @@
 			"enemyPower": "袁绍",
 			"enemyId": "391,392,393,394,395",
 			"homeHp": "9000",
-			"warChest": "69,",
+			"warChest": "139,",
 			"goldReward": "0",
 			"type": "1"
 		},
@@ -11525,7 +11525,7 @@
 			"enemyPower": "袁绍",
 			"enemyId": "396,397,398,399,400",
 			"homeHp": "10000",
-			"warChest": "70,",
+			"warChest": "140,",
 			"goldReward": "0",
 			"type": "1"
 		},
@@ -11624,7 +11624,7 @@
 			"enemyPower": "曹操",
 			"enemyId": "451,452,453,454,455",
 			"homeHp": "5000",
-			"warChest": "61,",
+			"warChest": "131,",
 			"goldReward": "0",
 			"type": "1"
 		},
@@ -11633,7 +11633,7 @@
 			"enemyPower": "曹操",
 			"enemyId": "456,457,458,459,460",
 			"homeHp": "5500",
-			"warChest": "62,",
+			"warChest": "132,",
 			"goldReward": "0",
 			"type": "1"
 		},
@@ -11642,7 +11642,7 @@
 			"enemyPower": "曹操",
 			"enemyId": "461,462,463,464,465",
 			"homeHp": "6000",
-			"warChest": "63,",
+			"warChest": "133,",
 			"goldReward": "0",
 			"type": "1"
 		},
@@ -11651,7 +11651,7 @@
 			"enemyPower": "曹操",
 			"enemyId": "466,467,468,469,470",
 			"homeHp": "6500",
-			"warChest": "64,",
+			"warChest": "134,",
 			"goldReward": "0",
 			"type": "1"
 		},
@@ -11660,7 +11660,7 @@
 			"enemyPower": "曹操",
 			"enemyId": "471,472,473,474,475",
 			"homeHp": "7000",
-			"warChest": "65,",
+			"warChest": "135,",
 			"goldReward": "0",
 			"type": "1"
 		},
@@ -11669,7 +11669,7 @@
 			"enemyPower": "曹操",
 			"enemyId": "476,477,478,479,480",
 			"homeHp": "7500",
-			"warChest": "66,",
+			"warChest": "136,",
 			"goldReward": "0",
 			"type": "1"
 		},
@@ -11678,7 +11678,7 @@
 			"enemyPower": "曹操",
 			"enemyId": "481,482,483,484,485",
 			"homeHp": "8000",
-			"warChest": "67,",
+			"warChest": "137,",
 			"goldReward": "0",
 			"type": "1"
 		},
@@ -11687,7 +11687,7 @@
 			"enemyPower": "曹操",
 			"enemyId": "486,487,488,489,490",
 			"homeHp": "8500",
-			"warChest": "68,",
+			"warChest": "138,",
 			"goldReward": "0",
 			"type": "1"
 		},
@@ -11696,7 +11696,7 @@
 			"enemyPower": "曹操",
 			"enemyId": "491,492,493,494,495",
 			"homeHp": "9000",
-			"warChest": "69,",
+			"warChest": "139,",
 			"goldReward": "0",
 			"type": "1"
 		},
@@ -11705,7 +11705,7 @@
 			"enemyPower": "曹操",
 			"enemyId": "496,497,498,499,500",
 			"homeHp": "10000",
-			"warChest": "70,",
+			"warChest": "140,",
 			"goldReward": "0",
 			"type": "1"
 		},
@@ -11804,7 +11804,7 @@
 			"enemyPower": "张绣",
 			"enemyId": "551,552,553,554,555",
 			"homeHp": "5000",
-			"warChest": "61,",
+			"warChest": "131,",
 			"goldReward": "0",
 			"type": "1"
 		},
@@ -11813,7 +11813,7 @@
 			"enemyPower": "张绣",
 			"enemyId": "556,557,558,559,560",
 			"homeHp": "5500",
-			"warChest": "62,",
+			"warChest": "132,",
 			"goldReward": "0",
 			"type": "1"
 		},
@@ -11822,7 +11822,7 @@
 			"enemyPower": "张绣",
 			"enemyId": "561,562,563,564,565",
 			"homeHp": "6000",
-			"warChest": "63,",
+			"warChest": "133,",
 			"goldReward": "0",
 			"type": "1"
 		},
@@ -11831,7 +11831,7 @@
 			"enemyPower": "张绣",
 			"enemyId": "566,567,568,569,570",
 			"homeHp": "6500",
-			"warChest": "64,",
+			"warChest": "134,",
 			"goldReward": "0",
 			"type": "1"
 		},
@@ -11840,7 +11840,7 @@
 			"enemyPower": "张绣",
 			"enemyId": "571,572,573,574,575",
 			"homeHp": "7000",
-			"warChest": "65,",
+			"warChest": "135,",
 			"goldReward": "0",
 			"type": "1"
 		},
@@ -11849,7 +11849,7 @@
 			"enemyPower": "张绣",
 			"enemyId": "576,577,578,579,580",
 			"homeHp": "7500",
-			"warChest": "66,",
+			"warChest": "136,",
 			"goldReward": "0",
 			"type": "1"
 		},
@@ -11858,7 +11858,7 @@
 			"enemyPower": "张绣",
 			"enemyId": "581,582,583,584,585",
 			"homeHp": "8000",
-			"warChest": "67,",
+			"warChest": "137,",
 			"goldReward": "0",
 			"type": "1"
 		},
@@ -11867,7 +11867,7 @@
 			"enemyPower": "张绣",
 			"enemyId": "586,587,588,589,590",
 			"homeHp": "8500",
-			"warChest": "68,",
+			"warChest": "138,",
 			"goldReward": "0",
 			"type": "1"
 		},
@@ -11876,7 +11876,7 @@
 			"enemyPower": "张绣",
 			"enemyId": "591,592,593,594,595",
 			"homeHp": "9000",
-			"warChest": "69,",
+			"warChest": "139,",
 			"goldReward": "0",
 			"type": "1"
 		},
@@ -11885,7 +11885,7 @@
 			"enemyPower": "张绣",
 			"enemyId": "596,597,598,599,600",
 			"homeHp": "10000",
-			"warChest": "70,",
+			"warChest": "140,",
 			"goldReward": "0",
 			"type": "1"
 		},
@@ -11984,7 +11984,7 @@
 			"enemyPower": "袁绍",
 			"enemyId": "651,652,653,654,655",
 			"homeHp": "5000",
-			"warChest": "61,",
+			"warChest": "131,",
 			"goldReward": "0",
 			"type": "1"
 		},
@@ -11993,7 +11993,7 @@
 			"enemyPower": "袁绍",
 			"enemyId": "656,657,658,659,660",
 			"homeHp": "5500",
-			"warChest": "62,",
+			"warChest": "132,",
 			"goldReward": "0",
 			"type": "1"
 		},
@@ -12002,7 +12002,7 @@
 			"enemyPower": "袁绍",
 			"enemyId": "661,662,663,664,665",
 			"homeHp": "6000",
-			"warChest": "63,",
+			"warChest": "133,",
 			"goldReward": "0",
 			"type": "1"
 		},
@@ -12011,7 +12011,7 @@
 			"enemyPower": "袁绍",
 			"enemyId": "666,667,668,669,670",
 			"homeHp": "6500",
-			"warChest": "64,",
+			"warChest": "134,",
 			"goldReward": "0",
 			"type": "1"
 		},
@@ -12020,7 +12020,7 @@
 			"enemyPower": "袁绍",
 			"enemyId": "671,672,673,674,675",
 			"homeHp": "7000",
-			"warChest": "65,",
+			"warChest": "135,",
 			"goldReward": "0",
 			"type": "1"
 		},
@@ -12029,7 +12029,7 @@
 			"enemyPower": "袁绍",
 			"enemyId": "676,677,678,679,680",
 			"homeHp": "7500",
-			"warChest": "66,",
+			"warChest": "136,",
 			"goldReward": "0",
 			"type": "1"
 		},
@@ -12038,7 +12038,7 @@
 			"enemyPower": "袁绍",
 			"enemyId": "681,682,683,684,685",
 			"homeHp": "8000",
-			"warChest": "67,",
+			"warChest": "137,",
 			"goldReward": "0",
 			"type": "1"
 		},
@@ -12047,7 +12047,7 @@
 			"enemyPower": "袁绍",
 			"enemyId": "686,687,688,689,690",
 			"homeHp": "8500",
-			"warChest": "68,",
+			"warChest": "138,",
 			"goldReward": "0",
 			"type": "1"
 		},
@@ -12056,7 +12056,7 @@
 			"enemyPower": "袁绍",
 			"enemyId": "691,692,693,694,695",
 			"homeHp": "9000",
-			"warChest": "69,",
+			"warChest": "139,",
 			"goldReward": "0",
 			"type": "1"
 		},
@@ -12065,7 +12065,7 @@
 			"enemyPower": "袁绍",
 			"enemyId": "696,697,698,699,700",
 			"homeHp": "10000",
-			"warChest": "70,",
+			"warChest": "140,",
 			"goldReward": "0",
 			"type": "1"
 		},
@@ -12164,7 +12164,7 @@
 			"enemyPower": "乌丸",
 			"enemyId": "751,752,753,754,755",
 			"homeHp": "5000",
-			"warChest": "61,",
+			"warChest": "131,",
 			"goldReward": "0",
 			"type": "1"
 		},
@@ -12173,7 +12173,7 @@
 			"enemyPower": "乌丸",
 			"enemyId": "756,757,758,759,760",
 			"homeHp": "5500",
-			"warChest": "62,",
+			"warChest": "132,",
 			"goldReward": "0",
 			"type": "1"
 		},
@@ -12182,7 +12182,7 @@
 			"enemyPower": "乌丸",
 			"enemyId": "761,762,763,764,765",
 			"homeHp": "6000",
-			"warChest": "63,",
+			"warChest": "133,",
 			"goldReward": "0",
 			"type": "1"
 		},
@@ -12191,7 +12191,7 @@
 			"enemyPower": "乌丸",
 			"enemyId": "766,767,768,769,770",
 			"homeHp": "6500",
-			"warChest": "64,",
+			"warChest": "134,",
 			"goldReward": "0",
 			"type": "1"
 		},
@@ -12200,7 +12200,7 @@
 			"enemyPower": "乌丸",
 			"enemyId": "771,772,773,774,775",
 			"homeHp": "7000",
-			"warChest": "65,",
+			"warChest": "135,",
 			"goldReward": "0",
 			"type": "1"
 		},
@@ -12209,7 +12209,7 @@
 			"enemyPower": "乌丸",
 			"enemyId": "776,777,778,779,780",
 			"homeHp": "7500",
-			"warChest": "66,",
+			"warChest": "136,",
 			"goldReward": "0",
 			"type": "1"
 		},
@@ -12218,7 +12218,7 @@
 			"enemyPower": "乌丸",
 			"enemyId": "781,782,783,784,785",
 			"homeHp": "8000",
-			"warChest": "67,",
+			"warChest": "137,",
 			"goldReward": "0",
 			"type": "1"
 		},
@@ -12227,7 +12227,7 @@
 			"enemyPower": "乌丸",
 			"enemyId": "786,787,788,789,790",
 			"homeHp": "8500",
-			"warChest": "68,",
+			"warChest": "138,",
 			"goldReward": "0",
 			"type": "1"
 		},
@@ -12236,7 +12236,7 @@
 			"enemyPower": "乌丸",
 			"enemyId": "791,792,793,794,795",
 			"homeHp": "9000",
-			"warChest": "69,",
+			"warChest": "139,",
 			"goldReward": "0",
 			"type": "1"
 		},
@@ -12245,7 +12245,7 @@
 			"enemyPower": "乌丸",
 			"enemyId": "796,797,798,799,800",
 			"homeHp": "10000",
-			"warChest": "70,",
+			"warChest": "140,",
 			"goldReward": "0",
 			"type": "1"
 		},
@@ -12344,7 +12344,7 @@
 			"enemyPower": "",
 			"enemyId": "851,852,853,854,855",
 			"homeHp": "5000",
-			"warChest": "61,",
+			"warChest": "131,",
 			"goldReward": "0",
 			"type": "1"
 		},
@@ -12353,7 +12353,7 @@
 			"enemyPower": "",
 			"enemyId": "856,857,858,859,860",
 			"homeHp": "5500",
-			"warChest": "62,",
+			"warChest": "132,",
 			"goldReward": "0",
 			"type": "1"
 		},
@@ -12362,7 +12362,7 @@
 			"enemyPower": "",
 			"enemyId": "861,862,863,864,865",
 			"homeHp": "6000",
-			"warChest": "63,",
+			"warChest": "133,",
 			"goldReward": "0",
 			"type": "1"
 		},
@@ -12371,7 +12371,7 @@
 			"enemyPower": "",
 			"enemyId": "866,867,868,869,870",
 			"homeHp": "6500",
-			"warChest": "64,",
+			"warChest": "134,",
 			"goldReward": "0",
 			"type": "1"
 		},
@@ -12380,7 +12380,7 @@
 			"enemyPower": "",
 			"enemyId": "871,872,873,874,875",
 			"homeHp": "7000",
-			"warChest": "65,",
+			"warChest": "135,",
 			"goldReward": "0",
 			"type": "1"
 		},
@@ -12389,7 +12389,7 @@
 			"enemyPower": "",
 			"enemyId": "876,877,878,879,880",
 			"homeHp": "7500",
-			"warChest": "66,",
+			"warChest": "136,",
 			"goldReward": "0",
 			"type": "1"
 		},
@@ -12398,7 +12398,7 @@
 			"enemyPower": "",
 			"enemyId": "881,882,883,884,885",
 			"homeHp": "8000",
-			"warChest": "67,",
+			"warChest": "137,",
 			"goldReward": "0",
 			"type": "1"
 		},
@@ -12407,7 +12407,7 @@
 			"enemyPower": "",
 			"enemyId": "886,887,888,889,890",
 			"homeHp": "8500",
-			"warChest": "68,",
+			"warChest": "138,",
 			"goldReward": "0",
 			"type": "1"
 		},
@@ -12416,7 +12416,7 @@
 			"enemyPower": "",
 			"enemyId": "891,892,893,894,895",
 			"homeHp": "9000",
-			"warChest": "69,",
+			"warChest": "139,",
 			"goldReward": "0",
 			"type": "1"
 		},
@@ -12425,7 +12425,7 @@
 			"enemyPower": "",
 			"enemyId": "896,897,898,899,900",
 			"homeHp": "10000",
-			"warChest": "70,",
+			"warChest": "140,",
 			"goldReward": "0",
 			"type": "1"
 		},
@@ -12524,7 +12524,7 @@
 			"enemyPower": "",
 			"enemyId": "951,952,953,954,955",
 			"homeHp": "5000",
-			"warChest": "61,",
+			"warChest": "131,",
 			"goldReward": "0",
 			"type": "1"
 		},
@@ -12533,7 +12533,7 @@
 			"enemyPower": "",
 			"enemyId": "956,957,958,959,960",
 			"homeHp": "5500",
-			"warChest": "62,",
+			"warChest": "132,",
 			"goldReward": "0",
 			"type": "1"
 		},
@@ -12542,7 +12542,7 @@
 			"enemyPower": "",
 			"enemyId": "961,962,963,964,965",
 			"homeHp": "6000",
-			"warChest": "63,",
+			"warChest": "133,",
 			"goldReward": "0",
 			"type": "1"
 		},
@@ -12551,7 +12551,7 @@
 			"enemyPower": "",
 			"enemyId": "966,967,968,969,970",
 			"homeHp": "6500",
-			"warChest": "64,",
+			"warChest": "134,",
 			"goldReward": "0",
 			"type": "1"
 		},
@@ -12560,7 +12560,7 @@
 			"enemyPower": "",
 			"enemyId": "971,972,973,974,975",
 			"homeHp": "7000",
-			"warChest": "65,",
+			"warChest": "135,",
 			"goldReward": "0",
 			"type": "1"
 		},
@@ -12569,7 +12569,7 @@
 			"enemyPower": "",
 			"enemyId": "976,977,978,979,980",
 			"homeHp": "7500",
-			"warChest": "66,",
+			"warChest": "136,",
 			"goldReward": "0",
 			"type": "1"
 		},
@@ -12578,7 +12578,7 @@
 			"enemyPower": "",
 			"enemyId": "981,982,983,984,985",
 			"homeHp": "8000",
-			"warChest": "67,",
+			"warChest": "137,",
 			"goldReward": "0",
 			"type": "1"
 		},
@@ -12587,7 +12587,7 @@
 			"enemyPower": "",
 			"enemyId": "986,987,988,989,990",
 			"homeHp": "8500",
-			"warChest": "68,",
+			"warChest": "138,",
 			"goldReward": "0",
 			"type": "1"
 		},
@@ -12596,7 +12596,7 @@
 			"enemyPower": "",
 			"enemyId": "991,992,993,994,995",
 			"homeHp": "9000",
-			"warChest": "69,",
+			"warChest": "139,",
 			"goldReward": "0",
 			"type": "1"
 		},
@@ -12605,7 +12605,7 @@
 			"enemyPower": "",
 			"enemyId": "996,997,998,999,1000",
 			"homeHp": "10000",
-			"warChest": "70,",
+			"warChest": "140,",
 			"goldReward": "0",
 			"type": "1"
 		},
@@ -12704,7 +12704,7 @@
 			"enemyPower": "",
 			"enemyId": "1051,1052,1053,1054,1055",
 			"homeHp": "5000",
-			"warChest": "61,",
+			"warChest": "131,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -12713,7 +12713,7 @@
 			"enemyPower": "",
 			"enemyId": "1056,1057,1058,1059,1060",
 			"homeHp": "5500",
-			"warChest": "62,",
+			"warChest": "132,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -12722,7 +12722,7 @@
 			"enemyPower": "",
 			"enemyId": "1061,1062,1063,1064,1065",
 			"homeHp": "6000",
-			"warChest": "63,",
+			"warChest": "133,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -12731,7 +12731,7 @@
 			"enemyPower": "",
 			"enemyId": "1066,1067,1068,1069,1070",
 			"homeHp": "6500",
-			"warChest": "64,",
+			"warChest": "134,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -12740,7 +12740,7 @@
 			"enemyPower": "",
 			"enemyId": "1071,1072,1073,1074,1075",
 			"homeHp": "7000",
-			"warChest": "65,",
+			"warChest": "135,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -12749,7 +12749,7 @@
 			"enemyPower": "",
 			"enemyId": "1076,1077,1078,1079,1080",
 			"homeHp": "7500",
-			"warChest": "66,",
+			"warChest": "136,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -12758,7 +12758,7 @@
 			"enemyPower": "",
 			"enemyId": "1081,1082,1083,1084,1085",
 			"homeHp": "8000",
-			"warChest": "67,",
+			"warChest": "137,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -12767,7 +12767,7 @@
 			"enemyPower": "",
 			"enemyId": "1086,1087,1088,1089,1090",
 			"homeHp": "8500",
-			"warChest": "68,",
+			"warChest": "138,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -12776,7 +12776,7 @@
 			"enemyPower": "",
 			"enemyId": "1091,1092,1093,1094,1095",
 			"homeHp": "9000",
-			"warChest": "69,",
+			"warChest": "139,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -12785,7 +12785,7 @@
 			"enemyPower": "",
 			"enemyId": "1096,1097,1098,1099,1100",
 			"homeHp": "10000",
-			"warChest": "70,",
+			"warChest": "140,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -12884,7 +12884,7 @@
 			"enemyPower": "",
 			"enemyId": "1151,1152,1153,1154,1155",
 			"homeHp": "5000",
-			"warChest": "61,",
+			"warChest": "131,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -12893,7 +12893,7 @@
 			"enemyPower": "",
 			"enemyId": "1156,1157,1158,1159,1160",
 			"homeHp": "5500",
-			"warChest": "62,",
+			"warChest": "132,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -12902,7 +12902,7 @@
 			"enemyPower": "",
 			"enemyId": "1161,1162,1163,1164,1165",
 			"homeHp": "6000",
-			"warChest": "63,",
+			"warChest": "133,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -12911,7 +12911,7 @@
 			"enemyPower": "",
 			"enemyId": "1166,1167,1168,1169,1170",
 			"homeHp": "6500",
-			"warChest": "64,",
+			"warChest": "134,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -12920,7 +12920,7 @@
 			"enemyPower": "",
 			"enemyId": "1171,1172,1173,1174,1175",
 			"homeHp": "7000",
-			"warChest": "65,",
+			"warChest": "135,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -12929,7 +12929,7 @@
 			"enemyPower": "",
 			"enemyId": "1176,1177,1178,1179,1180",
 			"homeHp": "7500",
-			"warChest": "66,",
+			"warChest": "136,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -12938,7 +12938,7 @@
 			"enemyPower": "",
 			"enemyId": "1181,1182,1183,1184,1185",
 			"homeHp": "8000",
-			"warChest": "67,",
+			"warChest": "137,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -12947,7 +12947,7 @@
 			"enemyPower": "",
 			"enemyId": "1186,1187,1188,1189,1190",
 			"homeHp": "8500",
-			"warChest": "68,",
+			"warChest": "138,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -12956,7 +12956,7 @@
 			"enemyPower": "",
 			"enemyId": "1191,1192,1193,1194,1195",
 			"homeHp": "9000",
-			"warChest": "69,",
+			"warChest": "139,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -12965,7 +12965,7 @@
 			"enemyPower": "",
 			"enemyId": "1196,1197,1198,1199,1200",
 			"homeHp": "10000",
-			"warChest": "70,",
+			"warChest": "140,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -13064,7 +13064,7 @@
 			"enemyPower": "",
 			"enemyId": "1251,1252,1253,1254,1255",
 			"homeHp": "5000",
-			"warChest": "61,",
+			"warChest": "131,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -13073,7 +13073,7 @@
 			"enemyPower": "",
 			"enemyId": "1256,1257,1258,1259,1260",
 			"homeHp": "5500",
-			"warChest": "62,",
+			"warChest": "132,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -13082,7 +13082,7 @@
 			"enemyPower": "",
 			"enemyId": "1261,1262,1263,1264,1265",
 			"homeHp": "6000",
-			"warChest": "63,",
+			"warChest": "133,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -13091,7 +13091,7 @@
 			"enemyPower": "",
 			"enemyId": "1266,1267,1268,1269,1270",
 			"homeHp": "6500",
-			"warChest": "64,",
+			"warChest": "134,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -13100,7 +13100,7 @@
 			"enemyPower": "",
 			"enemyId": "1271,1272,1273,1274,1275",
 			"homeHp": "7000",
-			"warChest": "65,",
+			"warChest": "135,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -13109,7 +13109,7 @@
 			"enemyPower": "",
 			"enemyId": "1276,1277,1278,1279,1280",
 			"homeHp": "7500",
-			"warChest": "66,",
+			"warChest": "136,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -13118,7 +13118,7 @@
 			"enemyPower": "",
 			"enemyId": "1281,1282,1283,1284,1285",
 			"homeHp": "8000",
-			"warChest": "67,",
+			"warChest": "137,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -13127,7 +13127,7 @@
 			"enemyPower": "",
 			"enemyId": "1286,1287,1288,1289,1290",
 			"homeHp": "8500",
-			"warChest": "68,",
+			"warChest": "138,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -13136,7 +13136,7 @@
 			"enemyPower": "",
 			"enemyId": "1291,1292,1293,1294,1295",
 			"homeHp": "9000",
-			"warChest": "69,",
+			"warChest": "139,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -13145,7 +13145,7 @@
 			"enemyPower": "",
 			"enemyId": "1296,1297,1298,1299,1300",
 			"homeHp": "10000",
-			"warChest": "70,",
+			"warChest": "140,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -13244,7 +13244,7 @@
 			"enemyPower": "",
 			"enemyId": "1351,1352,1353,1354,1355",
 			"homeHp": "5000",
-			"warChest": "61,",
+			"warChest": "131,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -13253,7 +13253,7 @@
 			"enemyPower": "",
 			"enemyId": "1356,1357,1358,1359,1360",
 			"homeHp": "5500",
-			"warChest": "62,",
+			"warChest": "132,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -13262,7 +13262,7 @@
 			"enemyPower": "",
 			"enemyId": "1361,1362,1363,1364,1365",
 			"homeHp": "6000",
-			"warChest": "63,",
+			"warChest": "133,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -13271,7 +13271,7 @@
 			"enemyPower": "",
 			"enemyId": "1366,1367,1368,1369,1370",
 			"homeHp": "6500",
-			"warChest": "64,",
+			"warChest": "134,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -13280,7 +13280,7 @@
 			"enemyPower": "",
 			"enemyId": "1371,1372,1373,1374,1375",
 			"homeHp": "7000",
-			"warChest": "65,",
+			"warChest": "135,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -13289,7 +13289,7 @@
 			"enemyPower": "",
 			"enemyId": "1376,1377,1378,1379,1380",
 			"homeHp": "7500",
-			"warChest": "66,",
+			"warChest": "136,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -13298,7 +13298,7 @@
 			"enemyPower": "",
 			"enemyId": "1381,1382,1383,1384,1385",
 			"homeHp": "8000",
-			"warChest": "67,",
+			"warChest": "137,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -13307,7 +13307,7 @@
 			"enemyPower": "",
 			"enemyId": "1386,1387,1388,1389,1390",
 			"homeHp": "8500",
-			"warChest": "68,",
+			"warChest": "138,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -13316,7 +13316,7 @@
 			"enemyPower": "",
 			"enemyId": "1391,1392,1393,1394,1395",
 			"homeHp": "9000",
-			"warChest": "69,",
+			"warChest": "139,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -13325,7 +13325,7 @@
 			"enemyPower": "",
 			"enemyId": "1396,1397,1398,1399,1400",
 			"homeHp": "10000",
-			"warChest": "70,",
+			"warChest": "140,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -13424,7 +13424,7 @@
 			"enemyPower": "",
 			"enemyId": "1451,1452,1453,1454,1455",
 			"homeHp": "5000",
-			"warChest": "61,",
+			"warChest": "131,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -13433,7 +13433,7 @@
 			"enemyPower": "",
 			"enemyId": "1456,1457,1458,1459,1460",
 			"homeHp": "5500",
-			"warChest": "62,",
+			"warChest": "132,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -13442,7 +13442,7 @@
 			"enemyPower": "",
 			"enemyId": "1461,1462,1463,1464,1465",
 			"homeHp": "6000",
-			"warChest": "63,",
+			"warChest": "133,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -13451,7 +13451,7 @@
 			"enemyPower": "",
 			"enemyId": "1466,1467,1468,1469,1470",
 			"homeHp": "6500",
-			"warChest": "64,",
+			"warChest": "134,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -13460,7 +13460,7 @@
 			"enemyPower": "",
 			"enemyId": "1471,1472,1473,1474,1475",
 			"homeHp": "7000",
-			"warChest": "65,",
+			"warChest": "135,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -13469,7 +13469,7 @@
 			"enemyPower": "",
 			"enemyId": "1476,1477,1478,1479,1480",
 			"homeHp": "7500",
-			"warChest": "66,",
+			"warChest": "136,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -13478,7 +13478,7 @@
 			"enemyPower": "",
 			"enemyId": "1481,1482,1483,1484,1485",
 			"homeHp": "8000",
-			"warChest": "67,",
+			"warChest": "137,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -13487,7 +13487,7 @@
 			"enemyPower": "",
 			"enemyId": "1486,1487,1488,1489,1490",
 			"homeHp": "8500",
-			"warChest": "68,",
+			"warChest": "138,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -13496,7 +13496,7 @@
 			"enemyPower": "",
 			"enemyId": "1491,1492,1493,1494,1495",
 			"homeHp": "9000",
-			"warChest": "69,",
+			"warChest": "139,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -13505,7 +13505,7 @@
 			"enemyPower": "",
 			"enemyId": "1496,1497,1498,1499,1500",
 			"homeHp": "10000",
-			"warChest": "70,",
+			"warChest": "140,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -13604,7 +13604,7 @@
 			"enemyPower": "",
 			"enemyId": "1551,1552,1553,1554,1555",
 			"homeHp": "5000",
-			"warChest": "61,",
+			"warChest": "131,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -13613,7 +13613,7 @@
 			"enemyPower": "",
 			"enemyId": "1556,1557,1558,1559,1560",
 			"homeHp": "5500",
-			"warChest": "62,",
+			"warChest": "132,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -13622,7 +13622,7 @@
 			"enemyPower": "",
 			"enemyId": "1561,1562,1563,1564,1565",
 			"homeHp": "6000",
-			"warChest": "63,",
+			"warChest": "133,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -13631,7 +13631,7 @@
 			"enemyPower": "",
 			"enemyId": "1566,1567,1568,1569,1570",
 			"homeHp": "6500",
-			"warChest": "64,",
+			"warChest": "134,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -13640,7 +13640,7 @@
 			"enemyPower": "",
 			"enemyId": "1571,1572,1573,1574,1575",
 			"homeHp": "7000",
-			"warChest": "65,",
+			"warChest": "135,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -13649,7 +13649,7 @@
 			"enemyPower": "",
 			"enemyId": "1576,1577,1578,1579,1580",
 			"homeHp": "7500",
-			"warChest": "66,",
+			"warChest": "136,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -13658,7 +13658,7 @@
 			"enemyPower": "",
 			"enemyId": "1581,1582,1583,1584,1585",
 			"homeHp": "8000",
-			"warChest": "67,",
+			"warChest": "137,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -13667,7 +13667,7 @@
 			"enemyPower": "",
 			"enemyId": "1586,1587,1588,1589,1590",
 			"homeHp": "8500",
-			"warChest": "68,",
+			"warChest": "138,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -13676,7 +13676,7 @@
 			"enemyPower": "",
 			"enemyId": "1591,1592,1593,1594,1595",
 			"homeHp": "9000",
-			"warChest": "69,",
+			"warChest": "139,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -13685,7 +13685,7 @@
 			"enemyPower": "",
 			"enemyId": "1596,1597,1598,1599,1600",
 			"homeHp": "10000",
-			"warChest": "70,",
+			"warChest": "140,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -13784,7 +13784,7 @@
 			"enemyPower": "",
 			"enemyId": "1651,1652,1653,1654,1655",
 			"homeHp": "5000",
-			"warChest": "61,",
+			"warChest": "131,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -13793,7 +13793,7 @@
 			"enemyPower": "",
 			"enemyId": "1656,1657,1658,1659,1660",
 			"homeHp": "5500",
-			"warChest": "62,",
+			"warChest": "132,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -13802,7 +13802,7 @@
 			"enemyPower": "",
 			"enemyId": "1661,1662,1663,1664,1665",
 			"homeHp": "6000",
-			"warChest": "63,",
+			"warChest": "133,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -13811,7 +13811,7 @@
 			"enemyPower": "",
 			"enemyId": "1666,1667,1668,1669,1670",
 			"homeHp": "6500",
-			"warChest": "64,",
+			"warChest": "134,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -13820,7 +13820,7 @@
 			"enemyPower": "",
 			"enemyId": "1671,1672,1673,1674,1675",
 			"homeHp": "7000",
-			"warChest": "65,",
+			"warChest": "135,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -13829,7 +13829,7 @@
 			"enemyPower": "",
 			"enemyId": "1676,1677,1678,1679,1680",
 			"homeHp": "7500",
-			"warChest": "66,",
+			"warChest": "136,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -13838,7 +13838,7 @@
 			"enemyPower": "",
 			"enemyId": "1681,1682,1683,1684,1685",
 			"homeHp": "8000",
-			"warChest": "67,",
+			"warChest": "137,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -13847,7 +13847,7 @@
 			"enemyPower": "",
 			"enemyId": "1686,1687,1688,1689,1690",
 			"homeHp": "8500",
-			"warChest": "68,",
+			"warChest": "138,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -13856,7 +13856,7 @@
 			"enemyPower": "",
 			"enemyId": "1691,1692,1693,1694,1695",
 			"homeHp": "9000",
-			"warChest": "69,",
+			"warChest": "139,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -13865,7 +13865,7 @@
 			"enemyPower": "",
 			"enemyId": "1696,1697,1698,1699,1700",
 			"homeHp": "10000",
-			"warChest": "70,",
+			"warChest": "140,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -13964,7 +13964,7 @@
 			"enemyPower": "",
 			"enemyId": "1751,1752,1753,1754,1755",
 			"homeHp": "5000",
-			"warChest": "61,",
+			"warChest": "131,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -13973,7 +13973,7 @@
 			"enemyPower": "",
 			"enemyId": "1756,1757,1758,1759,1760",
 			"homeHp": "5500",
-			"warChest": "62,",
+			"warChest": "132,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -13982,7 +13982,7 @@
 			"enemyPower": "",
 			"enemyId": "1761,1762,1763,1764,1765",
 			"homeHp": "6000",
-			"warChest": "63,",
+			"warChest": "133,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -13991,7 +13991,7 @@
 			"enemyPower": "",
 			"enemyId": "1766,1767,1768,1769,1770",
 			"homeHp": "6500",
-			"warChest": "64,",
+			"warChest": "134,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -14000,7 +14000,7 @@
 			"enemyPower": "",
 			"enemyId": "1771,1772,1773,1774,1775",
 			"homeHp": "7000",
-			"warChest": "65,",
+			"warChest": "135,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -14009,7 +14009,7 @@
 			"enemyPower": "",
 			"enemyId": "1776,1777,1778,1779,1780",
 			"homeHp": "7500",
-			"warChest": "66,",
+			"warChest": "136,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -14018,7 +14018,7 @@
 			"enemyPower": "",
 			"enemyId": "1781,1782,1783,1784,1785",
 			"homeHp": "8000",
-			"warChest": "67,",
+			"warChest": "137,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -14027,7 +14027,7 @@
 			"enemyPower": "",
 			"enemyId": "1786,1787,1788,1789,1790",
 			"homeHp": "8500",
-			"warChest": "68,",
+			"warChest": "138,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -14036,7 +14036,7 @@
 			"enemyPower": "",
 			"enemyId": "1791,1792,1793,1794,1795",
 			"homeHp": "9000",
-			"warChest": "69,",
+			"warChest": "139,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -14045,7 +14045,7 @@
 			"enemyPower": "",
 			"enemyId": "1796,1797,1798,1799,1800",
 			"homeHp": "10000",
-			"warChest": "70,",
+			"warChest": "140,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -14144,7 +14144,7 @@
 			"enemyPower": "",
 			"enemyId": "1851,1852,1853,1854,1855",
 			"homeHp": "5000",
-			"warChest": "61,",
+			"warChest": "131,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -14153,7 +14153,7 @@
 			"enemyPower": "",
 			"enemyId": "1856,1857,1858,1859,1860",
 			"homeHp": "5500",
-			"warChest": "62,",
+			"warChest": "132,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -14162,7 +14162,7 @@
 			"enemyPower": "",
 			"enemyId": "1861,1862,1863,1864,1865",
 			"homeHp": "6000",
-			"warChest": "63,",
+			"warChest": "133,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -14171,7 +14171,7 @@
 			"enemyPower": "",
 			"enemyId": "1866,1867,1868,1869,1870",
 			"homeHp": "6500",
-			"warChest": "64,",
+			"warChest": "134,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -14180,7 +14180,7 @@
 			"enemyPower": "",
 			"enemyId": "1871,1872,1873,1874,1875",
 			"homeHp": "7000",
-			"warChest": "65,",
+			"warChest": "135,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -14189,7 +14189,7 @@
 			"enemyPower": "",
 			"enemyId": "1876,1877,1878,1879,1880",
 			"homeHp": "7500",
-			"warChest": "66,",
+			"warChest": "136,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -14198,7 +14198,7 @@
 			"enemyPower": "",
 			"enemyId": "1881,1882,1883,1884,1885",
 			"homeHp": "8000",
-			"warChest": "67,",
+			"warChest": "137,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -14207,7 +14207,7 @@
 			"enemyPower": "",
 			"enemyId": "1886,1887,1888,1889,1890",
 			"homeHp": "8500",
-			"warChest": "68,",
+			"warChest": "138,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -14216,7 +14216,7 @@
 			"enemyPower": "",
 			"enemyId": "1891,1892,1893,1894,1895",
 			"homeHp": "9000",
-			"warChest": "69,",
+			"warChest": "139,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -14225,7 +14225,7 @@
 			"enemyPower": "",
 			"enemyId": "1896,1897,1898,1899,1900",
 			"homeHp": "10000",
-			"warChest": "70,",
+			"warChest": "140,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -14324,7 +14324,7 @@
 			"enemyPower": "",
 			"enemyId": "1951,1952,1953,1954,1955",
 			"homeHp": "5000",
-			"warChest": "61,",
+			"warChest": "131,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -14333,7 +14333,7 @@
 			"enemyPower": "",
 			"enemyId": "1956,1957,1958,1959,1960",
 			"homeHp": "5500",
-			"warChest": "62,",
+			"warChest": "132,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -14342,7 +14342,7 @@
 			"enemyPower": "",
 			"enemyId": "1961,1962,1963,1964,1965",
 			"homeHp": "6000",
-			"warChest": "63,",
+			"warChest": "133,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -14351,7 +14351,7 @@
 			"enemyPower": "",
 			"enemyId": "1966,1967,1968,1969,1970",
 			"homeHp": "6500",
-			"warChest": "64,",
+			"warChest": "134,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -14360,7 +14360,7 @@
 			"enemyPower": "",
 			"enemyId": "1971,1972,1973,1974,1975",
 			"homeHp": "7000",
-			"warChest": "65,",
+			"warChest": "135,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -14369,7 +14369,7 @@
 			"enemyPower": "",
 			"enemyId": "1976,1977,1978,1979,1980",
 			"homeHp": "7500",
-			"warChest": "66,",
+			"warChest": "136,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -14378,7 +14378,7 @@
 			"enemyPower": "",
 			"enemyId": "1981,1982,1983,1984,1985",
 			"homeHp": "8000",
-			"warChest": "67,",
+			"warChest": "137,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -14387,7 +14387,7 @@
 			"enemyPower": "",
 			"enemyId": "1986,1987,1988,1989,1990",
 			"homeHp": "8500",
-			"warChest": "68,",
+			"warChest": "138,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -14396,7 +14396,7 @@
 			"enemyPower": "",
 			"enemyId": "1991,1992,1993,1994,1995",
 			"homeHp": "9000",
-			"warChest": "69,",
+			"warChest": "139,",
 			"goldReward": "0",
 			"type": "0"
 		},
@@ -14405,7 +14405,7 @@
 			"enemyPower": "",
 			"enemyId": "1996,1997,1998,1999,2000",
 			"homeHp": "10000",
-			"warChest": "70,",
+			"warChest": "140,",
 			"goldReward": "0",
 			"type": "0"
 		},

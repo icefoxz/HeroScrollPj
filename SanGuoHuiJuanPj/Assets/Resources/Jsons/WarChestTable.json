@@ -7,8 +7,8 @@
 			"exp": "0",
 			"shuoyu": "1,3",
 			"yuanbao": "45,55",
-			"trap": "4,75,1,1;",
-			"tower": "4,75,1,1;",
+			"trap": "4,100,1,1;",
+			"tower": "4,100,1,1;",
 			"hero": "2,50,1,3;3,50,1,2;"
 		},
 		{
@@ -36,8 +36,8 @@
 		{
 			"id": "3",
 			"chestType": "0",
-			"chestName": "",
-			"exp": "5",
+			"chestName": "【新手】宝箱",
+			"exp": "3",
 			"shuoyu": "1,3",
 			"yuanbao": "",
 			"trap": "",
@@ -47,9 +47,9 @@
 		{
 			"id": "4",
 			"chestType": "0",
-			"chestName": "",
-			"exp": "0",
-			"shuoyu": "",
+			"chestName": "【简单】宝箱",
+			"exp": "5",
+			"shuoyu": "1,3",
 			"yuanbao": "",
 			"trap": "",
 			"tower": "",
@@ -58,9 +58,9 @@
 		{
 			"id": "5",
 			"chestType": "0",
-			"chestName": "",
-			"exp": "0",
-			"shuoyu": "",
+			"chestName": "【普通】宝箱",
+			"exp": "5",
+			"shuoyu": "1,3",
 			"yuanbao": "",
 			"trap": "",
 			"tower": "",
@@ -69,9 +69,9 @@
 		{
 			"id": "6",
 			"chestType": "0",
-			"chestName": "",
-			"exp": "0",
-			"shuoyu": "",
+			"chestName": "【困难】宝箱",
+			"exp": "5",
+			"shuoyu": "1,3",
 			"yuanbao": "",
 			"trap": "",
 			"tower": "",
@@ -80,9 +80,9 @@
 		{
 			"id": "7",
 			"chestType": "0",
-			"chestName": "",
-			"exp": "0",
-			"shuoyu": "",
+			"chestName": "【炼狱】宝箱",
+			"exp": "5",
+			"shuoyu": "1,3",
 			"yuanbao": "",
 			"trap": "",
 			"tower": "",
@@ -91,9 +91,9 @@
 		{
 			"id": "8",
 			"chestType": "0",
-			"chestName": "",
-			"exp": "0",
-			"shuoyu": "",
+			"chestName": "【魔王】宝箱",
+			"exp": "5",
+			"shuoyu": "1,3",
 			"yuanbao": "",
 			"trap": "",
 			"tower": "",
@@ -102,9 +102,9 @@
 		{
 			"id": "9",
 			"chestType": "0",
-			"chestName": "",
-			"exp": "0",
-			"shuoyu": "",
+			"chestName": "【挑战】宝箱",
+			"exp": "5",
+			"shuoyu": "1,3",
 			"yuanbao": "",
 			"trap": "",
 			"tower": "",
@@ -234,117 +234,117 @@
 		{
 			"id": "21",
 			"chestType": "0",
-			"chestName": "【简单】宝箱1",
-			"exp": "5",
+			"chestName": "【新手】宝箱11",
+			"exp": "3",
 			"shuoyu": "1,3",
-			"yuanbao": "5,15",
+			"yuanbao": "0,0",
 			"trap": "",
 			"tower": "",
-			"hero": "3,100,1,1;4,100,1,1;5,40,1,1;"
+			"hero": ""
 		},
 		{
 			"id": "22",
 			"chestType": "0",
-			"chestName": "【简单】宝箱2",
-			"exp": "5",
+			"chestName": "【新手】宝箱12",
+			"exp": "3",
 			"shuoyu": "1,3",
-			"yuanbao": "15,25",
+			"yuanbao": "0,0",
 			"trap": "",
 			"tower": "",
-			"hero": "3,100,1,1;4,100,1,1;5,42,1,1;"
+			"hero": ""
 		},
 		{
 			"id": "23",
 			"chestType": "0",
-			"chestName": "【简单】宝箱3",
-			"exp": "5",
+			"chestName": "【新手】宝箱13",
+			"exp": "3",
 			"shuoyu": "1,3",
-			"yuanbao": "25,35",
+			"yuanbao": "0,0",
 			"trap": "",
 			"tower": "",
-			"hero": "3,100,1,1;4,100,1,1;5,44,1,1;"
+			"hero": ""
 		},
 		{
 			"id": "24",
 			"chestType": "0",
-			"chestName": "【简单】宝箱4",
-			"exp": "5",
+			"chestName": "【新手】宝箱14",
+			"exp": "3",
 			"shuoyu": "1,3",
-			"yuanbao": "35,45",
+			"yuanbao": "0,0",
 			"trap": "",
 			"tower": "",
-			"hero": "3,100,1,1;4,100,1,1;5,46,1,1;"
+			"hero": ""
 		},
 		{
 			"id": "25",
 			"chestType": "0",
-			"chestName": "【简单】宝箱5",
-			"exp": "5",
+			"chestName": "【新手】宝箱15",
+			"exp": "3",
 			"shuoyu": "1,3",
-			"yuanbao": "45,55",
+			"yuanbao": "0,0",
 			"trap": "",
 			"tower": "",
-			"hero": "3,100,1,1;4,100,1,1;5,48,1,1;"
+			"hero": ""
 		},
 		{
 			"id": "26",
 			"chestType": "0",
-			"chestName": "【简单】宝箱6",
-			"exp": "5",
+			"chestName": "【新手】宝箱16",
+			"exp": "3",
 			"shuoyu": "1,3",
-			"yuanbao": "55,65",
+			"yuanbao": "0,0",
 			"trap": "",
 			"tower": "",
-			"hero": "3,100,1,1;4,100,1,1;5,50,1,1;"
+			"hero": ""
 		},
 		{
 			"id": "27",
 			"chestType": "0",
-			"chestName": "【简单】宝箱7",
-			"exp": "5",
+			"chestName": "【新手】宝箱17",
+			"exp": "3",
 			"shuoyu": "1,3",
-			"yuanbao": "65,75",
+			"yuanbao": "0,0",
 			"trap": "",
 			"tower": "",
-			"hero": "3,100,1,1;4,100,1,1;5,52,1,1;"
+			"hero": ""
 		},
 		{
 			"id": "28",
 			"chestType": "0",
-			"chestName": "【简单】宝箱8",
-			"exp": "5",
+			"chestName": "【新手】宝箱18",
+			"exp": "3",
 			"shuoyu": "1,3",
-			"yuanbao": "75,85",
+			"yuanbao": "0,0",
 			"trap": "",
 			"tower": "",
-			"hero": "3,100,1,1;4,100,1,1;5,54,1,1;"
+			"hero": ""
 		},
 		{
 			"id": "29",
 			"chestType": "0",
-			"chestName": "【简单】宝箱9",
-			"exp": "5",
+			"chestName": "【新手】宝箱19",
+			"exp": "3",
 			"shuoyu": "1,3",
-			"yuanbao": "85,95",
+			"yuanbao": "0,0",
 			"trap": "",
 			"tower": "",
-			"hero": "3,100,1,1;4,100,1,1;5,57,1,1;"
+			"hero": ""
 		},
 		{
 			"id": "30",
 			"chestType": "0",
-			"chestName": "【简单】宝箱10",
-			"exp": "5",
+			"chestName": "【新手】宝箱20",
+			"exp": "3",
 			"shuoyu": "1,3",
-			"yuanbao": "95,100",
+			"yuanbao": "0,0",
 			"trap": "",
 			"tower": "",
-			"hero": "3,100,1,1;4,100,1,1;5,60,1,1;"
+			"hero": ""
 		},
 		{
 			"id": "31",
 			"chestType": "0",
-			"chestName": "【普通】宝箱1",
+			"chestName": "【简单】宝箱1",
 			"exp": "5",
 			"shuoyu": "1,3",
 			"yuanbao": "5,15",
@@ -355,7 +355,7 @@
 		{
 			"id": "32",
 			"chestType": "0",
-			"chestName": "【普通】宝箱2",
+			"chestName": "【简单】宝箱2",
 			"exp": "5",
 			"shuoyu": "1,3",
 			"yuanbao": "15,25",
@@ -366,7 +366,7 @@
 		{
 			"id": "33",
 			"chestType": "0",
-			"chestName": "【普通】宝箱3",
+			"chestName": "【简单】宝箱3",
 			"exp": "5",
 			"shuoyu": "1,3",
 			"yuanbao": "25,35",
@@ -377,7 +377,7 @@
 		{
 			"id": "34",
 			"chestType": "0",
-			"chestName": "【普通】宝箱4",
+			"chestName": "【简单】宝箱4",
 			"exp": "5",
 			"shuoyu": "1,3",
 			"yuanbao": "35,45",
@@ -388,7 +388,7 @@
 		{
 			"id": "35",
 			"chestType": "0",
-			"chestName": "【普通】宝箱5",
+			"chestName": "【简单】宝箱5",
 			"exp": "5",
 			"shuoyu": "1,3",
 			"yuanbao": "45,55",
@@ -399,7 +399,7 @@
 		{
 			"id": "36",
 			"chestType": "0",
-			"chestName": "【普通】宝箱6",
+			"chestName": "【简单】宝箱6",
 			"exp": "5",
 			"shuoyu": "1,3",
 			"yuanbao": "55,65",
@@ -410,7 +410,7 @@
 		{
 			"id": "37",
 			"chestType": "0",
-			"chestName": "【普通】宝箱7",
+			"chestName": "【简单】宝箱7",
 			"exp": "5",
 			"shuoyu": "1,3",
 			"yuanbao": "65,75",
@@ -421,7 +421,7 @@
 		{
 			"id": "38",
 			"chestType": "0",
-			"chestName": "【普通】宝箱8",
+			"chestName": "【简单】宝箱8",
 			"exp": "5",
 			"shuoyu": "1,3",
 			"yuanbao": "75,85",
@@ -432,7 +432,7 @@
 		{
 			"id": "39",
 			"chestType": "0",
-			"chestName": "【普通】宝箱9",
+			"chestName": "【简单】宝箱9",
 			"exp": "5",
 			"shuoyu": "1,3",
 			"yuanbao": "85,95",
@@ -443,7 +443,7 @@
 		{
 			"id": "40",
 			"chestType": "0",
-			"chestName": "【普通】宝箱10",
+			"chestName": "【简单】宝箱10",
 			"exp": "5",
 			"shuoyu": "1,3",
 			"yuanbao": "95,100",
@@ -454,6 +454,336 @@
 		{
 			"id": "41",
 			"chestType": "0",
+			"chestName": "【简单】宝箱11",
+			"exp": "5",
+			"shuoyu": "1,3",
+			"yuanbao": "0,0",
+			"trap": "",
+			"tower": "",
+			"hero": ""
+		},
+		{
+			"id": "42",
+			"chestType": "0",
+			"chestName": "【简单】宝箱12",
+			"exp": "5",
+			"shuoyu": "1,3",
+			"yuanbao": "0,0",
+			"trap": "",
+			"tower": "",
+			"hero": ""
+		},
+		{
+			"id": "43",
+			"chestType": "0",
+			"chestName": "【简单】宝箱13",
+			"exp": "5",
+			"shuoyu": "1,3",
+			"yuanbao": "0,0",
+			"trap": "",
+			"tower": "",
+			"hero": ""
+		},
+		{
+			"id": "44",
+			"chestType": "0",
+			"chestName": "【简单】宝箱14",
+			"exp": "5",
+			"shuoyu": "1,3",
+			"yuanbao": "0,0",
+			"trap": "",
+			"tower": "",
+			"hero": ""
+		},
+		{
+			"id": "45",
+			"chestType": "0",
+			"chestName": "【简单】宝箱15",
+			"exp": "5",
+			"shuoyu": "1,3",
+			"yuanbao": "0,0",
+			"trap": "",
+			"tower": "",
+			"hero": ""
+		},
+		{
+			"id": "46",
+			"chestType": "0",
+			"chestName": "【简单】宝箱16",
+			"exp": "5",
+			"shuoyu": "1,3",
+			"yuanbao": "0,0",
+			"trap": "",
+			"tower": "",
+			"hero": ""
+		},
+		{
+			"id": "47",
+			"chestType": "0",
+			"chestName": "【简单】宝箱17",
+			"exp": "5",
+			"shuoyu": "1,3",
+			"yuanbao": "0,0",
+			"trap": "",
+			"tower": "",
+			"hero": ""
+		},
+		{
+			"id": "48",
+			"chestType": "0",
+			"chestName": "【简单】宝箱18",
+			"exp": "5",
+			"shuoyu": "1,3",
+			"yuanbao": "0,0",
+			"trap": "",
+			"tower": "",
+			"hero": ""
+		},
+		{
+			"id": "49",
+			"chestType": "0",
+			"chestName": "【简单】宝箱19",
+			"exp": "5",
+			"shuoyu": "1,3",
+			"yuanbao": "0,0",
+			"trap": "",
+			"tower": "",
+			"hero": ""
+		},
+		{
+			"id": "50",
+			"chestType": "0",
+			"chestName": "【简单】宝箱20",
+			"exp": "5",
+			"shuoyu": "1,3",
+			"yuanbao": "0,0",
+			"trap": "",
+			"tower": "",
+			"hero": ""
+		},
+		{
+			"id": "51",
+			"chestType": "0",
+			"chestName": "【普通】宝箱1",
+			"exp": "5",
+			"shuoyu": "1,3",
+			"yuanbao": "5,15",
+			"trap": "",
+			"tower": "",
+			"hero": "3,100,1,1;4,100,1,1;5,40,1,1;"
+		},
+		{
+			"id": "52",
+			"chestType": "0",
+			"chestName": "【普通】宝箱2",
+			"exp": "5",
+			"shuoyu": "1,3",
+			"yuanbao": "15,25",
+			"trap": "",
+			"tower": "",
+			"hero": "3,100,1,1;4,100,1,1;5,42,1,1;"
+		},
+		{
+			"id": "53",
+			"chestType": "0",
+			"chestName": "【普通】宝箱3",
+			"exp": "5",
+			"shuoyu": "1,3",
+			"yuanbao": "25,35",
+			"trap": "",
+			"tower": "",
+			"hero": "3,100,1,1;4,100,1,1;5,44,1,1;"
+		},
+		{
+			"id": "54",
+			"chestType": "0",
+			"chestName": "【普通】宝箱4",
+			"exp": "5",
+			"shuoyu": "1,3",
+			"yuanbao": "35,45",
+			"trap": "",
+			"tower": "",
+			"hero": "3,100,1,1;4,100,1,1;5,46,1,1;"
+		},
+		{
+			"id": "55",
+			"chestType": "0",
+			"chestName": "【普通】宝箱5",
+			"exp": "5",
+			"shuoyu": "1,3",
+			"yuanbao": "45,55",
+			"trap": "",
+			"tower": "",
+			"hero": "3,100,1,1;4,100,1,1;5,48,1,1;"
+		},
+		{
+			"id": "56",
+			"chestType": "0",
+			"chestName": "【普通】宝箱6",
+			"exp": "5",
+			"shuoyu": "1,3",
+			"yuanbao": "55,65",
+			"trap": "",
+			"tower": "",
+			"hero": "3,100,1,1;4,100,1,1;5,50,1,1;"
+		},
+		{
+			"id": "57",
+			"chestType": "0",
+			"chestName": "【普通】宝箱7",
+			"exp": "5",
+			"shuoyu": "1,3",
+			"yuanbao": "65,75",
+			"trap": "",
+			"tower": "",
+			"hero": "3,100,1,1;4,100,1,1;5,52,1,1;"
+		},
+		{
+			"id": "58",
+			"chestType": "0",
+			"chestName": "【普通】宝箱8",
+			"exp": "5",
+			"shuoyu": "1,3",
+			"yuanbao": "75,85",
+			"trap": "",
+			"tower": "",
+			"hero": "3,100,1,1;4,100,1,1;5,54,1,1;"
+		},
+		{
+			"id": "59",
+			"chestType": "0",
+			"chestName": "【普通】宝箱9",
+			"exp": "5",
+			"shuoyu": "1,3",
+			"yuanbao": "85,95",
+			"trap": "",
+			"tower": "",
+			"hero": "3,100,1,1;4,100,1,1;5,57,1,1;"
+		},
+		{
+			"id": "60",
+			"chestType": "0",
+			"chestName": "【普通】宝箱10",
+			"exp": "5",
+			"shuoyu": "1,3",
+			"yuanbao": "95,100",
+			"trap": "",
+			"tower": "",
+			"hero": "3,100,1,1;4,100,1,1;5,60,1,1;"
+		},
+		{
+			"id": "61",
+			"chestType": "0",
+			"chestName": "【普通】宝箱11",
+			"exp": "5",
+			"shuoyu": "1,3",
+			"yuanbao": "0,0",
+			"trap": "",
+			"tower": "",
+			"hero": ""
+		},
+		{
+			"id": "62",
+			"chestType": "0",
+			"chestName": "【普通】宝箱12",
+			"exp": "5",
+			"shuoyu": "1,3",
+			"yuanbao": "0,0",
+			"trap": "",
+			"tower": "",
+			"hero": ""
+		},
+		{
+			"id": "63",
+			"chestType": "0",
+			"chestName": "【普通】宝箱13",
+			"exp": "5",
+			"shuoyu": "1,3",
+			"yuanbao": "0,0",
+			"trap": "",
+			"tower": "",
+			"hero": ""
+		},
+		{
+			"id": "64",
+			"chestType": "0",
+			"chestName": "【普通】宝箱14",
+			"exp": "5",
+			"shuoyu": "1,3",
+			"yuanbao": "0,0",
+			"trap": "",
+			"tower": "",
+			"hero": ""
+		},
+		{
+			"id": "65",
+			"chestType": "0",
+			"chestName": "【普通】宝箱15",
+			"exp": "5",
+			"shuoyu": "1,3",
+			"yuanbao": "0,0",
+			"trap": "",
+			"tower": "",
+			"hero": ""
+		},
+		{
+			"id": "66",
+			"chestType": "0",
+			"chestName": "【普通】宝箱16",
+			"exp": "5",
+			"shuoyu": "1,3",
+			"yuanbao": "0,0",
+			"trap": "",
+			"tower": "",
+			"hero": ""
+		},
+		{
+			"id": "67",
+			"chestType": "0",
+			"chestName": "【普通】宝箱17",
+			"exp": "5",
+			"shuoyu": "1,3",
+			"yuanbao": "0,0",
+			"trap": "",
+			"tower": "",
+			"hero": ""
+		},
+		{
+			"id": "68",
+			"chestType": "0",
+			"chestName": "【普通】宝箱18",
+			"exp": "5",
+			"shuoyu": "1,3",
+			"yuanbao": "0,0",
+			"trap": "",
+			"tower": "",
+			"hero": ""
+		},
+		{
+			"id": "69",
+			"chestType": "0",
+			"chestName": "【普通】宝箱19",
+			"exp": "5",
+			"shuoyu": "1,3",
+			"yuanbao": "0,0",
+			"trap": "",
+			"tower": "",
+			"hero": ""
+		},
+		{
+			"id": "70",
+			"chestType": "0",
+			"chestName": "【普通】宝箱20",
+			"exp": "5",
+			"shuoyu": "1,3",
+			"yuanbao": "0,0",
+			"trap": "",
+			"tower": "",
+			"hero": ""
+		},
+		{
+			"id": "71",
+			"chestType": "0",
 			"chestName": "【困难】宝箱1",
 			"exp": "5",
 			"shuoyu": "1,3",
@@ -463,7 +793,7 @@
 			"hero": "4,100,1,1;5,80,1,1;6,40,1,1;"
 		},
 		{
-			"id": "42",
+			"id": "72",
 			"chestType": "0",
 			"chestName": "【困难】宝箱2",
 			"exp": "5",
@@ -474,7 +804,7 @@
 			"hero": "4,100,1,1;5,82,1,1;6,42,1,1;"
 		},
 		{
-			"id": "43",
+			"id": "73",
 			"chestType": "0",
 			"chestName": "【困难】宝箱3",
 			"exp": "5",
@@ -485,7 +815,7 @@
 			"hero": "4,100,1,1;5,84,1,1;6,44,1,1;"
 		},
 		{
-			"id": "44",
+			"id": "74",
 			"chestType": "0",
 			"chestName": "【困难】宝箱4",
 			"exp": "5",
@@ -496,7 +826,7 @@
 			"hero": "4,100,1,1;5,86,1,1;6,46,1,1;"
 		},
 		{
-			"id": "45",
+			"id": "75",
 			"chestType": "0",
 			"chestName": "【困难】宝箱5",
 			"exp": "5",
@@ -507,7 +837,7 @@
 			"hero": "4,100,1,1;5,88,1,1;6,48,1,1;"
 		},
 		{
-			"id": "46",
+			"id": "76",
 			"chestType": "0",
 			"chestName": "【困难】宝箱6",
 			"exp": "5",
@@ -518,7 +848,7 @@
 			"hero": "4,100,1,1;5,90,1,1;6,50,1,1;"
 		},
 		{
-			"id": "47",
+			"id": "77",
 			"chestType": "0",
 			"chestName": "【困难】宝箱7",
 			"exp": "5",
@@ -529,7 +859,7 @@
 			"hero": "4,100,1,1;5,92,1,1;6,52,1,1;"
 		},
 		{
-			"id": "48",
+			"id": "78",
 			"chestType": "0",
 			"chestName": "【困难】宝箱8",
 			"exp": "5",
@@ -540,7 +870,7 @@
 			"hero": "4,100,1,1;5,94,1,1;6,54,1,1;"
 		},
 		{
-			"id": "49",
+			"id": "79",
 			"chestType": "0",
 			"chestName": "【困难】宝箱9",
 			"exp": "5",
@@ -551,7 +881,7 @@
 			"hero": "4,100,1,1;5,97,1,1;6,57,1,1;"
 		},
 		{
-			"id": "50",
+			"id": "80",
 			"chestType": "0",
 			"chestName": "【困难】宝箱10",
 			"exp": "5",
@@ -562,7 +892,117 @@
 			"hero": "4,100,1,1;5,100,1,1;6,60,1,1;"
 		},
 		{
-			"id": "51",
+			"id": "81",
+			"chestType": "0",
+			"chestName": "【困难】宝箱11",
+			"exp": "5",
+			"shuoyu": "1,3",
+			"yuanbao": "0,0",
+			"trap": "",
+			"tower": "",
+			"hero": ""
+		},
+		{
+			"id": "82",
+			"chestType": "0",
+			"chestName": "【困难】宝箱12",
+			"exp": "5",
+			"shuoyu": "1,3",
+			"yuanbao": "0,0",
+			"trap": "",
+			"tower": "",
+			"hero": ""
+		},
+		{
+			"id": "83",
+			"chestType": "0",
+			"chestName": "【困难】宝箱13",
+			"exp": "5",
+			"shuoyu": "1,3",
+			"yuanbao": "0,0",
+			"trap": "",
+			"tower": "",
+			"hero": ""
+		},
+		{
+			"id": "84",
+			"chestType": "0",
+			"chestName": "【困难】宝箱14",
+			"exp": "5",
+			"shuoyu": "1,3",
+			"yuanbao": "0,0",
+			"trap": "",
+			"tower": "",
+			"hero": ""
+		},
+		{
+			"id": "85",
+			"chestType": "0",
+			"chestName": "【困难】宝箱15",
+			"exp": "5",
+			"shuoyu": "1,3",
+			"yuanbao": "0,0",
+			"trap": "",
+			"tower": "",
+			"hero": ""
+		},
+		{
+			"id": "86",
+			"chestType": "0",
+			"chestName": "【困难】宝箱16",
+			"exp": "5",
+			"shuoyu": "1,3",
+			"yuanbao": "0,0",
+			"trap": "",
+			"tower": "",
+			"hero": ""
+		},
+		{
+			"id": "87",
+			"chestType": "0",
+			"chestName": "【困难】宝箱17",
+			"exp": "5",
+			"shuoyu": "1,3",
+			"yuanbao": "0,0",
+			"trap": "",
+			"tower": "",
+			"hero": ""
+		},
+		{
+			"id": "88",
+			"chestType": "0",
+			"chestName": "【困难】宝箱18",
+			"exp": "5",
+			"shuoyu": "1,3",
+			"yuanbao": "0,0",
+			"trap": "",
+			"tower": "",
+			"hero": ""
+		},
+		{
+			"id": "89",
+			"chestType": "0",
+			"chestName": "【困难】宝箱19",
+			"exp": "5",
+			"shuoyu": "1,3",
+			"yuanbao": "0,0",
+			"trap": "",
+			"tower": "",
+			"hero": ""
+		},
+		{
+			"id": "90",
+			"chestType": "0",
+			"chestName": "【困难】宝箱20",
+			"exp": "5",
+			"shuoyu": "1,3",
+			"yuanbao": "0,0",
+			"trap": "",
+			"tower": "",
+			"hero": ""
+		},
+		{
+			"id": "91",
 			"chestType": "0",
 			"chestName": "【炼狱】宝箱1",
 			"exp": "5",
@@ -573,7 +1013,7 @@
 			"hero": "5,80,1,1;6,40,1,1;"
 		},
 		{
-			"id": "52",
+			"id": "92",
 			"chestType": "0",
 			"chestName": "【炼狱】宝箱2",
 			"exp": "5",
@@ -584,7 +1024,7 @@
 			"hero": "5,82,1,1;6,42,1,1;"
 		},
 		{
-			"id": "53",
+			"id": "93",
 			"chestType": "0",
 			"chestName": "【炼狱】宝箱3",
 			"exp": "5",
@@ -595,7 +1035,7 @@
 			"hero": "5,84,1,1;6,44,1,1;"
 		},
 		{
-			"id": "54",
+			"id": "94",
 			"chestType": "0",
 			"chestName": "【炼狱】宝箱4",
 			"exp": "5",
@@ -606,7 +1046,7 @@
 			"hero": "5,86,1,1;6,46,1,1;"
 		},
 		{
-			"id": "55",
+			"id": "95",
 			"chestType": "0",
 			"chestName": "【炼狱】宝箱5",
 			"exp": "5",
@@ -617,7 +1057,7 @@
 			"hero": "5,88,1,1;6,48,1,1;"
 		},
 		{
-			"id": "56",
+			"id": "96",
 			"chestType": "0",
 			"chestName": "【炼狱】宝箱6",
 			"exp": "5",
@@ -628,7 +1068,7 @@
 			"hero": "5,90,1,1;6,50,1,1;"
 		},
 		{
-			"id": "57",
+			"id": "97",
 			"chestType": "0",
 			"chestName": "【炼狱】宝箱7",
 			"exp": "5",
@@ -639,7 +1079,7 @@
 			"hero": "5,92,1,1;6,52,1,1;"
 		},
 		{
-			"id": "58",
+			"id": "98",
 			"chestType": "0",
 			"chestName": "【炼狱】宝箱8",
 			"exp": "5",
@@ -650,7 +1090,7 @@
 			"hero": "5,94,1,1;6,54,1,1;"
 		},
 		{
-			"id": "59",
+			"id": "99",
 			"chestType": "0",
 			"chestName": "【炼狱】宝箱9",
 			"exp": "5",
@@ -661,7 +1101,7 @@
 			"hero": "5,97,1,1;6,57,1,1;"
 		},
 		{
-			"id": "60",
+			"id": "100",
 			"chestType": "0",
 			"chestName": "【炼狱】宝箱10",
 			"exp": "5",
@@ -672,7 +1112,337 @@
 			"hero": "5,100,1,1;6,60,1,1;"
 		},
 		{
-			"id": "61",
+			"id": "101",
+			"chestType": "0",
+			"chestName": "【炼狱】宝箱11",
+			"exp": "5",
+			"shuoyu": "1,3",
+			"yuanbao": "0,0",
+			"trap": "",
+			"tower": "",
+			"hero": ""
+		},
+		{
+			"id": "102",
+			"chestType": "0",
+			"chestName": "【炼狱】宝箱12",
+			"exp": "5",
+			"shuoyu": "1,3",
+			"yuanbao": "0,0",
+			"trap": "",
+			"tower": "",
+			"hero": ""
+		},
+		{
+			"id": "103",
+			"chestType": "0",
+			"chestName": "【炼狱】宝箱13",
+			"exp": "5",
+			"shuoyu": "1,3",
+			"yuanbao": "0,0",
+			"trap": "",
+			"tower": "",
+			"hero": ""
+		},
+		{
+			"id": "104",
+			"chestType": "0",
+			"chestName": "【炼狱】宝箱14",
+			"exp": "5",
+			"shuoyu": "1,3",
+			"yuanbao": "0,0",
+			"trap": "",
+			"tower": "",
+			"hero": ""
+		},
+		{
+			"id": "105",
+			"chestType": "0",
+			"chestName": "【炼狱】宝箱15",
+			"exp": "5",
+			"shuoyu": "1,3",
+			"yuanbao": "0,0",
+			"trap": "",
+			"tower": "",
+			"hero": ""
+		},
+		{
+			"id": "106",
+			"chestType": "0",
+			"chestName": "【炼狱】宝箱16",
+			"exp": "5",
+			"shuoyu": "1,3",
+			"yuanbao": "0,0",
+			"trap": "",
+			"tower": "",
+			"hero": ""
+		},
+		{
+			"id": "107",
+			"chestType": "0",
+			"chestName": "【炼狱】宝箱17",
+			"exp": "5",
+			"shuoyu": "1,3",
+			"yuanbao": "0,0",
+			"trap": "",
+			"tower": "",
+			"hero": ""
+		},
+		{
+			"id": "108",
+			"chestType": "0",
+			"chestName": "【炼狱】宝箱18",
+			"exp": "5",
+			"shuoyu": "1,3",
+			"yuanbao": "0,0",
+			"trap": "",
+			"tower": "",
+			"hero": ""
+		},
+		{
+			"id": "109",
+			"chestType": "0",
+			"chestName": "【炼狱】宝箱19",
+			"exp": "5",
+			"shuoyu": "1,3",
+			"yuanbao": "0,0",
+			"trap": "",
+			"tower": "",
+			"hero": ""
+		},
+		{
+			"id": "110",
+			"chestType": "0",
+			"chestName": "【炼狱】宝箱20",
+			"exp": "5",
+			"shuoyu": "1,3",
+			"yuanbao": "0,0",
+			"trap": "",
+			"tower": "",
+			"hero": ""
+		},
+		{
+			"id": "111",
+			"chestType": "0",
+			"chestName": "【魔王】宝箱1",
+			"exp": "5",
+			"shuoyu": "1,3",
+			"yuanbao": "5,15",
+			"trap": "",
+			"tower": "",
+			"hero": ""
+		},
+		{
+			"id": "112",
+			"chestType": "0",
+			"chestName": "【魔王】宝箱2",
+			"exp": "5",
+			"shuoyu": "1,3",
+			"yuanbao": "15,25",
+			"trap": "",
+			"tower": "",
+			"hero": ""
+		},
+		{
+			"id": "113",
+			"chestType": "0",
+			"chestName": "【魔王】宝箱3",
+			"exp": "5",
+			"shuoyu": "1,3",
+			"yuanbao": "25,35",
+			"trap": "",
+			"tower": "",
+			"hero": ""
+		},
+		{
+			"id": "114",
+			"chestType": "0",
+			"chestName": "【魔王】宝箱4",
+			"exp": "5",
+			"shuoyu": "1,3",
+			"yuanbao": "35,45",
+			"trap": "",
+			"tower": "",
+			"hero": ""
+		},
+		{
+			"id": "115",
+			"chestType": "0",
+			"chestName": "【魔王】宝箱5",
+			"exp": "5",
+			"shuoyu": "1,3",
+			"yuanbao": "45,55",
+			"trap": "",
+			"tower": "",
+			"hero": ""
+		},
+		{
+			"id": "116",
+			"chestType": "0",
+			"chestName": "【魔王】宝箱6",
+			"exp": "5",
+			"shuoyu": "1,3",
+			"yuanbao": "55,65",
+			"trap": "",
+			"tower": "",
+			"hero": ""
+		},
+		{
+			"id": "117",
+			"chestType": "0",
+			"chestName": "【魔王】宝箱7",
+			"exp": "5",
+			"shuoyu": "1,3",
+			"yuanbao": "65,75",
+			"trap": "",
+			"tower": "",
+			"hero": ""
+		},
+		{
+			"id": "118",
+			"chestType": "0",
+			"chestName": "【魔王】宝箱8",
+			"exp": "5",
+			"shuoyu": "1,3",
+			"yuanbao": "75,85",
+			"trap": "",
+			"tower": "",
+			"hero": ""
+		},
+		{
+			"id": "119",
+			"chestType": "0",
+			"chestName": "【魔王】宝箱9",
+			"exp": "5",
+			"shuoyu": "1,3",
+			"yuanbao": "85,95",
+			"trap": "",
+			"tower": "",
+			"hero": ""
+		},
+		{
+			"id": "120",
+			"chestType": "0",
+			"chestName": "【魔王】宝箱10",
+			"exp": "5",
+			"shuoyu": "1,3",
+			"yuanbao": "95,100",
+			"trap": "",
+			"tower": "",
+			"hero": ""
+		},
+		{
+			"id": "121",
+			"chestType": "0",
+			"chestName": "【魔王】宝箱11",
+			"exp": "5",
+			"shuoyu": "1,3",
+			"yuanbao": "0,0",
+			"trap": "",
+			"tower": "",
+			"hero": ""
+		},
+		{
+			"id": "122",
+			"chestType": "0",
+			"chestName": "【魔王】宝箱12",
+			"exp": "5",
+			"shuoyu": "1,3",
+			"yuanbao": "0,0",
+			"trap": "",
+			"tower": "",
+			"hero": ""
+		},
+		{
+			"id": "123",
+			"chestType": "0",
+			"chestName": "【魔王】宝箱13",
+			"exp": "5",
+			"shuoyu": "1,3",
+			"yuanbao": "0,0",
+			"trap": "",
+			"tower": "",
+			"hero": ""
+		},
+		{
+			"id": "124",
+			"chestType": "0",
+			"chestName": "【魔王】宝箱14",
+			"exp": "5",
+			"shuoyu": "1,3",
+			"yuanbao": "0,0",
+			"trap": "",
+			"tower": "",
+			"hero": ""
+		},
+		{
+			"id": "125",
+			"chestType": "0",
+			"chestName": "【魔王】宝箱15",
+			"exp": "5",
+			"shuoyu": "1,3",
+			"yuanbao": "0,0",
+			"trap": "",
+			"tower": "",
+			"hero": ""
+		},
+		{
+			"id": "126",
+			"chestType": "0",
+			"chestName": "【魔王】宝箱16",
+			"exp": "5",
+			"shuoyu": "1,3",
+			"yuanbao": "0,0",
+			"trap": "",
+			"tower": "",
+			"hero": ""
+		},
+		{
+			"id": "127",
+			"chestType": "0",
+			"chestName": "【魔王】宝箱17",
+			"exp": "5",
+			"shuoyu": "1,3",
+			"yuanbao": "0,0",
+			"trap": "",
+			"tower": "",
+			"hero": ""
+		},
+		{
+			"id": "128",
+			"chestType": "0",
+			"chestName": "【魔王】宝箱18",
+			"exp": "5",
+			"shuoyu": "1,3",
+			"yuanbao": "0,0",
+			"trap": "",
+			"tower": "",
+			"hero": ""
+		},
+		{
+			"id": "129",
+			"chestType": "0",
+			"chestName": "【魔王】宝箱19",
+			"exp": "5",
+			"shuoyu": "1,3",
+			"yuanbao": "0,0",
+			"trap": "",
+			"tower": "",
+			"hero": ""
+		},
+		{
+			"id": "130",
+			"chestType": "0",
+			"chestName": "【魔王】宝箱20",
+			"exp": "5",
+			"shuoyu": "1,3",
+			"yuanbao": "0,0",
+			"trap": "",
+			"tower": "",
+			"hero": ""
+		},
+		{
+			"id": "131",
 			"chestType": "0",
 			"chestName": "【挑战】宝箱1",
 			"exp": "5",
@@ -683,7 +1453,7 @@
 			"hero": "5,80,1,1;6,40,1,1;"
 		},
 		{
-			"id": "62",
+			"id": "132",
 			"chestType": "0",
 			"chestName": "【挑战】宝箱2",
 			"exp": "5",
@@ -694,7 +1464,7 @@
 			"hero": "5,82,1,1;6,42,1,1;"
 		},
 		{
-			"id": "63",
+			"id": "133",
 			"chestType": "0",
 			"chestName": "【挑战】宝箱3",
 			"exp": "5",
@@ -705,7 +1475,7 @@
 			"hero": "5,84,1,1;6,44,1,1;"
 		},
 		{
-			"id": "64",
+			"id": "134",
 			"chestType": "0",
 			"chestName": "【挑战】宝箱4",
 			"exp": "5",
@@ -716,7 +1486,7 @@
 			"hero": "5,86,1,1;6,46,1,1;"
 		},
 		{
-			"id": "65",
+			"id": "135",
 			"chestType": "0",
 			"chestName": "【挑战】宝箱5",
 			"exp": "5",
@@ -727,7 +1497,7 @@
 			"hero": "5,88,1,1;6,48,1,1;"
 		},
 		{
-			"id": "66",
+			"id": "136",
 			"chestType": "0",
 			"chestName": "【挑战】宝箱6",
 			"exp": "5",
@@ -738,7 +1508,7 @@
 			"hero": "5,90,1,1;6,50,1,1;"
 		},
 		{
-			"id": "67",
+			"id": "137",
 			"chestType": "0",
 			"chestName": "【挑战】宝箱7",
 			"exp": "5",
@@ -749,7 +1519,7 @@
 			"hero": "5,92,1,1;6,52,1,1;"
 		},
 		{
-			"id": "68",
+			"id": "138",
 			"chestType": "0",
 			"chestName": "【挑战】宝箱8",
 			"exp": "5",
@@ -760,7 +1530,7 @@
 			"hero": "5,94,1,1;6,54,1,1;"
 		},
 		{
-			"id": "69",
+			"id": "139",
 			"chestType": "0",
 			"chestName": "【挑战】宝箱9",
 			"exp": "5",
@@ -771,7 +1541,7 @@
 			"hero": "5,97,1,1;6,57,1,1;"
 		},
 		{
-			"id": "70",
+			"id": "140",
 			"chestType": "0",
 			"chestName": "【挑战】宝箱10",
 			"exp": "5",
