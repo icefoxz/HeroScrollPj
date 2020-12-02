@@ -967,6 +967,86 @@
 			"unitLevel": "10",
 			"goldReward": "1",
 			"warChest": "100,"
+		},
+		{
+			"enemyUnit": "121",
+			"unitType": "3",
+			"rarity": "6",
+			"unitLevel": "1",
+			"goldReward": "1",
+			"warChest": "131,"
+		},
+		{
+			"enemyUnit": "122",
+			"unitType": "3",
+			"rarity": "6",
+			"unitLevel": "2",
+			"goldReward": "1",
+			"warChest": "132,"
+		},
+		{
+			"enemyUnit": "123",
+			"unitType": "3",
+			"rarity": "6",
+			"unitLevel": "3",
+			"goldReward": "1",
+			"warChest": "133,"
+		},
+		{
+			"enemyUnit": "124",
+			"unitType": "3",
+			"rarity": "6",
+			"unitLevel": "4",
+			"goldReward": "1",
+			"warChest": "134,"
+		},
+		{
+			"enemyUnit": "125",
+			"unitType": "3",
+			"rarity": "6",
+			"unitLevel": "5",
+			"goldReward": "1",
+			"warChest": "135,"
+		},
+		{
+			"enemyUnit": "126",
+			"unitType": "3",
+			"rarity": "6",
+			"unitLevel": "6",
+			"goldReward": "1",
+			"warChest": "136,"
+		},
+		{
+			"enemyUnit": "127",
+			"unitType": "3",
+			"rarity": "6",
+			"unitLevel": "7",
+			"goldReward": "1",
+			"warChest": "137,"
+		},
+		{
+			"enemyUnit": "128",
+			"unitType": "3",
+			"rarity": "6",
+			"unitLevel": "8",
+			"goldReward": "1",
+			"warChest": "138,"
+		},
+		{
+			"enemyUnit": "129",
+			"unitType": "3",
+			"rarity": "6",
+			"unitLevel": "9",
+			"goldReward": "1",
+			"warChest": "139,"
+		},
+		{
+			"enemyUnit": "130",
+			"unitType": "3",
+			"rarity": "6",
+			"unitLevel": "10",
+			"goldReward": "1",
+			"warChest": "140,"
 		}
 	]
 }
