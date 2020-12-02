@@ -304,6 +304,7 @@ public class JiBanActivedClass
 {
     public int jiBanIndex { get; set; }
     public bool isActived { get; set; }
+    public bool isHadBossId { get; set; }
     public List<JiBanCardTypeClass> cardTypeLists { get; set; }
 }
 
@@ -314,6 +315,7 @@ public class JiBanCardTypeClass
 {
     public int cardType { get; set; }
     public int cardId { get; set; }
+    public int bossId { get; set; }
     public List<FightCardData> cardLists { get; set; }
 }
 

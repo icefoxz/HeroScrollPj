@@ -420,6 +420,16 @@ public class FightForManager : MonoBehaviour
                 jiBanActivedClass.isActived = false;
                 jiBanActivedClass.cardTypeLists = new List<JiBanCardTypeClass>();
                 string[] arrs = LoadJsonFile.jiBanTableDatas[i][3].Split(';');
+                string[] arrBoss = new string[] { }; //  记录bossId
+                if (LoadJsonFile.jiBanTableDatas[i][5]!="")
+                {
+                    jiBanActivedClass.isHadBossId = true;
+                    arrBoss = LoadJsonFile.jiBanTableDatas[i][5].Split(';');
+                }
+                else
+                {
+                    jiBanActivedClass.isHadBossId = false;
+                }
                 for (int j = 0; j < arrs.Length; j++)
                 {
                     if (arrs[j] != "")
@@ -428,6 +438,8 @@ public class FightForManager : MonoBehaviour
                         string[] arrss = arrs[j].Split(',');
                         jiBanCardTypeClass.cardType = int.Parse(arrss[0]);
                         jiBanCardTypeClass.cardId = int.Parse(arrss[1]);
+                        if (jiBanActivedClass.isHadBossId)
+                            jiBanCardTypeClass.bossId = int.Parse(arrBoss[j].Split(',')[1]);
                         jiBanCardTypeClass.cardLists = new List<FightCardData>();
                         jiBanActivedClass.cardTypeLists.Add(jiBanCardTypeClass);
                     }
@@ -459,7 +471,9 @@ public class FightForManager : MonoBehaviour
                     bool isActived = true;
                     for (int j = 0; j < jiBanActivedClass.cardTypeLists.Count; j++)
                     {
-                        if (jiBanActivedClass.cardTypeLists[j].cardType == cardData.cardType && jiBanActivedClass.cardTypeLists[j].cardId == cardData.cardId)
+                        if (jiBanActivedClass.cardTypeLists[j].cardType == cardData.cardType
+                            && (jiBanActivedClass.cardTypeLists[j].cardId == cardData.cardId
+                            || (jiBanActivedClass.isHadBossId && jiBanActivedClass.cardTypeLists[j].bossId == cardData.cardId)))
                         {
                             if (isAdd)
                             {
