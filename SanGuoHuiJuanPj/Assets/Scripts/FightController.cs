@@ -3791,7 +3791,7 @@ public class FightController : MonoBehaviour
                 break;
             case JiBanSkillName.WeiWuMouShi:
                 //对敌方全体武将造成一次物理攻击（平均*0.5），并有20%概率造成【眩晕】
-                PlayAudioForSecondClip(102, 0);
+                PlayAudioForSecondClip(103, 0);
                 fullScreenEffectObjs[4].SetActive(false);
                 fullScreenEffectObjs[4].transform.position = jBEffectShowPos[isPlayer ? 0 : 1].position;
                 fullScreenEffectObjs[4].SetActive(true);
