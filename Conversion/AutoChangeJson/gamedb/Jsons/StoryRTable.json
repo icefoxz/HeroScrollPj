@@ -1,0 +1,1012 @@
+{
+	"StoryRTable": [
+		{
+			"id": "0",
+			"ending": "你挥起长剑，劈开宝箱。一些金币出现在眼前……",
+			"unitType": "-1",
+			"unitId": "0",
+			"unitLevel": "0",
+			"unitCount": "0",
+			"goldReward": "10"
+		},
+		{
+			"id": "1",
+			"ending": "此物来历不明，恐敌人使诈。行军要紧，不容耽误……",
+			"unitType": "-1",
+			"unitId": "0",
+			"unitLevel": "0",
+			"unitCount": "0",
+			"goldReward": "0"
+		},
+		{
+			"id": "2",
+			"ending": "你挥起长剑，劈开宝箱。一阵烟雾散去，出现一具干尸……将士们窃窃私语，此乃不祥之兆矣……\n<color=##FFFFFF00>缩进</color>你只得花费军饷，安抚军心……",
+			"unitType": "-1",
+			"unitId": "0",
+			"unitLevel": "0",
+			"unitCount": "0",
+			"goldReward": "-5"
+		},
+		{
+			"id": "3",
+			"ending": "此物来历不明，恐敌人使诈。行军要紧，不容耽误……",
+			"unitType": "-1",
+			"unitId": "0",
+			"unitLevel": "0",
+			"unitCount": "0",
+			"goldReward": "0"
+		},
+		{
+			"id": "4",
+			"ending": "难民皆是战乱所害，怎能见死不救……\n<color=#FFFFFF00>缩进</color>你分出一些军粮给难民充饥，难民们感激涕零，皆请愿随你出生入死！",
+			"unitType": "0",
+			"unitId": "0",
+			"unitLevel": "1",
+			"unitCount": "3",
+			"goldReward": "0"
+		},
+		{
+			"id": "5",
+			"ending": "此等人皆来路不明，恐敌人使诈。赶路要紧，你下令驱赶难民，导致怨声载道。",
+			"unitType": "-1",
+			"unitId": "0",
+			"unitLevel": "0",
+			"unitCount": "0",
+			"goldReward": "0"
+		},
+		{
+			"id": "6",
+			"ending": "正当你施舍之时，突然响起叫杀之声。你中了敌人奸计，于混乱之中紧忙撤退。",
+			"unitType": "-1",
+			"unitId": "0",
+			"unitLevel": "0",
+			"unitCount": "0",
+			"goldReward": "-2"
+		},
+		{
+			"id": "7",
+			"ending": "原来拦路之人并非难民，乃是山贼装扮而成……你大破山贼，俘获壮丁无数，将其充军……",
+			"unitType": "0",
+			"unitId": "0",
+			"unitLevel": "1",
+			"unitCount": "3",
+			"goldReward": "0"
+		},
+		{
+			"id": "8",
+			"ending": "你朝着古柳道前行，迷雾愈浓，将士们纷纷感到头晕目眩，疑似瘴气入体……\n<color=#FFFFFF00>缩进</color>正当你叫苦之时，一鹤发老者前来求见。你识得此人，乃神医<color=##C70000>华佗</color>……",
+			"unitType": "0",
+			"unitId": "0",
+			"unitLevel": "1",
+			"unitCount": "1",
+			"goldReward": "0"
+		},
+		{
+			"id": "9",
+			"ending": "你朝着杏花林前去，许久之后，发现前方乃一处悬崖峭壁。你连叹三声，下令大军原路返回……",
+			"unitType": "-1",
+			"unitId": "0",
+			"unitLevel": "0",
+			"unitCount": "0",
+			"goldReward": "-2"
+		},
+		{
+			"id": "10",
+			"ending": "你朝着古柳继续前行，迷雾愈浓，正当疑惑之时，前方传来消息，你们已步入沼泽地带。你不得不抛弃辎重，方全身而退……",
+			"unitType": "-1",
+			"unitId": "0",
+			"unitLevel": "0",
+			"unitCount": "0",
+			"goldReward": "-2"
+		},
+		{
+			"id": "11",
+			"ending": "你朝着杏花林前去，果然有一村落藏于其间……\n<color=#FFFFFF00>缩进</color>你下令三军只许借水止渴，不得扰民生事……你正欲前行，一壮汉挡在路前，自称虎痴<color=#C70000>许褚</color>………",
+			"unitType": "0",
+			"unitId": "0",
+			"unitLevel": "1",
+			"unitCount": "1",
+			"goldReward": "0"
+		},
+		{
+			"id": "12",
+			"ending": "女子对你十分感激，许你帮其解开衣带。你双手发颤，待帮其解开衣带，女子从怀中取出一些随身财物，馈赠于你……",
+			"unitType": "-1",
+			"unitId": "0",
+			"unitLevel": "0",
+			"unitCount": "0",
+			"goldReward": "5"
+		},
+		{
+			"id": "13",
+			"ending": "你不为女色所动，转身离去。没走几步，落入一个猎户陷阱之中，大呼救命……",
+			"unitType": "-1",
+			"unitId": "0",
+			"unitLevel": "0",
+			"unitCount": "0",
+			"goldReward": "-2"
+		},
+		{
+			"id": "14",
+			"ending": "城池之中并无防备，你下令全城搜捕，俘获敌军主帅<color=#C70000>诸葛亮</color>……",
+			"unitType": "0",
+			"unitId": "0",
+			"unitLevel": "1",
+			"unitCount": "1",
+			"goldReward": "0"
+		},
+		{
+			"id": "15",
+			"ending": "恐敌方有诈，你退至城外三里扎营早饭……\n<color=#FFFFFF00>缩进</color>数日之后，探子来报，前方乃一空城耳……",
+			"unitType": "-1",
+			"unitId": "0",
+			"unitLevel": "0",
+			"unitCount": "0",
+			"goldReward": "0"
+		},
+		{
+			"id": "16",
+			"ending": "你听闻此人乃忘恩负义之徒，留之定为日后之祸害。下令将其斩首示众，以震军心！",
+			"unitType": "-1",
+			"unitId": "0",
+			"unitLevel": "0",
+			"unitCount": "0",
+			"goldReward": "5"
+		},
+		{
+			"id": "17",
+			"ending": "你令人为其松绑，此人再次跪地而谢。你正欲前往扶起，此人夺过一把短刀向你扑来……幸好护卫早有察觉，你方才逃过一命。",
+			"unitType": "-1",
+			"unitId": "0",
+			"unitLevel": "0",
+			"unitCount": "0",
+			"goldReward": "-2"
+		},
+		{
+			"id": "18",
+			"ending": "将士们听闻此言，皆口中生津，奋力前行……",
+			"unitType": "0",
+			"unitId": "0",
+			"unitLevel": "0",
+			"unitCount": "0",
+			"goldReward": "5"
+		},
+		{
+			"id": "19",
+			"ending": "将士们听闻此言，大惊失色，四散而逃……",
+			"unitType": "-1",
+			"unitId": "0",
+			"unitLevel": "0",
+			"unitCount": "0",
+			"goldReward": "-5"
+		},
+		{
+			"id": "20",
+			"ending": "你出城迎战，走到半途忽闻呐喊之声，左右两边敌军齐出……你紧忙下令撤退，但发现已陷入重重包围。",
+			"unitType": "-1",
+			"unitId": "0",
+			"unitLevel": "0",
+			"unitCount": "0",
+			"goldReward": "-5"
+		},
+		{
+			"id": "21",
+			"ending": "你下令严防死守。不过数日，敌军见你防守严密，只好撤退。城内军民皆欢喜不已，为你设宴庆功。",
+			"unitType": "-1",
+			"unitId": "0",
+			"unitLevel": "0",
+			"unitCount": "0",
+			"goldReward": "5"
+		},
+		{
+			"id": "22",
+			"ending": "你观敌军士气衰竭，召集将士，披坚执锐，打开城门冲入敌营之中。以迅雷不及掩耳之势大破敌军，俘获敌军上将<color=#C70000>夏侯惇</color>。",
+			"unitType": "0",
+			"unitId": "0",
+			"unitLevel": "2",
+			"unitCount": "1",
+			"goldReward": "0"
+		},
+		{
+			"id": "23",
+			"ending": "城内粮仓日渐消耗，而敌军仍未退却之意……城内军心涣散，更有甚者叛逃至敌方阵营……",
+			"unitType": "-1",
+			"unitId": "0",
+			"unitLevel": "0",
+			"unitCount": "0",
+			"goldReward": "-5"
+		},
+		{
+			"id": "24",
+			"ending": "士可杀不可辱！你亲自率军出战，行至半路，不料敌方早有埋伏，将你重重包围。你折损数千将士，死里逃生，后怕不已……",
+			"unitType": "-1",
+			"unitId": "0",
+			"unitLevel": "0",
+			"unitCount": "0",
+			"goldReward": "-5"
+		},
+		{
+			"id": "25",
+			"ending": "奇耻大辱！你拍案而起，后又寻思一番，此乃敌人激将之法，此时出战必然有去无回。你按兵不动，数日之后，敌军军粮耗尽，自收兵而退。",
+			"unitType": "-1",
+			"unitId": "0",
+			"unitLevel": "0",
+			"unitCount": "0",
+			"goldReward": "5"
+		},
+		{
+			"id": "26",
+			"ending": "你即刻整备军马，杀入城中，与投诚之军合为一处，左突右进，大获全胜！俘获守城之将<color=#C70000>傅佥</color>。",
+			"unitType": "0",
+			"unitId": "0",
+			"unitLevel": "5",
+			"unitCount": "1",
+			"goldReward": "0"
+		},
+		{
+			"id": "27",
+			"ending": "你犹豫不决，恐此乃敌方诈降之计，遂按兵不动。又过数日，城内依旧顽强抵抗，久攻不下。敌方援军已至，你只得无功而返。",
+			"unitType": "-1",
+			"unitId": "0",
+			"unitLevel": "0",
+			"unitCount": "0",
+			"goldReward": "0"
+		},
+		{
+			"id": "28",
+			"ending": "你即刻整备军马，杀入城中。城池内忽然火光通明，喊杀声四起！你恍然醒悟，但已深陷重围，没有退路……",
+			"unitType": "-1",
+			"unitId": "0",
+			"unitLevel": "0",
+			"unitCount": "0",
+			"goldReward": "-5"
+		},
+		{
+			"id": "29",
+			"ending": "你料定此乃敌方诈降之计，按兵不动。不过数日，敌方城门大开，守城将士皆卸甲而出，你招降敌方将领<color=#C70000>臧洪</color>。",
+			"unitType": "0",
+			"unitId": "0",
+			"unitLevel": "10",
+			"unitCount": "1",
+			"goldReward": "0"
+		},
+		{
+			"id": "30",
+			"ending": "你放下手中书卷，扶起女子，置青梅酒几杯，与其推心置腹，情不知所起一往而深，伤感之至，便与其相拥而泣。一夜之后，神清气爽。",
+			"unitType": "-1",
+			"unitId": "0",
+			"unitLevel": "0",
+			"unitCount": "0",
+			"goldReward": "2"
+		},
+		{
+			"id": "31",
+			"ending": "你观女子颇有姿色，但绝非轻薄之人。恐是醉酒失态，情不自已。男女之间授受不亲，你断然拒绝。女子潸然泪下，似三月梨花，对你依依不舍……你问其姓名，乃江东<color=#C70000>大乔</color>。",
+			"unitType": "0",
+			"unitId": "0",
+			"unitLevel": "3",
+			"unitCount": "1",
+			"goldReward": "0"
+		},
+		{
+			"id": "32",
+			"ending": "你置弓备箭，率领精壮随从数十人，前往城南山下。潜伏一夜，天明之时，林中果然出现一白额巨虎。你弯弓搭箭，蓄力而发，一箭穿喉……",
+			"unitType": "-1",
+			"unitId": "0",
+			"unitLevel": "0",
+			"unitCount": "0",
+			"goldReward": "5"
+		},
+		{
+			"id": "33",
+			"ending": "前往打探之人尚未归来，虚实不明不可轻举妄动。城中百姓纷纷抱怨……",
+			"unitType": "-1",
+			"unitId": "0",
+			"unitLevel": "0",
+			"unitCount": "0",
+			"goldReward": "-5"
+		},
+		{
+			"id": "34",
+			"ending": "你令人端来一坛烈酒，几口吞下后，借着酒意，不顾众人阻拦单骑出城。行至山下，天色已晚，阴风飒飒，呼啸声阵阵传来，你酒醒之后方知身处险境……",
+			"unitType": "-1",
+			"unitId": "0",
+			"unitLevel": "0",
+			"unitCount": "0",
+			"goldReward": "-5"
+		},
+		{
+			"id": "35",
+			"ending": "前往打探之人尚未归来，虚实不明不可轻举妄动……此时，一好汉前来，愿为民除害，此人身强力壮，仪表不凡，自报姓名，乃江东<color=#C70000>孙策</color>。",
+			"unitType": "0",
+			"unitId": "0",
+			"unitLevel": "5",
+			"unitCount": "1",
+			"goldReward": "0"
+		},
+		{
+			"id": "36",
+			"ending": "此乃天赐良机，何不在群雄之前一展神武？你欣然前往，于万人之中争先恐后，不料马匹受惊，将你摔落在地。你受伤而归，将士们无不叹惜……",
+			"unitType": "-1",
+			"unitId": "0",
+			"unitLevel": "0",
+			"unitCount": "0",
+			"goldReward": "-5"
+		},
+		{
+			"id": "37",
+			"ending": "春季正当万物复苏之时，此时狩猎有损天道常理，岂可只顾一时之兴？百姓闻此，无不对你连连称赞……\n不久之后，有一名士前来拜访……",
+			"unitType": "0",
+			"unitId": "0",
+			"unitLevel": "3",
+			"unitCount": "1",
+			"goldReward": "0"
+		},
+		{
+			"id": "38",
+			"ending": "你跨上擂台，撂倒数十壮士，夺得头筹。陈善人对你大加赞赏，择日将女儿含香连同金银珠宝送你府上。你初见含香之容貌，真乃国色天香。趁当夜月色温柔，即洞房花烛。",
+			"unitType": "0",
+			"unitId": "0",
+			"unitLevel": "1",
+			"unitCount": "1",
+			"goldReward": "0"
+		},
+		{
+			"id": "39",
+			"ending": "你听闻传言陈善人之女其丑无比，遂一旁观望，不料被一贼眉鼠眼无名之辈夺得头筹。待含香出现在众人面前，众人皆惊叹，此乃国色天香之容貌，岂可嫁于一无名之辈。你捶胸顿足，当场晕厥。",
+			"unitType": "-1",
+			"unitId": "0",
+			"unitLevel": "0",
+			"unitCount": "0",
+			"goldReward": "-5"
+		},
+		{
+			"id": "40",
+			"ending": "你跨上擂台，撂倒数十壮士，夺得头筹。陈善人对你大加赞赏，择日将女儿含香连同金银珠宝送你府上。你见含香之容貌大为惊叹，满脸横肉，一口弯牙，暴戾之气外泄，甚是丑陋。你虽不敢当面戳破，但内心苦不堪言。",
+			"unitType": "-1",
+			"unitId": "0",
+			"unitLevel": "0",
+			"unitCount": "0",
+			"goldReward": "-5"
+		},
+		{
+			"id": "41",
+			"ending": "你刚刚跨上擂台，便与一九尺壮汉缠斗起来。你力不能敌，被撂下擂台来，断了一颗门牙。狼狈而归……",
+			"unitType": "-1",
+			"unitId": "0",
+			"unitLevel": "0",
+			"unitCount": "0",
+			"goldReward": "5"
+		},
+		{
+			"id": "42",
+			"ending": "待城破，必然生灵涂炭。为救一城将士百姓，你慷慨赴宴。酒席间，你察觉帐外暗藏刀斧手，便借故去茅房，仓皇而逃……",
+			"unitType": "-1",
+			"unitId": "0",
+			"unitLevel": "0",
+			"unitCount": "0",
+			"goldReward": "-5"
+		},
+		{
+			"id": "43",
+			"ending": "大丈夫当舍身赴死，岂可畏战求和！你当众戳破敌方之诡计，将士们各个咬牙切齿，你率领全军一鼓作气，打得敌军措手不及，突出重围……正行间，遇到一路人马前来接应……",
+			"unitType": "0",
+			"unitId": "0",
+			"unitLevel": "1",
+			"unitCount": "1",
+			"goldReward": "0"
+		},
+		{
+			"id": "44",
+			"ending": "两军对阵，身为统帅，岂可只顾身家性命与荣华富贵！以令左右将此人拖出去斩首示众，以振军心！",
+			"unitType": "-1",
+			"unitId": "0",
+			"unitLevel": "0",
+			"unitCount": "0",
+			"goldReward": "10"
+		},
+		{
+			"id": "45",
+			"ending": "昔日同窗竟然是敌方之说客，陷你于贪生怕死之辈，你悲从中来，又念及同窗之谊，放此人而去。你回到营帐，发现军机要密丢失，大声疾呼……",
+			"unitType": "-1",
+			"unitId": "0",
+			"unitLevel": "0",
+			"unitCount": "0",
+			"goldReward": "-5"
+		},
+		{
+			"id": "46",
+			"ending": "修筑城墙乃百年大计，岂可偷工减料？！你花费重金，亲自督工，不过数日筑起铜墙铁壁。军民无不称赞，敌人来犯，无惧矣。",
+			"unitType": "-1",
+			"unitId": "0",
+			"unitLevel": "0",
+			"unitCount": "0",
+			"goldReward": "-5"
+		},
+		{
+			"id": "47",
+			"ending": "你欲修建铜墙铁壁，怎奈何囊中羞涩，东拼西凑只筹来数金。待城墙筑起，你暗自嗟叹：敌将至，城危矣。",
+			"unitType": "-1",
+			"unitId": "0",
+			"unitLevel": "0",
+			"unitCount": "0",
+			"goldReward": "0"
+		},
+		{
+			"id": "48",
+			"ending": "今日大雪，想必此人必未外出，此去定能成功。你冒雪前往深山之中，求得奇才，你不禁叹曰，得遇此人，真如鱼得水。",
+			"unitType": "0",
+			"unitId": "0",
+			"unitLevel": "5",
+			"unitCount": "1",
+			"goldReward": "0"
+		},
+		{
+			"id": "49",
+			"ending": "今诸侯相争，欲成大事，岂可坐以待毙？！你欲将出门，迎面一阵刺骨冷风。你不得已返回屋内，围炉暖酒，等待大雪停息。",
+			"unitType": "-1",
+			"unitId": "0",
+			"unitLevel": "0",
+			"unitCount": "0",
+			"goldReward": "0"
+		},
+		{
+			"id": "50",
+			"ending": "国难当头，大丈夫岂能袖手旁观！你即刻整顿军马，前往会盟之地，与其他诸侯歃血为盟，结为十八路诸侯，共讨国贼，一时声名大作！更是有名士前来投靠……",
+			"unitType": "0",
+			"unitId": "0",
+			"unitLevel": "5",
+			"unitCount": "1",
+			"goldReward": "0"
+		},
+		{
+			"id": "51",
+			"ending": "若大军前往，必使城防空虚，鸡鸣狗盗之徒将乘虚而入。天下将变，当此时，万万不可轻举妄动。",
+			"unitType": "-1",
+			"unitId": "0",
+			"unitLevel": "0",
+			"unitCount": "0",
+			"goldReward": "0"
+		},
+		{
+			"id": "52",
+			"ending": "你即刻整顿军马，前往会盟之地，与其他诸侯歃血为盟，结为十八路诸侯。不料大战未至，诸侯之间已互相掣肘……你叹大帐之中皆是跳梁小丑，遂抽身而去，大军无功而返。",
+			"unitType": "-1",
+			"unitId": "0",
+			"unitLevel": "0",
+			"unitCount": "0",
+			"goldReward": "-5"
+		},
+		{
+			"id": "53",
+			"ending": "若大军前往，必使城防空虚，鸡鸣狗盗之徒将乘虚而入。天下将变，不如乘此时修筑城墙，安抚民心。\n不久之后，有一壮汉前来拜访……",
+			"unitType": "0",
+			"unitId": "0",
+			"unitLevel": "1",
+			"unitCount": "1",
+			"goldReward": "0"
+		},
+		{
+			"id": "54",
+			"ending": "你观来者虽然人多势众，但皆是些乌合之众，便二话不说，杀将过去。不料对方负隅顽抗，借着地形与你缠斗良久，你无心恋战，只得引兵而退。",
+			"unitType": "-1",
+			"unitId": "0",
+			"unitLevel": "0",
+			"unitCount": "0",
+			"goldReward": "-5"
+		},
+		{
+			"id": "55",
+			"ending": "你观来者虽是草莽之辈，但恐皆是游勇散兵集结而成，若死战，恐粮草有误。犹豫再三，你只得绕道而行。",
+			"unitType": "-1",
+			"unitId": "0",
+			"unitLevel": "0",
+			"unitCount": "0",
+			"goldReward": "-3"
+		},
+		{
+			"id": "56",
+			"ending": "你上前搭话，告知对方乃车中乃军粮，并予头目数两金，让其放行。对方听闻你大名，愿意率众投靠……",
+			"unitType": "0",
+			"unitId": "0",
+			"unitLevel": "10",
+			"unitCount": "1",
+			"goldReward": "0"
+		},
+		{
+			"id": "57",
+			"ending": "你观来者虽是草莽之辈，但恐皆是游勇散兵集结而成，若死战，恐粮草有误。你只得绕道而行。",
+			"unitType": "-1",
+			"unitId": "0",
+			"unitLevel": "0",
+			"unitCount": "0",
+			"goldReward": "-3"
+		},
+		{
+			"id": "58",
+			"ending": "你择一吉日，率领亲信随从，备活畜祭品，前往高台行三跪九拜之礼，焚香祭天。返回途中见一饥童朝你泪目相望，你头痛欲裂，坠落马下，卧床不醒数十日。",
+			"unitType": "-1",
+			"unitId": "0",
+			"unitLevel": "0",
+			"unitCount": "0",
+			"goldReward": "-5"
+		},
+		{
+			"id": "59",
+			"ending": "你将家中金银细软一并献出，换草药等物资，发往夏口。百姓皆称你为大贤，天下归心。\n不久之后，有一名士前来拜访……",
+			"unitType": "0",
+			"unitId": "0",
+			"unitLevel": "5",
+			"unitCount": "1",
+			"goldReward": "0"
+		},
+		{
+			"id": "60",
+			"ending": "你义不容辞，携带兵马前往徐州城中。城主大为感激，与你同席而坐，共商守城之策。不料数日之后，敌军不战而退，城主将功劳尽归于你，感激万分。",
+			"unitType": "0",
+			"unitId": "0",
+			"unitLevel": "5",
+			"unitCount": "1",
+			"goldReward": "0"
+		},
+		{
+			"id": "61",
+			"ending": "此乃生死相关之事，怎可意气用事！你思索再三，书信一封差往徐州，告知对方你的难处。",
+			"unitType": "-1",
+			"unitId": "0",
+			"unitLevel": "0",
+			"unitCount": "0",
+			"goldReward": "0"
+		},
+		{
+			"id": "62",
+			"ending": "你有意前往，但唯恐与强敌正面相抗，非但不能解徐州之围，反而置身于险境之中。你计上心来，率军前往敌方之后。不过数日，徐州之围解除。",
+			"unitType": "-1",
+			"unitId": "0",
+			"unitLevel": "0",
+			"unitCount": "0",
+			"goldReward": "10"
+		},
+		{
+			"id": "63",
+			"ending": "此乃生死相关之事，怎可意气用事！你思索再三，书信一封差往徐州，告知对方你的难处。",
+			"unitType": "-1",
+			"unitId": "0",
+			"unitLevel": "0",
+			"unitCount": "0",
+			"goldReward": "0"
+		},
+		{
+			"id": "64",
+			"ending": "天下兴亡匹夫有责！你相应官府号召，变卖家资，举起义旗，召集壮勇数千。时黄巾来犯，你出兵迎击，大获全胜。\n不久之后，有一壮士前来投靠……",
+			"unitType": "0",
+			"unitId": "0",
+			"unitLevel": "5",
+			"unitCount": "1",
+			"goldReward": "0"
+		},
+		{
+			"id": "65",
+			"ending": "此等皆乌合之众，难成气候。你将诏令弃之一旁，继续饮酒作乐。数日之后，黄巾军从四面八方而来，将你围困于孤城之中。你大梦方醒，已是悔之晚矣。",
+			"unitType": "-1",
+			"unitId": "0",
+			"unitLevel": "0",
+			"unitCount": "0",
+			"goldReward": "-5"
+		},
+		{
+			"id": "66",
+			"ending": "此等皆乌合之众，不堪一击，此时正是立功之时。你兴兵数万，深入黄巾军腹地，不料敌方组织有序，士兵们各个视敌如仇。你大梦方醒，此乃天下大变矣。",
+			"unitType": "-1",
+			"unitId": "0",
+			"unitLevel": "0",
+			"unitCount": "0",
+			"goldReward": "-3"
+		},
+		{
+			"id": "67",
+			"ending": "大旱数年，天下民不聊生久矣，乃黄巾之乱根源，乱党岂能一战而灭？你一边招兵买马，修筑城防，一边开仓赈灾，收复民心。黄巾乱党闻之，不敢侵犯。\n不久之后，有一壮士前来投靠……",
+			"unitType": "0",
+			"unitId": "0",
+			"unitLevel": "5",
+			"unitCount": "1",
+			"goldReward": "0"
+		},
+		{
+			"id": "68",
+			"ending": "当夜，贼兵到来。贼将令大军围山，并断你汲水道路。你观山下，贼兵漫山遍野，旌旗队伍，甚是严整。你不敢下山，被困于孤山之上，待水尽粮绝，敌军引火烧山，你败局已定。",
+			"unitType": "-1",
+			"unitId": "0",
+			"unitLevel": "0",
+			"unitCount": "0",
+			"goldReward": "-5"
+		},
+		{
+			"id": "69",
+			"ending": "你正欲上山扎营，副将将你拦住，曰：若屯兵当道，筑起城垣，贼兵总有十万，不能偷过；今若弃此要路，屯兵于山上，倘贼兵骤至，四面围定，将何策保之？你恍然醒悟，依其计。贼军至，与其抗衡数十日，街亭得守。",
+			"unitType": "0",
+			"unitId": "0",
+			"unitLevel": "5",
+			"unitCount": "1",
+			"goldReward": "0"
+		},
+		{
+			"id": "70",
+			"ending": "你饮数杯酒毕，一面仍与人弈棋，伸臂令佗医之。华佗割开皮肉，用刀刮骨，悉悉有声……军帐之内，无不叹息，将军真乃神人矣。",
+			"unitType": "0",
+			"unitId": "0",
+			"unitLevel": "5",
+			"unitCount": "1",
+			"goldReward": "0"
+		},
+		{
+			"id": "71",
+			"ending": "纵有神医，此伤恐难立刻痊愈。不若暂回荆州，静心疗伤，待痊愈，再来讨贼。",
+			"unitType": "-1",
+			"unitId": "0",
+			"unitLevel": "0",
+			"unitCount": "0",
+			"goldReward": "0"
+		},
+		{
+			"id": "72",
+			"ending": "你熟读春秋大义，知滴水只当涌泉相报！如今恩人受难，怎可逞一时英雄，落井下石？此乃不仁不义之徒所为耳。",
+			"unitType": "-1",
+			"unitId": "0",
+			"unitLevel": "0",
+			"unitCount": "0",
+			"goldReward": "0"
+		},
+		{
+			"id": "73",
+			"ending": "如若放虎归山，必将后患无穷。身为大丈夫，怎可取小义而舍大义？你厉声大喝，令左右将敌帅拿下。",
+			"unitType": "0",
+			"unitId": "0",
+			"unitLevel": "5",
+			"unitCount": "1",
+			"goldReward": "0"
+		},
+		{
+			"id": "74",
+			"ending": "此时朝廷已然风雨飘摇，大汉气数危矣。此时得玉玺，乃天意。你私将玉玺收入囊中，却被小人所察。风声走漏，掌管军粮之人与你有隙，借此机会克扣军粮。",
+			"unitType": "-1",
+			"unitId": "0",
+			"unitLevel": "0",
+			"unitCount": "0",
+			"goldReward": "-2"
+		},
+		{
+			"id": "75",
+			"ending": "当今诸侯会盟共讨国贼，此乃国之重物，怎能私藏？！你将传国玉玺献给盟主，不料盟主乃一狼子野心之辈，赏你数金，将玉玺据为己有，你悔之晚矣。",
+			"unitType": "-1",
+			"unitId": "0",
+			"unitLevel": "0",
+			"unitCount": "0",
+			"goldReward": "-5"
+		},
+		{
+			"id": "76",
+			"ending": "街亭已失，不能复得矣。北伐中原，匡扶汉室皆成空谈。你观帐下负荆请罪之人，心如刀绞，奈何军令状在此，只得忍痛割爱。",
+			"unitType": "-1",
+			"unitId": "0",
+			"unitLevel": "0",
+			"unitCount": "0",
+			"goldReward": "-5"
+		},
+		{
+			"id": "77",
+			"ending": "街亭已失，不能复得矣。北伐中原，匡扶汉室皆成空谈。你观帐下负荆请罪之人，众将皆为其求情。此时正当用人之际，你收回军令状，令其戴罪立功。",
+			"unitType": "0",
+			"unitId": "0",
+			"unitLevel": "5",
+			"unitCount": "1",
+			"goldReward": "0"
+		},
+		{
+			"id": "78",
+			"ending": "大雨倾盆，河水泛滥。你掘开河道，将洪水引入城池之中。待城中之水没过腰部，敌军不战而降。\n俘获敌军主帅……",
+			"unitType": "0",
+			"unitId": "0",
+			"unitLevel": "5",
+			"unitCount": "1",
+			"goldReward": "0"
+		},
+		{
+			"id": "79",
+			"ending": "你将火油浇上芦草，用投石车将其投入敌城之中。不料天气潮湿，火不能燃，功亏一篑。",
+			"unitType": "-1",
+			"unitId": "0",
+			"unitLevel": "0",
+			"unitCount": "0",
+			"goldReward": "-5"
+		},
+		{
+			"id": "80",
+			"ending": "你掘开河道，将河水引入城池之中。天气炎热，城中正缺水。敌军取水解渴，并笑你不识常理。",
+			"unitType": "-1",
+			"unitId": "0",
+			"unitLevel": "0",
+			"unitCount": "0",
+			"goldReward": "-5"
+		},
+		{
+			"id": "81",
+			"ending": "你将火油浇上芦草，用投石车将其投入敌城之中。天气干燥，火苗引燃城中茅草枯木，火势冲天。敌军不战自乱，出城投降。\n俘获敌军主帅……",
+			"unitType": "0",
+			"unitId": "0",
+			"unitLevel": "5",
+			"unitCount": "1",
+			"goldReward": "0"
+		},
+		{
+			"id": "82",
+			"ending": "将在外，军令有所不受！你打发来者，催促大军加快行军，投奔远方。",
+			"unitType": "-1",
+			"unitId": "0",
+			"unitLevel": "0",
+			"unitCount": "0",
+			"goldReward": "10"
+		},
+		{
+			"id": "83",
+			"ending": "你叹息，此等定是丞相顿悟，大势已去矣。你恐丞相怪罪，只得班师回朝，另作打算。",
+			"unitType": "-1",
+			"unitId": "0",
+			"unitLevel": "0",
+			"unitCount": "0",
+			"goldReward": "-5"
+		},
+		{
+			"id": "84",
+			"ending": "身为臣子，岂可罔顾朝廷安危，而贪图荣华富贵！为报皇恩，你当场签下血书。董承携衣带诏而归，你立刻清醒，大祸临头矣。",
+			"unitType": "-1",
+			"unitId": "0",
+			"unitLevel": "0",
+			"unitCount": "0",
+			"goldReward": "-5"
+		},
+		{
+			"id": "85",
+			"ending": "你暗自惊叹，此乃谋反作乱，不可轻为，以免引火烧身。借着酒意，你假装酣睡。董承叹曰：皇亲国戚亦是贪生怕死之辈，汉室危矣。言毕，收起衣带诏，抽身而去。",
+			"unitType": "-1",
+			"unitId": "0",
+			"unitLevel": "0",
+			"unitCount": "0",
+			"goldReward": "0"
+		},
+		{
+			"id": "86",
+			"ending": "如今乱世，奸臣当道。大丈夫能屈能伸，岂能因小失大耳？你变卖家资，换得金银数两，献于督邮。不料督邮得寸进尺，你悔之晚矣。",
+			"unitType": "-1",
+			"unitId": "0",
+			"unitLevel": "0",
+			"unitCount": "0",
+			"goldReward": "-5"
+		},
+		{
+			"id": "87",
+			"ending": "你舍命为朝廷，立下大功，却只得一小小县尉。如今受此屈辱，岂有此理！将督邮毒打一顿，取印绶挂于其颈上，弃官而去。真乃大快人心！",
+			"unitType": "-1",
+			"unitId": "0",
+			"unitLevel": "0",
+			"unitCount": "0",
+			"goldReward": "10"
+		},
+		{
+			"id": "88",
+			"ending": "金鳞岂是池中物，大丈夫志在千里，怎能被困于一孤城之中。当此时应另作打算，你趁着夜色逃出城外，不料被叛军俘获……",
+			"unitType": "-1",
+			"unitId": "0",
+			"unitLevel": "0",
+			"unitCount": "0",
+			"goldReward": "-5"
+		},
+		{
+			"id": "89",
+			"ending": "若城破，必将生灵涂炭。当此为难时刻怎能弃民不顾？城在我在，城亡我亡！\n不久之后，有一壮士前来投靠……",
+			"unitType": "0",
+			"unitId": "0",
+			"unitLevel": "5",
+			"unitCount": "1",
+			"goldReward": "0"
+		},
+		{
+			"id": "90",
+			"ending": "识时务者为俊杰，你观此人乃心怀天下之人，日后必成大事。你承蒙不杀之恩，愿忠心侍主。",
+			"unitType": "-1",
+			"unitId": "0",
+			"unitLevel": "0",
+			"unitCount": "0",
+			"goldReward": "10"
+		},
+		{
+			"id": "91",
+			"ending": "大丈夫顶天立地，岂能罔顾性命！你宁死不从。敌帅十分痛惜，不忍杀你，只好为你松绑，任你而去。",
+			"unitType": "-1",
+			"unitId": "0",
+			"unitLevel": "0",
+			"unitCount": "0",
+			"goldReward": "0"
+		},
+		{
+			"id": "92",
+			"ending": "留得青山在不愁没柴烧。敌帅虽是卑鄙之人，然你可先委屈自己，等时机成熟，再做打算。",
+			"unitType": "-1",
+			"unitId": "0",
+			"unitLevel": "0",
+			"unitCount": "0",
+			"goldReward": "0"
+		},
+		{
+			"id": "93",
+			"ending": "大丈夫顶天立地，岂能罔顾性命！你宁死不从，慷慨赴义。行刑之时，援军到来，你观来者，乃一英雄好汉……",
+			"unitType": "0",
+			"unitId": "0",
+			"unitLevel": "5",
+			"unitCount": "1",
+			"goldReward": "0"
+		},
+		{
+			"id": "94",
+			"ending": "天下苦于战乱久矣，主公优柔寡断，乃非英明贤主，若不能早作打算，恐命不久矣。你与来者约定，待得胜，不可屠杀俘虏，不可骚扰百姓。对方赞你为大贤之人，愿意投靠……",
+			"unitType": "0",
+			"unitId": "0",
+			"unitLevel": "5",
+			"unitCount": "1",
+			"goldReward": "0"
+		},
+		{
+			"id": "95",
+			"ending": "你受主公恩德久矣，怎能见利忘义！你呵斥来者，令其羞愧不已。",
+			"unitType": "-1",
+			"unitId": "0",
+			"unitLevel": "0",
+			"unitCount": "0",
+			"goldReward": "0"
+		},
+		{
+			"id": "96",
+			"ending": "你本想痛斥来者，转身一想，不若将计就计……你与来者约定，与三日后午夜前来劫营，你当作为内应……待送走来者，你将此事告知于主公，并提前布防，以逸待劳，俘获敌将……",
+			"unitType": "0",
+			"unitId": "0",
+			"unitLevel": "5",
+			"unitCount": "1",
+			"goldReward": "0"
+		},
+		{
+			"id": "97",
+			"ending": "你受主公恩德久矣，怎能见利忘义！你呵斥来者，令其羞愧不已。",
+			"unitType": "-1",
+			"unitId": "0",
+			"unitLevel": "0",
+			"unitCount": "0",
+			"goldReward": "0"
+		},
+		{
+			"id": "98",
+			"ending": "狭路相逢勇者胜！你犒赏三军将士，待大军冲锋之时，号角与战鼓响彻山谷，回响不绝，山崩地裂。敌方以为是天兵将至，一时间狼哭鬼嚎，溃不成军。\n乱军之中，你俘获敌军主帅……",
+			"unitType": "0",
+			"unitId": "0",
+			"unitLevel": "5",
+			"unitCount": "1",
+			"goldReward": "0"
+		},
+		{
+			"id": "99",
+			"ending": "此时作战虽可胜，然杀人一万，自损三千。你下令三军后退十里安营扎寨。正行间，敌方顺着小道冲杀过来，大军只得且战且退……",
+			"unitType": "-1",
+			"unitId": "0",
+			"unitLevel": "0",
+			"unitCount": "0",
+			"goldReward": "-5"
+		},
+		{
+			"id": "100",
+			"ending": "你观将士们个个胆颤心惊，于是利剑出鞘，下令冲锋，后退者斩！不料敌方声势浩大，将士们死伤无数，毫无战意……",
+			"unitType": "-1",
+			"unitId": "0",
+			"unitLevel": "0",
+			"unitCount": "0",
+			"goldReward": "-5"
+		},
+		{
+			"id": "101",
+			"ending": "此时作战虽可胜，然杀人一万，自损三千。你下令三军后退十里安营扎寨。正行间，敌方顺着小道冲杀过来，大军只得且战且退……",
+			"unitType": "-1",
+			"unitId": "0",
+			"unitLevel": "0",
+			"unitCount": "0",
+			"goldReward": "-10"
+		},
+		{
+			"id": "102",
+			"ending": "狭路相逢勇者胜！你向来军纪严明，待大军冲锋之时，号角与战鼓响彻山谷，回响不绝，山崩地裂。敌方以为是天兵将至，一时间狼哭鬼嚎，溃不成军。\n乱军之中，你俘获敌军主帅……",
+			"unitType": "0",
+			"unitId": "0",
+			"unitLevel": "5",
+			"unitCount": "1",
+			"goldReward": "0"
+		},
+		{
+			"id": "103",
+			"ending": "此时作战虽可胜，然杀人一万，自损三千。你下令三军后退十里安营扎寨。正行间，敌方顺着小道冲杀过来，大军只得且战且退……",
+			"unitType": "-1",
+			"unitId": "0",
+			"unitLevel": "0",
+			"unitCount": "0",
+			"goldReward": "-3"
+		},
+		{
+			"id": "104",
+			"ending": "若蜀国亡，吴国必不久矣。刻不容缓，你派出大将统领3万大军，进攻魏国。魏国腹背受敌，只得从蜀国撤兵。蜀国送来物资，以表谢意。",
+			"unitType": "-1",
+			"unitId": "0",
+			"unitLevel": "0",
+			"unitCount": "0",
+			"goldReward": "10"
+		},
+		{
+			"id": "105",
+			"ending": "你本想隔岸观火，坐收渔利，怎奈蜀国后主孱弱不堪，献城降魏。不久之后，魏国调转矛头，大军向你压境，你悔之晚矣。",
+			"unitType": "-1",
+			"unitId": "0",
+			"unitLevel": "0",
+			"unitCount": "0",
+			"goldReward": "-5"
+		},
+		{
+			"id": "106",
+			"ending": "若蜀国亡，吴国必不久矣。你派军前去救援，不料，魏国伐蜀为假，实则调虎离山，待你城防空虚，连占你数座城池。",
+			"unitType": "-1",
+			"unitId": "0",
+			"unitLevel": "0",
+			"unitCount": "0",
+			"goldReward": "-5"
+		},
+		{
+			"id": "107",
+			"ending": "若此时救援蜀国，恐魏国降罪……不若静观其变。大战之后，蜀国虽势弱，但诸葛亮用兵如神，以少胜多。你趁机讨伐魏国，连克数城。",
+			"unitType": "-1",
+			"unitId": "0",
+			"unitLevel": "0",
+			"unitCount": "0",
+			"goldReward": "5"
+		},
+		{
+			"id": "108",
+			"ending": "敌方料定我腹背受敌，必已军心大乱。既如此，不如反其道而行之，趁城门大开，攻入城中。你依此计，果然攻入城中，大获全胜。俘获敌军主帅……",
+			"unitType": "0",
+			"unitId": "0",
+			"unitLevel": "5",
+			"unitCount": "1",
+			"goldReward": "0"
+		},
+		{
+			"id": "109",
+			"ending": "腹背受敌乃兵家之大忌，你率军火速向后突击，虽然最终逃出敌方前后夹击，但损失惨重。",
+			"unitType": "-1",
+			"unitId": "0",
+			"unitLevel": "0",
+			"unitCount": "0",
+			"goldReward": "-5"
+		},
+		{
+			"id": "110",
+			"ending": "大军远征，怎能无功而返？此时城中之敌已是强弩之末，若此时攻城，必将大胜。你依此计，令将士们加紧攻城，但城中敌人只是岿然不动，以逸待劳，令你损失惨重。",
+			"unitType": "-1",
+			"unitId": "0",
+			"unitLevel": "0",
+			"unitCount": "0",
+			"goldReward": "-5"
+		},
+		{
+			"id": "111",
+			"ending": "当前已腹背受敌，若继续攻城，必是死路一条，不若从后方杀出一条血路。你激励三军，与援军血战一场，最终成功突围。",
+			"unitType": "-1",
+			"unitId": "0",
+			"unitLevel": "0",
+			"unitCount": "0",
+			"goldReward": "5"
+		}
+	]
+}
