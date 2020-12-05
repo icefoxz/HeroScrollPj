@@ -810,7 +810,7 @@ public class FightController : MonoBehaviour
                         break;
                     case "57":
                         PlayAudioForSecondClip(57, 0);
-                        AttackToEffectShow(attackedUnit, false, "57A");
+                        AttackToEffectShow(attackedUnit, true);
                         break;
                     case "58":
                         finalDamage = TieQiSkill(finalDamage, attackUnit, attackedUnit);
@@ -2705,10 +2705,11 @@ public class FightController : MonoBehaviour
                         }
                         else
                         {
+                            int defPropNums = 0;
                             //免伤计算
                             if (attackedUnit.fightState.removeArmorNums <= 0)   //是否有卸甲
                             {
-                                int defPropNums = int.Parse(LoadJsonFile.heroTableDatas[attackedUnit.cardId][11]) + attackedUnit.fightState.fenghuotaiAddtion;
+                                defPropNums = int.Parse(LoadJsonFile.heroTableDatas[attackedUnit.cardId][11]) + attackedUnit.fightState.fenghuotaiAddtion;
                                 //白马/重甲，自身血量每降低10%，提高5%免伤
                                 switch (LoadJsonFile.heroTableDatas[attackedUnit.cardId][5])
                                 {
@@ -2760,18 +2761,22 @@ public class FightController : MonoBehaviour
                                     }
                                 }
 
-
                                 defPropNums = defPropNums > LoadJsonFile.GetGameValue(116) ? LoadJsonFile.GetGameValue(116) : defPropNums;
-                                finalDamage = (int)((100f - defPropNums) / 100f * finalDamage);
-                                //判断攻击者的伤害类型，获得被攻击者的物理或法术免伤百分比
-                                defPropNums = int.Parse(LoadJsonFile.heroTableDatas[attackedUnit.cardId][(attackUnit != null && attackUnit.cardDamageType == 0) ? 23 : 24]);
-                                finalDamage = (int)((100f - defPropNums) / 100f * finalDamage);
-                            }
 
-                            //藤甲免疫物理伤害
-                            if (LoadJsonFile.heroTableDatas[attackedUnit.cardId][5] == "57" && attackUnit != null && attackUnit.cardDamageType == 0)
-                            {
-                                finalDamage = 0;
+                                //判断攻击者的伤害类型，获得被攻击者的物理或法术免伤百分比
+                                if (attackUnit != null && attackUnit.cardDamageType == 0)
+                                {
+                                    defPropNums = defPropNums + int.Parse(LoadJsonFile.heroTableDatas[attackedUnit.cardId][23]);
+                                    if (LoadJsonFile.heroTableDatas[attackedUnit.cardId][5] == "57") //藤甲免疫90%物理伤害
+                                    {
+                                        defPropNums = defPropNums + LoadJsonFile.GetGameValue(162);
+                                    }
+                                }
+                                else
+                                {
+                                    defPropNums = defPropNums + int.Parse(LoadJsonFile.heroTableDatas[attackedUnit.cardId][24]);
+                                }
+                                finalDamage = (int)((100f - defPropNums) / 100f * finalDamage);
                             }
 
                             //流血状态加成
