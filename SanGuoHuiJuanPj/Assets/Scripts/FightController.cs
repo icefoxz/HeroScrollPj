@@ -2776,6 +2776,7 @@ public class FightController : MonoBehaviour
                                 {
                                     defPropNums = defPropNums + int.Parse(LoadJsonFile.heroTableDatas[attackedUnit.cardId][24]);
                                 }
+                                defPropNums = Mathf.Min(defPropNums, 100);
                                 finalDamage = (int)((100f - defPropNums) / 100f * finalDamage);
                             }
 
