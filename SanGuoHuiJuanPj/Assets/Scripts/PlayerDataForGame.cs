@@ -24,7 +24,8 @@ public class PlayerDataForGame : MonoBehaviour
 
     [HideInInspector]
     public int[] guideObjsShowed;   //存放各个指引展示情况
-
+    
+    //记录出战单位
     [HideInInspector]
     public List<int> fightHeroId = new List<int>();
     [HideInInspector]

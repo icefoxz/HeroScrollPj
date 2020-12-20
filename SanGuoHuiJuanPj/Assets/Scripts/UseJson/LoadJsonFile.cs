@@ -14,7 +14,7 @@ public class LoadJsonFile : MonoBehaviour
     private static readonly string tableNameStrs = "PlayerInitialTable;AssetTable;HeroTable;PlayerLevelTable;SoldierTable;" +
         "TowerTable;ClassTable;UpGradeTable;TrapTable;SpellTable;WarChestTable;WarTable;CityLevelTable;PointTable;" +
         "BattleEventTable;EnemyTable;EnemyUnitTable;StoryTable;StoryRTable;TestTable;TestRTable;EncounterTable;" +
-        "ShoppingTable;ChoseWarTable;GuideTable;KnowledgeTable;RCodeTable;TiLiStoreTable;EnemyBOSSTable;StringTextTable;NumParametersTable;JiBanTable";
+        "ShoppingTable;ChoseWarTable;GuideTable;KnowledgeTable;RCodeTable;TiLiStoreTable;EnemyBOSSTable;StringTextTable;NumParametersTable;JiBanTable;ShiLiTable";
 
 
     /// <summary>
@@ -176,6 +176,11 @@ public class LoadJsonFile : MonoBehaviour
     /// 羁绊数据表
     /// </summary>
     public static List<List<string>> jiBanTableDatas;
+    
+    /// <summary>
+    ///势力表 
+    /// </summary>
+    public static List<List<string>> shiLiTableDatas;
 
     /// <summary>
     /// 加载json文件获取数据至链表中
@@ -890,7 +895,22 @@ public class LoadJsonFile : MonoBehaviour
             //Debug.Log("Json文件加载成功---" + tableNames[indexTable] + ".Json");
             indexTable++;
         }
-
+        //加载势力表数据：ShiLiTable
+        {
+            jsonData = LoadJsonByName(tableNames[indexTable]);
+            root = JsonConvert.DeserializeObject<Roots>(jsonData);
+            shiLiTableDatas = new List<List<string>>(root.ShiLiTable.Count);
+            for (int i = 0; i < root.ShiLiTable.Count; i++)
+            {
+                shiLiTableDatas.Add(new List<string>());
+                shiLiTableDatas[i].Add(root.ShiLiTable[i].id);
+                shiLiTableDatas[i].Add(root.ShiLiTable[i].ShiLi);
+                shiLiTableDatas[i].Add(root.ShiLiTable[i].Zi);
+                shiLiTableDatas[i].Add(root.ShiLiTable[i].Qi);
+            }
+            //Debug.Log("Json文件加载成功---" + tableNames[indexTable] + ".Json");
+            indexTable++;
+        }
 
         if (indexTable >= tableNames.Length)
         {

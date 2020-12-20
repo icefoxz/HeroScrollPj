@@ -410,3 +410,10 @@ public class JiBanTableItem
     public string jiBanXiaoGuo { get; set; }
     public string BOSSId { get; set; }
 }
+public class ShiLiTableItem 
+{
+    public string id { get; set; }
+    public string ShiLi { get; set; }
+    public string Zi { get; set; }
+    public string Qi { get; set; }
+}

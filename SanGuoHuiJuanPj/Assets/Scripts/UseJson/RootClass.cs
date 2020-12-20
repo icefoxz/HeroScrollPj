@@ -133,4 +133,8 @@ public class Roots
     /// 羁绊表
     /// </summary>
     public List<JiBanTableItem> JiBanTable { get; set; }
+    /// <summary>
+    /// 势力表
+    /// </summary>
+    public List<ShiLiTableItem> ShiLiTable { get; set; }
 }

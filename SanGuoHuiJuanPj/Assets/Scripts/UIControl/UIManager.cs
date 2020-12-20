@@ -24,7 +24,7 @@ public class UIManager : MonoBehaviour
     [SerializeField]
     Text cardsListTitle;         //主城卡牌列表标题
     [SerializeField]
-    Text cardsNumsTitle;         //主城卡牌列表标题
+    Text cardsNumsTitle;         //主城卡牌列表中的单位数量
     [SerializeField]
     Image changeCardsListBtn;         //主城卡牌列表切换按钮
     [SerializeField]
@@ -38,7 +38,7 @@ public class UIManager : MonoBehaviour
     [SerializeField]
     GameObject rewardsShowObj;  //奖品展示UI
     [SerializeField]
-    GameObject[] zhuChengInterFaces;    //主城切换页面0桃园1主城2战役
+    GameObject[] zhuChengInterFaces;    //主城切换页面0桃园1主城2战役3霸业4对战
     [SerializeField]
     GameObject[] particlesForInterface;    //主城页面对应粒子效果0桃园1主城2战役
     [SerializeField]
@@ -90,11 +90,11 @@ public class UIManager : MonoBehaviour
     [SerializeField]
     GameObject chickenEntObj;   //体力入口
     [SerializeField]
-    GameObject chickenShopWindowObj;    //鸡坛商店窗口
+    GameObject chickenShopWindowObj;    //烧鸡商店窗口
     [SerializeField]
     Button[] chickenShopBtns;   //体力商店购买按钮
     [SerializeField]
-    Text chickenCloseText;  //鸡坛关闭时间Text
+    Text chickenCloseText;  //烧鸡关闭时间Text
 
     [SerializeField]
     GameObject cutTiLiTextObj;  //扣除体力动画Obj
@@ -934,7 +934,7 @@ public class UIManager : MonoBehaviour
         int cardNums = 0;
 
         NowLevelAndHadChip fuzhuDataIndex = new NowLevelAndHadChip();
-
+        //排序
         SortHSTData(PlayerDataForGame.instance.hstData.soldierSaveData);
         for (int i = 0; i < PlayerDataForGame.instance.hstData.soldierSaveData.Count; i++)
         {
@@ -1296,6 +1296,7 @@ public class UIManager : MonoBehaviour
                 ConsumeManager.instance.AddYuanBao(getGoldNums);
                 AudioController0.instance.ChangeAudioClip(AudioController0.instance.audioClips[17], AudioController0.instance.audioVolumes[17]);
                 AudioController0.instance.PlayAudioSource(0);
+                //刷新主城列表
                 showHeroListOrTower = !showHeroListOrTower;
                 ChangeScrollView();
                 PlayerDataForGame.instance.AddOrCutFightCardId(heroData.typeIndex, heroData.id, false);
@@ -1637,6 +1638,7 @@ public class UIManager : MonoBehaviour
             boxBtnObjs[i].transform.GetChild(0).GetChild(2).gameObject.SetActive(false);
         }
         rewardsShowObj.SetActive(true);
+        //刷新主城列表
         showHeroListOrTower = false;
         ChangeScrollView();
         rewardsShowObj.transform.GetComponentInChildren<ScrollRect>().horizontalNormalizedPosition = 0f;
