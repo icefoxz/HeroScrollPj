@@ -47,6 +47,9 @@ import e_create_stringTextTable
 import e_create_numParametersTable
 import e_create_jiBanTable
 import e_create_shiLiTable
+import e_create_baYeDiTuTable
+import e_create_baYeShiJianTable
+import e_create_baYeBattleTable
 
 taskList = (
 
@@ -84,6 +87,9 @@ taskList = (
 	('/Hero.xlsx', e_create_numParametersTable, '/NumParametersTable.json'),
 	('/Hero.xlsx', e_create_jiBanTable, '/JiBanTable.json'),
 	('/Hero.xlsx', e_create_shiLiTable, '/ShiLiTable.json'),
+	('/Hero.xlsx', e_create_baYeDiTuTable, '/BaYeDiTuTable.json'),
+	('/Hero.xlsx', e_create_baYeShiJianTable, '/BaYeShiJianTable.json'),
+	('/Hero.xlsx', e_create_baYeBattleTable, '/BaYeBattleTable.json'),
 
 )
 
