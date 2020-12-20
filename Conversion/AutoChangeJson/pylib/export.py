@@ -46,6 +46,7 @@ import e_create_enemyBOSSTable
 import e_create_stringTextTable
 import e_create_numParametersTable
 import e_create_jiBanTable
+import e_create_shiLiTable
 
 taskList = (
 
@@ -82,6 +83,8 @@ taskList = (
 	('/Hero.xlsx', e_create_stringTextTable, '/StringTextTable.json'),
 	('/Hero.xlsx', e_create_numParametersTable, '/NumParametersTable.json'),
 	('/Hero.xlsx', e_create_jiBanTable, '/JiBanTable.json'),
+	('/Hero.xlsx', e_create_shiLiTable, '/ShiLiTable.json'),
+
 )
 
 
