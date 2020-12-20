@@ -2514,6 +2514,7 @@ MonoBehaviour:
   cardsListTitle: {fileID: 1012035982}
   cardsNumsTitle: {fileID: 1369432409}
   changeCardsListBtn: {fileID: 22564099}
+  changeCardsListNameImg: {fileID: 1066820942}
   showCardObj: {fileID: 1658345918}
   infoTran: {fileID: 514928113}
   heChengBtn: {fileID: 2050111256}
@@ -2569,6 +2570,7 @@ MonoBehaviour:
   jibanBtnBoxTran: {fileID: 1042261152}
   jibanHeroBoxTran: {fileID: 361152354}
   jiBanWinCloseBtn: {fileID: 943528706}
+  indexChooseListForceId: 0
   musicBtnText: {fileID: 1978084671}
   jinNangObj: {fileID: 2076200366}
   jinNangWindowObj: {fileID: 1511621557}
@@ -16802,7 +16804,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 292, y: -1046}
+  m_AnchoredPosition: {x: 291.75, y: -1046.3334}
   m_SizeDelta: {x: 583.5, y: 418.53336}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &799804011
@@ -23329,7 +23331,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 292, y: -628}
+  m_AnchoredPosition: {x: 291.75, y: -627.80005}
   m_SizeDelta: {x: 583.5, y: 418.53336}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &889036024
@@ -24795,7 +24797,7 @@ MonoBehaviour:
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
   m_Interactable: 1
-  m_TargetGraphic: {fileID: 0}
+  m_TargetGraphic: {fileID: 22564099}
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
@@ -26185,7 +26187,7 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
-  m_Interactable: 0
+  m_Interactable: 1
   m_TargetGraphic: {fileID: 1047333681}
   m_OnClick:
     m_PersistentCalls:
@@ -26408,7 +26410,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 292, y: -209}
+  m_AnchoredPosition: {x: 291.75, y: -209.26668}
   m_SizeDelta: {x: 583.5, y: 418.53336}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1050866441
@@ -26777,7 +26779,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 0.88235295}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []

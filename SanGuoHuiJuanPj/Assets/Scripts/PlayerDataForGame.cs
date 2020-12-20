@@ -208,12 +208,15 @@ public class PlayerDataForGame : MonoBehaviour
             setDesignContentScale();
         }
     }
-
-    //计算辅助上阵数量
-    public int CalculationFuZhuCount()
+   
+    //计算出战总数量
+    public int CalculationFightCount()
     {
-        return fightSoLdierId.Count + fightTowerId.Count + fightTrapId.Count + fightSpellId.Count;
+        int count = 0;
+        count = fightHeroId.Count + fightTowerId.Count + fightTrapId.Count;
+        return count;
     }
+
 
     /// <summary>
     /// 添加或删除卡牌id到出战列表
@@ -225,7 +228,7 @@ public class PlayerDataForGame : MonoBehaviour
             case 0:
                 if (isAdd)
                 {
-                    if (fightHeroId.Count < int.Parse(LoadJsonFile.playerLevelTableDatas[pyData.level - 1][2]))
+                    if (CalculationFightCount() < int.Parse(LoadJsonFile.playerLevelTableDatas[pyData.level - 1][2]))
                     {
                         if (!fightHeroId.Contains(cardId))
                         {
@@ -257,7 +260,7 @@ public class PlayerDataForGame : MonoBehaviour
             case 1:
                 if (isAdd)
                 {
-                    if (CalculationFuZhuCount() < int.Parse(LoadJsonFile.playerLevelTableDatas[pyData.level - 1][3]))
+                    if (CalculationFightCount() < int.Parse(LoadJsonFile.playerLevelTableDatas[pyData.level - 1][2]))
                     {
                         if (!fightSoLdierId.Contains(cardId))
                         {
@@ -290,7 +293,7 @@ public class PlayerDataForGame : MonoBehaviour
             case 2:
                 if (isAdd)
                 {
-                    if (CalculationFuZhuCount() < int.Parse(LoadJsonFile.playerLevelTableDatas[pyData.level - 1][3]))
+                    if (CalculationFightCount() < int.Parse(LoadJsonFile.playerLevelTableDatas[pyData.level - 1][2]))
                     {
                         if (!fightTowerId.Contains(cardId))
                         {
@@ -323,7 +326,7 @@ public class PlayerDataForGame : MonoBehaviour
             case 3:
                 if (isAdd)
                 {
-                    if (CalculationFuZhuCount() < int.Parse(LoadJsonFile.playerLevelTableDatas[pyData.level - 1][3]))
+                    if (CalculationFightCount() < int.Parse(LoadJsonFile.playerLevelTableDatas[pyData.level - 1][2]))
                     {
                         if (!fightTrapId.Contains(cardId))
                         {
@@ -356,7 +359,7 @@ public class PlayerDataForGame : MonoBehaviour
             case 4:
                 if (isAdd)
                 {
-                    if (CalculationFuZhuCount() < int.Parse(LoadJsonFile.playerLevelTableDatas[pyData.level - 1][3]))
+                    if (CalculationFightCount() < int.Parse(LoadJsonFile.playerLevelTableDatas[pyData.level - 1][2]))
                     {
                         if (!fightSpellId.Contains(cardId))
                         {

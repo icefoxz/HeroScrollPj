@@ -280,6 +280,7 @@ public class LoadJsonFile : MonoBehaviour
                 playerLevelTableDatas[i].Add(root.PlayerLevelTable[i].companionLimit);
                 playerLevelTableDatas[i].Add(root.PlayerLevelTable[i].homeHp);
                 playerLevelTableDatas[i].Add(root.PlayerLevelTable[i].yuanZheng);
+                playerLevelTableDatas[i].Add(root.PlayerLevelTable[i].unLockShiLi);
             }
             //Debug.Log("Json文件加载成功---" + tableNames[indexTable] + ".Json");
             indexTable++;
@@ -336,6 +337,7 @@ public class LoadJsonFile : MonoBehaviour
                 towerTableDatas[i].Add(root.TowerTable[i].intro2);
                 towerTableDatas[i].Add(root.TowerTable[i].chestBxBox);
                 towerTableDatas[i].Add(root.TowerTable[i].chanChu);
+                towerTableDatas[i].Add(root.TowerTable[i].shiLi);
             }
             //Debug.Log("Json文件加载成功---" + tableNames[indexTable] + ".Json");
             indexTable++;
@@ -395,6 +397,7 @@ public class LoadJsonFile : MonoBehaviour
                 trapTableDatas[i].Add(root.TrapTable[i].intro2);
                 trapTableDatas[i].Add(root.TrapTable[i].chestBxBox);
                 trapTableDatas[i].Add(root.TrapTable[i].chanChu);
+                trapTableDatas[i].Add(root.TrapTable[i].shiLi);
             }
             //Debug.Log("Json文件加载成功---" + tableNames[indexTable] + ".Json");
             indexTable++;

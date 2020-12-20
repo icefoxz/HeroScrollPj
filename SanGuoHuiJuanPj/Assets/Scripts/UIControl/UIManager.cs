@@ -26,7 +26,9 @@ public class UIManager : MonoBehaviour
     [SerializeField]
     Text cardsNumsTitle;         //主城卡牌列表中的单位数量
     [SerializeField]
-    Image changeCardsListBtn;         //主城卡牌列表切换按钮
+    Image changeCardsListBtn;         //主城卡牌列表切换按钮势力图片
+    [SerializeField]
+    Image changeCardsListNameImg;     //主城卡牌列表切换按钮势力文字图片
     [SerializeField]
     GameObject showCardObj;     //上部展示的卡牌
     [SerializeField]
@@ -61,8 +63,6 @@ public class UIManager : MonoBehaviour
     Transform rewardsParent;    //奖品父级
     [SerializeField]
     GameObject rewardObj;       //奖品预制件
-
-    bool showHeroListOrTower;   //标记展示武将列表还是辅助列表
 
     private int needYuanBaoNums;    //记录所需元宝数
 
@@ -106,8 +106,8 @@ public class UIManager : MonoBehaviour
             instance = this;
         }
         isJumping = false;
-        showHeroListOrTower = true;
         needYuanBaoNums = 0;
+        indexChooseListForceId = 0;
         selectCardData = new NowLevelAndHadChip();
     }
 
@@ -697,16 +697,8 @@ public class UIManager : MonoBehaviour
     //刷新上阵数量的显示
     private void UpdateCardNumsShow()
     {
-        if (showHeroListOrTower)
-        {
-            cardsListTitle.text = LoadJsonFile.GetStringText(28);
-            cardsNumsTitle.text = PlayerDataForGame.instance.fightHeroId.Count + "/" + LoadJsonFile.playerLevelTableDatas[PlayerDataForGame.instance.pyData.level - 1][2];
-        }
-        else
-        {
-            cardsListTitle.text = LoadJsonFile.GetStringText(29);
-            cardsNumsTitle.text = PlayerDataForGame.instance.CalculationFuZhuCount() + "/" + LoadJsonFile.playerLevelTableDatas[PlayerDataForGame.instance.pyData.level - 1][3];
-        }
+        cardsListTitle.text = "出战";
+        cardsNumsTitle.text = PlayerDataForGame.instance.CalculationFightCount() + "/" + LoadJsonFile.playerLevelTableDatas[PlayerDataForGame.instance.pyData.level - 1][2];
     }
 
     //是否展示卡牌详情显示
@@ -719,6 +711,8 @@ public class UIManager : MonoBehaviour
         sellCardBtn.SetActive(isShow);
     }
 
+    public int indexChooseListForceId = 0; //标记主城展示哪个势力的id
+
     /// <summary>
     /// 改变武将列表和辅助列表显示
     /// </summary>
@@ -726,24 +720,15 @@ public class UIManager : MonoBehaviour
     {
         AudioController0.instance.RandomPlayGuZhengAudio();
 
-        TakeBackHeroCardPooling();
-
-        if (showHeroListOrTower)
+        indexChooseListForceId++;
+        if (indexChooseListForceId > int.Parse(LoadJsonFile.playerLevelTableDatas[PlayerDataForGame.instance.pyData.level - 1][6]))
         {
-            CreateTowerContent(true);
-            showHeroListOrTower = false;
-
-            UpdateCardNumsShow();
-            changeCardsListBtn.sprite = Resources.Load("Image/uiImage/changeHero", typeof(Sprite)) as Sprite;
+            indexChooseListForceId = 0;
         }
-        else
-        {
-            CreateHeroContent(true);
-            showHeroListOrTower = true;
-
-            UpdateCardNumsShow();
-            changeCardsListBtn.sprite = Resources.Load("Image/uiImage/changeHelp", typeof(Sprite)) as Sprite;
-        }
+        changeCardsListBtn.sprite = Resources.Load("Image/shiLi/Flag/" + indexChooseListForceId, typeof(Sprite)) as Sprite;
+        changeCardsListNameImg.sprite = Resources.Load("Image/shiLi/Name/" + indexChooseListForceId, typeof(Sprite)) as Sprite;
+        CreateHeroAndTowerContent();
+        UpdateCardNumsShow();
         StartCoroutine(LiteToChangeViewShow(0));
     }
 
@@ -925,62 +910,104 @@ public class UIManager : MonoBehaviour
         CalculatedNeedYuanBao(fuzhuData.level);
     }
 
-
     /// <summary>
-    /// 创建并展示辅助列表
+    /// 创建并展示单位列表
     /// </summary>
-    private void CreateTowerContent(bool isNeedChooseFirst)
+    private void CreateHeroAndTowerContent()
     {
+        TakeBackHeroCardPooling();
+
+        PlayerDataForGame.instance.fightHeroId.Clear();
+        PlayerDataForGame.instance.fightTowerId.Clear();
+        PlayerDataForGame.instance.fightTrapId.Clear();
+
         int cardNums = 0;
+
+        SortHSTData(PlayerDataForGame.instance.hstData.heroSaveData);   //  排序
+
+        NowLevelAndHadChip heroDataIndex = new NowLevelAndHadChip();    //临时记录武将存档信息
+        for (int i = 0; i < PlayerDataForGame.instance.hstData.heroSaveData.Count; i++)
+        {
+            heroDataIndex = PlayerDataForGame.instance.hstData.heroSaveData[i];
+            if (indexChooseListForceId==int.Parse(LoadJsonFile.heroTableDatas[heroDataIndex.id][6]))
+            {
+                if (heroDataIndex.level > 0 || heroDataIndex.chips > 0)
+                {
+                    if (heroDataIndex.isFight>0)
+                    {
+                        PlayerDataForGame.instance.fightHeroId.Add(heroDataIndex.id);
+                    }
+                    cardNums++;
+                    ShowOneHeroRules(heroDataIndex);
+                }
+            }
+        }
 
         NowLevelAndHadChip fuzhuDataIndex = new NowLevelAndHadChip();
         //排序
-        SortHSTData(PlayerDataForGame.instance.hstData.soldierSaveData);
-        for (int i = 0; i < PlayerDataForGame.instance.hstData.soldierSaveData.Count; i++)
-        {
-            fuzhuDataIndex = PlayerDataForGame.instance.hstData.soldierSaveData[i];
-            if (fuzhuDataIndex.level > 0 || fuzhuDataIndex.chips > 0)
-            {
-                cardNums++;
-                ShowOneFuZhuRules(LoadJsonFile.soldierTableDatas, fuzhuDataIndex, 13);
-            }
-        }
+        //SortHSTData(PlayerDataForGame.instance.hstData.soldierSaveData);
+        //for (int i = 0; i < PlayerDataForGame.instance.hstData.soldierSaveData.Count; i++)
+        //{
+        //    fuzhuDataIndex = PlayerDataForGame.instance.hstData.soldierSaveData[i];
+        //    if (fuzhuDataIndex.level > 0 || fuzhuDataIndex.chips > 0)
+        //    {
+        //        cardNums++;
+        //        ShowOneFuZhuRules(LoadJsonFile.soldierTableDatas, fuzhuDataIndex, 13);
+        //    }
+        //}
         SortHSTData(PlayerDataForGame.instance.hstData.towerSaveData);
         for (int i = 0; i < PlayerDataForGame.instance.hstData.towerSaveData.Count; i++)
         {
             fuzhuDataIndex = PlayerDataForGame.instance.hstData.towerSaveData[i];
-            if (fuzhuDataIndex.level > 0 || fuzhuDataIndex.chips > 0)
+            if (indexChooseListForceId == int.Parse(LoadJsonFile.towerTableDatas[fuzhuDataIndex.id][15]))
             {
-                cardNums++;
-                ShowOneFuZhuRules(LoadJsonFile.towerTableDatas, fuzhuDataIndex, 10);
+                if (fuzhuDataIndex.level > 0 || fuzhuDataIndex.chips > 0)
+                {
+                    if (fuzhuDataIndex.isFight > 0)
+                    {
+                        PlayerDataForGame.instance.fightTowerId.Add(fuzhuDataIndex.id);
+                    }
+                    cardNums++;
+                    ShowOneFuZhuRules(LoadJsonFile.towerTableDatas, fuzhuDataIndex, 10);
+                }
             }
         }
         SortHSTData(PlayerDataForGame.instance.hstData.trapSaveData);
         for (int i = 0; i < PlayerDataForGame.instance.hstData.trapSaveData.Count; i++)
         {
             fuzhuDataIndex = PlayerDataForGame.instance.hstData.trapSaveData[i];
-            if (fuzhuDataIndex.level > 0 || fuzhuDataIndex.chips > 0)
+            if (indexChooseListForceId == int.Parse(LoadJsonFile.trapTableDatas[fuzhuDataIndex.id][14]))
             {
-                cardNums++;
-                ShowOneFuZhuRules(LoadJsonFile.trapTableDatas, fuzhuDataIndex, 8);
+                if (fuzhuDataIndex.level > 0 || fuzhuDataIndex.chips > 0)
+                {
+                    if (fuzhuDataIndex.isFight > 0)
+                    {
+                        PlayerDataForGame.instance.fightTrapId.Add(fuzhuDataIndex.id);
+                    }
+                    cardNums++;
+                    ShowOneFuZhuRules(LoadJsonFile.trapTableDatas, fuzhuDataIndex, 8);
+                }
             }
         }
-        SortHSTData(PlayerDataForGame.instance.hstData.spellSaveData);
-        for (int i = 0; i < PlayerDataForGame.instance.hstData.spellSaveData.Count; i++)
-        {
-            fuzhuDataIndex = PlayerDataForGame.instance.hstData.spellSaveData[i];
-            if (fuzhuDataIndex.level > 0 || fuzhuDataIndex.chips > 0)
-            {
-                cardNums++;
-                ShowOneFuZhuRules(LoadJsonFile.spellTableDatas, fuzhuDataIndex, 6);
-            }
-        }
-        if (isNeedChooseFirst && cardNums > 0)
+        //SortHSTData(PlayerDataForGame.instance.hstData.spellSaveData);
+        //for (int i = 0; i < PlayerDataForGame.instance.hstData.spellSaveData.Count; i++)
+        //{
+        //    fuzhuDataIndex = PlayerDataForGame.instance.hstData.spellSaveData[i];
+        //    if (fuzhuDataIndex.level > 0 || fuzhuDataIndex.chips > 0)
+        //    {
+        //        cardNums++;
+        //        ShowOneFuZhuRules(LoadJsonFile.spellTableDatas, fuzhuDataIndex, 6);
+        //    }
+        //}
+        if (cardNums > 0)
         {
             StartCoroutine(LiteUpdateListChooseFirst(0));
+            ShowOrHideInfo(true);
         }
-        ShowOrHideInfo(cardNums > 0);
-
+        else
+        {
+            ShowOrHideInfo(false);
+        }
     }
 
     /// <summary>
@@ -1073,32 +1100,6 @@ public class UIManager : MonoBehaviour
         {
             OnClickHeroCardFun(heroData, obj.transform.GetChild(9).GetComponent<Image>());
         });
-    }
-
-    /// <summary>
-    /// 创建并展示英雄列表
-    /// </summary>
-    private void CreateHeroContent(bool isNeedChooseFirst)
-    {
-        int cardNums = 0;
-
-        SortHSTData(PlayerDataForGame.instance.hstData.heroSaveData);   //  排序
-
-        NowLevelAndHadChip heroDataIndex = new NowLevelAndHadChip();    //临时记录武将存档信息
-        for (int i = 0; i < PlayerDataForGame.instance.hstData.heroSaveData.Count; i++)
-        {
-            heroDataIndex = PlayerDataForGame.instance.hstData.heroSaveData[i];
-            if (heroDataIndex.level > 0 || heroDataIndex.chips > 0)
-            {
-                cardNums++;
-                ShowOneHeroRules(heroDataIndex);
-            }
-        }
-        if (isNeedChooseFirst && cardNums > 0)
-        {
-            StartCoroutine(LiteUpdateListChooseFirst(0));
-        }
-        ShowOrHideInfo(cardNums > 0);
     }
 
     /// <summary>
@@ -1297,7 +1298,6 @@ public class UIManager : MonoBehaviour
                 AudioController0.instance.ChangeAudioClip(AudioController0.instance.audioClips[17], AudioController0.instance.audioVolumes[17]);
                 AudioController0.instance.PlayAudioSource(0);
                 //刷新主城列表
-                showHeroListOrTower = !showHeroListOrTower;
                 ChangeScrollView();
                 PlayerDataForGame.instance.AddOrCutFightCardId(heroData.typeIndex, heroData.id, false);
                 UpdateCardNumsShow();
@@ -1419,13 +1419,10 @@ public class UIManager : MonoBehaviour
         yvQueNumText.text = PlayerDataForGame.instance.pyData.yvque.ToString();
         showTiLiNums = PlayerPrefs.GetInt(TimeSystemControl.staminaStr);
         tiLiNumText.text = showTiLiNums + "/90";
-        CreateTowerContent(false);
 
-        TakeBackHeroCardPooling();
+        CreateHeroAndTowerContent();
+        UpdateCardNumsShow();
 
-        CreateHeroContent(true);
-        cardsListTitle.text = LoadJsonFile.GetStringText(28);
-        cardsNumsTitle.text = PlayerDataForGame.instance.fightHeroId.Count + "/" + LoadJsonFile.playerLevelTableDatas[PlayerDataForGame.instance.pyData.level - 1][2];
         StartCoroutine(LiteToChangeViewShow(0));
     }
 
@@ -1639,7 +1636,6 @@ public class UIManager : MonoBehaviour
         }
         rewardsShowObj.SetActive(true);
         //刷新主城列表
-        showHeroListOrTower = false;
         ChangeScrollView();
         rewardsShowObj.transform.GetComponentInChildren<ScrollRect>().horizontalNormalizedPosition = 0f;
         yield return new WaitForSeconds(1f);

@@ -50,6 +50,7 @@ public class PlayerLevelTableItem
     public string companionLimit { get; set; }
     public string homeHp { get; set; }
     public string yuanZheng { get; set; }
+    public string unLockShiLi { get; set; }
 }
 public class SoldierTableItem
 {
@@ -88,6 +89,7 @@ public class TowerTableItem
     public string chestBxBox { get; set; }
     public string intro2 { get; set; }
     public string chanChu { get; set; }
+    public string shiLi { get; set; }
 }
 public class ClassTableItem
 {
@@ -120,6 +122,7 @@ public class TrapTableItem
     public string chestBxBox { get; set; }
     public string intro2 { get; set; }
     public string chanChu { get; set; }
+    public string shiLi { get; set; }
 }
 public class SpellTableItem
 {

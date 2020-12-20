@@ -2767,10 +2767,6 @@ public class FightController : MonoBehaviour
                                 if (attackUnit != null && attackUnit.cardDamageType == 0)
                                 {
                                     defPropNums = defPropNums + int.Parse(LoadJsonFile.heroTableDatas[attackedUnit.cardId][23]);
-                                    if (LoadJsonFile.heroTableDatas[attackedUnit.cardId][5] == "57") //藤甲免疫90%物理伤害
-                                    {
-                                        defPropNums = defPropNums + LoadJsonFile.GetGameValue(162);
-                                    }
                                 }
                                 else
                                 {
