@@ -18,7 +18,8 @@ def export_json(xls, fn):
                 ss += "\t\t\t\"heroLimit\": \"" + conv_int(c[ri.Next()]) + "\",\n"
                 ss += "\t\t\t\"companionLimit\": \"" + conv_int(c[ri.Next()]) + "\",\n"
                 ss += "\t\t\t\"homeHp\": \"" + conv_int(c[ri.Next()]) + "\",\n"
-                ss += "\t\t\t\"yuanZheng\": \"" + conv_int(c[ri.Next()]) + "\"\n"
+                ss += "\t\t\t\"yuanZheng\": \"" + conv_int(c[ri.Next()]) + "\",\n"
+                ss += "\t\t\t\"unLockShiLi\": \"" + conv_int(c[ri.Next()]) + "\"\n"
                 ss += "\t\t},\n"
                 s += ss
             s = s[:-2]

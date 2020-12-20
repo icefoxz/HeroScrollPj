@@ -26,7 +26,8 @@ def export_json(xls, fn):
                 ss += "\t\t\t\"chestZyBox\": \"" + conv_str_bin(c[ri.Next()]) + "\",\n"
                 ss += "\t\t\t\"chestBxBox\": \"" + conv_str_bin(c[ri.Next()]) + "\",\n"
                 ss += "\t\t\t\"intro2\": \"" + conv_str_bin(c[ri.Next()]) + "\",\n"
-                ss += "\t\t\t\"chanChu\": \"" + conv_int(c[ri.Next()]) + "\"\n"
+                ss += "\t\t\t\"chanChu\": \"" + conv_int(c[ri.Next()]) + "\",\n"
+                ss += "\t\t\t\"shiLi\": \"" + conv_int(c[ri.Next()]) + "\"\n"
                 ss += "\t\t},\n"
                 s += ss
             s = s[:-2]
