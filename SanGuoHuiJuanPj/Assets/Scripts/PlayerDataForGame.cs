@@ -40,6 +40,13 @@ public class PlayerDataForGame : MonoBehaviour
     [HideInInspector]
     public int chooseWarsId = new int();    //记录选择的战役id
 
+    [HideInInspector]
+    public int zhanYiColdNums = 0;  //记录战役的金币数
+    [HideInInspector]
+    public int baYeGoldNums = 0;    //记录霸业金币数
+    [HideInInspector]
+    public bool isZhanYi;   //记录这场战斗是战役还是霸业
+
     float fadeSpeed = 1.5f;   //渐隐渐显时间
     [HideInInspector]
     public bool isJumping;
@@ -79,6 +86,9 @@ public class PlayerDataForGame : MonoBehaviour
         getBackTiLiNums = 0;
         isNeedSaveData = false;
         isHadNewSaveData = false;
+
+        isZhanYi = true;
+        baYeGoldNums = 100;
 
         garbageStationObjs = new List<GameObject>();
         StartCoroutine(FadeTransitionEffect(0));

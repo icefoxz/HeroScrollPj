@@ -122,7 +122,7 @@ public class UIManager : MonoBehaviour
         InitChickenOpenTs();
         InitChickenBtnFun();
         InitJiBanForMainFun();
-
+        InitBaYeFun();
         PlayerDataForGame.instance.ClearGarbageStationObj();
     }
 
@@ -156,6 +156,198 @@ public class UIManager : MonoBehaviour
 
     [SerializeField]
     Button jiBanWinCloseBtn;    //羁绊界面关闭按钮
+
+    [SerializeField]
+    GameObject baYeEventsObj;   //霸业事件点父级
+    [SerializeField]
+    GameObject chooseBaYeEventImg;  //选择霸业地点的Img
+    [SerializeField]
+    GameObject baYeForceObj;    //霸业势力选择父级
+    [SerializeField]
+    Text baYeGoldNumText;   //霸业金币数量
+
+    //开始霸业战斗
+    public void StartBaYeFight()
+    {
+        if (baYeFoeceChooseImgObj != null && baYeEventChooseIndex != -1)
+        {
+            print("可以开始战斗");
+            if (!isJumping)
+            {
+                isJumping = true;
+                AudioController0.instance.ChangeAudioClip(AudioController0.instance.audioClips[12], AudioController0.instance.audioVolumes[12]);
+                AudioController0.instance.PlayAudioSource(0);
+
+                StartCoroutine(LateGoToFightScene());
+            }
+            else
+            {
+                PlayOnClickMusic();
+            }
+        }
+        else
+        {
+            print("请选择");
+        }
+    }
+
+    //初始化霸业界面内容
+    private void InitBaYeFun()
+    {
+        baYeEventChooseIndex = -1;
+        //城市点初始化
+        for (int i = 0; i < baYeEventsObj.transform.childCount; i++)
+        {
+            baYeEventsObj.transform.GetChild(i).gameObject.SetActive(false);
+        }
+        string[] eventCitys = LoadJsonFile.playerLevelTableDatas[PlayerDataForGame.instance.pyData.level - 1][7].Split(',');
+        for (int i = 0; i < eventCitys.Length; i++)
+        {
+            if (eventCitys[i] != "")
+            {
+                int indexId = i;
+                //得到战役id
+                int indexWarId = GetChooseEventsWarId(indexId);
+                baYeEventsObj.transform.GetChild(i).GetComponentInChildren<Button>().onClick.AddListener(delegate ()
+                {
+                    ChooseBaYeEventOnClick(indexId, indexWarId);
+                });
+                baYeEventsObj.transform.GetChild(i).GetComponentInChildren<Text>().text = LoadJsonFile.baYeDiTuTableDatas[i][3];    //城市名
+                baYeEventsObj.transform.GetChild(i).gameObject.SetActive(true);
+            }
+        }
+
+        //势力选择
+        int forceUnlockId = int.Parse(LoadJsonFile.playerLevelTableDatas[PlayerDataForGame.instance.pyData.level - 1][6]);
+        for (int i = 0; i < forceUnlockId + 1; i++)
+        {
+            int index = i;
+            GameObject obj = baYeForceObj.transform.GetChild(index).gameObject;
+            obj.transform.GetChild(0).GetComponent<Image>().sprite = Resources.Load("Image/shiLi/Flag/" + index, typeof(Sprite)) as Sprite;
+            obj.transform.GetChild(1).GetComponent<Image>().sprite = Resources.Load("Image/shiLi/Name/" + index, typeof(Sprite)) as Sprite;
+            obj.GetComponent<Button>().onClick.AddListener(delegate() {
+                ChooseBaYeForceOnClick(index, obj.transform.GetChild(2).gameObject);
+            });
+            obj.SetActive(true);
+        }
+        baYeGoldNumText.text = PlayerDataForGame.instance.baYeGoldNums.ToString();
+    }
+
+    //标记选择霸业势力的ChooseImg
+    GameObject baYeFoeceChooseImgObj;
+    //标记选择霸业城池id
+    int baYeEventChooseIndex; 
+
+    //选择霸业的势力方法
+    private void ChooseBaYeForceOnClick(int forceId, GameObject chooseImgObj)
+    {
+        if (baYeFoeceChooseImgObj != null)
+        {
+            baYeFoeceChooseImgObj.SetActive(false);
+        }
+        baYeFoeceChooseImgObj = chooseImgObj;
+        baYeFoeceChooseImgObj.SetActive(true);
+        SeleceBaYeForceCards(forceId);
+    }
+
+    //刷新霸业的势力武将选择（派去战斗）
+    private void SeleceBaYeForceCards(int forceId)
+    {
+        PlayerDataForGame.instance.fightHeroId.Clear();
+        PlayerDataForGame.instance.fightTowerId.Clear();
+        PlayerDataForGame.instance.fightTrapId.Clear();
+
+        NowLevelAndHadChip heroDataIndex = new NowLevelAndHadChip();    //临时记录武将存档信息
+        for (int i = 0; i < PlayerDataForGame.instance.hstData.heroSaveData.Count; i++)
+        {
+            heroDataIndex = PlayerDataForGame.instance.hstData.heroSaveData[i];
+            if (forceId == int.Parse(LoadJsonFile.heroTableDatas[heroDataIndex.id][6]))
+            {
+                if (heroDataIndex.level > 0 || heroDataIndex.chips > 0)
+                {
+                    if (heroDataIndex.isFight > 0)
+                    {
+                        PlayerDataForGame.instance.fightHeroId.Add(heroDataIndex.id);
+                    }
+                }
+            }
+        }
+        NowLevelAndHadChip fuzhuDataIndex = new NowLevelAndHadChip();
+        for (int i = 0; i < PlayerDataForGame.instance.hstData.towerSaveData.Count; i++)
+        {
+            fuzhuDataIndex = PlayerDataForGame.instance.hstData.towerSaveData[i];
+            if (forceId == int.Parse(LoadJsonFile.towerTableDatas[fuzhuDataIndex.id][15]))
+            {
+                if (fuzhuDataIndex.level > 0 || fuzhuDataIndex.chips > 0)
+                {
+                    if (fuzhuDataIndex.isFight > 0)
+                    {
+                        PlayerDataForGame.instance.fightTowerId.Add(fuzhuDataIndex.id);
+                    }
+                }
+            }
+        }
+        for (int i = 0; i < PlayerDataForGame.instance.hstData.trapSaveData.Count; i++)
+        {
+            fuzhuDataIndex = PlayerDataForGame.instance.hstData.trapSaveData[i];
+            if (forceId == int.Parse(LoadJsonFile.trapTableDatas[fuzhuDataIndex.id][14]))
+            {
+                if (fuzhuDataIndex.level > 0 || fuzhuDataIndex.chips > 0)
+                {
+                    if (fuzhuDataIndex.isFight > 0)
+                    {
+                        PlayerDataForGame.instance.fightTrapId.Add(fuzhuDataIndex.id);
+                    }
+                }
+            }
+        }
+    }
+
+    //选择某个霸业城池点的方法
+    private void ChooseBaYeEventOnClick(int eventIndex, int warId)
+    {
+        PlayerDataForGame.instance.chooseWarsId = warId;
+        chooseBaYeEventImg.transform.position = baYeEventsObj.transform.GetChild(eventIndex).transform.position;
+        chooseBaYeEventImg.SetActive(true);
+        baYeEventChooseIndex = warId;
+        print(warId);
+    }
+
+    //获取霸业城池的战役id
+    private int GetChooseEventsWarId(int eventIndex)
+    {
+        string[] eventsStr = LoadJsonFile.baYeDiTuTableDatas[eventIndex][2].Split(',');
+        List<int> shiJianIdList = new List<int>();
+        for (int i = 0; i < eventsStr.Length; i++)
+        {
+            if (eventsStr[i] != "")
+            {
+                shiJianIdList.Add(int.Parse(eventsStr[i]));
+            }
+        }
+        //得到随机的霸业事件id
+        int baYeBattleId = int.Parse(LoadJsonFile.baYeShiJianTableDatas[BackShiJianIdByWeightValue(shiJianIdList)][3]);
+        return int.Parse(LoadJsonFile.baYeBattleTableDatas[baYeBattleId][int.Parse(LoadJsonFile.playerLevelTableDatas[PlayerDataForGame.instance.pyData.level - 1][9]) + 1]);
+    }
+
+    //根据权重得到随机id
+    private int BackShiJianIdByWeightValue(List<int> datas)
+    {
+        int weightValueSum = 0;
+        for (int i = 0; i < datas.Count; i++)
+        {
+            weightValueSum += int.Parse(LoadJsonFile.baYeShiJianTableDatas[datas[i]][1]);
+        }
+        int randNum = UnityEngine.Random.Range(0, weightValueSum);
+        int indexTest = 0;
+        while (randNum >= 0)
+        {
+            randNum -= int.Parse(LoadJsonFile.baYeShiJianTableDatas[datas[indexTest]][1]);
+            indexTest++;
+        }
+        indexTest -= 1;
+        return datas[indexTest];
+    }
 
     //main场景羁绊内容的初始化
     private void InitJiBanForMainFun()
@@ -617,6 +809,7 @@ public class UIManager : MonoBehaviour
         //选中状态显示
         obj.GetComponentInChildren<Image>().enabled = true;
 
+        PlayerDataForGame.instance.zhanYiColdNums = 10;
         PlayerDataForGame.instance.chooseWarsId = warsId;
         //战役介绍
         warIntroText.DOPause();
@@ -1754,8 +1947,12 @@ public class UIManager : MonoBehaviour
                 }
                 break;
             case 2:
+                PlayerDataForGame.instance.isZhanYi = true;
                 ShowOrHideGuideObj(3, true);
                 warsChooseListObj.transform.parent.parent.GetComponent<ScrollRect>().DOVerticalNormalizedPos(0f, 0.3f);
+                break;
+            case 4:
+                PlayerDataForGame.instance.isZhanYi = false;
                 break;
             default:
                 break;

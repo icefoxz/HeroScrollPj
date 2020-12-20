@@ -137,4 +137,16 @@ public class Roots
     /// 势力表
     /// </summary>
     public List<ShiLiTableItem> ShiLiTable { get; set; }
+    /// <summary>
+    /// 霸业地图表
+    /// </summary>
+    public List<BaYeDiTuTableItem> BaYeDiTuTable { get; set; }
+    /// <summary>
+    /// 霸业事件表
+    /// </summary>
+    public List<BaYeShiJianTableItem> BaYeShiJianTable { get; set; }
+    /// <summary>
+    /// 霸业战役难度表
+    /// </summary>
+    public List<BaYeBattleTableItem> BaYeBattleTable { get; set; }
 }

@@ -14,7 +14,8 @@ public class LoadJsonFile : MonoBehaviour
     private static readonly string tableNameStrs = "PlayerInitialTable;AssetTable;HeroTable;PlayerLevelTable;SoldierTable;" +
         "TowerTable;ClassTable;UpGradeTable;TrapTable;SpellTable;WarChestTable;WarTable;CityLevelTable;PointTable;" +
         "BattleEventTable;EnemyTable;EnemyUnitTable;StoryTable;StoryRTable;TestTable;TestRTable;EncounterTable;" +
-        "ShoppingTable;ChoseWarTable;GuideTable;KnowledgeTable;RCodeTable;TiLiStoreTable;EnemyBOSSTable;StringTextTable;NumParametersTable;JiBanTable;ShiLiTable";
+        "ShoppingTable;ChoseWarTable;GuideTable;KnowledgeTable;RCodeTable;TiLiStoreTable;EnemyBOSSTable;StringTextTable;" +
+        "NumParametersTable;JiBanTable;ShiLiTable;BaYeDiTuTable;BaYeShiJianTable;BaYeBattleTable";
 
 
     /// <summary>
@@ -183,6 +184,21 @@ public class LoadJsonFile : MonoBehaviour
     public static List<List<string>> shiLiTableDatas;
 
     /// <summary>
+    ///霸业地图表 
+    /// </summary>
+    public static List<List<string>> baYeDiTuTableDatas;
+
+    /// <summary>
+    ///霸业事件表 
+    /// </summary>
+    public static List<List<string>> baYeShiJianTableDatas;
+
+    /// <summary>
+    ///霸业战役难度表 
+    /// </summary>
+    public static List<List<string>> baYeBattleTableDatas;
+
+    /// <summary>
     /// 加载json文件获取数据至链表中
     /// </summary>
     private void JsonDataToSheets(string[] tableNames)
@@ -281,6 +297,9 @@ public class LoadJsonFile : MonoBehaviour
                 playerLevelTableDatas[i].Add(root.PlayerLevelTable[i].homeHp);
                 playerLevelTableDatas[i].Add(root.PlayerLevelTable[i].yuanZheng);
                 playerLevelTableDatas[i].Add(root.PlayerLevelTable[i].unLockShiLi);
+                playerLevelTableDatas[i].Add(root.PlayerLevelTable[i].BaYeCombat);
+                playerLevelTableDatas[i].Add(root.PlayerLevelTable[i].BaYeNonCombat);
+                playerLevelTableDatas[i].Add(root.PlayerLevelTable[i].BaYeBattle);
             }
             //Debug.Log("Json文件加载成功---" + tableNames[indexTable] + ".Json");
             indexTable++;
@@ -910,6 +929,53 @@ public class LoadJsonFile : MonoBehaviour
                 shiLiTableDatas[i].Add(root.ShiLiTable[i].ShiLi);
                 shiLiTableDatas[i].Add(root.ShiLiTable[i].Zi);
                 shiLiTableDatas[i].Add(root.ShiLiTable[i].Qi);
+            }
+            //Debug.Log("Json文件加载成功---" + tableNames[indexTable] + ".Json");
+            indexTable++;
+        }//加载霸业地图表数据：BaYeDiTuTable
+        {
+            jsonData = LoadJsonByName(tableNames[indexTable]);
+            root = JsonConvert.DeserializeObject<Roots>(jsonData);
+            baYeDiTuTableDatas = new List<List<string>>(root.BaYeDiTuTable.Count);
+            for (int i = 0; i < root.BaYeDiTuTable.Count; i++)
+            {
+                baYeDiTuTableDatas.Add(new List<string>());
+                baYeDiTuTableDatas[i].Add(root.BaYeDiTuTable[i].id);
+                baYeDiTuTableDatas[i].Add(root.BaYeDiTuTable[i].type);
+                baYeDiTuTableDatas[i].Add(root.BaYeDiTuTable[i].events);
+                baYeDiTuTableDatas[i].Add(root.BaYeDiTuTable[i].name);
+            }
+            //Debug.Log("Json文件加载成功---" + tableNames[indexTable] + ".Json");
+            indexTable++;
+        }//加载霸业事件表数据：BaYeShiJianTable
+        {
+            jsonData = LoadJsonByName(tableNames[indexTable]);
+            root = JsonConvert.DeserializeObject<Roots>(jsonData);
+            baYeShiJianTableDatas = new List<List<string>>(root.BaYeShiJianTable.Count);
+            for (int i = 0; i < root.BaYeShiJianTable.Count; i++)
+            {
+                baYeShiJianTableDatas.Add(new List<string>());
+                baYeShiJianTableDatas[i].Add(root.BaYeShiJianTable[i].id);
+                baYeShiJianTableDatas[i].Add(root.BaYeShiJianTable[i].QuanZhong);
+                baYeShiJianTableDatas[i].Add(root.BaYeShiJianTable[i].BaYeJingYan);
+                baYeShiJianTableDatas[i].Add(root.BaYeShiJianTable[i].BaYeBattle);
+            }
+            //Debug.Log("Json文件加载成功---" + tableNames[indexTable] + ".Json");
+            indexTable++;
+        }//加载霸业战役难度表数据：BaYeBattleTable
+        {
+            jsonData = LoadJsonByName(tableNames[indexTable]);
+            root = JsonConvert.DeserializeObject<Roots>(jsonData);
+            baYeBattleTableDatas = new List<List<string>>(root.BaYeBattleTable.Count);
+            for (int i = 0; i < root.BaYeBattleTable.Count; i++)
+            {
+                baYeBattleTableDatas.Add(new List<string>());
+                baYeBattleTableDatas[i].Add(root.BaYeBattleTable[i].id);
+                baYeBattleTableDatas[i].Add(root.BaYeBattleTable[i].level0);
+                baYeBattleTableDatas[i].Add(root.BaYeBattleTable[i].level1);
+                baYeBattleTableDatas[i].Add(root.BaYeBattleTable[i].level2);
+                baYeBattleTableDatas[i].Add(root.BaYeBattleTable[i].level3);
+                baYeBattleTableDatas[i].Add(root.BaYeBattleTable[i].level4);
             }
             //Debug.Log("Json文件加载成功---" + tableNames[indexTable] + ".Json");
             indexTable++;

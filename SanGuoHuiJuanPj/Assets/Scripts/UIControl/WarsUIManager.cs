@@ -73,7 +73,15 @@ public class WarsUIManager : MonoBehaviour
         }
         isPointMoveNow = false;
         cityLevel = 1;
-        goldForCity = 10;
+        //战斗金币
+        if (PlayerDataForGame.instance.isZhanYi)
+        {
+            goldForCity = PlayerDataForGame.instance.zhanYiColdNums;
+        }
+        else
+        {
+            goldForCity = PlayerDataForGame.instance.baYeGoldNums;
+        }
         treasureChestNums = 0;
         indexLastGuanQiaId = 0;
         passedGuanQiaNums = -1;
@@ -234,6 +242,12 @@ public class WarsUIManager : MonoBehaviour
         PlayerDataForGame.instance.isNeedSaveData = true;
         LoadSaveData.instance.SaveGameData(3);
         gameOverObj.SetActive(true);
+
+        //霸业的战斗金币传到主城
+        if (!PlayerDataForGame.instance.isZhanYi)
+        {
+            PlayerDataForGame.instance.baYeGoldNums = goldForCity;
+        }
     }
 
     //初始化父级关卡

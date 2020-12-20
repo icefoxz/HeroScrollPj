@@ -51,6 +51,9 @@ public class PlayerLevelTableItem
     public string homeHp { get; set; }
     public string yuanZheng { get; set; }
     public string unLockShiLi { get; set; }
+    public string BaYeCombat { get; set; }
+    public string BaYeNonCombat { get; set; }
+    public string BaYeBattle { get; set; }
 }
 public class SoldierTableItem
 {
@@ -419,4 +422,27 @@ public class ShiLiTableItem
     public string ShiLi { get; set; }
     public string Zi { get; set; }
     public string Qi { get; set; }
+}
+public class BaYeDiTuTableItem
+{
+    public string id { get; set; }
+    public string type { get; set; }
+    public string events { get; set; }
+    public string name { get; set; }
+}
+public class BaYeShiJianTableItem
+{
+    public string id { get; set; }
+    public string QuanZhong { get; set; }
+    public string BaYeJingYan { get; set; }
+    public string BaYeBattle { get; set; }
+}
+public class BaYeBattleTableItem
+{
+    public string id { get; set; }
+    public string level0 { get; set; }
+    public string level1 { get; set; }
+    public string level2 { get; set; }
+    public string level3 { get; set; }
+    public string level4 { get; set; }
 }
