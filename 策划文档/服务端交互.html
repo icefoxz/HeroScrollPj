@@ -1,0 +1,143 @@
+<html>
+<head><title>Image map created by yEd</title>
+<style type="text/css">
+.tooltip {
+  font-size:10pt;
+  background-color:#FFFFCC;
+  border:1px solid black;
+  padding:2px
+}
+</style>
+<style type="text/css">
+.tooltip {
+  position:absolute;
+  display:none
+}
+</style>
+</head>
+<body>
+
+<script type="text/javascript">
+tooltip = null;
+document.onmousemove = updateTooltip;
+function updateTooltip(e) {
+try {
+if (document.all) {
+if (document.documentElement && document.documentElement.scrollTop) { // Explorer 6 Strict
+x = document.documentElement.scrollLeft + window.event.x;
+y = document.documentElement.scrollTop + window.event.y;
+}
+else { // all other Explorers
+x = document.body.scrollLeft + window.event.x;
+y = document.body.scrollTop + window.event.y;
+}
+}
+else {
+x = e.pageX;
+y = e.pageY;
+}
+if (tooltip != null) {
+o = 20;
+var sx, sy;
+if (self.pageYOffset) { // all except Explorer
+sx = self.pageXOffset;
+sy = self.pageYOffset;
+}
+else if (document.documentElement && document.documentElement.scrollTop) { // Explorer 6 Strict
+sx = document.documentElement.scrollLeft;
+sy = document.documentElement.scrollTop;
+}
+else if (document.body) { // all other Explorers
+sx = document.body.scrollLeft;
+sy = document.body.scrollTop;
+}
+t = y + o + tooltip.offsetHeight;
+w = sy + document.body.clientHeight;
+if (t > w) {
+y = y - o - tooltip.offsetHeight;
+}
+else {
+y = y + o;
+}
+t = x + o + tooltip.offsetWidth;
+w = sx + document.body.clientWidth;
+if (t > w) {
+x = x - o - tooltip.offsetWidth;
+}
+else {
+x = x + o;
+}
+if ((tooltip.style.top == '' || tooltip.style.top == 0) && (tooltip.style.left == '' || tooltip.style.left == 0))
+{
+tooltip.style.width = tooltip.offsetWidth + 'px';
+tooltip.style.height = tooltip.offsetHeight + 'px';
+}
+tooltip.style.left = x + "px";
+tooltip.style.top = y + "px";
+}
+} catch (error) { error = null; }
+}
+function showTooltip(id) {
+try {
+tooltip = document.getElementById(id);
+tooltip.style.display = "block";
+} catch (error) { error = null; }
+}
+function hideTooltip() {
+try {
+tooltip.style.display = "none";
+} catch (error) { error = null; }
+}
+</script>
+
+<div class="tooltip" id="n0">服务端</div>
+<div class="tooltip" id="n1">客户端</div>
+<div class="tooltip" id="n2">登录函数</div>
+<div class="tooltip" id="n3">登录事件指令</div>
+<div class="tooltip" id="n4">长连接指令集</div>
+<div class="tooltip" id="n5">长连接函数</div>
+<div class="tooltip" id="n6">数据库</div>
+<div class="tooltip" id="n7">游戏服务指令集<br>1.主动发送互交信息<br>2.客户端请求互交</div>
+<div class="tooltip" id="e1">1.发送登录信息</div>
+<div class="tooltip" id="e2">	4.请求长连接信息</div>
+<div class="tooltip" id="e3">5.返回链接和密匙</div>
+<div class="tooltip" id="e4">6.返回长连接的链接和密匙</div>
+<div class="tooltip" id="e5">7.链接 + 密匙</div>
+<div class="tooltip" id="e6">8.请求长连接握手</div>
+<div class="tooltip" id="e7">9.返回握手结果</div>
+<div class="tooltip" id="e8">10.开启长连接线程互交直到线程断线。交互信息将从这里发给用户。</div>
+<div class="tooltip" id="e9">2.验证用户信息</div>
+<div class="tooltip" id="e10">3.返回合法信息</div>
+<div class="tooltip" id="e11">发送交互信息</div>
+
+<map name="image1_1">
+  <area shape="poly" coords="592,459,627,459,632,454,632,330,622,330,622,454,627,454,627,449,592,449,592,459,592,459" alt="" onmouseover="showTooltip('e11')" onmouseout="hideTooltip()"/>
+  <area shape="poly" coords="580,79,580,97,585,97,585,92,471,92,466,97,466,132,476,132,476,97,471,97,471,102,585,102,590,97,590,79,580,79,580,79" alt="" onmouseover="showTooltip('e10')" onmouseout="hideTooltip()"/>
+  <area shape="poly" coords="457,137,457,64,452,64,452,69,530,69,530,59,452,59,447,64,447,137,457,137,457,137" alt="" onmouseover="showTooltip('e9')" onmouseout="hideTooltip()"/>
+  <area shape="poly" coords="602,323,602,362,607,362,607,357,47,357,47,362,52,362,52,195,42,195,42,362,47,367,607,367,612,362,612,323,602,323,602,323" alt="" onmouseover="showTooltip('e8')" onmouseout="hideTooltip()"/>
+  <area shape="poly" coords="562,313,247,313,247,323,562,323,562,313,562,313" alt="" onmouseover="showTooltip('e7')" onmouseout="hideTooltip()"/>
+  <area shape="poly" coords="242,303,557,303,557,293,242,293,242,303,242,303" alt="" onmouseover="showTooltip('e6')" onmouseout="hideTooltip()"/>
+  <area shape="poly" coords="194,189,194,278,204,278,204,189,194,189,194,189" alt="" onmouseover="showTooltip('e5')" onmouseout="hideTooltip()"/>
+  <area shape="poly" coords="426,170,247,170,247,180,426,180,426,170,426,170" alt="" onmouseover="showTooltip('e4')" onmouseout="hideTooltip()"/>
+  <area shape="poly" coords="634,293,634,163,629,158,521,158,521,168,629,168,629,163,624,163,624,293,634,293,634,293" alt="" onmouseover="showTooltip('e3')" onmouseout="hideTooltip()"/>
+  <area shape="poly" coords="462,189,462,219,467,224,609,224,609,219,604,219,604,288,614,288,614,219,609,214,467,214,467,219,472,219,472,189,462,189,462,189" alt="" onmouseover="showTooltip('e2')" onmouseout="hideTooltip()"/>
+  <area shape="poly" coords="242,155,421,155,421,145,242,145,242,155,242,155" alt="" onmouseover="showTooltip('e1')" onmouseout="hideTooltip()"/>
+  <area shape="rect" coords="457,413,592,494" alt="" onmouseover="showTooltip('n7')" onmouseout="hideTooltip()"/>
+  <area shape="rect" coords="535,49,634,79" alt="" onmouseover="showTooltip('n6')" onmouseout="hideTooltip()"/>
+  <area shape="rect" coords="156,283,242,334" alt="" onmouseover="showTooltip('n5')" onmouseout="hideTooltip()"/>
+  <area shape="rect" coords="562,293,652,323" alt="" onmouseover="showTooltip('n4')" onmouseout="hideTooltip()"/>
+  <area shape="rect" coords="426,137,516,189" alt="" onmouseover="showTooltip('n3')" onmouseout="hideTooltip()"/>
+  <area shape="rect" coords="156,137,242,189" alt="" onmouseover="showTooltip('n2')" onmouseout="hideTooltip()"/>
+  <area shape="rect" coords="15,137,79,189" alt="" onmouseover="showTooltip('n1')" onmouseout="hideTooltip()"/>
+  <area shape="rect" coords="410,15,672,516" alt="" onmouseover="showTooltip('n0')" onmouseout="hideTooltip()"/>
+</map>
+
+
+    <table class="yimagetable" cellspacing="0" cellpadding="0" border="0">
+      <tr>
+        <td><img class="yimage" src="服务端交互1_1.png" usemap="#image1_1" border="0" alt=""/></td>
+      </tr>
+    </table>
+
+</body>
+</html>
