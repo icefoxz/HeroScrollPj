@@ -50,6 +50,8 @@ import e_create_shiLiTable
 import e_create_baYeDiTuTable
 import e_create_baYeShiJianTable
 import e_create_baYeBattleTable
+import e_create_baYeRenWuTable
+
 
 taskList = (
 
@@ -90,6 +92,7 @@ taskList = (
 	('/Hero.xlsx', e_create_baYeDiTuTable, '/BaYeDiTuTable.json'),
 	('/Hero.xlsx', e_create_baYeShiJianTable, '/BaYeShiJianTable.json'),
 	('/Hero.xlsx', e_create_baYeBattleTable, '/BaYeBattleTable.json'),
+	('/Hero.xlsx', e_create_baYeRenWuTable, '/BaYeRenWuTable.json'),
 
 )
 

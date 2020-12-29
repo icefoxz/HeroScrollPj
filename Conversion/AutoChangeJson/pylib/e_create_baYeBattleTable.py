@@ -18,7 +18,12 @@ def export_json(xls, fn):
                 ss += "\t\t\t\"level1\": \"" + conv_int(c[ri.Next()]) + "\",\n"
                 ss += "\t\t\t\"level2\": \"" + conv_int(c[ri.Next()]) + "\",\n"
                 ss += "\t\t\t\"level3\": \"" + conv_int(c[ri.Next()]) + "\",\n"
-                ss += "\t\t\t\"level4\": \"" + conv_int(c[ri.Next()]) + "\"\n"
+                ss += "\t\t\t\"level4\": \"" + conv_int(c[ri.Next()]) + "\",\n"
+                ss += "\t\t\t\"level5\": \"" + conv_int(c[ri.Next()]) + "\",\n"
+                ss += "\t\t\t\"level6\": \"" + conv_int(c[ri.Next()]) + "\",\n"
+                ss += "\t\t\t\"level7\": \"" + conv_int(c[ri.Next()]) + "\",\n"
+                ss += "\t\t\t\"level8\": \"" + conv_int(c[ri.Next()]) + "\",\n"
+                ss += "\t\t\t\"level9\": \"" + conv_int(c[ri.Next()]) + "\"\n"
                 ss += "\t\t},\n"
                 s += ss
             s = s[:-2]
