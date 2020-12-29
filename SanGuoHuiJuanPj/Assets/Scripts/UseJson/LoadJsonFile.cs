@@ -1041,20 +1041,14 @@ public class LoadJsonFile : MonoBehaviour
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    public static string GetStringText(int id)
-    {
-        return stringTextTableDatas[id][1];
-    }
+    public static string GetStringText(int id) => stringTextTableDatas[id][1];
 
     /// <summary>
     /// 根据id获取游戏数值内容
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    public static int GetGameValue(int id)
-    {
-        return int.Parse(numParametersTableDatas[id][1]);
-    }
+    public static int GetGameValue(int id) => int.Parse(numParametersTableDatas[id][1]);
 
 
     private void Awake()

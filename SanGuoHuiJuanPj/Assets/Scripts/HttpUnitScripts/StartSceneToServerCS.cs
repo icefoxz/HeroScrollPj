@@ -146,7 +146,7 @@ public class StartSceneToServerCS : MonoBehaviour
     {
         //申请一个账号
         string replyStr = HttpToServerCS.instance.LoginRelatedFunsForGet(LoginFunIndex.CREATE_ACCOUNT_NAME, null);
-        if (replyStr != StringForEditor.ERROR)
+        if (replyStr != HttpResponse.ERROR)
         {
             BackAccountClass backAccountClass = new BackAccountClass();
             try
@@ -197,64 +197,61 @@ public class StartSceneToServerCS : MonoBehaviour
     /// </summary>
     private void CreateAccountFun()
     {
-        if (passwordInput.text == "")
+        if (string.IsNullOrWhiteSpace(passwordInput.text))
         {
             PlayerDataForGame.instance.ShowStringTips("请输入密码");
+            return;
         }
-        else
+
+        if (passwordInput1.text != passwordInput.text)
         {
-            if (passwordInput1.text != passwordInput.text)
+            passwordInput1.text = string.Empty;
+            PlayerDataForGame.instance.ShowStringTips("请确认密码");
+            return;
+        }
+
+        var arrStr = new[] { accountText.text, passwordInput.text };
+        //提交账号密码，申请注册账号
+        var replyStr = HttpToServerCS.instance.LoginRelatedFunsForGet(LoginFunIndex.CREATE_ACCOUNT, arrStr);
+        if (replyStr == HttpResponse.ERROR)
+        {
+            Debug.Log("服务器响应错误");
+            PlayerDataForGame.instance.ShowStringTips("服务器响应错误");
+            return;
+        }
+
+        var backAccountClass = new BackAccountClass();
+        try
+        {
+            backAccountClass = JsonConvert.DeserializeObject<BackAccountClass>(replyStr);
+
+            if (backAccountClass.error != (int) ServerBackCode.SUCCESS)
             {
-                passwordInput1.text = "";
-                PlayerDataForGame.instance.ShowStringTips("请确认密码");
-            }
-            else
-            {
-                string[] arrStr = new string[2] { accountText.text, passwordInput.text };
-                //提交账号密码，申请注册账号
-                string replyStr = HttpToServerCS.instance.LoginRelatedFunsForGet(LoginFunIndex.CREATE_ACCOUNT, arrStr);
-                if (replyStr != StringForEditor.ERROR)
-                {
-                    BackAccountClass backAccountClass = new BackAccountClass();
-                    try
-                    {
-                        backAccountClass = JsonConvert.DeserializeObject<BackAccountClass>(replyStr);
-
-                        if (backAccountClass.error != (int)ServerBackCode.SUCCESS)
-                        {
-                            string serverBackStr = HttpToServerCS.instance.ErrorAnalysisFun(null, backAccountClass.error);
-                            PlayerDataForGame.instance.ShowStringTips(serverBackStr);
-                            return;
-                        }
-                    }
-                    catch (Exception e)
-                    {
-                        Debug.LogError(e.ToString());
-                        string serverBackStr = HttpToServerCS.instance.ErrorAnalysisFun(replyStr);
-                        PlayerDataForGame.instance.ShowStringTips(serverBackStr);
-                        return;
-                    }
-
-                    //给游戏中存放账户名和密码
-                    PlayerDataForGame.instance.atData.accountName = backAccountClass.name;
-                    PlayerDataForGame.instance.atData.passwordStr = passwordInput.text;
-                    PlayerPrefs.SetString(accountNamePrefsStr, PlayerDataForGame.instance.atData.accountName);
-                    PlayerPrefs.SetString(passwordStrPrefsStr, PlayerDataForGame.instance.atData.passwordStr);
-                    registerAccountObj.SetActive(false);
-                    passwordInput.text = "";
-                    passwordInput1.text = "";
-                    PlayerDataForGame.instance.ShowStringTips("注册成功");
-
-                    phoneNumberObj.SetActive(true);
-                    chackAccountObj.SetActive(true);
-                }
-                else
-                {
-                    Debug.Log("服务器响应错误");
-                    PlayerDataForGame.instance.ShowStringTips("服务器响应错误");
-                }
+                var serverBackStr = HttpToServerCS.instance.ErrorAnalysisFun(null, backAccountClass.error);
+                PlayerDataForGame.instance.ShowStringTips(serverBackStr);
+                return;
             }
         }
+        catch (Exception e)
+        {
+            Debug.LogError(e.ToString());
+            var serverBackStr = HttpToServerCS.instance.ErrorAnalysisFun(replyStr);
+            PlayerDataForGame.instance.ShowStringTips(serverBackStr);
+            return;
+        }
+
+        //给游戏中存放账户名和密码
+        PlayerDataForGame.instance.atData.accountName = backAccountClass.name;
+        PlayerDataForGame.instance.atData.passwordStr = passwordInput.text;
+        PlayerPrefs.SetString(accountNamePrefsStr, PlayerDataForGame.instance.atData.accountName);
+        PlayerPrefs.SetString(passwordStrPrefsStr, PlayerDataForGame.instance.atData.passwordStr);
+        registerAccountObj.SetActive(false);
+        passwordInput.text = string.Empty;
+        passwordInput1.text = string.Empty;
+        PlayerDataForGame.instance.ShowStringTips("注册成功");
+
+        phoneNumberObj.SetActive(true);
+        chackAccountObj.SetActive(true);
     }
 
     /// <summary>
@@ -280,7 +277,7 @@ public class StartSceneToServerCS : MonoBehaviour
         string[] arrStr = new string[3] { PlayerDataForGame.instance.atData.accountName, PlayerDataForGame.instance.atData.passwordStr, sMSBackContentClass.phone };
         //提交账号密码手机号，申请绑定手机
         string replyStr = HttpToServerCS.instance.LoginRelatedFunsForGet(LoginFunIndex.BIND_PHONE, arrStr);
-        if (replyStr != StringForEditor.ERROR)
+        if (replyStr != HttpResponse.ERROR)
         {
             BackPhoneToAccountClass backPhoneToAccountClass = new BackPhoneToAccountClass();
             try
@@ -392,7 +389,7 @@ public class StartSceneToServerCS : MonoBehaviour
                 string[] arrStr = new string[3] { accountInput.text, pwInput.text, isPhone.ToString() };
 
                 string replyStr = HttpToServerCS.instance.LoginRelatedFunsForGet(LoginFunIndex.ACCOUNT_LOGIN, arrStr);
-                if (replyStr != StringForEditor.ERROR)
+                if (replyStr != HttpResponse.ERROR)
                 {
                     BackForLoginClass backForLoginClass = new BackForLoginClass();
                     try

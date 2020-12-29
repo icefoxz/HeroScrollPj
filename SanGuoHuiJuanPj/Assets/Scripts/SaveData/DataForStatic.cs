@@ -226,14 +226,12 @@ public static class StringForGuide
 /// <summary>
 /// 代码相应提示字符
 /// </summary>
-public static class StringForEditor
+public static class HttpResponse
 {
     /// <summary>
     /// 错误
     /// </summary>
-    public static readonly string ERROR = "ERROR";
-
-    
+    public const string ERROR = "ERROR";
 }
 
 /// <summary>

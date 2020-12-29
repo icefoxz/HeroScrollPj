@@ -243,7 +243,7 @@ public class LoadSaveData : MonoBehaviour
             //string jsonData = JsonConvert.SerializeObject(uploadArchiveToServerClass);
             //上传存档到服务器
             string replyStr = HttpToServerCS.instance.LoginRelatedFunsForPost(LoginFunIndex.UPLOAD_ARCHIVE, arrobjs);
-            if (replyStr != StringForEditor.ERROR)
+            if (replyStr != HttpResponse.ERROR)
             {
                 try
                 {

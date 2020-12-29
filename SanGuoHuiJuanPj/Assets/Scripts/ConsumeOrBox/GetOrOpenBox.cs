@@ -135,7 +135,7 @@ public class GetOrOpenBox : MonoBehaviour
         int cutYvQueNums = 0;
         if (boxNumber == 0)   //免费百箱
         {
-            if (openJiuTanYBNums <= PlayerDataForGame.instance.pyData.yuanbao && TimeSystemControl.instance.OnClickToGetFreeBox())
+            if (openJiuTanYBNums <= PlayerDataForGame.instance.pyData.yuanbao && TimeSystemControl.instance.OnClickToGetJiuTan())
             {
                 cutYvQueNums = openJiuTanYBNums;
             }

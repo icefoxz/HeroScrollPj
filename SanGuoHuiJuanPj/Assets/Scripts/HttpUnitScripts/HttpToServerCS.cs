@@ -54,7 +54,7 @@ public class HttpToServerCS : MonoBehaviour
     /// <returns></returns>
     public string LoginRelatedFunsForGet(LoginFunIndex loginFunIndex, string[] contentStrs)
     {
-        string getUrlStr = string.Empty;
+        var getUrlStr = string.Empty;
 
         switch (loginFunIndex)
         {
@@ -70,6 +70,8 @@ public class HttpToServerCS : MonoBehaviour
             case LoginFunIndex.ACCOUNT_LOGIN:
                 getUrlStr = AccountNameOrPhoneLogin;
                 break;
+            case LoginFunIndex.UPLOAD_ARCHIVE:
+                break;
             default:
                 break;
         }
@@ -84,13 +86,10 @@ public class HttpToServerCS : MonoBehaviour
         catch (System.Exception e)
         {
             Debug.LogError(e.ToString());
-            return StringForEditor.ERROR;
+            return HttpResponse.ERROR;
         }
-        //Debug.Log("getUrlStr: " + getUrlStr);
-        string replyStr = HttpUitls.Get(getUrlStr);
-        //Debug.Log("reply: " + replyStr);
-
-        return replyStr;
+        
+        return HttpUitls.Get(getUrlStr);
     }
 
     /// <summary>

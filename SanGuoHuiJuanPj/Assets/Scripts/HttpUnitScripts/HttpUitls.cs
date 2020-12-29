@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using System.Net.Http;
 using System.Text;
 using UnityEngine;
 
@@ -48,7 +49,7 @@ namespace wode.HTTP
             catch (Exception e)
             {
                 Debug.LogError(e.ToString());
-                retString = StringForEditor.ERROR;
+                retString = HttpResponse.ERROR;
             }
             return retString;
         }
@@ -105,7 +106,7 @@ namespace wode.HTTP
             catch (Exception e)
             {
                 Debug.LogError(e.ToString());
-                retString = StringForEditor.ERROR;
+                retString = HttpResponse.ERROR;
             }
             return retString;
         }
@@ -152,7 +153,7 @@ namespace wode.HTTP
             catch (Exception e)
             {
                 Debug.LogError(e.ToString());
-                retString = StringForEditor.ERROR;
+                retString = HttpResponse.ERROR;
             }
             return retString;
         }

@@ -59,6 +59,10 @@ public class UIManager : MonoBehaviour
     GameObject queRenWindows;   //操作确认窗口
     [SerializeField]
     public GameObject[] boxBtnObjs;    //宝箱obj
+
+    public Text JinNangQuota;    //锦囊配额文本
+    public Text JiuTanQuota;    //酒坛配额文本
+
     [SerializeField]
     Transform rewardsParent;    //奖品父级
     [SerializeField]
@@ -2172,11 +2176,9 @@ public class UIManager : MonoBehaviour
     //刷新锦囊入口的显示
     public void UpdateShowJinNangBtn(bool isCanOpen)
     {
-        if (isCanOpenJinNang != isCanOpen)
-        {
-            jinNangObj.SetActive(isCanOpen);
-            isCanOpenJinNang = isCanOpen;
-        }
+        if (isCanOpenJinNang == isCanOpen) return;
+        jinNangObj.SetActive(isCanOpen);
+        isCanOpenJinNang = isCanOpen;
     }
 
     //开启锦囊
@@ -2343,96 +2345,88 @@ public class UIManager : MonoBehaviour
         }
         else
         {
-            if (!TimeSystemControl.instance.isGetNetworkTime)
+            int indexId = -1;
+            for (int i = 0; i < LoadJsonFile.rCodeTableDatas.Count; i++)
             {
-                PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(46));
-                PlayOnClickMusic();
-            }
-            else
-            {
-                int indexId = -1;
-                for (int i = 0; i < LoadJsonFile.rCodeTableDatas.Count; i++)
+                if (str == LoadJsonFile.rCodeTableDatas[i][1])
                 {
-                    if (str == LoadJsonFile.rCodeTableDatas[i][1])
-                    {
-                        indexId = i;
-                        break;
-                    }
+                    indexId = i;
+                    break;
                 }
-                if (indexId != -1)
+            }
+            if (indexId != -1)
+            {
+                string[] arr = LoadJsonFile.rCodeTableDatas[indexId][2].Split('-');
+                DateTime startTime = DateTime.ParseExact(arr[0], "yyyyMMdd", System.Globalization.CultureInfo.CurrentCulture);
+                DateTime endTime = DateTime.ParseExact(arr[1], "yyyyMMdd", System.Globalization.CultureInfo.CurrentCulture);
+                DateTime nowTime = TimeSystemControl.instance.SystemTimer.Now.LocalDateTime;
+
+                if (nowTime < startTime || nowTime > endTime)
                 {
-                    string[] arr = LoadJsonFile.rCodeTableDatas[indexId][2].Split('-');
-                    DateTime startTime = DateTime.ParseExact(arr[0], "yyyyMMdd", System.Globalization.CultureInfo.CurrentCulture);
-                    DateTime endTime = DateTime.ParseExact(arr[1], "yyyyMMdd", System.Globalization.CultureInfo.CurrentCulture);
-                    DateTime nowTime = TimeSystemControl.instance.GetStrBackTime();
-
-                    if (nowTime < startTime || nowTime > endTime)
-                    {
-                        rtInputField.text = "";
-                        PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(47));
-                        PlayOnClickMusic();
-                    }
-                    else
-                    {
-                        if (!PlayerDataForGame.instance.gbocData.redemptionCodeGotList[indexId].isGot)
-                        {
-                            //获得奖励
-                            int addYvQueNums = int.Parse(LoadJsonFile.rCodeTableDatas[indexId][4]);
-                            ConsumeManager.instance.AddYuQue(addYvQueNums);
-                            int addYuanBaoNums = int.Parse(LoadJsonFile.rCodeTableDatas[indexId][5]);
-                            ConsumeManager.instance.AddYuanBao(addYuanBaoNums);
-                            int tiLiNums = int.Parse(LoadJsonFile.rCodeTableDatas[indexId][6]);
-                            AddTiLiNums(tiLiNums);
-                            string[] arrRewards = LoadJsonFile.rCodeTableDatas[indexId][7].Split(';');
-                            List<RewardsCardClass> rewards = new List<RewardsCardClass>();
-                            int cardType = 0;
-                            int cardId = 0;
-                            int chips = 0;
-                            for (int i = 0; i < arrRewards.Length; i++)
-                            {
-                                if (arrRewards[i] != "")
-                                {
-                                    string[] arrs = arrRewards[i].Split(',');
-                                    cardType = int.Parse(arrs[0]);
-                                    cardId = int.Parse(arrs[1]);
-                                    chips = int.Parse(arrs[2]);
-                                    GetAndSaveCardChips(cardType, cardId, chips);
-
-                                    RewardsCardClass rewardCard = new RewardsCardClass();
-                                    rewardCard.cardType = cardType;
-                                    rewardCard.cardId = cardId;
-                                    rewardCard.cardChips = chips;
-                                    rewards.Add(rewardCard);
-                                }
-                            }
-                            PlayerDataForGame.instance.isNeedSaveData = true;
-                            LoadSaveData.instance.SaveGameData(2);
-                            ShowRewardsThings(addYuanBaoNums, addYvQueNums, 0, tiLiNums, rewards, 0);
-
-                            PlayerDataForGame.instance.gbocData.redemptionCodeGotList[indexId].isGot = true;
-                            PlayerDataForGame.instance.isNeedSaveData = true;
-                            LoadSaveData.instance.SaveGameData(4);
-
-                            rtInputField.text = "";
-                            PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.rCodeTableDatas[indexId][3]);
-                            rtCloseBtn.onClick.Invoke();
-                            AudioController0.instance.ChangeAudioClip(AudioController0.instance.audioClips[0], AudioController0.instance.audioVolumes[0]);
-                            AudioController0.instance.PlayAudioSource(0);
-                        }
-                        else
-                        {
-                            rtInputField.text = "";
-                            PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(48));
-                            PlayOnClickMusic();
-                        }
-                    }
+                    rtInputField.text = "";
+                    PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(47));
+                    PlayOnClickMusic();
                 }
                 else
                 {
-                    rtInputField.text = "";
-                    PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(49));
-                    PlayOnClickMusic();
+                    if (!PlayerDataForGame.instance.gbocData.redemptionCodeGotList[indexId].isGot)
+                    {
+                        //获得奖励
+                        int addYvQueNums = int.Parse(LoadJsonFile.rCodeTableDatas[indexId][4]);
+                        ConsumeManager.instance.AddYuQue(addYvQueNums);
+                        int addYuanBaoNums = int.Parse(LoadJsonFile.rCodeTableDatas[indexId][5]);
+                        ConsumeManager.instance.AddYuanBao(addYuanBaoNums);
+                        int tiLiNums = int.Parse(LoadJsonFile.rCodeTableDatas[indexId][6]);
+                        AddTiLiNums(tiLiNums);
+                        string[] arrRewards = LoadJsonFile.rCodeTableDatas[indexId][7].Split(';');
+                        List<RewardsCardClass> rewards = new List<RewardsCardClass>();
+                        int cardType = 0;
+                        int cardId = 0;
+                        int chips = 0;
+                        for (int i = 0; i < arrRewards.Length; i++)
+                        {
+                            if (arrRewards[i] != "")
+                            {
+                                string[] arrs = arrRewards[i].Split(',');
+                                cardType = int.Parse(arrs[0]);
+                                cardId = int.Parse(arrs[1]);
+                                chips = int.Parse(arrs[2]);
+                                GetAndSaveCardChips(cardType, cardId, chips);
+
+                                RewardsCardClass rewardCard = new RewardsCardClass();
+                                rewardCard.cardType = cardType;
+                                rewardCard.cardId = cardId;
+                                rewardCard.cardChips = chips;
+                                rewards.Add(rewardCard);
+                            }
+                        }
+                        PlayerDataForGame.instance.isNeedSaveData = true;
+                        LoadSaveData.instance.SaveGameData(2);
+                        ShowRewardsThings(addYuanBaoNums, addYvQueNums, 0, tiLiNums, rewards, 0);
+
+                        PlayerDataForGame.instance.gbocData.redemptionCodeGotList[indexId].isGot = true;
+                        PlayerDataForGame.instance.isNeedSaveData = true;
+                        LoadSaveData.instance.SaveGameData(4);
+
+                        rtInputField.text = "";
+                        PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.rCodeTableDatas[indexId][3]);
+                        rtCloseBtn.onClick.Invoke();
+                        AudioController0.instance.ChangeAudioClip(AudioController0.instance.audioClips[0], AudioController0.instance.audioVolumes[0]);
+                        AudioController0.instance.PlayAudioSource(0);
+                    }
+                    else
+                    {
+                        rtInputField.text = "";
+                        PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(48));
+                        PlayOnClickMusic();
+                    }
                 }
+            }
+            else
+            {
+                rtInputField.text = "";
+                PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(49));
+                PlayOnClickMusic();
             }
         }
     }
@@ -2575,7 +2569,7 @@ public class UIManager : MonoBehaviour
     private void GetCkChangeTimeAndWindow()
     {
         //当前时间点TimeOfDay
-        TimeSpan dspNow = TimeSystemControl.instance.GetStrBackTime().TimeOfDay;
+        TimeSpan dspNow = TimeSystemControl.instance.SystemTimer.Now.LocalDateTime.TimeOfDay;
         //TimeSpan dspNow = DateTime.Now.TimeOfDay;
 
         //在12点-14点之间
@@ -2673,7 +2667,7 @@ public class UIManager : MonoBehaviour
         if (seconds < closeCkWinSeconds)
         {
             closeCkWinSeconds = seconds;
-            chickenCloseText.text = TimeSystemControl.instance.BackToTimeShow(closeCkWinSeconds);
+            chickenCloseText.text = TimeSystemControl.instance.TimeDisplayText(closeCkWinSeconds);
         }
     }
 
@@ -2681,7 +2675,7 @@ public class UIManager : MonoBehaviour
     private bool CanOpenChickenEntr()
     {
         //当前时间点TimeOfDay
-        TimeSpan dspNow = TimeSystemControl.instance.GetStrBackTime().TimeOfDay;
+        TimeSpan dspNow = TimeSystemControl.instance.SystemTimer.Now.LocalDateTime.TimeOfDay;
         //TimeSpan dspNow = DateTime.Now.TimeOfDay;
 
         //在12点-14点之间

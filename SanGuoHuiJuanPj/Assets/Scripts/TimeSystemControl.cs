@@ -14,29 +14,41 @@ public class TimeSystemControl : MonoBehaviour
     private string timeWebPath = "http://www.hko.gov.hk/cgi-bin/gts/time5a.pr?a=1";
     private string timeWebPath0 = "http://api.m.taobao.com/rest/api3.do?api=mtop.common.getTimestamp";
 
+    #region UnityEditor
+    public SystemTimer SystemTimer;//系统时间的脚本引用(编辑器里引用)
+    public int JinNangTimeGapSecs = 3600;//锦囊间隔时间
+    public int JiuTanTimeGapSecs = 3600;//酒坛间隔时间
+    public int JinNangRedeemCountPerDay = 10;//锦囊一天可获取次数
+    public int JiuTanRedeemCountPerDay = 10;//酒坛一天可获取次数
+    #endregion
+
     public static string NetworkTimestampStr = "NetworkTimestamp";
 
-    private string fBoxOpenNeedTimes = "fBONT"; //游戏内的计时器记录免费宝箱开启时间
+    //private string fBoxOpenNeedTimes = "fBONT"; //游戏内的计时器记录免费宝箱开启时间
     private string fBoxOpenNeedTimes1 = "fBONT1";
     private string fBoxOpenNeedTimes2 = "fBONT2";
-    private string jinNangOpenNeedTime = "jNBONT";   //游戏内的计时器记录锦囊开启时间
-    private string freeBoxOpenTime = "fBOT"; //记录免费宝箱网络开启时间
+    //private string freeBoxOpenTime = "fBOT"; //记录免费宝箱网络开启时间
     private string freeBoxOpenTime1 = "fBOT1";
     private string freeBoxOpenTime2 = "fBOT2";
-    private string jinNangOpenTime = "jNBOT";   //记录锦囊网络开启时间
+    private const string LastJNOpenTime = "lastJNOpenTime";   //上次开启锦囊的时间
+    private const string LastJTOpenTime = "lastJTOpenTime";   //上次开启酒坛的时间
+    private const string JNRedeemCount = "JNRedeemCount";   //锦囊获取次数(注意：每天重置)
+    private const string JTRedeemCount = "JTRedeemCount";   //酒坛获取次数(注意：每天重置)
 
-    int openNeedSeconds;   //宝箱开启时间
+    //int openNeedSeconds;   //宝箱开启时间
     int openNeedSeconds1;
     int openNeedSeconds2;
-    int openJNNeedSeconds;//锦囊开启时间
-    int secondsNetTime_FreeBox = 0; //记录免费宝箱网络开启剩余时间
+
+    //int secondsNetTime_FreeBox = 0; //记录免费宝箱网络开启剩余时间
     int secondsNetTime_FreeBox1 = 0;
     int secondsNetTime_FreeBox2 = 0;
-    int secondsNetTime_JinNang = 0; //记录锦囊网络开启剩余时间
-    long openFreeBoxTimeLong;   //记录宝箱开启的网络long
+    //int secsRemain_JinNang = 0; //记录锦囊网络开启剩余时间
+    //long openFreeBoxTimeLong;   //记录宝箱开启的网络long
     long openFreeBoxTimeLong1;
     long openFreeBoxTimeLong2;
-    long openJinNangTimeLong;   //记录锦囊开启的网络long
+    //long openJinNangTimeLong;   //记录锦囊开启的网络long
+    long lastJNOpenTime; //上一个锦囊开启时间
+    long lastJTOpenTime; //上一个酒坛开启时间
 
     private string tiLiHuiFuNeedTimes = "tLHFNT"; //游戏内的计时器记录体力恢复时间 单位秒
     private string tiLiHuiFuTime = "tLHFT"; //记录体力恢复满的网络时间点
@@ -45,21 +57,21 @@ public class TimeSystemControl : MonoBehaviour
     long tiLiHfTimeLong;   //记录体力恢复满的网络long
     int maxStaminaNum;  //记录最大体力值
 
-    [HideInInspector]
-    public bool isGetNetworkTime;   //标记是否获取到网络时间
+    //[HideInInspector]
+    //public bool isGetNetworkTime;   //标记是否获取到网络时间
 
     [HideInInspector]
     public bool isOpenMainScene;    //是否在主城界面
 
-    bool isCanGetBox;   //记录是否能开启宝箱
+    bool isJiuTanAvailable;   //记录是否能开启宝箱
     bool isCanGetBox1;
     bool isCanGetBox2;
-    bool isCanGetJN;    //记录是否能开启锦囊
+    bool isJNTimeValid;    //记录是否锦囊开启时间合法
 
     bool isNeedHuiFuTiLi;   //记录是否需要恢复体力
 
-    DateTime timeNow;
-    DateTime startTime;
+    //DateTime timeNow;
+    //DateTime startTime;
 
     float secondHandAccurate = 0;   //精准游戏毫秒针
     float secondHandAccurate1 = 0;
@@ -68,7 +80,7 @@ public class TimeSystemControl : MonoBehaviour
 
     float secondHandAccurate_TL = 0;   //精准游戏毫秒针0
 
-    long nowTimeLong;   //当前网络时间戳long
+    //long nowTimeLong;   //当前网络时间戳long
 
     //鸡坛相关存档字符
     public static string openCKTime0_str = "openCKTime0"; //12点
@@ -83,23 +95,11 @@ public class TimeSystemControl : MonoBehaviour
     private void Awake()
     {
         if (instance != null)
-        {
             Destroy(gameObject);
-        }
         else
-        {
             instance = this;
-        }
         DontDestroyOnLoad(gameObject);
-        isGetNetworkTime = false;
         isOpenMainScene = false;
-        timeNow = DateTime.MinValue;
-        startTime = TimeZone.CurrentTimeZone.ToLocalTime(new DateTime(1970, 1, 1));
-        
-        StartCoroutine(GetTime());
-
-        //StartCoroutine(GetTime0());
-
     }
 
     private void Start()
@@ -110,27 +110,16 @@ public class TimeSystemControl : MonoBehaviour
     //初次存档对时间相关数据进行初始化
     public void InitTimeRelatedData()
     {
-        isCanGetBox = true;
-        openFreeBoxTimeLong = 0;
-        PlayerPrefs.SetInt(fBoxOpenNeedTimes, 0);
-        PlayerPrefs.SetString(freeBoxOpenTime, "0");
-
+        isJiuTanAvailable = true;
+        PlayerPrefs.SetString(LastJTOpenTime, "0");
 
         isCanGetBox1 = false;
         openNeedSeconds1 = LoadJsonFile.GetGameValue(1);
         PlayerPrefs.SetInt(fBoxOpenNeedTimes1, openNeedSeconds1);
-        if (isGetNetworkTime)
-        {
-            long nowTimeStr = nowTimeLong;
-            nowTimeStr += (openNeedSeconds1 * 1000);
-            openFreeBoxTimeLong1 = nowTimeStr;
-            PlayerPrefs.SetString(freeBoxOpenTime1, nowTimeStr.ToString());
-        }
-        else
-        {
-            openFreeBoxTimeLong1 = 0;
-            PlayerPrefs.SetString(freeBoxOpenTime1, "0");
-        }
+
+        openFreeBoxTimeLong1 = 0;
+        PlayerPrefs.SetString(freeBoxOpenTime1, "0");
+
         //openFreeBoxTimeLong1 = 0;
         //PlayerPrefs.SetInt(fBoxOpenNeedTimes1, 0);
         //PlayerPrefs.SetString(freeBoxOpenTime1, "0");
@@ -140,10 +129,8 @@ public class TimeSystemControl : MonoBehaviour
         PlayerPrefs.SetInt(fBoxOpenNeedTimes2, 0);
         PlayerPrefs.SetString(freeBoxOpenTime2, "0");
 
-        isCanGetJN = true;
-        openJinNangTimeLong = 0;
-        PlayerPrefs.SetInt(jinNangOpenNeedTime, 0);
-        PlayerPrefs.SetString(jinNangOpenTime, "0");
+        lastJNOpenTime = 0;
+        PlayerPrefs.SetString(LastJNOpenTime, "0");
 
         //isNeedHuiFuTiLi = false;
         PlayerPrefs.SetInt(staminaStr, int.Parse(LoadJsonFile.assetTableDatas[2].startValue));
@@ -165,13 +152,9 @@ public class TimeSystemControl : MonoBehaviour
     //每次进入游戏对开启时间进行初始化
     private void StartGameToInitOpenTime()
     {
-        openNeedSeconds = LoadJsonFile.GetGameValue(0);  //宝箱开启时间
+        JiuTanTimeGapSecs = LoadJsonFile.GetGameValue(0);  //宝箱开启时间
         openNeedSeconds1 = LoadJsonFile.GetGameValue(1);
         openNeedSeconds2 = LoadJsonFile.GetGameValue(2);
-        openJNNeedSeconds = 3600; //锦囊开启时间
-
-        isCanGetBox = (PlayerPrefs.GetInt(fBoxOpenNeedTimes) <= 0);
-        openFreeBoxTimeLong = long.Parse(PlayerPrefs.GetString(freeBoxOpenTime));
 
         isCanGetBox1 = (PlayerPrefs.GetInt(fBoxOpenNeedTimes1) <= 0);
         openFreeBoxTimeLong1 = long.Parse(PlayerPrefs.GetString(freeBoxOpenTime1));
@@ -179,21 +162,39 @@ public class TimeSystemControl : MonoBehaviour
         isCanGetBox2 = (PlayerPrefs.GetInt(fBoxOpenNeedTimes2) <= 0);
         openFreeBoxTimeLong2 = long.Parse(PlayerPrefs.GetString(freeBoxOpenTime2));
 
-        isCanGetJN = (PlayerPrefs.GetInt(jinNangOpenNeedTime) <= 0);
-        openJinNangTimeLong = long.Parse(PlayerPrefs.GetString(jinNangOpenTime));
+        long.TryParse(PlayerPrefs.GetString(LastJNOpenTime), out lastJNOpenTime);
+        long.TryParse(PlayerPrefs.GetString(LastJTOpenTime), out lastJTOpenTime);
+        
+        isJNTimeValid = lastJNOpenTime == default;
+        //openJinNangTimeLong = long.Parse(PlayerPrefs.GetString(jinNangOpenTime));
 
         maxStaminaNum = int.Parse(LoadJsonFile.assetTableDatas[2].startValue);
         isNeedHuiFuTiLi = (PlayerPrefs.GetInt(staminaStr) < maxStaminaNum);
-        tiLiHfTimeLong = long.Parse(PlayerPrefs.GetString(tiLiHuiFuTime));
+        long.TryParse(PlayerPrefs.GetString(tiLiHuiFuTime),out tiLiHfTimeLong);
+        ItemsRedemptionFunc();
+    }
+
+    /// <summary>
+    /// 游戏物品获取次数计算函数
+    /// </summary>
+    private void ItemsRedemptionFunc()
+    {
+        var lastJNTime = SystemTimer.UnixToDateTime(lastJNOpenTime);
+        if (!IsSameDay(lastJNTime)) PlayerPrefs.SetInt(JNRedeemCount, 0);
+        var lastJTTime = SystemTimer.UnixToDateTime(lastJTOpenTime);
+        if (!IsSameDay(lastJTTime)) PlayerPrefs.SetInt(JTRedeemCount, 0);
+        //根据系统时间计算本地的天数是否是同一天
+        bool IsSameDay(DateTimeOffset date) => SystemTimer.Now.LocalDateTime.Day == date.LocalDateTime.Day &&
+                                               SystemTimer.Now.LocalDateTime.Month == date.LocalDateTime.Month &&
+                                               SystemTimer.Now.LocalDateTime.Year == date.LocalDateTime.Year;
     }
 
     private void Update()
     {
-        //StartCoroutine(GetTime());
-        UpdateFreeBoxTimer();
+        UpdateJinNangTimer();
+        UpdateJiuTanTimer();
         UpdateFreeBoxTimer1();
         UpdateFreeBoxTimer2();
-        UpdateJinNangTimer();
         UpdateStaminaTimer();
 
         UpdateChickenShoping();
@@ -204,40 +205,33 @@ public class TimeSystemControl : MonoBehaviour
     /// </summary>
     public void InitIsTodayFirstLoadingGame()
     {
-        if (isGetNetworkTime)
-        {
-            DateTime nowTime = GetStrBackTime();
-            //DateTime nowTime = DateTime.Now;
+        DateTime now = SystemTimer.Now.LocalDateTime;
+        //DateTime nowTime = DateTime.Now;
 
-            if (nowTime.Year > PlayerPrefs.GetInt(yearStr))
+        if (now.Year > PlayerPrefs.GetInt(yearStr))
+        {
+            PlayerPrefs.SetInt(yearStr, now.Year);
+            PlayerPrefs.SetInt(dayOfyearStr, now.DayOfYear);
+            isFInGame = true;
+        }
+        else
+        {
+            if (now.DayOfYear > PlayerPrefs.GetInt(dayOfyearStr))
             {
-                PlayerPrefs.SetInt(yearStr, nowTime.Year);
-                PlayerPrefs.SetInt(dayOfyearStr, nowTime.DayOfYear);
+                PlayerPrefs.SetInt(dayOfyearStr, now.DayOfYear);
                 isFInGame = true;
             }
             else
             {
-                if (nowTime.DayOfYear > PlayerPrefs.GetInt(dayOfyearStr))
-                {
-                    PlayerPrefs.SetInt(dayOfyearStr, nowTime.DayOfYear);
-                    isFInGame = true;
-                }
-                else
-                {
-                    isFInGame = false;
-                }
+                isFInGame = false;
             }
-        }
-        else
-        {
-            isFInGame = false;
         }
     }
 
     //修正下次进入已经不是今天第一次进入游戏了
     public void UpdateIsNotFirstInGame()
     {
-        DateTime nowTime = GetStrBackTime();
+        DateTime nowTime = SystemTimer.Now.LocalDateTime;
         //DateTime nowTime = DateTime.Now;
 
         PlayerPrefs.SetInt(yearStr, nowTime.Year);
@@ -251,13 +245,13 @@ public class TimeSystemControl : MonoBehaviour
         //在主界面的话
         if (isOpenMainScene)
         {
-            UIManager.instance.InitOpenChickenTime(isGetNetworkTime);
+            UIManager.instance.InitOpenChickenTime(true);
             //UIManager.instance.InitOpenChickenTime(true);
         }
     }
 
-    //返回时间格式
-    public string BackToTimeShow(int seconds)
+    //时间显示格式
+    public string TimeDisplayText(int seconds)
     {
         string str = string.Empty;
         if (seconds <= 0)
@@ -321,7 +315,7 @@ public class TimeSystemControl : MonoBehaviour
 
             if (isOpenMainScene)
             {
-                UIManager.instance.UpdateShowTiLiInfo(BackToTimeShow(0));
+                UIManager.instance.UpdateShowTiLiInfo(TimeDisplayText(0));
             }
         }
 
@@ -332,36 +326,25 @@ public class TimeSystemControl : MonoBehaviour
     {
         if (isNeedHuiFuTiLi)
         {
-            if (isGetNetworkTime)
+            if (tiLiHfTimeLong == 0)
             {
-                if (tiLiHfTimeLong == 0)
-                {
-                    tiLiHfTimeLong = nowTimeLong + PlayerPrefs.GetInt(tiLiHuiFuNeedTimes) * 1000;
-                    PlayerPrefs.SetString(tiLiHuiFuTime, tiLiHfTimeLong.ToString());
-                }
-                int secondsCha = (int)((tiLiHfTimeLong - nowTimeLong) / 1000);
-                if (secondsNetTime_TiLiHf > secondsCha || (secondsNetTime_TiLiHf <= 0 && secondsCha != 0))
-                {
-                    secondsNetTime_TiLiHf = secondsCha;
-                    int totalTimes = PlayerPrefs.GetInt(tiLiHuiFuNeedTimes);
-                    UpdateTiLiHuiFuTime(totalTimes - secondsNetTime_TiLiHf, totalTimes);
-                }
+                tiLiHfTimeLong = SystemTimer.NowUnixTicks + PlayerPrefs.GetInt(tiLiHuiFuNeedTimes) * 1000;
+                PlayerPrefs.SetString(tiLiHuiFuTime, tiLiHfTimeLong.ToString());
             }
-            else
+
+            int secondsCha = (int) ((tiLiHfTimeLong - SystemTimer.NowUnixTicks) / 1000);
+            if (secondsNetTime_TiLiHf > secondsCha || (secondsNetTime_TiLiHf <= 0 && secondsCha != 0))
             {
-                secondHandAccurate_TL += Time.deltaTime;
-                if (secondHandAccurate_TL >= 1f)
-                {
-                    secondHandAccurate_TL = 0;
-                    UpdateTiLiHuiFuTime(1, PlayerPrefs.GetInt(tiLiHuiFuNeedTimes));
-                }
+                secondsNetTime_TiLiHf = secondsCha;
+                int totalTimes = PlayerPrefs.GetInt(tiLiHuiFuNeedTimes);
+                UpdateTiLiHuiFuTime(totalTimes - secondsNetTime_TiLiHf, totalTimes);
             }
         }
         else
         {
             if (isOpenMainScene)
             {
-                UIManager.instance.UpdateShowTiLiInfo(BackToTimeShow(0));
+                UIManager.instance.UpdateShowTiLiInfo(TimeDisplayText(0));
             }
         }
     }
@@ -391,7 +374,7 @@ public class TimeSystemControl : MonoBehaviour
         }
         if (isOpenMainScene)
         {
-            UIManager.instance.UpdateShowTiLiInfo(BackToTimeShow(secondsRemaining));
+            UIManager.instance.UpdateShowTiLiInfo(TimeDisplayText(secondsRemaining));
         }
         PlayerPrefs.SetInt(tiLiHuiFuNeedTimes, totalTimesNums);
     }
@@ -409,37 +392,23 @@ public class TimeSystemControl : MonoBehaviour
                 usedNums = usedNums - (nowStamina - maxStaminaNum);
             }
 
-            PlayerPrefs.SetInt(tiLiHuiFuNeedTimes, oneTiLiHfSeconds * usedNums + PlayerPrefs.GetInt(tiLiHuiFuNeedTimes));
+            PlayerPrefs.SetInt(tiLiHuiFuNeedTimes,
+                oneTiLiHfSeconds * usedNums + PlayerPrefs.GetInt(tiLiHuiFuNeedTimes));
 
             secondsNetTime_TiLiHf += (usedNums * oneTiLiHfSeconds * 1000);
 
-            if (isGetNetworkTime)
+            if (tiLiHfTimeLong == 0)
             {
-                if (tiLiHfTimeLong == 0)
-                {
-                    long huiFuTimeLong = nowTimeLong;
-                    huiFuTimeLong += (PlayerPrefs.GetInt(tiLiHuiFuNeedTimes) * 1000);
-                    tiLiHfTimeLong = huiFuTimeLong;
-                }
-                else
-                {
-                    tiLiHfTimeLong += (oneTiLiHfSeconds * 1000 * usedNums);
-                }
-                PlayerPrefs.SetString(tiLiHuiFuTime, tiLiHfTimeLong.ToString());
+                long huiFuTimeLong = SystemTimer.NowUnixTicks;
+                huiFuTimeLong += (PlayerPrefs.GetInt(tiLiHuiFuNeedTimes) * 1000);
+                tiLiHfTimeLong = huiFuTimeLong;
             }
             else
             {
-                tiLiHfTimeLong = 0;
-                long tiLiHuiFu_Net = long.Parse(PlayerPrefs.GetString(tiLiHuiFuTime));
-                if (tiLiHuiFu_Net != 0)
-                {
-                    PlayerPrefs.SetString(tiLiHuiFuTime, (tiLiHuiFu_Net + oneTiLiHfSeconds * 1000 * usedNums).ToString());
-                }
-                else
-                {
-                    PlayerPrefs.SetString(tiLiHuiFuTime, "0");
-                }
+                tiLiHfTimeLong += (oneTiLiHfSeconds * 1000 * usedNums);
             }
+
+            PlayerPrefs.SetString(tiLiHuiFuTime, tiLiHfTimeLong.ToString());
         }
         else
         {
@@ -447,72 +416,38 @@ public class TimeSystemControl : MonoBehaviour
         }
     }
 
-    private void UpdateFreeBoxTimer()
+    private void UpdateJiuTanTimer()
     {
-        if (!isCanGetBox)
-        {
-            if (isGetNetworkTime)   //联网
-            {
-                if (openFreeBoxTimeLong == 0)
-                {
-                    openFreeBoxTimeLong = nowTimeLong + PlayerPrefs.GetInt(fBoxOpenNeedTimes) * 1000;
-                    PlayerPrefs.SetString(freeBoxOpenTime, openFreeBoxTimeLong.ToString());
-                }
-                int secondCha = (int)((openFreeBoxTimeLong - nowTimeLong) / 1000);
-                if (secondsNetTime_FreeBox > secondCha || (secondsNetTime_FreeBox <= 0 && secondCha != 0))
-                {
-                    //Debug.Log("secondCha: " + secondCha);
-                    secondsNetTime_FreeBox = secondCha;
-                    int totalTimes = PlayerPrefs.GetInt(fBoxOpenNeedTimes);
-                    UpdateBoxOpenTimeFromGame(totalTimes - secondsNetTime_FreeBox, totalTimes);
-                }
-            }
-            else
-            {
-                secondHandAccurate += Time.deltaTime;
-                if (secondHandAccurate >= 1f)
-                {
-                    secondHandAccurate = 0;
-                    UpdateBoxOpenTimeFromGame(1, PlayerPrefs.GetInt(fBoxOpenNeedTimes));
-                }
-            }
-        }
-        else
-        {
-            if (isOpenMainScene)
-            {
-                UIManager.instance.transform.GetComponent<GetOrOpenBox>().UpdateOpenTimeTips(string.Empty, 0, true);
-            }
-        }
+        var nextOpenJiuTanTimeTicks = lastJTOpenTime + (JiuTanTimeGapSecs * 1000);
+        var redeemCount = PlayerPrefs.GetInt(JTRedeemCount);
+        //如果当前时间大于下次开启时间
+        isJiuTanAvailable = (SystemTimer.NowUnixTicks >= nextOpenJiuTanTimeTicks && redeemCount < JiuTanRedeemCountPerDay) 
+                            || lastJNOpenTime == 0;
+        if (!isOpenMainScene) return;
+        if (UIManager.instance.JiuTanQuota != null)
+            UIManager.instance.JiuTanQuota.text = $"{redeemCount}/{JiuTanRedeemCountPerDay}";
+        if (isJiuTanAvailable)
+            UIManager.instance.transform.GetComponent<GetOrOpenBox>().UpdateOpenTimeTips(string.Empty, 0, true);
+        else UIManager.instance.transform.GetComponent<GetOrOpenBox>().UpdateOpenTimeTips(TimeDisplayText((int)
+            (nextOpenJiuTanTimeTicks - SystemTimer.NowUnixTicks)/1000), 0, false);
     }
 
     private void UpdateFreeBoxTimer1()
     {
         if (!isCanGetBox1)
         {
-            if (isGetNetworkTime)   //联网
+            if (openFreeBoxTimeLong1 == 0)
             {
-                if (openFreeBoxTimeLong1 == 0)
-                {
-                    openFreeBoxTimeLong1 = nowTimeLong + PlayerPrefs.GetInt(fBoxOpenNeedTimes1) * 1000;
-                    PlayerPrefs.SetString(freeBoxOpenTime1, openFreeBoxTimeLong1.ToString());
-                }
-                int secondCha = (int)((openFreeBoxTimeLong1 - nowTimeLong) / 1000);
-                if (secondsNetTime_FreeBox1 > secondCha || (secondsNetTime_FreeBox1 <= 0 && secondCha != 0))
-                {
-                    secondsNetTime_FreeBox1 = secondCha;
-                    int totalTimes = PlayerPrefs.GetInt(fBoxOpenNeedTimes1);
-                    UpdateBoxOpenTimeFromGame1(totalTimes - secondsNetTime_FreeBox1, totalTimes);
-                }
+                openFreeBoxTimeLong1 = SystemTimer.NowUnixTicks + PlayerPrefs.GetInt(fBoxOpenNeedTimes1) * 1000;
+                PlayerPrefs.SetString(freeBoxOpenTime1, openFreeBoxTimeLong1.ToString());
             }
-            else
+
+            int secondCha = (int) ((openFreeBoxTimeLong1 - SystemTimer.NowUnixTicks) / 1000);
+            if (secondsNetTime_FreeBox1 > secondCha || (secondsNetTime_FreeBox1 <= 0 && secondCha != 0))
             {
-                secondHandAccurate1 += Time.deltaTime;
-                if (secondHandAccurate1 >= 1f)
-                {
-                    secondHandAccurate1 = 0;
-                    UpdateBoxOpenTimeFromGame1(1, PlayerPrefs.GetInt(fBoxOpenNeedTimes1));
-                }
+                secondsNetTime_FreeBox1 = secondCha;
+                int totalTimes = PlayerPrefs.GetInt(fBoxOpenNeedTimes1);
+                UpdateBoxOpenTimeFromGame1(totalTimes - secondsNetTime_FreeBox1, totalTimes);
             }
         }
         else
@@ -528,29 +463,18 @@ public class TimeSystemControl : MonoBehaviour
     {
         if (!isCanGetBox2)
         {
-            if (isGetNetworkTime)   //联网
+            if (openFreeBoxTimeLong2 == 0)
             {
-                if (openFreeBoxTimeLong2 == 0)
-                {
-                    openFreeBoxTimeLong2 = nowTimeLong + PlayerPrefs.GetInt(fBoxOpenNeedTimes2) * 1000;
-                    PlayerPrefs.SetString(freeBoxOpenTime2, openFreeBoxTimeLong2.ToString());
-                }
-                int secondCha = (int)((openFreeBoxTimeLong2 - nowTimeLong) / 1000);
-                if (secondsNetTime_FreeBox2 > secondCha || (secondsNetTime_FreeBox2 <= 0 && secondCha != 0))
-                {
-                    secondsNetTime_FreeBox2 = secondCha;
-                    int totalTimes = PlayerPrefs.GetInt(fBoxOpenNeedTimes2);
-                    UpdateBoxOpenTimeFromGame2(totalTimes - secondsNetTime_FreeBox2, totalTimes);
-                }
+                openFreeBoxTimeLong2 = SystemTimer.NowUnixTicks + PlayerPrefs.GetInt(fBoxOpenNeedTimes2) * 1000;
+                PlayerPrefs.SetString(freeBoxOpenTime2, openFreeBoxTimeLong2.ToString());
             }
-            else
+
+            int secondCha = (int) ((openFreeBoxTimeLong2 - SystemTimer.NowUnixTicks) / 1000);
+            if (secondsNetTime_FreeBox2 > secondCha || (secondsNetTime_FreeBox2 <= 0 && secondCha != 0))
             {
-                secondHandAccurate2 += Time.deltaTime;
-                if (secondHandAccurate2 >= 1f)
-                {
-                    secondHandAccurate2 = 0;
-                    UpdateBoxOpenTimeFromGame2(1, PlayerPrefs.GetInt(fBoxOpenNeedTimes2));
-                }
+                secondsNetTime_FreeBox2 = secondCha;
+                int totalTimes = PlayerPrefs.GetInt(fBoxOpenNeedTimes2);
+                UpdateBoxOpenTimeFromGame2(totalTimes - secondsNetTime_FreeBox2, totalTimes);
             }
         }
         else
@@ -564,66 +488,14 @@ public class TimeSystemControl : MonoBehaviour
 
     private void UpdateJinNangTimer()
     {
-        if (!isCanGetJN)
-        {
-            if (isGetNetworkTime)   //联网
-            {
-                if (openJinNangTimeLong == 0)
-                {
-                    openJinNangTimeLong = nowTimeLong + PlayerPrefs.GetInt(jinNangOpenNeedTime) * 1000;
-                    PlayerPrefs.SetString(jinNangOpenTime, openJinNangTimeLong.ToString());
-                }
-                int secondCha = (int)((openJinNangTimeLong - nowTimeLong) / 1000);
-                if (secondsNetTime_JinNang > secondCha || (secondsNetTime_JinNang <= 0 && secondCha != 0))
-                {
-                    secondsNetTime_JinNang = secondCha;
-                    int totalTimes = PlayerPrefs.GetInt(jinNangOpenNeedTime);
-                    UpdateJinNangTimeFromGame(totalTimes - secondsNetTime_JinNang, totalTimes);
-                }
-            }
-            else
-            {
-                secondHandAccurateJN += Time.deltaTime;
-                if (secondHandAccurateJN >= 1f)
-                {
-                    secondHandAccurateJN = 0;
-                    UpdateJinNangTimeFromGame(1, PlayerPrefs.GetInt(jinNangOpenNeedTime));
-                }
-            }
-        }
-        else
-        {
-            //可以开启时
-            if (isOpenMainScene)
-            {
-                UIManager.instance.UpdateShowJinNangBtn(isCanGetJN);
-            }
-        }
-    }
-
-
-    //宝箱开启时间缩减
-    private void UpdateBoxOpenTimeFromGame(int cutSeconds, int totalTimes)
-    {
-        int countDownNums = totalTimes;
-        countDownNums -= cutSeconds;
-        if (countDownNums <= 0)
-        {
-            countDownNums = 0;
-            isCanGetBox = true;
-            if (isOpenMainScene)
-            {
-                UIManager.instance.transform.GetComponent<GetOrOpenBox>().UpdateOpenTimeTips(string.Empty, 0, true);
-            }
-        }
-        else
-        {
-            if (isOpenMainScene)
-            {
-                UIManager.instance.transform.GetComponent<GetOrOpenBox>().UpdateOpenTimeTips(BackToTimeShow(countDownNums), 0, false);
-            }
-        }
-        PlayerPrefs.SetInt(fBoxOpenNeedTimes, countDownNums);
+        var nextOpenJNTimeTicks = lastJNOpenTime + (JinNangTimeGapSecs * 1000);
+        var redeemCount = PlayerPrefs.GetInt(JNRedeemCount);
+        //如果当前时间大于下次开启时间
+        //可以开启锦囊
+        isJNTimeValid = (SystemTimer.NowUnixTicks >= nextOpenJNTimeTicks && redeemCount < JinNangRedeemCountPerDay) 
+                        || lastJNOpenTime == 0;
+        if (!isOpenMainScene) return;
+        UIManager.instance.UpdateShowJinNangBtn(isJNTimeValid);
     }
 
     private void UpdateBoxOpenTimeFromGame1(int cutSeconds, int totalTimes)
@@ -643,7 +515,7 @@ public class TimeSystemControl : MonoBehaviour
         {
             if (isOpenMainScene)
             {
-                UIManager.instance.transform.GetComponent<GetOrOpenBox>().UpdateOpenTimeTips(BackToTimeShow(countDownNums), 1, false);
+                UIManager.instance.transform.GetComponent<GetOrOpenBox>().UpdateOpenTimeTips(TimeDisplayText(countDownNums), 1, false);
             }
         }
         PlayerPrefs.SetInt(fBoxOpenNeedTimes1, countDownNums);
@@ -666,69 +538,40 @@ public class TimeSystemControl : MonoBehaviour
         {
             if (isOpenMainScene)
             {
-                UIManager.instance.transform.GetComponent<GetOrOpenBox>().UpdateOpenTimeTips(BackToTimeShow(countDownNums), 2, false);
+                UIManager.instance.transform.GetComponent<GetOrOpenBox>().UpdateOpenTimeTips(TimeDisplayText(countDownNums), 2, false);
             }
         }
         PlayerPrefs.SetInt(fBoxOpenNeedTimes2, countDownNums);
     }
 
-    private void UpdateJinNangTimeFromGame(int cutSeconds, int totalTimes)
-    {
-        int countDownNums = totalTimes;
-        countDownNums -= cutSeconds;
-        if (countDownNums <= 0)
-        {
-            countDownNums = 0;
-            isCanGetJN = true;
-            //可以开启锦囊
-            if (isOpenMainScene)
-            {
-                UIManager.instance.UpdateShowJinNangBtn(isCanGetJN);
-            }
-        }
-        else
-        {
-            if (isOpenMainScene)
-            {
-                UIManager.instance.UpdateShowJinNangBtn(isCanGetJN);
-            }
-        }
-        PlayerPrefs.SetInt(jinNangOpenNeedTime, countDownNums);
-    }
-
-
-
     /// <summary>
     /// 开启免费宝箱
     /// </summary>
     /// <returns></returns>
-    public bool OnClickToGetFreeBox()
+    public bool OnClickToGetJiuTan()
     {
-        if (isCanGetBox)
-        {
-            //Debug.Log("打开免费宝箱");
-            secondsNetTime_FreeBox = 0;
-            isCanGetBox = false;
-            PlayerPrefs.SetInt(fBoxOpenNeedTimes, openNeedSeconds);
-            if (isGetNetworkTime)
-            {
-                long nowTimeStr = nowTimeLong;//long.Parse(PlayerPrefs.GetString(NetworkTimestampStr));
-                nowTimeStr += (openNeedSeconds * 1000);
-                openFreeBoxTimeLong = nowTimeStr;
-                PlayerPrefs.SetString(freeBoxOpenTime, nowTimeStr.ToString());
-            }
-            else
-            {
-                openFreeBoxTimeLong = 0;
-                PlayerPrefs.SetString(freeBoxOpenTime, "0");
-            }
-            return true;
-        }
-        else
+        if (!isJiuTanAvailable)
         {
             PlayerDataForGame.instance.ShowStringTips("尚未灌满酒坛");
             return false;
         }
+
+        var jTRedeemCount = PlayerPrefs.GetInt(JTRedeemCount);
+
+        //如果酒坛获取已达限制次数，尝试执行是否时间过了0点重置次数
+        if (jTRedeemCount >= JiuTanRedeemCountPerDay)
+        {
+            ItemsRedemptionFunc();
+            jTRedeemCount = PlayerPrefs.GetInt(JTRedeemCount);
+        }
+
+        if (jTRedeemCount >= JiuTanRedeemCountPerDay) return false;
+        //Debug.Log("打开免费宝箱");
+        isJiuTanAvailable = false;
+        lastJTOpenTime = SystemTimer.NowUnixTicks;
+        PlayerPrefs.SetString(LastJTOpenTime, lastJTOpenTime.ToString());
+        PlayerPrefs.SetInt(JTRedeemCount, ++jTRedeemCount);
+        return true;
     }
 
     public bool OnClickToGetFreeBox1()
@@ -739,18 +582,10 @@ public class TimeSystemControl : MonoBehaviour
             secondsNetTime_FreeBox1 = 0;
             isCanGetBox1 = false;
             PlayerPrefs.SetInt(fBoxOpenNeedTimes1, openNeedSeconds1);
-            if (isGetNetworkTime)
-            {
-                long nowTimeStr = nowTimeLong;//long.Parse(PlayerPrefs.GetString(NetworkTimestampStr));
-                nowTimeStr += (openNeedSeconds1 * 1000);
-                openFreeBoxTimeLong1 = nowTimeStr;
-                PlayerPrefs.SetString(freeBoxOpenTime1, nowTimeStr.ToString());
-            }
-            else
-            {
-                openFreeBoxTimeLong1 = 0;
-                PlayerPrefs.SetString(freeBoxOpenTime1, "0");
-            }
+            long nowTimeStr = SystemTimer.NowUnixTicks; //long.Parse(PlayerPrefs.GetString(NetworkTimestampStr));
+            nowTimeStr += (openNeedSeconds1 * 1000);
+            openFreeBoxTimeLong1 = nowTimeStr;
+            PlayerPrefs.SetString(freeBoxOpenTime1, nowTimeStr.ToString());
             return true;
         }
         else
@@ -768,154 +603,41 @@ public class TimeSystemControl : MonoBehaviour
             secondsNetTime_FreeBox2 = 0;
             isCanGetBox2 = false;
             PlayerPrefs.SetInt(fBoxOpenNeedTimes2, openNeedSeconds2);
-            if (isGetNetworkTime)
-            {
-                long nowTimeStr = nowTimeLong;//long.Parse(PlayerPrefs.GetString(NetworkTimestampStr));
-                nowTimeStr += (openNeedSeconds2 * 1000);
-                openFreeBoxTimeLong2 = nowTimeStr;
-                PlayerPrefs.SetString(freeBoxOpenTime2, nowTimeStr.ToString());
-            }
-            else
-            {
-                openFreeBoxTimeLong2 = 0;
-                PlayerPrefs.SetString(freeBoxOpenTime2, "0");
-            }
+            long nowTimeStr = SystemTimer.NowUnixTicks; //long.Parse(PlayerPrefs.GetString(NetworkTimestampStr));
+            nowTimeStr += (openNeedSeconds2 * 1000);
+            openFreeBoxTimeLong2 = nowTimeStr;
+            PlayerPrefs.SetString(freeBoxOpenTime2, nowTimeStr.ToString());
             return true;
         }
-        else
-        {
-            //Debug.Log("宝箱免费开启时间未到");
-            return false;
-        }
+
+        //Debug.Log("宝箱免费开启时间未到");
+        return false;
     }
 
     //开启锦囊
     public bool OnClickToGetJinNang()
     {
-        if (isCanGetJN)
+        if (!isJNTimeValid) return false;
+        var jNRedeemCount = PlayerPrefs.GetInt(JNRedeemCount);
+        //如果锦囊获取已达限制次数，尝试执行是否时间过了0点重置次数
+        if (jNRedeemCount >= JinNangRedeemCountPerDay)
         {
-            //Debug.Log("打开锦囊");
-            secondsNetTime_JinNang = 0;
-            isCanGetJN = false;
-            PlayerPrefs.SetInt(jinNangOpenNeedTime, openJNNeedSeconds);
-            if (isGetNetworkTime)
-            {
-                long nowTimeStr = nowTimeLong;
-                nowTimeStr += (openJNNeedSeconds * 1000);
-                openJinNangTimeLong = nowTimeStr;
-                PlayerPrefs.SetString(jinNangOpenTime, nowTimeStr.ToString());
-            }
-            else
-            {
-                openJinNangTimeLong = 0;
-                PlayerPrefs.SetString(jinNangOpenTime, "0");
-            }
-            return true;
+            ItemsRedemptionFunc();
+            jNRedeemCount = PlayerPrefs.GetInt(JNRedeemCount);
         }
-        else
-        {
-            //Debug.Log("宝箱免费开启时间未到");
-            return false;
-        }
-    }
 
-    //更新时间
-    IEnumerator GetTime()
-    {
-        string timeStr = string.Empty;
+        Debug.Log(
+            $"{nameof(TimeSystemControl)}:{nameof(OnClickToGetJinNang)} 锦囊获取次数[{++jNRedeemCount}/{JinNangRedeemCountPerDay}]");
+        if (jNRedeemCount >= JinNangRedeemCountPerDay) return false;
+        //Debug.Log("打开锦囊");
+        isJNTimeValid = false;
+        lastJNOpenTime = SystemTimer.NowUnixTicks;
+        PlayerPrefs.SetString(LastJNOpenTime, lastJNOpenTime.ToString());
+        PlayerPrefs.SetInt(JNRedeemCount, ++jNRedeemCount);
+        if (UIManager.instance.JinNangQuota != null)
+            UIManager.instance.JinNangQuota.text = $"今日次数：{jNRedeemCount}/{JinNangRedeemCountPerDay}";
+        return true;
 
-        while (true)
-        {
-            //WWW www = new WWW(timeWebPath);
-            WWW www = new WWW(timeWebPath0);
-            yield return www;
-
-            //Debug.Log(www.text);
-
-            if (www.text == "" || www.text.Trim() == "")//如果断网
-            {
-                isGetNetworkTime = false;
-            }
-            else//成功获取网络时间
-            {
-                try
-                {
-                    //0=1600529802400
-                    //timeStr = www.text.Substring(2); //获取网络准确时间戳
-                    timeStr = www.text.Substring(81, 13); //获取网络准确时间戳
-
-                    nowTimeLong = long.Parse(timeStr);
-
-                    isGetNetworkTime = true;
-                }
-                catch (Exception e)
-                {
-                    isGetNetworkTime = false;
-                }
-
-            }
-            yield return new WaitForSeconds(0.1f);
-        }
-    }
-
-    //获取当前时间
-    public DateTime GetStrBackTime()
-    {
-        //return nowTimeLong;
-        return startTime.AddMilliseconds(Convert.ToDouble(nowTimeLong));
-    }
-
-    /// <summary>
-    /// 获取百度时间
-    /// </summary>
-    /// <returns></returns>
-    private string GetNetDateTime()
-    {
-        WebRequest request = null;
-        WebResponse response = null;
-        WebHeaderCollection headerCollection = null;
-        string datetime = string.Empty;
-        try
-        {
-            request = WebRequest.Create("https://www.baidu.com");
-            request.Timeout = 3000;
-            request.Credentials = CredentialCache.DefaultCredentials;
-            response = (WebResponse)request.GetResponse();
-            headerCollection = response.Headers;
-            foreach (var h in headerCollection.AllKeys)
-            { if (h == "Date") { datetime = headerCollection[h]; } }
-            return datetime;
-        }
-        catch (Exception) { return datetime; }
-        finally
-        {
-            if (request != null)
-            { request.Abort(); }
-            if (response != null)
-            { response.Close(); }
-            if (headerCollection != null)
-            { headerCollection.Clear(); }
-        }
-    }
-    
-    //获取网址内容
-    private static string GetWebRequest(string getUrl)
-    {
-        string responseContent = "";
-
-        HttpWebRequest request = (HttpWebRequest)WebRequest.Create(getUrl);
-        request.ContentType = "application/json";
-        request.Method = "GET";
-
-        HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-        //在这里对接收到的页面内容进行处理
-        using (System.IO.Stream resStream = response.GetResponseStream())
-        {
-            using (System.IO.StreamReader reader = new System.IO.StreamReader(resStream, Encoding.UTF8))
-            {
-                responseContent = reader.ReadToEnd().ToString();
-            }
-        }
-        return responseContent;
+        //Debug.Log("宝箱免费开启时间未到");
     }
 }
