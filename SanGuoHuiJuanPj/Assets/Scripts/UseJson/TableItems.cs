@@ -445,4 +445,15 @@ public class BaYeBattleTableItem
     public string level2 { get; set; }
     public string level3 { get; set; }
     public string level4 { get; set; }
+    public string level5 { get; set; }
+    public string level6 { get; set; }
+    public string level7 { get; set; }
+    public string level8 { get; set; }
+    public string level9 { get; set; }
+}
+public class BaYeRenWuTableItem
+{ 
+    public string id { get; set; }
+    public string jingYan { get; set; }
+    public string jiangLi { get; set; }
 }

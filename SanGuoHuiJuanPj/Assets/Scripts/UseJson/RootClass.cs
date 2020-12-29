@@ -149,4 +149,8 @@ public class Roots
     /// 霸业战役难度表
     /// </summary>
     public List<BaYeBattleTableItem> BaYeBattleTable { get; set; }
+    /// <summary>
+    /// 霸业任务表
+    /// </summary>
+    public List<BaYeRenWuTableItem> BaYeRenWuTable { get; set; }
 }

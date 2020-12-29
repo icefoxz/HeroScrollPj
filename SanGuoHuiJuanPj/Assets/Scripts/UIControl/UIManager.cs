@@ -980,7 +980,7 @@ public class UIManager : MonoBehaviour
         if (fuzhuData.level < LoadJsonFile.upGradeTableDatas.Count)
         {
             obj.transform.GetChild(2).GetComponent<Text>().text = fuzhuData.chips + "/" + LoadJsonFile.upGradeTableDatas[fuzhuData.level][1];
-            obj.transform.GetChild(2).GetComponent<Text>().color = fuzhuData.chips >= int.Parse(LoadJsonFile.upGradeTableDatas[fuzhuData.level][1]) ? ColorDataStatic.deep_green : Color.black;
+            obj.transform.GetChild(2).GetComponent<Text>().color = fuzhuData.chips >= int.Parse(LoadJsonFile.upGradeTableDatas[fuzhuData.level][1]) ? ColorDataStatic.deep_green : Color.white;
 
         }
         else
@@ -1259,7 +1259,7 @@ public class UIManager : MonoBehaviour
         if (heroData.level < LoadJsonFile.upGradeTableDatas.Count)
         {
             obj.transform.GetChild(2).GetComponent<Text>().text = heroData.chips + "/" + LoadJsonFile.upGradeTableDatas[heroData.level][1];
-            obj.transform.GetChild(2).GetComponent<Text>().color = heroData.chips >= int.Parse(LoadJsonFile.upGradeTableDatas[heroData.level][1]) ? ColorDataStatic.deep_green : Color.black;
+            obj.transform.GetChild(2).GetComponent<Text>().color = heroData.chips >= int.Parse(LoadJsonFile.upGradeTableDatas[heroData.level][1]) ? ColorDataStatic.deep_green : Color.white;
         }
         else
         {
