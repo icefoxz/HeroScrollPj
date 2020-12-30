@@ -1,13 +1,24 @@
-﻿using DG.Tweening;
+﻿using System;
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using Random = UnityEngine.Random;
 
 public class PlayerDataForGame : MonoBehaviour
 {
     public static PlayerDataForGame instance;
+    [Serializable]
+    public enum WarTypes
+    {
+        None = 0,
+        Expedition = 1, //主线战役
+        Baye = 2, //霸业
+    }
+
+    public WarTypes WarType;//记录上一场战斗的类型
 
     [HideInInspector]
     public bool isNeedSaveData; //记录是否需要存档
@@ -427,7 +438,7 @@ public class PlayerDataForGame : MonoBehaviour
             }
             garbageStationObjs.Clear();
         }
-        catch (System.Exception e)
+        catch (Exception e)
         {
             Debug.LogError(e.ToString());
         }
@@ -445,5 +456,16 @@ public class PlayerDataForGame : MonoBehaviour
         textTipsObj.SetActive(false);
         textTipsObj.transform.GetComponent<Text>().text = str;
         textTipsObj.SetActive(true);
+    }
+
+    /// <summary>
+    /// 为战斗类型预设个记号，在场景转换的时候将读取战斗记号并打开相应的页面
+    /// </summary>
+    /// <param name="warType"></param>
+    public void FlagWarTypeBeforeBattle(int warType)
+    {
+        WarType = warType >= 0 && warType <= 2
+            ? (WarTypes) warType
+            : throw new ArgumentOutOfRangeException($"Type of {nameof(WarTypes)} : {warType}");
     }
 }

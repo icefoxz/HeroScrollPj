@@ -7,6 +7,7 @@ using System;
 
 public class UIManager : MonoBehaviour
 {
+
     public static UIManager instance;
 
     [SerializeField]
@@ -128,6 +129,24 @@ public class UIManager : MonoBehaviour
         InitJiBanForMainFun();
         InitBaYeFun();
         PlayerDataForGame.instance.ClearGarbageStationObj();
+        LoadPageFromFlag();
+    }
+
+    private void LoadPageFromFlag()
+    {
+        switch (PlayerDataForGame.instance.WarType)
+        {
+            case PlayerDataForGame.WarTypes.None:
+            case PlayerDataForGame.WarTypes.Expedition:
+                ZhuChengInterfaceSwitching(1);
+                break;
+            case PlayerDataForGame.WarTypes.Baye:
+                ZhuChengInterfaceSwitching(4);
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+        PlayerDataForGame.instance.FlagWarTypeBeforeBattle(0);
     }
 
     //时间管理
@@ -181,7 +200,7 @@ public class UIManager : MonoBehaviour
                 isJumping = true;
                 AudioController0.instance.ChangeAudioClip(AudioController0.instance.audioClips[12], AudioController0.instance.audioVolumes[12]);
                 AudioController0.instance.PlayAudioSource(0);
-
+                PlayerDataForGame.instance.FlagWarTypeBeforeBattle(2);
                 StartCoroutine(LateGoToFightScene());
             }
             else
@@ -843,8 +862,9 @@ public class UIManager : MonoBehaviour
     /// <summary>
     /// 开始对战
     /// </summary>
-    public void OnClickStartWars()
+    public void OnClickStartWars(int warType)
     {
+        PlayerDataForGame.instance.FlagWarTypeBeforeBattle(warType);
         if (!isJumping)
         {
             string[] tiLiCostArr = LoadJsonFile.choseWarTableDatas[tiLiCostIndex][4].Split(',');

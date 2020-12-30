@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 /// <summary>
@@ -6,10 +7,16 @@ using UnityEngine;
 /// </summary>
 public static class XDebug
 {
-    public static void Log<T>(string message,[CallerMemberName] string methodName = null,T type = default)
+    public static void Log<T>(string message,[CallerMemberName] string methodName = null,T type = default) where T : class
     {
 #if DEBUG
-        Debug.Log($"{type.GetType().Name}:{methodName}() {message}");
+        Debug.Log($"{type?.GetType().Name}:{methodName}() {message}");
+#endif
+    }
+    public static void Log(Type type,string message,[CallerMemberName] string methodName = null)
+    {
+#if DEBUG
+        Debug.Log($"{type.Name}:{methodName}() {message}");
 #endif
     }
 

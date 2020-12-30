@@ -21,7 +21,8 @@ public static class Http
         {
             error += e.ToString();
         }
-        Debug.LogError(error);
+
+        XDebug.Log(typeof(Http), error);
 #endif
         return HttpResponse.ERROR;
     }
