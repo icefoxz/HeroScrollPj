@@ -627,7 +627,7 @@ public class TimeSystemControl : MonoBehaviour
         }
 
         Debug.Log(
-            $"{nameof(TimeSystemControl)}:{nameof(OnClickToGetJinNang)} 锦囊获取次数[{++jNRedeemCount}/{JinNangRedeemCountPerDay}]");
+            $"{nameof(TimeSystemControl)}:{nameof(OnClickToGetJinNang)} 锦囊获取次数[{jNRedeemCount+1}/{JinNangRedeemCountPerDay}]");
         if (jNRedeemCount >= JinNangRedeemCountPerDay) return false;
         //Debug.Log("打开锦囊");
         isJNTimeValid = false;

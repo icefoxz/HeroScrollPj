@@ -1261,6 +1261,7 @@ GameObject:
   m_Component:
   - component: {fileID: 107439209}
   - component: {fileID: 107439208}
+  - component: {fileID: 107439210}
   m_Layer: 0
   m_Name: TimerGameObject
   m_TagString: Untagged
@@ -1280,7 +1281,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b4a9774558fba314bb4a315038bb5eba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isGetNetworkTime: 0
+  SystemTimer: {fileID: 107439210}
+  JinNangTimeGapSecs: 3600
+  JiuTanTimeGapSecs: 3600
+  JinNangRedeemCountPerDay: 10
+  JiuTanRedeemCountPerDay: 10
   isOpenMainScene: 0
   isFInGame: 0
 --- !u!4 &107439209
@@ -1297,6 +1302,20 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 11
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &107439210
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 107439207}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3ecc746d3e8c7d6439d7eaf42188912b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  RetryLimit: 5
+  SyncSecs: 5
 --- !u!1 &114322320
 GameObject:
   m_ObjectHideFlags: 0
@@ -25264,6 +25283,9 @@ MonoBehaviour:
   fightTrapId: 
   fightSpellId: 
   chooseWarsId: 0
+  zhanYiColdNums: 0
+  baYeGoldNums: 0
+  isZhanYi: 0
   isJumping: 0
   loadingText: {fileID: 662825763}
   infoText: {fileID: 1718758193}

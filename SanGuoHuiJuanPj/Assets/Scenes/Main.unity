@@ -2742,6 +2742,8 @@ MonoBehaviour:
   - {fileID: 739635045}
   - {fileID: 1565587393}
   - {fileID: 433270610}
+  JinNangQuota: {fileID: 720334579}
+  JiuTanQuota: {fileID: 1004057954}
   rewardsParent: {fileID: 1218467906}
   rewardObj: {fileID: 4704504723686532958, guid: 75ebd9b4c8ccc5f4791209462f249f12,
     type: 3}
