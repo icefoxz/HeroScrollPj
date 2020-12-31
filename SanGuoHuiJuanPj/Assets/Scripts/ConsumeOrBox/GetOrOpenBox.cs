@@ -138,6 +138,7 @@ public class GetOrOpenBox : MonoBehaviour
             if (openJiuTanYBNums <= PlayerDataForGame.instance.pyData.yuanbao && TimeSystemControl.instance.OnClickToGetJiuTan())
             {
                 cutYvQueNums = openJiuTanYBNums;
+                PlayerDataForGame.instance.Redemption(PlayerDataForGame.RedeemTypes.JiuTan);
             }
             else
             {
@@ -212,7 +213,7 @@ public class GetOrOpenBox : MonoBehaviour
             for (int i = 0; i < 3; i++)
             {
                 string rewardCardString = LoadJsonFile.warChestTableDatas[boxNumber][i + 6];
-                if (rewardCardString == "" || rewardCardString == null)
+                if (string.IsNullOrWhiteSpace(rewardCardString))
                 {
                     continue;
                 }

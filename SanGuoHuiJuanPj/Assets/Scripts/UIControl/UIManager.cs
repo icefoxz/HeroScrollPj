@@ -2243,37 +2243,38 @@ public class UIManager : MonoBehaviour
             watchAdFordoubleBtn.onClick.RemoveAllListeners();
             watchAdFordoubleBtn.gameObject.SetActive(true);
 
-            jinNangImg.DOFade(1, 0.5f).OnComplete(delegate ()
+            jinNangImg.DOFade(1, 0.5f).OnComplete(()=>
             {
                 jinNangText.text = LoadJsonFile.knowledgeTableDatas[randId][2];
                 jinNangTextName.text = LoadJsonFile.knowledgeTableDatas[randId][5];//新增人物名
                 jinNangTextName.DOFade(1, 1.5f);
-                jinNangText.DOFade(1, 1.5f).OnComplete(delegate ()
+                jinNangText.DOFade(1, 1.5f).OnComplete(()=>
                 {
                     contuineObj.SetActive(true);
-                    jinNangBackBtn.onClick.AddListener(delegate ()
+                    jinNangBackBtn.onClick.AddListener( ()=>
                     {
                         PlayOnClickMusic();
                         jinNangTextName.DOFade(0, 1f);
-                        jinNangText.DOFade(0, 1f).OnComplete(delegate ()
+                        jinNangText.DOFade(0, 1f).OnComplete(()=>
                         {
                             //展示奖励内容
                             UpdateJinNangRewards(addYuanBaoNums, addTiLiNums);
                             rewardsTran.gameObject.SetActive(true);
 
                             //点击背景领取并退出锦囊
-                            jinNangBackBtn.onClick.AddListener(delegate ()
+                            jinNangBackBtn.onClick.AddListener(()=>
                             {
                                 PlayOnClickMusic();
                                 if (addYuanBaoNums > 0)
                                     ConsumeManager.instance.AddYuanBao(addYuanBaoNums);
                                 if (addTiLiNums > 0)
                                     TimeSystemControl.instance.AddTiLiNums(addTiLiNums);
+                                PlayerDataForGame.instance.Redemption(PlayerDataForGame.RedeemTypes.JinNang);
                                 PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(43));
                                 jinNangWindowObj.SetActive(false);
                             });
                             //点击广告双倍奖励
-                            watchAdFordoubleBtn.onClick.AddListener(delegate ()
+                            watchAdFordoubleBtn.onClick.AddListener(()=>
                             {
                                 PlayOnClickMusic();
                                 //背景按钮无效
@@ -2281,7 +2282,7 @@ public class UIManager : MonoBehaviour
                                 watchAdFordoubleBtn.enabled = false;
                                 if (!DoNewAdController.instance.GetReWardVideo(
                                 //if (!AdController.instance.ShowVideo(
-                                    delegate ()
+                                     ()=>
                                     {
                                         //奖励翻倍
                                         addYuanBaoNums = addYuanBaoNums * 2;
@@ -2291,7 +2292,7 @@ public class UIManager : MonoBehaviour
                                         watchAdFordoubleBtn.gameObject.SetActive(false);
                                         watchAdFordoubleBtn.enabled = true;
                                     },
-                                    delegate ()
+                                     ()=>
                                     {
                                         PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(6));
                                         jinNangBackBtn.enabled = true;

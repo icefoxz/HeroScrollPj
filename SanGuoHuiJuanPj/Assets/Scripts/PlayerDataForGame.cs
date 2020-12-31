@@ -17,7 +17,11 @@ public class PlayerDataForGame : MonoBehaviour
         Expedition = 1, //主线战役
         Baye = 2, //霸业
     }
-
+    public enum RedeemTypes
+    {
+        JinNang = 0, // 锦囊
+        JiuTan = 1  //酒坛
+    }
     public WarTypes WarType;//记录上一场战斗的类型
 
     [HideInInspector]
@@ -31,7 +35,7 @@ public class PlayerDataForGame : MonoBehaviour
     public PlyDataClass pyData = new PlyDataClass();  //玩家基本信息
     public GetBoxOrCodeData gbocData = new GetBoxOrCodeData();  //玩家宝箱与兑换码信息
     public HSTDataClass hstData = new HSTDataClass();       //玩家武将士兵塔等信息
-    public WarsDataClass warsData = new WarsDataClass();       //玩家战役解锁进度信息
+    public WarsDataClass warsData = new WarsDataClass();       //玩家战役解锁+霸业进度信息
 
     [HideInInspector]
     public int[] guideObjsShowed;   //存放各个指引展示情况
@@ -467,5 +471,39 @@ public class PlayerDataForGame : MonoBehaviour
         WarType = warType >= 0 && warType <= 2
             ? (WarTypes) warType
             : throw new ArgumentOutOfRangeException($"Type of {nameof(WarTypes)} : {warType}");
+    }
+
+    public void SetRedeemCount(RedeemTypes type, int count)
+    {
+        switch (type)
+        {
+            case RedeemTypes.JinNang:
+                pyData.dailyJinNangRedemptionCount = count;
+                break;
+            case RedeemTypes.JiuTan:
+                pyData.dailyJiuTanRedemptionCount = count;
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(type), type, null);
+        }
+        LoadSaveData.instance.SaveGameData(1);
+    }
+
+    public void Redemption(RedeemTypes type)
+    {
+        switch (type)
+        {
+            case RedeemTypes.JinNang:
+                pyData.dailyJinNangRedemptionCount++;
+                pyData.lastJinNangRedeemTime = SystemTimer.instance.NowUnixTicks;
+                break;
+            case RedeemTypes.JiuTan:
+                pyData.dailyJiuTanRedemptionCount++;
+                pyData.lastJiuTanRedeemTime = SystemTimer.instance.NowUnixTicks;
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(type), type, null);
+        }
+        LoadSaveData.instance.SaveGameData(1);
     }
 }

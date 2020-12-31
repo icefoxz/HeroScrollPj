@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 #region 玩家数据相关类
@@ -86,6 +87,15 @@ public class PlyDataClass
     public int yvque { get; set; }
     //玩家初始势力id
     public int forceId { get; set; }
+    //上次锦囊获取时间
+    public long lastJinNangRedeemTime { get; set; }
+    //锦囊每天的获取次数
+    public int dailyJinNangRedemptionCount { get; set; }
+    //上次酒坛获取时间
+    public long lastJiuTanRedeemTime { get; set; }
+    //酒坛每天的获取次数
+    public int dailyJiuTanRedemptionCount { get; set; }
+
 }
 
 public class GetBoxOrCodeData
