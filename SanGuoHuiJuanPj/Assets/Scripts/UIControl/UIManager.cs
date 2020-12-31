@@ -1973,6 +1973,8 @@ public class UIManager : MonoBehaviour
             case 2:
                 PlayerDataForGame.instance.isZhanYi = true;
                 ShowOrHideGuideObj(3, true);
+                //重新选择战役关卡
+                //OnClickChangeWarsFun(PlayerDataForGame.instance.warsData.warUnlockSaveData[index > endId ? endId : index].warId, lastObj);
                 warsChooseListObj.transform.parent.parent.GetComponent<ScrollRect>().DOVerticalNormalizedPos(0f, 0.3f);
                 break;
             case 4:
