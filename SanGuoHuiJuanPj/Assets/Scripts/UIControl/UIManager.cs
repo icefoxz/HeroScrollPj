@@ -1789,7 +1789,7 @@ public class UIManager : MonoBehaviour
         if (selectCardData.level < LoadJsonFile.upGradeTableDatas.Count)
         {
             listCard.GetChild(2).GetComponent<Text>().text = selectCardData.chips + "/" + LoadJsonFile.upGradeTableDatas[selectCardData.level][1];
-            listCard.GetChild(2).GetComponent<Text>().color = selectCardData.chips >= int.Parse(LoadJsonFile.upGradeTableDatas[selectCardData.level][1]) ? ColorDataStatic.deep_green : Color.black;
+            listCard.GetChild(2).GetComponent<Text>().color = selectCardData.chips >= int.Parse(LoadJsonFile.upGradeTableDatas[selectCardData.level][1]) ? ColorDataStatic.deep_green : Color.white;
         }
         else
         {
