@@ -630,6 +630,12 @@ public class FightForManager : MonoBehaviour
                     case 20://弓弩营
                         ZhanGuTaiAddtionFun(cardData, posIndex, cardDatas, isAdd);
                         break;
+                    case 22://长持营
+                        ZhanGuTaiAddtionFun(cardData, posIndex, cardDatas, isAdd);
+                        break;
+                    case 23://战船营
+                        ZhanGuTaiAddtionFun(cardData, posIndex, cardDatas, isAdd);
+                        break;
                     default:
                         break;
                 }
@@ -743,7 +749,7 @@ public class FightForManager : MonoBehaviour
                         }
                         break;
                     case 15://蜀汉旗
-                        if (LoadJsonFile.heroTableDatas[cardData.cardId][6] == "2")
+                        if (LoadJsonFile.heroTableDatas[cardData.cardId][6] == "0")
                         {
                             if (cardData.fightState.zhangutaiAddtion <= 0)
                             {
@@ -753,7 +759,7 @@ public class FightForManager : MonoBehaviour
                         }
                         break;
                     case 16://东吴旗
-                        if (LoadJsonFile.heroTableDatas[cardData.cardId][6] == "3")
+                        if (LoadJsonFile.heroTableDatas[cardData.cardId][6] == "2")
                         {
                             if (cardData.fightState.zhangutaiAddtion <= 0)
                             {
@@ -788,6 +794,26 @@ public class FightForManager : MonoBehaviour
                         break;
                     case 20://弓弩营
                         if (LoadJsonFile.classTableDatas[int.Parse(LoadJsonFile.heroTableDatas[cardData.cardId][5])][5] == "9")
+                        {
+                            if (cardData.fightState.zhangutaiAddtion <= 0)
+                            {
+                                CreateSateIcon(cardData.cardObj.transform.GetChild(7), StringNameStatic.StateIconPath_zhangutaiAddtion, false);
+                            }
+                            cardData.fightState.zhangutaiAddtion += addtionNums;
+                        }
+                        break;
+                    case 22://长持营
+                        if (LoadJsonFile.classTableDatas[int.Parse(LoadJsonFile.heroTableDatas[cardData.cardId][5])][5] == "3")
+                        {
+                            if (cardData.fightState.zhangutaiAddtion <= 0)
+                            {
+                                CreateSateIcon(cardData.cardObj.transform.GetChild(7), StringNameStatic.StateIconPath_zhangutaiAddtion, false);
+                            }
+                            cardData.fightState.zhangutaiAddtion += addtionNums;
+                        }
+                        break;
+                    case 23://战船营
+                        if (LoadJsonFile.classTableDatas[int.Parse(LoadJsonFile.heroTableDatas[cardData.cardId][5])][5] == "8")
                         {
                             if (cardData.fightState.zhangutaiAddtion <= 0)
                             {
@@ -1092,7 +1118,7 @@ public class FightForManager : MonoBehaviour
                     FightCardData addedFightCard = cardDatas[CardNearbyAdditionForeach[posIndex][i]];
                     if (addedFightCard != null && addedFightCard.cardType == 0 && addedFightCard.nowHp > 0)
                     {
-                        if (LoadJsonFile.heroTableDatas[addedFightCard.cardId][6] == "2") //蜀势力
+                        if (LoadJsonFile.heroTableDatas[addedFightCard.cardId][6] == "0") //蜀势力
                         {
                             DamageTowerAdditionFun(addedFightCard, isAdd, addtionNums);
                         }
@@ -1105,7 +1131,7 @@ public class FightForManager : MonoBehaviour
                     FightCardData addedFightCard = cardDatas[CardNearbyAdditionForeach[posIndex][i]];
                     if (addedFightCard != null && addedFightCard.cardType == 0 && addedFightCard.nowHp > 0)
                     {
-                        if (LoadJsonFile.heroTableDatas[addedFightCard.cardId][6] == "3") //吴势力
+                        if (LoadJsonFile.heroTableDatas[addedFightCard.cardId][6] == "2") //吴势力
                         {
                             DamageTowerAdditionFun(addedFightCard, isAdd, addtionNums);
                         }
@@ -1132,6 +1158,32 @@ public class FightForManager : MonoBehaviour
                     if (addedFightCard != null && addedFightCard.cardType == 0 && addedFightCard.nowHp > 0)
                     {
                         if (LoadJsonFile.classTableDatas[int.Parse(LoadJsonFile.heroTableDatas[addedFightCard.cardId][5])][5] == "9") 
+                        {
+                            DamageTowerAdditionFun(addedFightCard, isAdd, addtionNums);
+                        }
+                    }
+                }
+                break;
+            case 22://长持营
+                for (int i = 0; i < CardNearbyAdditionForeach[posIndex].Length; i++)
+                {
+                    FightCardData addedFightCard = cardDatas[CardNearbyAdditionForeach[posIndex][i]];
+                    if (addedFightCard != null && addedFightCard.cardType == 0 && addedFightCard.nowHp > 0)
+                    {
+                        if (LoadJsonFile.classTableDatas[int.Parse(LoadJsonFile.heroTableDatas[addedFightCard.cardId][5])][5] == "3")
+                        {
+                            DamageTowerAdditionFun(addedFightCard, isAdd, addtionNums);
+                        }
+                    }
+                }
+                break;
+            case 23://战船营
+                for (int i = 0; i < CardNearbyAdditionForeach[posIndex].Length; i++)
+                {
+                    FightCardData addedFightCard = cardDatas[CardNearbyAdditionForeach[posIndex][i]];
+                    if (addedFightCard != null && addedFightCard.cardType == 0 && addedFightCard.nowHp > 0)
+                    {
+                        if (LoadJsonFile.classTableDatas[int.Parse(LoadJsonFile.heroTableDatas[addedFightCard.cardId][5])][5] == "8")
                         {
                             DamageTowerAdditionFun(addedFightCard, isAdd, addtionNums);
                         }
