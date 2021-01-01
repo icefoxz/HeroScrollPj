@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 using UnityEngine;
 
 #region 玩家数据相关类
@@ -78,7 +79,7 @@ public class PyDataClass
 public class PlyDataClass
 {
     //等级
-    public int level { get; set; }
+    public int level { get; set; } = 1;
     //经验
     public int exp { get; set; }
     //元宝
@@ -147,10 +148,50 @@ public class UnlockWarCount
     public bool isTakeReward;   //是否领过首通宝箱
 }
 
+/// <summary>
+/// 霸业管理类
+/// </summary>
+public class BaYeDataClass
+{
+    public long lastBaYeActivityTime;
+    public int currentExp;
+    public int gold;
+    public List<BaYeEvent> data = new List<BaYeEvent>();
+    ///// <summary>
+    ///// 势力与城的绑定， Key = city， Value = force
+    ///// </summary>
+    //public Dictionary<int, int> cityBoundForce = new Dictionary<int, int>();
+    ///// <summary>
+    ///// 城与霸业事件绑定，Key = city，Value = eventId
+    ///// </summary>
+    //public Dictionary<int, int> cityBoundEvent = new Dictionary<int, int>();
+    ///// <summary>
+    ///// 霸业战役和关卡记录，  Key = warId，Value = stage
+    ///// </summary>
+    //public Dictionary<int, int> stagePassed = new Dictionary<int, int>();
+
+    private List<bool> openedChest1 = new List<bool>();
+
+    public List<bool> openedChest
+    {
+        get
+        {
+            if (openedChest1 == null)
+            {
+                openedChest1 = new List<bool>();
+            }
+
+            return openedChest1;
+        }
+        set => openedChest1 = value;
+    }
+}
+
 public class WarsDataClass
 {
     //战役解锁进度
     public List<UnlockWarCount> warUnlockSaveData;
+    public BaYeDataClass baYe = new BaYeDataClass();
 }
 
 #endregion

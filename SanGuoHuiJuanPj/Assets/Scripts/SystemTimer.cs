@@ -23,6 +23,10 @@ public class SystemTimer : MonoBehaviour
         var utc = Epoch.AddMilliseconds(unixTicks);
         return utc.ToLocalTime();
     }
+    public static bool IsToday(DateTimeOffset date) => instance.Now.LocalDateTime.Day == date.LocalDateTime.Day &&
+                                           instance.Now.LocalDateTime.Month == date.LocalDateTime.Month &&
+                                           instance.Now.LocalDateTime.Year == date.LocalDateTime.Year;
+    public static bool IsToday(long unixTicks) => IsToday(UnixToDateTime(unixTicks));
 
     private DateTimeOffset startTime;
     /// <summary>

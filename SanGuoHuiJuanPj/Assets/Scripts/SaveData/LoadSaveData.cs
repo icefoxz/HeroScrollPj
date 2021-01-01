@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.IO;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine.SceneManagement;
 using Newtonsoft.Json;
 
@@ -63,14 +64,7 @@ public class LoadSaveData : MonoBehaviour
         string filePath0 = AppDebugClass.plyDataString;
         string filePath1 = AppDebugClass.hstDataString;
         string filePath2 = AppDebugClass.warUnlockDataString;
-        if ((File.Exists(filePath0) || File.Exists(filePath00) || File.Exists(filePath)) && File.Exists(filePath1) && File.Exists(filePath2))
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
+        return (File.Exists(filePath0) || File.Exists(filePath00) || File.Exists(filePath)) && File.Exists(filePath1) && File.Exists(filePath2);
     }
 
     /// <summary>
@@ -122,7 +116,7 @@ public class LoadSaveData : MonoBehaviour
         }
         isLoadingSaveData = false;
     }
-    public void SaveByJson(HSTDataClass save)
+    private void SaveByJson(HSTDataClass save)
     {
         isLoadingSaveData = true;
         try
@@ -135,7 +129,7 @@ public class LoadSaveData : MonoBehaviour
         }
         isLoadingSaveData = false;
     }
-    public void SaveByJson(WarsDataClass save)
+    private void SaveByJson(WarsDataClass save)
     {
         isLoadingSaveData = true;
         try
@@ -148,7 +142,7 @@ public class LoadSaveData : MonoBehaviour
         }
         isLoadingSaveData = false;
     }
-    public void SaveByJson(GetBoxOrCodeData save)
+    private void SaveByJson(GetBoxOrCodeData save)
     {
         isLoadingSaveData = true;
         try
@@ -399,7 +393,7 @@ public class LoadSaveData : MonoBehaviour
                         jsonStr2 = EncryptDecipherTool.DESDecrypt(jsonStr2);
                     jsonStr2 = InspectionAndCorrectionString(jsonStr2, new string[] { "true}]}", "false}]}" }, filePath2);
                     save2 = ArchiveCorrection(JsonConvert.DeserializeObject<WarsDataClass>(jsonStr2));
-
+                    if (save2.baYe == null) save2.baYe = new BaYeDataClass();
                     Debug.Log("读档成功");
 
                     //备份存档
@@ -897,6 +891,7 @@ public class LoadSaveData : MonoBehaviour
             unlock.isTakeReward = false;
             warsSaveData.warUnlockSaveData.Add(unlock);
         }
+        warsSaveData.baYe = new BaYeDataClass();
         SaveByJson(warsSaveData);
         ////////////////////////////////////////////////////////////////////////////////////////////
         isEncrypted = 1;
@@ -1064,5 +1059,31 @@ public class LoadSaveData : MonoBehaviour
         }
         //Debug.Log(jsonStr);
         return jsonStr;
+    }
+
+    public void BindBaYeForceAndStage(int eventId , int cityId, int forceId,int warId)
+    {
+        var baYe = PlayerDataForGame.instance.warsData.baYe;
+        if (baYe.data.Any(d => d.CityId == cityId)) return;
+        var expList = BaYeManager.instance.GetBaYeEventExp(eventId);
+        baYe.data.Add(new BaYeEvent
+        {
+            CityId = cityId, EventId = eventId, ForceId = forceId, WarId = warId,
+            ExpList = expList,
+            PassedStages = new bool[expList.Count]
+        });
+        PlayerDataForGame.instance.isNeedSaveData = true;
+        SaveGameData(3);
+
+        //if (!baYe.cityBoundForce.ContainsKey(cityId))
+        //{
+        //    baYe.cityBoundForce.Add(cityId, forceId);
+        //    baYe.cityBoundEvent.Add(cityId, eventId);
+        //}
+        //else
+        //{
+        //    baYe.cityBoundForce[forceId] = cityId;
+        //    baYe.cityBoundEvent[cityId] = eventId;
+        //}
     }
 }

@@ -4842,7 +4842,7 @@ public class FightController : MonoBehaviour
                 getBoxsList.Add(int.Parse(arr1[k]));
             }
         }
-        WarsUIManager.instance.goldForCity += getGold;
+        WarsUIManager.instance.GoldForCity += getGold;
         WarsUIManager.instance.treasureChestNums += getBoxsList.Count;
         WarsUIManager.instance.UpdateGoldandBoxNumsShow();
         WarsUIManager.instance.ShowOrHideGuideObj(2, true);

@@ -22,7 +22,7 @@ public class PlayerDataForGame : MonoBehaviour
         JinNang = 0, // 锦囊
         JiuTan = 1  //酒坛
     }
-    public WarTypes WarType;//记录上一场战斗的类型
+    public WarTypes WarType;//标记当前战斗类型
 
     [HideInInspector]
     public bool isNeedSaveData; //记录是否需要存档
@@ -57,10 +57,8 @@ public class PlayerDataForGame : MonoBehaviour
 
     [HideInInspector]
     public int zhanYiColdNums = 0;  //记录战役的金币数
-    [HideInInspector]
-    public int baYeGoldNums = 0;    //记录霸业金币数
-    [HideInInspector]
-    public bool isZhanYi;   //记录这场战斗是战役还是霸业
+    //[HideInInspector]
+    //public int baYeGoldNums = 0;    //记录霸业金币数
 
     float fadeSpeed = 1.5f;   //渐隐渐显时间
     [HideInInspector]
@@ -81,6 +79,8 @@ public class PlayerDataForGame : MonoBehaviour
     [HideInInspector]
     public int boxForTiLiNums;  //返还体力单个宝箱扣除体力数
 
+    public BaYeManager baYeManager;
+
     private void Awake()
     {
         if (instance != null)
@@ -91,6 +91,7 @@ public class PlayerDataForGame : MonoBehaviour
         {
             instance = this;
         }
+
         DontDestroyOnLoad(gameObject);
         chooseWarsId = 0;
         isJumping = false;
@@ -101,9 +102,6 @@ public class PlayerDataForGame : MonoBehaviour
         getBackTiLiNums = 0;
         isNeedSaveData = false;
         isHadNewSaveData = false;
-
-        isZhanYi = true;
-        baYeGoldNums = 100;
 
         garbageStationObjs = new List<GameObject>();
         StartCoroutine(FadeTransitionEffect(0));
@@ -120,7 +118,7 @@ public class PlayerDataForGame : MonoBehaviour
             }
             loadingText.text = string.Format(LoadJsonFile.GetStringText(63), (int)(loadPro * 100));
 
-            if (loadPro == 1 && !LoadSaveData.instance.isLoadingSaveData)
+            if (loadPro >= 1 && !LoadSaveData.instance.isLoadingSaveData)
             {
                 loadPro = 0;
                 isJumping = false;
@@ -451,6 +449,9 @@ public class PlayerDataForGame : MonoBehaviour
     [SerializeField]
     GameObject textTipsObj;     //文本提示obj 
 
+    public int selectedEventId; //当前选择的霸业城池
+    public int selectedCity;
+
     /// <summary>
     /// 场景底部文本提示
     /// </summary>
@@ -486,6 +487,8 @@ public class PlayerDataForGame : MonoBehaviour
             default:
                 throw new ArgumentOutOfRangeException(nameof(type), type, null);
         }
+
+        PlayerDataForGame.instance.isNeedSaveData = true;
         LoadSaveData.instance.SaveGameData(1);
     }
 
@@ -504,6 +507,8 @@ public class PlayerDataForGame : MonoBehaviour
             default:
                 throw new ArgumentOutOfRangeException(nameof(type), type, null);
         }
+
+        PlayerDataForGame.instance.isNeedSaveData = true;
         LoadSaveData.instance.SaveGameData(1);
     }
 }

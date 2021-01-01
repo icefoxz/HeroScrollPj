@@ -165,16 +165,11 @@ public class TimeSystemControl : MonoBehaviour
     /// </summary>
     private void ItemsRedemptionFunc()
     {
-        var lastJNTime = SystemTimer.UnixToDateTime(PlayerDataForGame.instance.pyData.lastJinNangRedeemTime);
-        if (!IsSameDay(lastJNTime)) 
+        if (!SystemTimer.IsToday(PlayerDataForGame.instance.pyData.lastJinNangRedeemTime)) 
             PlayerDataForGame.instance.SetRedeemCount(PlayerDataForGame.RedeemTypes.JinNang, 0);
-        var lastJTTime = SystemTimer.UnixToDateTime(PlayerDataForGame.instance.pyData.lastJiuTanRedeemTime);
-        if (!IsSameDay(lastJTTime)) 
+        if (!SystemTimer.IsToday(PlayerDataForGame.instance.pyData.lastJiuTanRedeemTime)) 
             PlayerDataForGame.instance.SetRedeemCount(PlayerDataForGame.RedeemTypes.JiuTan, 0);
         //根据系统时间计算本地的天数是否是同一天
-        bool IsSameDay(DateTimeOffset date) => SystemTimer.Now.LocalDateTime.Day == date.LocalDateTime.Day &&
-                                               SystemTimer.Now.LocalDateTime.Month == date.LocalDateTime.Month &&
-                                               SystemTimer.Now.LocalDateTime.Year == date.LocalDateTime.Year;
     }
 
     private void Update()

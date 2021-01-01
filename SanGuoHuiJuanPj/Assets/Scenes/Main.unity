@@ -3048,6 +3048,13 @@ MonoBehaviour:
   - {fileID: 1292695640}
   chickenCloseText: {fileID: 1678826690}
   cutTiLiTextObj: {fileID: 1401711411}
+  baYeExpSlider: {fileID: 100429885}
+  baYeChestButtons:
+  - {fileID: 626780027}
+  - {fileID: 1628790351}
+  - {fileID: 1602223554}
+  - {fileID: 2122450299}
+  - {fileID: 1083161020}
   huiJuanWinObj: {fileID: 235096072}
   jiBanBtnsConObj: {fileID: 1555607920}
   jiBanInfoConObj: {fileID: 614527951}
@@ -3517,7 +3524,7 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
-  m_Interactable: 1
+  m_Interactable: 0
   m_TargetGraphic: {fileID: 653862436}
   m_FillRect: {fileID: 470410268}
   m_HandleRect: {fileID: 653862435}

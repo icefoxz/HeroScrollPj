@@ -13,6 +13,12 @@ public static class XDebug
         Debug.Log($"{type?.GetType().Name}:{methodName}() {message}");
 #endif
     }
+    public static void LogError<T>(string message,[CallerMemberName] string methodName = null,T type = default) where T : class
+    {
+#if DEBUG
+        Debug.LogError($"{type?.GetType().Name}:{methodName}() {message}");
+#endif
+    }
     public static void Log(Type type,string message,[CallerMemberName] string methodName = null)
     {
 #if DEBUG

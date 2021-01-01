@@ -1,8 +1,11 @@
-﻿using DG.Tweening;
+﻿using System;
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
+using Random = UnityEngine.Random;
 
 public class WarsUIManager : MonoBehaviour
 {
@@ -29,15 +32,49 @@ public class WarsUIManager : MonoBehaviour
     GameObject upLevelBtn;   //升级城池btn
 
     public GameObject[] eventsWindows; //各种事件窗口 0-战斗；1-故事；2-答题；3-奇遇；4-通用
-
+    public enum EventTypes
+    {
+        Generic,//通用
+        Battle,//战斗
+        Story,//故事
+        Quest,//答题
+        Adventure,//奇遇
+        Trade//交易
+    }
+    /// <summary>
+    /// 上一个关卡类型
+    /// </summary>
+    private EventTypes lastEvent = EventTypes.Generic;
     [SerializeField]
     GameObject gameOverObj;  //战役结束ui
     [SerializeField]
     float percentReturnHp;    //回春回血百分比
 
-    public int cityLevel = new int();   //记录城池等级
-    public int goldForCity = new int();   //记录城池金币
-    public int treasureChestNums = new int();   //记录城池宝箱
+    public int cityLevel;   //记录城池等级
+    public int goldForCity; //记录城池金币
+
+    public int GoldForCity
+    {
+        get
+        {
+            //为了容易调试，同步编辑器输入的金币数量。
+            if (goldForCity != PlayerDataForGame.instance.warsData.baYe.gold)
+                PlayerDataForGame.instance.warsData.baYe.gold = goldForCity;
+            if (PlayerDataForGame.instance.WarType == PlayerDataForGame.WarTypes.Baye)
+                return PlayerDataForGame.instance.warsData.baYe.gold;
+            return goldForCity;
+        }
+        set
+        {
+            goldForCity = value;
+            if (PlayerDataForGame.instance.WarType != PlayerDataForGame.WarTypes.Baye) return;
+            PlayerDataForGame.instance.warsData.baYe.gold = value;
+            PlayerDataForGame.instance.isNeedSaveData = true;
+            LoadSaveData.instance.SaveGameData(3);
+        }
+    }
+
+    public int treasureChestNums;   //记录城池宝箱
 
     int indexLastGuanQiaId;   //记录上一个关卡id
     int passedGuanQiaNums;  //记录通过的关卡数
@@ -64,6 +101,7 @@ public class WarsUIManager : MonoBehaviour
     int nowGuanQiaIndex;    //记录当前关卡进度
 
     bool isEnteredLevel;    //记录是否进入了关卡
+    List<int> baYeBattleList; //记录霸业的战斗关卡
 
     private void Awake()
     {
@@ -73,14 +111,20 @@ public class WarsUIManager : MonoBehaviour
         }
         isPointMoveNow = false;
         cityLevel = 1;
-        //战斗金币
-        if (PlayerDataForGame.instance.isZhanYi)
+        switch (PlayerDataForGame.instance.WarType)
         {
-            goldForCity = PlayerDataForGame.instance.zhanYiColdNums;
-        }
-        else
-        {
-            goldForCity = PlayerDataForGame.instance.baYeGoldNums;
+            //战斗金币
+            case PlayerDataForGame.WarTypes.Expedition:
+                GoldForCity = PlayerDataForGame.instance.zhanYiColdNums;
+                break;
+            case PlayerDataForGame.WarTypes.Baye:
+                GoldForCity = PlayerDataForGame.instance.warsData.baYe.gold;
+                break;
+            case PlayerDataForGame.WarTypes.None:
+                XDebug.LogError<WarsUIManager>($"未确认战斗类型[{PlayerDataForGame.WarTypes.None}]，请在调用战斗场景前预设战斗类型。");
+                throw new InvalidOperationException();
+            default:
+                throw new ArgumentOutOfRangeException();
         }
         treasureChestNums = 0;
         indexLastGuanQiaId = 0;
@@ -101,7 +145,9 @@ public class WarsUIManager : MonoBehaviour
     void Start()
     {
         PlayerDataForGame.instance.lastSenceIndex = 2;
-
+        //如果战斗是霸业，初始化霸业战斗id记录器，非霸业不使用
+        if (PlayerDataForGame.instance.WarType == PlayerDataForGame.WarTypes.Baye)
+            baYeBattleList = new List<int>();
         InitMainUIShow();
 
         InitCardListShow();
@@ -112,6 +158,7 @@ public class WarsUIManager : MonoBehaviour
     //初始化关卡
     private void InitGuanQiaShow()
     {
+        lastEvent = EventTypes.Generic;
         //尝试展示指引
         ShowOrHideGuideObj(0, true);
         InitShowParentGuanQia(LoadJsonFile.warTableDatas[PlayerDataForGame.instance.chooseWarsId][3]);
@@ -244,9 +291,9 @@ public class WarsUIManager : MonoBehaviour
         gameOverObj.SetActive(true);
 
         //霸业的战斗金币传到主城
-        if (!PlayerDataForGame.instance.isZhanYi)
+        if (PlayerDataForGame.instance.WarType == PlayerDataForGame.WarTypes.Baye)
         {
-            PlayerDataForGame.instance.baYeGoldNums = goldForCity;
+            PlayerDataForGame.instance.warsData.baYe.gold = GoldForCity;
         }
     }
 
@@ -417,6 +464,9 @@ public class WarsUIManager : MonoBehaviour
     /// <param name="fightId"></param>
     private void GoToTheFight(int fightId, int guanQiaId)
     {
+        //如果是霸业，添加临时的战斗关卡记录
+        if (PlayerDataForGame.instance.WarType == PlayerDataForGame.WarTypes.Baye) baYeBattleList.Add(guanQiaId);
+        lastEvent = EventTypes.Battle;
         PlayAudioClip(21);
 
         fightBackImage.sprite = Resources.Load("Image/battleBG/" + LoadJsonFile.pointTableDatas[guanQiaId][7], typeof(Sprite)) as Sprite;
@@ -436,6 +486,7 @@ public class WarsUIManager : MonoBehaviour
     /// <param name="storyId"></param>
     private void GoToTheStory()
     {
+        lastEvent = EventTypes.Story;
         PlayAudioClip(19);
 
         InitializeDianGu();
@@ -449,6 +500,7 @@ public class WarsUIManager : MonoBehaviour
     /// <param name="testId"></param>
     private void GoToTheTest()
     {
+        lastEvent = EventTypes.Quest;
         PlayAudioClip(19);
 
         InitializeDaTi();
@@ -462,6 +514,7 @@ public class WarsUIManager : MonoBehaviour
     /// <param name="qiyuId"></param>
     private void GoToTheQiYu(bool isBuy)
     {
+        lastEvent = isBuy ? EventTypes.Trade : EventTypes.Adventure;
         //尝试关闭指引
         ShowOrHideGuideObj(0, false);
 
@@ -702,7 +755,7 @@ public class WarsUIManager : MonoBehaviour
             PlayAudioClip(13);
         }
 
-        if (updateMoney != 0 && updateMoney > goldForCity)
+        if (updateMoney != 0 && updateMoney > GoldForCity)
         {
             PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(56));
             return false;
@@ -720,8 +773,8 @@ public class WarsUIManager : MonoBehaviour
                 }
             }
 
-            goldForCity -= updateMoney;
-            playerInfoObj.transform.GetChild(1).GetChild(0).GetComponent<Text>().text = goldForCity.ToString();
+            GoldForCity -= updateMoney;
+            playerInfoObj.transform.GetChild(1).GetChild(0).GetComponent<Text>().text = GoldForCity.ToString();
 
             for (int i = 0; i < 3; i++)
             {
@@ -1147,15 +1200,15 @@ public class WarsUIManager : MonoBehaviour
         if (isBuy)
         {
             PlayAudioClip(13);
-            if (money > goldForCity)
+            if (money > GoldForCity)
             {
                 PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(56));
                 return;
             }
             else
             {
-                goldForCity -= money;
-                playerInfoObj.transform.GetChild(1).GetChild(0).GetComponent<Text>().text = goldForCity.ToString();
+                GoldForCity -= money;
+                playerInfoObj.transform.GetChild(1).GetChild(0).GetComponent<Text>().text = GoldForCity.ToString();
                 eventsWindows[3].transform.GetChild(0).GetChild(1).GetChild(btnIndex).gameObject.SetActive(false);
             }
         }
@@ -1231,12 +1284,12 @@ public class WarsUIManager : MonoBehaviour
         int goldReward = int.Parse(LoadJsonFile.storyRTableDatas[indexAns][6]);
         if (goldReward < 0)
         {
-            goldReward = goldForCity >= Mathf.Abs(goldReward) ? goldReward : -goldForCity;
+            goldReward = GoldForCity >= Mathf.Abs(goldReward) ? goldReward : -GoldForCity;
         }
         if (goldReward != 0)
         {
-            goldForCity += goldReward;
-            playerInfoObj.transform.GetChild(1).GetChild(0).GetComponent<Text>().text = goldForCity.ToString();
+            GoldForCity += goldReward;
+            playerInfoObj.transform.GetChild(1).GetChild(0).GetComponent<Text>().text = GoldForCity.ToString();
         }
         int unitType = int.Parse(LoadJsonFile.storyRTableDatas[indexAns][2]);
         if (unitType >= 0)
@@ -1583,11 +1636,33 @@ public class WarsUIManager : MonoBehaviour
     //刷新战役进度显示
     private void UpdateBattleSchedule()
     {
+        //如果是霸业
+        if(PlayerDataForGame.instance.WarType == PlayerDataForGame.WarTypes.Baye)
+        {
+            /**
+             * -判断.上一个场景是不是战斗。
+             * -判断.第几个霸业战斗
+             * -判断.霸业经验奖励是否已被领取
+             * 1.加经验
+             */
+            if (lastEvent == EventTypes.Battle)
+            {
+                var baYe = PlayerDataForGame.instance.warsData.baYe;
+                var field = baYe.data.Single(f => f.CityId == PlayerDataForGame.instance.selectedCity);
+                if(!field.PassedStages[baYeBattleList.Count-1])//如果过关未被记录
+                {
+                    var exp = field.ExpList[baYeBattleList.Count - 1];//获取相应经验值
+                    field.PassedStages[baYeBattleList.Count -1] = true;
+                    PlayerDataForGame.instance.baYeManager.AddExp(exp);//给玩家加经验值
+                }
+            }
+        }
         nowGuanQiaIndex++;
         if (nowGuanQiaIndex >= int.Parse(LoadJsonFile.warTableDatas[PlayerDataForGame.instance.chooseWarsId][4]))
         {
             nowGuanQiaIndex = int.Parse(LoadJsonFile.warTableDatas[PlayerDataForGame.instance.chooseWarsId][4]);
         }
+
         string str = nowGuanQiaIndex + "/" + LoadJsonFile.warTableDatas[PlayerDataForGame.instance.chooseWarsId][4];
         battleScheduleText.text = str;
     }
@@ -1595,7 +1670,7 @@ public class WarsUIManager : MonoBehaviour
     //刷新金币宝箱的显示
     public void UpdateGoldandBoxNumsShow()
     {
-        playerInfoObj.transform.GetChild(1).GetChild(0).GetComponent<Text>().text = goldForCity.ToString();
+        playerInfoObj.transform.GetChild(1).GetChild(0).GetComponent<Text>().text = GoldForCity.ToString();
         playerInfoObj.transform.GetChild(2).GetChild(0).GetComponent<Text>().text = treasureChestNums.ToString();
     }
 
@@ -1626,17 +1701,17 @@ public class WarsUIManager : MonoBehaviour
         ShowOrHideGuideObj(2, false);
 
         int needGold = int.Parse(LoadJsonFile.cityLevelTableDatas[cityLevel - 1][1]);
-        if (goldForCity < needGold)
+        if (GoldForCity < needGold)
         {
             PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(56));
             PlayAudioClip(20);
         }
         else
         {
-            goldForCity -= needGold;
+            GoldForCity -= needGold;
             cityLevel++;
             PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(60));
-            playerInfoObj.transform.GetChild(1).GetChild(0).GetComponent<Text>().text = goldForCity.ToString();
+            playerInfoObj.transform.GetChild(1).GetChild(0).GetComponent<Text>().text = GoldForCity.ToString();
             UpdateLevelInfo();
             //满级
             if (cityLevel >= LoadJsonFile.cityLevelTableDatas.Count)
@@ -1815,6 +1890,7 @@ public class WarsUIManager : MonoBehaviour
     }
 
     bool isShowQuitTips = false;
+
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Escape))
