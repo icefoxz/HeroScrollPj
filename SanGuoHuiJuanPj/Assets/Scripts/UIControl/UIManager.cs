@@ -610,7 +610,7 @@ public class UIManager : MonoBehaviour
 
                         if (PlayerDataForGame.instance.warsData.warUnlockSaveData[specificId].unLockCount < warTotalNums)
                         {
-                            if (firstChooseWarId==-1)
+                            if (firstChooseWarId == -1)
                             {
                                 firstChooseWarId = specificId;
                                 lastObj = obj;
@@ -644,7 +644,7 @@ public class UIManager : MonoBehaviour
         OnClickChangeWarsFun(firstChooseWarId, lastObj);
         warsChooseListObj.transform.parent.parent.GetComponent<ScrollRect>().DOVerticalNormalizedPos(0f, 0.3f);
     }
-
+    
     /// <summary>
     /// 领取战役首通宝箱
     /// </summary>
@@ -820,7 +820,16 @@ public class UIManager : MonoBehaviour
         //默认选择最后一个关卡
         OnClickChangeWarsFun(PlayerDataForGame.instance.warsData.warUnlockSaveData[index > endId ? endId : index].warId, lastObj);
         warsChooseListObj.transform.parent.parent.GetComponent<ScrollRect>().DOVerticalNormalizedPos(0f, 0.3f);
+        delForChooseYZWar = new DelForChooseYZWar(delegate ()
+        {
+            OnClickChangeWarsFun(PlayerDataForGame.instance.warsData.warUnlockSaveData[index > endId ? endId : index].warId, lastObj);
+        });
     }
+
+
+    delegate void DelForChooseYZWar();
+    DelForChooseYZWar delForChooseYZWar;    //记录默认选择的战役方法
+
 
     //选择战役的改变
     private void OnClickChangeWarsFun(int warsId, GameObject obj)
@@ -1975,6 +1984,7 @@ public class UIManager : MonoBehaviour
                 ShowOrHideGuideObj(3, true);
                 //重新选择战役关卡
                 //OnClickChangeWarsFun(PlayerDataForGame.instance.warsData.warUnlockSaveData[index > endId ? endId : index].warId, lastObj);
+                delForChooseYZWar?.Invoke();
                 warsChooseListObj.transform.parent.parent.GetComponent<ScrollRect>().DOVerticalNormalizedPos(0f, 0.3f);
                 break;
             case 4:
@@ -2282,8 +2292,8 @@ public class UIManager : MonoBehaviour
                                 //背景按钮无效
                                 jinNangBackBtn.enabled = false;
                                 watchAdFordoubleBtn.enabled = false;
-                                if (!DoNewAdController.instance.GetReWardVideo(
-                                //if (!AdController.instance.ShowVideo(
+                                //if (!DoNewAdController.instance.GetReWardVideo(
+                                if (!AdController.instance.ShowVideo(
                                      ()=>
                                     {
                                         //奖励翻倍
@@ -2540,8 +2550,8 @@ public class UIManager : MonoBehaviour
         switch (indexBtn)
         {
             case 0:
-                if (!DoNewAdController.instance.GetReWardVideo(
-                //if (!AdController.instance.ShowVideo(
+                //if (!DoNewAdController.instance.GetReWardVideo(
+                if (!AdController.instance.ShowVideo(
                     delegate ()
                     {
                         GetTiLiForChicken(needYvQueNums, getTiLiNums);
