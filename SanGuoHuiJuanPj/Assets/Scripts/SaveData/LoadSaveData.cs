@@ -105,6 +105,19 @@ public class LoadSaveData : MonoBehaviour
     /// </summary>
     private void SaveByJson(PlyDataClass save)
     {
+        if (save.exp == 0 &&
+            save.forceId == 0 &&
+            save.dailyJinNangRedemptionCount == 0 &&
+            save.dailyJiuTanRedemptionCount == 0 &&
+            save.lastJinNangRedeemTime == 0 &&
+            save.lastJiuTanRedeemTime == 0 &&
+            save.level == 1 &&
+            save.yuanbao == 0 &&
+            save.yvque == 0)
+        {
+            throw new InvalidDataException();
+        }
+
         isLoadingSaveData = true;
         try
         {

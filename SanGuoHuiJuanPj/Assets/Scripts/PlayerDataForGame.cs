@@ -488,7 +488,7 @@ public class PlayerDataForGame : MonoBehaviour
                 throw new ArgumentOutOfRangeException(nameof(type), type, null);
         }
 
-        PlayerDataForGame.instance.isNeedSaveData = true;
+        isNeedSaveData = true;
         LoadSaveData.instance.SaveGameData(1);
     }
 
@@ -508,7 +508,7 @@ public class PlayerDataForGame : MonoBehaviour
                 throw new ArgumentOutOfRangeException(nameof(type), type, null);
         }
 
-        PlayerDataForGame.instance.isNeedSaveData = true;
+        isNeedSaveData = true;
         LoadSaveData.instance.SaveGameData(1);
     }
 }

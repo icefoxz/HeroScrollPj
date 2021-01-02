@@ -207,53 +207,6 @@ public class GetOrOpenBox : MonoBehaviour
             int chips = 0;
 
             var rewards = RewardManager.instance.GetCards(boxNumber, isZyBox);
-
-            for (int i = 0; i < 3; i++)
-            {
-                string rewardCardString = LoadJsonFile.warChestTableDatas[boxNumber][i + 6];
-                if (string.IsNullOrWhiteSpace(rewardCardString))
-                {
-                    continue;
-                }
-                string typeId = "";
-                switch (i)
-                {
-                    case 0:
-                        typeId = "3";   //陷阱类型
-                        break;
-                    case 1:
-                        typeId = "2";   //塔类型
-                        break;
-                    case 2:
-                        typeId = "0";   //武将类型
-                        break;
-                    default:
-                        break;
-                }
-                string[] rewardArrs = rewardCardString.Split(';');
-                for (int j = 0; j < rewardArrs.Length; j++)
-                {
-                    if (rewardArrs[j] != "")
-                    {
-                        //0:稀有度 1：获得概率 2-3：少-多
-                        string[] cardArrs = rewardArrs[j].Split(',');
-                        //出现概率
-                        if (int.Parse(cardArrs[1]) >= UnityEngine.Random.Range(1, 101))
-                        {
-                            cardId = RewardManager.instance.GetRewardCardId(typeId, cardArrs[0], isZyBox);
-                            chips = UnityEngine.Random.Range(int.Parse(cardArrs[2]), int.Parse(cardArrs[3]) + 1);
-
-                            RewardManager.instance.GetAndSaveCardChips(typeId, cardId, chips);
-
-                            RewardsCardClass rewardCard = new RewardsCardClass();
-                            rewardCard.cardType = int.Parse(typeId);
-                            rewardCard.cardId = cardId;
-                            rewardCard.cardChips = chips;
-                            rewards.Add(rewardCard);
-                        }
-                    }
-                }
-            }
             PlayerDataForGame.instance.isNeedSaveData = true;
             LoadSaveData.instance.SaveGameData();
 

@@ -64,6 +64,7 @@ public class UIManager : MonoBehaviour
 
     public Text JinNangQuota;    //锦囊配额文本
     public Text JiuTanQuota;    //酒坛配额文本
+    public Text JiuTanTimeTips; //酒坛剩余时间文本
 
     [SerializeField]
     Transform rewardsParent;    //奖品父级
@@ -105,8 +106,8 @@ public class UIManager : MonoBehaviour
     [SerializeField]
     GameObject cutTiLiTextObj;  //扣除体力动画Obj
 
-    public Slider baYeExpSlider; //霸业经验条
-    public Button[] baYeChestButtons; //霸业宝箱
+    public BaYeProgressUI baYeProgressUi; //霸业经验条
+    public ChestUI[] baYeChestButtons; //霸业宝箱
 
     private int lastAvailableStageIndex;//最远可战的战役索引
     private int selectedBaYeForceId; //当前为霸业选择的势力ID
@@ -124,6 +125,7 @@ public class UIManager : MonoBehaviour
         indexChooseListForceId = 0;
         selectCardData = new NowLevelAndHadChip();
         rewardManager = gameObject.AddComponent<RewardManager>();
+        ItemsRedemptionFunc();
     }
 
     // Start is called before the first frame update
@@ -189,6 +191,18 @@ public class UIManager : MonoBehaviour
     GameObject baYeForceObj;    //霸业势力选择父级
     [SerializeField]
     Text baYeGoldNumText;   //霸业金币数量
+
+    /// <summary>
+    /// 游戏物品获取次数计算函数
+    /// </summary>
+    public void ItemsRedemptionFunc()
+    {
+        if (!SystemTimer.IsToday(PlayerDataForGame.instance.pyData.lastJinNangRedeemTime)) 
+            PlayerDataForGame.instance.SetRedeemCount(PlayerDataForGame.RedeemTypes.JinNang, 0);
+        if (!SystemTimer.IsToday(PlayerDataForGame.instance.pyData.lastJiuTanRedeemTime)) 
+            PlayerDataForGame.instance.SetRedeemCount(PlayerDataForGame.RedeemTypes.JiuTan, 0);
+        //根据系统时间计算本地的天数是否是同一天
+    }
 
     private void LoadPageFromFlag()
     {
@@ -310,13 +324,20 @@ public class UIManager : MonoBehaviour
     private void ResetBaYeProgressSection(BaYeDataClass baYe)
     {
         var baYeReward = BaYeManager.instance.GetRewardChests();
-        baYeExpSlider.maxValue = baYeReward[baYeReward.Count - 1].Item2;
-        baYeExpSlider.value = baYe.currentExp;
+        baYeProgressUi.Set(baYe.currentExp,baYeReward[baYeReward.Count - 1].Item2);
         for (int i = 0; i < baYeReward.Count; i++)
         {
-            baYeChestButtons[i].gameObject.SetActive(!baYe.openedChest[i]);
-            //如果玩家霸业的经验值大于宝箱经验值
-            baYeChestButtons[i].interactable = baYe.currentExp >= baYeReward[i].Item2 && !baYe.openedChest[i];
+            //如果玩家霸业的经验值大于宝箱经验值并宝箱未被开过
+            if (baYe.currentExp < baYeReward[i].Item2)
+            {
+                baYeChestButtons[i].Disabled();
+                continue;
+            }
+
+            //如果宝箱未被开过
+            if (!baYe.openedChest[i])
+                baYeChestButtons[i].Ready();
+            else baYeChestButtons[i].Opened();
         }
     }
 
@@ -643,7 +664,7 @@ public class UIManager : MonoBehaviour
     }
     public void GetBaYeProgressReward(int index)
     {
-        baYeChestButtons[index].gameObject.SetActive(false);
+        baYeChestButtons[index].Opened();
         var data = LoadJsonFile.baYeRenWuTableDatas[index].Select(int.Parse).ToList();
         var rewardId = data[2];
         var chestData = LoadJsonFile.warChestTableDatas[rewardId];

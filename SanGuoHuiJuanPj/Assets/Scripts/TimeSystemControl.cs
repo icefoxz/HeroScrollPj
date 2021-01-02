@@ -157,19 +157,6 @@ public class TimeSystemControl : MonoBehaviour
         maxStaminaNum = int.Parse(LoadJsonFile.assetTableDatas[2].startValue);
         isNeedHuiFuTiLi = (PlayerPrefs.GetInt(staminaStr) < maxStaminaNum);
         long.TryParse(PlayerPrefs.GetString(tiLiHuiFuTime),out tiLiHfTimeLong);
-        ItemsRedemptionFunc();
-    }
-
-    /// <summary>
-    /// 游戏物品获取次数计算函数
-    /// </summary>
-    private void ItemsRedemptionFunc()
-    {
-        if (!SystemTimer.IsToday(PlayerDataForGame.instance.pyData.lastJinNangRedeemTime)) 
-            PlayerDataForGame.instance.SetRedeemCount(PlayerDataForGame.RedeemTypes.JinNang, 0);
-        if (!SystemTimer.IsToday(PlayerDataForGame.instance.pyData.lastJiuTanRedeemTime)) 
-            PlayerDataForGame.instance.SetRedeemCount(PlayerDataForGame.RedeemTypes.JiuTan, 0);
-        //根据系统时间计算本地的天数是否是同一天
     }
 
     private void Update()
@@ -416,7 +403,8 @@ public class TimeSystemControl : MonoBehaviour
         {
             var displayText = string.Empty;
             if (countAvailable)
-                displayText = TimeDisplayText((int) (nextOpenJiuTanTimeTicks - SystemTimer.NowUnixTicks) / 1000);
+                displayText =
+                    $"灌满酒坛还需：{TimeDisplayText((int) (nextOpenJiuTanTimeTicks - SystemTimer.NowUnixTicks) / 1000)}";
             UIManager.instance.transform.GetComponent<GetOrOpenBox>().UpdateOpenTimeTips(displayText, 0, false);
         }
         else
@@ -554,7 +542,7 @@ public class TimeSystemControl : MonoBehaviour
         //如果酒坛获取已达限制次数，尝试执行是否时间过了0点重置次数
         if (jTRedeemCount >= JiuTanRedeemCountPerDay)
         {
-            ItemsRedemptionFunc();
+            UIManager.instance.ItemsRedemptionFunc();
             jTRedeemCount = player.dailyJiuTanRedemptionCount;
         }
 
@@ -613,7 +601,7 @@ public class TimeSystemControl : MonoBehaviour
         //如果锦囊获取已达限制次数，尝试执行是否时间过了0点重置次数
         if (jNRedeemCount >= JinNangRedeemCountPerDay)
         {
-            ItemsRedemptionFunc();
+            UIManager.instance.ItemsRedemptionFunc();
             jNRedeemCount = player.dailyJinNangRedemptionCount;
         }
 
