@@ -289,9 +289,9 @@ public class UIManager : MonoBehaviour
         }
 
         //势力选择
-        int forceUnlockId = int.Parse(LoadJsonFile.playerLevelTableDatas[PlayerDataForGame.instance.pyData.level - 1][6]);
+        int totalUnlockForce = int.Parse(LoadJsonFile.playerLevelTableDatas[PlayerDataForGame.instance.pyData.level - 1][6]);
         forceFields = new List<BaYeForceField>();
-        for (int i = 0; i < forceUnlockId + 1; i++)
+        for (int i = 0; i < totalUnlockForce + 1; i++)
         {
             int forceIndex = i;
             GameObject obj = baYeForceObj.transform.GetChild(forceIndex).gameObject;
@@ -345,7 +345,7 @@ public class UIManager : MonoBehaviour
     //int baYeEventChooseIndex; 
 
     //选择霸业的势力方法
-    private void ChooseBaYeForceOnClick(int forceId)
+    public void ChooseBaYeForceOnClick(int forceId)
     {
         if (PlayerDataForGame.instance.selectedEventId == -1) return;
         var force = forceFields.Single(f => f.id == forceId);

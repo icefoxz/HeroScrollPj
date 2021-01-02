@@ -398,7 +398,7 @@ public class TimeSystemControl : MonoBehaviour
                             || playerData.lastJiuTanRedeemTime == 0;
         if (!isOpenMainScene) return;
         if (UIManager.instance.JiuTanQuota != null)
-            UIManager.instance.JiuTanQuota.text = $"{redeemCount}/{JiuTanRedeemCountPerDay}";
+            UIManager.instance.JiuTanQuota.text = $"{JiuTanRedeemCountPerDay-redeemCount}";
         if (!isJiuTanAvailable)
         {
             var displayText = string.Empty;

@@ -15,15 +15,14 @@ public static class Http
             if (response.IsSuccessStatusCode)
                 return await response.Content.ReadAsStringAsync();
             error += $"Code[{response.StatusCode}]";
-#if DEBUG
         }
         catch (Exception e)
         {
+#if DEBUG
             error += e.ToString();
-        }
-
-        XDebug.Log(typeof(Http), error);
+            XDebug.Log(typeof(Http), error);
 #endif
+        }
         return HttpResponse.ERROR;
     }
     public static async Task<string> PostAsync(string url,string content)
