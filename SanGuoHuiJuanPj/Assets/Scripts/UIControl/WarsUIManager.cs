@@ -57,9 +57,6 @@ public class WarsUIManager : MonoBehaviour
     {
         get
         {
-            //为了容易调试，同步编辑器输入的金币数量。
-            if (goldForCity != PlayerDataForGame.instance.warsData.baYe.gold)
-                PlayerDataForGame.instance.warsData.baYe.gold = goldForCity;
             if (PlayerDataForGame.instance.WarType == PlayerDataForGame.WarTypes.Baye)
                 return PlayerDataForGame.instance.warsData.baYe.gold;
             return goldForCity;
