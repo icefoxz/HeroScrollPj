@@ -170,15 +170,15 @@ public class BaYeDataClass
     ///// </summary>
     //public Dictionary<int, int> stagePassed = new Dictionary<int, int>();
 
-    private List<bool> openedChest1 = new List<bool>();
+    private bool[] openedChest1 = new bool[5];
 
-    public List<bool> openedChest
+    public bool[] openedChest
     {
         get
         {
             if (openedChest1 == null)
             {
-                openedChest1 = new List<bool>();
+                openedChest1 = new bool[5];
             }
 
             return openedChest1;

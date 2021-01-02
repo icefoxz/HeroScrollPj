@@ -1653,7 +1653,7 @@ public class WarsUIManager : MonoBehaviour
                 {
                     var exp = field.ExpList[baYeBattleList.Count - 1];//获取相应经验值
                     field.PassedStages[baYeBattleList.Count -1] = true;
-                    PlayerDataForGame.instance.baYeManager.AddExp(exp);//给玩家加经验值
+                    PlayerDataForGame.instance.baYeManager.SetExp(exp);//给玩家加经验值
                 }
             }
         }

@@ -112,7 +112,7 @@ public class UIManager : MonoBehaviour
     private int selectedBaYeForceId; //当前为霸业选择的势力ID
     private List<BaYeCityField> cityFields; //霸业的地图物件
     private List<BaYeForceField> forceFields; //可选势力物件
-
+    public RewardManager rewardManager;
     private void Awake()
     {
         if (instance == null)
@@ -123,6 +123,7 @@ public class UIManager : MonoBehaviour
         needYuanBaoNums = 0;
         indexChooseListForceId = 0;
         selectCardData = new NowLevelAndHadChip();
+        rewardManager = gameObject.AddComponent<RewardManager>();
     }
 
     // Start is called before the first frame update
@@ -313,8 +314,9 @@ public class UIManager : MonoBehaviour
         baYeExpSlider.value = baYe.currentExp;
         for (int i = 0; i < baYeReward.Count; i++)
         {
-            baYeChestButtons[i].gameObject.SetActive(baYe.openedChest.Count <= i || baYe.openedChest[i]);
-            baYeChestButtons[i].interactable = baYe.currentExp >= baYeReward[i].Item2;
+            baYeChestButtons[i].gameObject.SetActive(!baYe.openedChest[i]);
+            //如果玩家霸业的经验值大于宝箱经验值
+            baYeChestButtons[i].interactable = baYe.currentExp >= baYeReward[i].Item2 && !baYe.openedChest[i];
         }
     }
 
@@ -639,7 +641,24 @@ public class UIManager : MonoBehaviour
         OnClickChangeWarsFun(firstChooseWarId, lastObj);
         warsChooseListObj.transform.parent.parent.GetComponent<ScrollRect>().DOVerticalNormalizedPos(0f, 0.3f);
     }
-    
+    public void GetBaYeProgressReward(int index)
+    {
+        baYeChestButtons[index].gameObject.SetActive(false);
+        var data = LoadJsonFile.baYeRenWuTableDatas[index].Select(int.Parse).ToList();
+        var rewardId = data[2];
+        var chestData = LoadJsonFile.warChestTableDatas[rewardId];
+        var exp = int.Parse(chestData[3]);
+        var yvQue = RewardManager.instance.GetYvQue(rewardId);
+        var yuanBao = RewardManager.instance.GetYuanBao(rewardId);
+        var cards = RewardManager.instance.GetCards(rewardId, false);
+        ConsumeManager.instance.AddYuQue(yvQue);
+        ConsumeManager.instance.AddYuanBao(yuanBao);
+        PlayerDataForGame.instance.warsData.baYe.openedChest[index] = true;
+        PlayerDataForGame.instance.isNeedSaveData = true;
+        LoadSaveData.instance.SaveGameData(3);
+        ShowRewardsThings(yuanBao, yvQue, exp, 0, cards, 0.5f);
+    }
+
     /// <summary>
     /// 领取战役首通宝箱
     /// </summary>

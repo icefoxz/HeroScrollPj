@@ -199,16 +199,14 @@ public class GetOrOpenBox : MonoBehaviour
 
             int addExpNums = int.Parse(LoadJsonFile.warChestTableDatas[boxNumber][3]);
             UIManager.instance.GetPlayerExp(addExpNums);
-            string[] arrYvQueNums = LoadJsonFile.warChestTableDatas[boxNumber][4].Split(',');
-            int addYvQueNums = UnityEngine.Random.Range(int.Parse(arrYvQueNums[0]), int.Parse(arrYvQueNums[1]) + 1);
+            var addYuanBaoNums = RewardManager.instance.GetYuanBao(boxNumber);
+            var addYvQueNums = RewardManager.instance.GetYvQue(boxNumber);
             ConsumeManager.instance.AddYuQue(addYvQueNums);
-            string[] arrYuanBaoNums = LoadJsonFile.warChestTableDatas[boxNumber][5].Split(',');
-            int addYuanBaoNums = UnityEngine.Random.Range(int.Parse(arrYuanBaoNums[0]), int.Parse(arrYuanBaoNums[1]) + 1);
             ConsumeManager.instance.AddYuanBao(addYuanBaoNums);
             int cardId = 0;
             int chips = 0;
 
-            List<RewardsCardClass> rewards = new List<RewardsCardClass>();
+            var rewards = RewardManager.instance.GetCards(boxNumber, isZyBox);
 
             for (int i = 0; i < 3; i++)
             {
@@ -242,10 +240,10 @@ public class GetOrOpenBox : MonoBehaviour
                         //出现概率
                         if (int.Parse(cardArrs[1]) >= UnityEngine.Random.Range(1, 101))
                         {
-                            cardId = GetRewardCardId(typeId, cardArrs[0], isZyBox);
+                            cardId = RewardManager.instance.GetRewardCardId(typeId, cardArrs[0], isZyBox);
                             chips = UnityEngine.Random.Range(int.Parse(cardArrs[2]), int.Parse(cardArrs[3]) + 1);
 
-                            GetAndSaveCardChips(typeId, cardId, chips);
+                            RewardManager.instance.GetAndSaveCardChips(typeId, cardId, chips);
 
                             RewardsCardClass rewardCard = new RewardsCardClass();
                             rewardCard.cardType = int.Parse(typeId);
@@ -275,129 +273,4 @@ public class GetOrOpenBox : MonoBehaviour
         isBoxOpening = false;
     }
 
-    /// <summary>
-    /// 获取并存储奖励碎片
-    /// </summary>
-    /// <param name="cardType">卡牌种类</param>
-    /// <param name="cardId">具体id</param>
-    /// <param name="chips">碎片数量</param>
-    /// <returns></returns>
-    private void GetAndSaveCardChips(string cardType, int cardId, int chips)
-    {
-        //Debug.Log("cardId:" + cardId);
-        switch (cardType)
-        {
-            case "0":
-                PlayerDataForGame.instance.hstData.heroSaveData[UIManager.instance.FindIndexFromData(PlayerDataForGame.instance.hstData.heroSaveData, cardId)].chips += chips;
-                break;
-            case "1":
-                PlayerDataForGame.instance.hstData.soldierSaveData[UIManager.instance.FindIndexFromData(PlayerDataForGame.instance.hstData.soldierSaveData, cardId)].chips += chips;
-                break;
-            case "2":
-                PlayerDataForGame.instance.hstData.towerSaveData[UIManager.instance.FindIndexFromData(PlayerDataForGame.instance.hstData.towerSaveData, cardId)].chips += chips;
-                break;
-            case "3":
-                PlayerDataForGame.instance.hstData.trapSaveData[UIManager.instance.FindIndexFromData(PlayerDataForGame.instance.hstData.trapSaveData, cardId)].chips += chips;
-                break;
-            case "4":
-                PlayerDataForGame.instance.hstData.spellSaveData[UIManager.instance.FindIndexFromData(PlayerDataForGame.instance.hstData.spellSaveData, cardId)].chips += chips;
-                break;
-            default:
-                break;
-        }
-    }
-
-    /// <summary>
-    /// 获取到随机的卡牌id
-    /// </summary>
-    /// <param name="cardType">单位类型</param>
-    /// <param name="rarity">稀有度</param>
-    /// <param name="isZyBox">是否为战役宝箱</param>
-    /// <returns>获取单位id</returns>
-    private int GetRewardCardId(string cardType, string rarity, bool isZyBox)
-    {
-        int cardId = -1;
-        try
-        {
-            switch (cardType)
-            {
-                case "0":
-                    cardId = GetBackRandomCardId(LoadJsonFile.heroTableDatas, isZyBox ? 19 : 20, 21, rarity);
-                    break;
-                //case "1":
-                //    cardIds = GetMustRarityCardSToList(LoadJsonFile.soldierTableDatas, rarity, 16);
-                //    cardId = cardIds[UnityEngine.Random.Range(0, cardIds.Count)];
-                //    break;
-                case "2":
-                    cardId = GetBackRandomCardId(LoadJsonFile.towerTableDatas, isZyBox ? 11 : 13, 14, rarity);
-                    break;
-                case "3":
-                    cardId = GetBackRandomCardId(LoadJsonFile.trapTableDatas, isZyBox ? 9 : 12, 13, rarity);
-                    break;
-                //case "4":
-                //    cardIds = GetMustRarityCardSToList(LoadJsonFile.spellTableDatas, rarity, 7);
-                //    cardId = cardIds[UnityEngine.Random.Range(0, cardIds.Count)];
-                //    break;
-                default:
-                    break;
-            }
-        }
-        catch (Exception e)
-        {
-            Debug.LogError(e.ToString());
-        }
-        return cardId;
-    }
-
-    //卡牌和权重类
-    private class CardIdAndWeights
-    {
-        public int cardId;
-        public int weights;
-    }
-
-    /// <summary>
-    /// 返回随机选中卡牌id
-    /// </summary>
-    /// <param name="dataLists"></param>
-    /// <param name="indexColumn"></param>
-    /// <returns></returns>
-    private int GetBackRandomCardId(List<List<string>> dataLists, int indexColumn, int indexChanChu, string rarity)
-    {
-        List<CardIdAndWeights> cwList = new List<CardIdAndWeights>();
-        for (int i = 0; i < dataLists.Count; i++)
-        {
-            if (dataLists[i][indexChanChu] != "0" && dataLists[i][3] == rarity)
-            {
-                string[] arrs = dataLists[i][indexColumn].Split(',');
-                if (int.Parse(arrs[0]) <= PlayerDataForGame.instance.pyData.level)
-                {
-                    CardIdAndWeights cw = new CardIdAndWeights();
-                    cw.cardId = i;
-                    cw.weights = int.Parse(arrs[1]);
-                    cwList.Add(cw);
-                }
-            }
-        }
-        return BackCardIdByWeightValue(cwList);
-    }
-
-    //根据权重得到随机id
-    private int BackCardIdByWeightValue(List<CardIdAndWeights> datas)
-    {
-        int weightValueSum = 0;
-        for (int i = 0; i < datas.Count; i++)
-        {
-            weightValueSum += datas[i].weights;
-        }
-        int randNum = UnityEngine.Random.Range(0, weightValueSum);
-        int indexTest = 0;
-        while (randNum >= 0)
-        {
-            randNum -= datas[indexTest].weights;
-            indexTest++;
-        }
-        indexTest -= 1;
-        return datas[indexTest].cardId;
-    }
 }
