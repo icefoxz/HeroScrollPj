@@ -11,10 +11,11 @@
 			"hp": "1200,1440,1680,1920,2160,2400,2640,2880,3120,3360,3600",
 			"hpr": "50",
 			"icon": "100",
-			"chestZyBox": "1,10",
-			"chestBxBox": "1,10",
+			"chestZyBox": "14,10",
+			"chestBxBox": "14,10",
 			"intro2": "将受到的近战伤害全数反弹。",
-			"chanChu": "1"
+			"chanChu": "1",
+			"shiLi": "3"
 		},
 		{
 			"id": "1",
@@ -27,10 +28,11 @@
 			"hp": "50,50,50,50,50,50,50,50,50,50,50",
 			"hpr": "50",
 			"icon": "101",
-			"chestZyBox": "1,10",
-			"chestBxBox": "1,10",
+			"chestZyBox": "1,15",
+			"chestBxBox": "1,15",
 			"intro2": "受到伤害时爆炸，对近战攻击者造成重大伤害。",
-			"chanChu": "1"
+			"chanChu": "1",
+			"shiLi": "0"
 		},
 		{
 			"id": "2",
@@ -43,10 +45,11 @@
 			"hp": "1800,2160,2520,2880,3240,3600,3960,4320,4680,5040,5400",
 			"hpr": "50",
 			"icon": "102",
-			"chestZyBox": "1,10",
-			"chestBxBox": "1,10",
+			"chestZyBox": "13,10",
+			"chestBxBox": "13,10",
 			"intro2": "抵挡进攻，可承受高额伤害。",
-			"chanChu": "1"
+			"chanChu": "1",
+			"shiLi": "2"
 		},
 		{
 			"id": "3",
@@ -60,9 +63,10 @@
 			"hpr": "50",
 			"icon": "103",
 			"chestZyBox": "1,10",
-			"chestBxBox": "7,10",
+			"chestBxBox": "1,10",
 			"intro2": "抵挡进攻，大概率为攻击者添加【眩晕】状态。【眩晕】状态下军团无法行动。",
-			"chanChu": "1"
+			"chanChu": "1",
+			"shiLi": "0"
 		},
 		{
 			"id": "4",
@@ -75,10 +79,11 @@
 			"hp": "1200,1440,1680,1920,2160,2400,2640,2880,3120,3360,3600",
 			"hpr": "50",
 			"icon": "104",
-			"chestZyBox": "1,10",
-			"chestBxBox": "7,10",
+			"chestZyBox": "11,10",
+			"chestBxBox": "11,10",
 			"intro2": "抵挡进攻，大概率为攻击者添加【禁锢】状态。【禁锢】状态下军团无法使用兵种技。",
-			"chanChu": "1"
+			"chanChu": "1",
+			"shiLi": "1"
 		},
 		{
 			"id": "5",
@@ -91,10 +96,11 @@
 			"hp": "1200,1440,1680,1920,2160,2400,2640,2880,3120,3360,3600",
 			"hpr": "50",
 			"icon": "105",
-			"chestZyBox": "1,10",
-			"chestBxBox": "7,10",
+			"chestZyBox": "0,0",
+			"chestBxBox": "0,0",
 			"intro2": "抵挡进攻，大概率为攻击者添加【怯战】状态。【怯战】状态下，军团无法暴击和会心一击。",
-			"chanChu": "1"
+			"chanChu": "0",
+			"shiLi": "0"
 		},
 		{
 			"id": "6",
@@ -107,10 +113,11 @@
 			"hp": "1200,1440,1680,1920,2160,2400,2640,2880,3120,3360,3600",
 			"hpr": "50",
 			"icon": "106",
-			"chestZyBox": "1,10",
-			"chestBxBox": "12,10",
+			"chestZyBox": "0,0",
+			"chestBxBox": "0,0",
 			"intro2": "抵挡进攻，大概率为攻击者添加【灼烧】状态。【灼烧】状态下，回合结束时受到血量上限20%伤害。",
-			"chanChu": "1"
+			"chanChu": "0",
+			"shiLi": "0"
 		},
 		{
 			"id": "7",
@@ -123,10 +130,11 @@
 			"hp": "1200,1440,1680,1920,2160,2400,2640,2880,3120,3360,3600",
 			"hpr": "50",
 			"icon": "107",
-			"chestZyBox": "1,10",
-			"chestBxBox": "12,10",
+			"chestZyBox": "0,0",
+			"chestBxBox": "0,0",
 			"intro2": "抵挡进攻，大概率为攻击者添加【中毒】状态。【中毒】状态下，回合开始时受到血量上限20%伤害。",
-			"chanChu": "1"
+			"chanChu": "0",
+			"shiLi": "0"
 		},
 		{
 			"id": "8",
@@ -139,10 +147,11 @@
 			"hp": "1200,1440,1680,1920,2160,2400,2640,2880,3120,3360,3600",
 			"hpr": "50",
 			"icon": "108",
-			"chestZyBox": "1,10",
-			"chestBxBox": "12,10",
+			"chestZyBox": "0,0",
+			"chestBxBox": "0,0",
 			"intro2": "抵挡进攻，大概率为攻击者添加【流血】状态。【流血】状态下，单位被攻击时，额外受到50%伤害。",
-			"chanChu": "1"
+			"chanChu": "0",
+			"shiLi": "0"
 		},
 		{
 			"id": "9",
@@ -155,10 +164,11 @@
 			"hp": "1,1,1,1,1,1,1,1,1,1,1",
 			"hpr": "50",
 			"icon": "109",
-			"chestZyBox": "1,10",
-			"chestBxBox": "10,10",
+			"chestZyBox": "16,10",
+			"chestBxBox": "16,10",
 			"intro2": "受到伤害时触发。碾压一列，造成伤害，并造成【眩晕】。对陷阱造成2倍伤害。",
-			"chanChu": "1"
+			"chanChu": "1",
+			"shiLi": "4"
 		},
 		{
 			"id": "10",
@@ -171,10 +181,11 @@
 			"hp": "1,1,1,1,1,1,1,1,1,1,1",
 			"hpr": "50",
 			"icon": "110",
-			"chestZyBox": "1,10",
-			"chestBxBox": "10,10",
+			"chestZyBox": "0,0",
+			"chestBxBox": "0,0",
 			"intro2": "受到伤害时触发。碾压一行，造成伤害，并造成【眩晕】。对陷阱造成2倍伤害。",
-			"chanChu": "1"
+			"chanChu": "0",
+			"shiLi": "0"
 		},
 		{
 			"id": "11",
@@ -190,7 +201,8 @@
 			"chestZyBox": "0,0",
 			"chestBxBox": "0,0",
 			"intro2": "打破后掉落金币。",
-			"chanChu": "0"
+			"chanChu": "0",
+			"shiLi": "0"
 		},
 		{
 			"id": "12",
@@ -206,7 +218,127 @@
 			"chestZyBox": "0,0",
 			"chestBxBox": "0,0",
 			"intro2": "打破后掉落战役宝箱。",
-			"chanChu": "0"
+			"chanChu": "0",
+			"shiLi": "0"
+		},
+		{
+			"id": "0",
+			"name": "大拒马",
+			"intro": "",
+			"rarity": "0",
+			"price": "0",
+			"shortName": "",
+			"damage": "",
+			"hp": "",
+			"hpr": "0",
+			"icon": "0",
+			"chestZyBox": "",
+			"chestBxBox": "",
+			"intro2": "",
+			"chanChu": "0",
+			"shiLi": "0"
+		},
+		{
+			"id": "0",
+			"name": "大地雷",
+			"intro": "",
+			"rarity": "0",
+			"price": "0",
+			"shortName": "",
+			"damage": "",
+			"hp": "",
+			"hpr": "0",
+			"icon": "0",
+			"chestZyBox": "",
+			"chestBxBox": "",
+			"intro2": "",
+			"chanChu": "0",
+			"shiLi": "0"
+		},
+		{
+			"id": "0",
+			"name": "大石墙",
+			"intro": "",
+			"rarity": "0",
+			"price": "0",
+			"shortName": "",
+			"damage": "",
+			"hp": "",
+			"hpr": "0",
+			"icon": "0",
+			"chestZyBox": "",
+			"chestBxBox": "",
+			"intro2": "",
+			"chanChu": "0",
+			"shiLi": "0"
+		},
+		{
+			"id": "0",
+			"name": "滚石滚木",
+			"intro": "随机选择10个目标，进行攻击并造成眩晕",
+			"rarity": "0",
+			"price": "0",
+			"shortName": "",
+			"damage": "",
+			"hp": "",
+			"hpr": "0",
+			"icon": "0",
+			"chestZyBox": "",
+			"chestBxBox": "",
+			"intro2": "",
+			"chanChu": "0",
+			"shiLi": "0"
+		},
+		{
+			"id": "0",
+			"name": "波浪",
+			"intro": "【防御型】无视攻击1回合，1回合后消散，并对敌方前排造成击退1格",
+			"rarity": "0",
+			"price": "0",
+			"shortName": "",
+			"damage": "",
+			"hp": "",
+			"hpr": "0",
+			"icon": "0",
+			"chestZyBox": "",
+			"chestBxBox": "",
+			"intro2": "",
+			"chanChu": "0",
+			"shiLi": "0"
+		},
+		{
+			"id": "0",
+			"name": "大浪",
+			"intro": "【防御型】无视攻击3回合，3回合后消散，并对敌方前排造成击退2格",
+			"rarity": "0",
+			"price": "0",
+			"shortName": "",
+			"damage": "",
+			"hp": "",
+			"hpr": "0",
+			"icon": "0",
+			"chestZyBox": "",
+			"chestBxBox": "",
+			"intro2": "",
+			"chanChu": "0",
+			"shiLi": "0"
+		},
+		{
+			"id": "0",
+			"name": "巨浪",
+			"intro": "【防御型】无视攻击5回合，5回合后消散，并对敌方前排造成击退3格",
+			"rarity": "0",
+			"price": "0",
+			"shortName": "",
+			"damage": "",
+			"hp": "",
+			"hpr": "0",
+			"icon": "0",
+			"chestZyBox": "",
+			"chestBxBox": "",
+			"intro2": "",
+			"chanChu": "0",
+			"shiLi": "0"
 		}
 	]
 }

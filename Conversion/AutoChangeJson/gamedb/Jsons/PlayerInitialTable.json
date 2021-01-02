@@ -3,25 +3,25 @@
 		{
 			"id": "0",
 			"power": "魏",
-			"initialHero": "39,100",
+			"initialHero": "26,39,59,340,100,82",
 			"initialSoldier": "",
-			"initialTower": "2,6,14",
+			"initialTower": "0,2,6,14,15,16",
 			"powerIntro": "自黄巾之乱，董卓专权，致使天下大乱。枭雄曹操不甘屈服于淫威之下，召集宗亲氏族，立志成就一番经天纬地之业……"
 		},
 		{
 			"id": "1",
 			"power": "蜀",
-			"initialHero": "59,136",
+			"initialHero": "26,39,59,340,100,82",
 			"initialSoldier": "",
-			"initialTower": "2,6,15",
+			"initialTower": "0,2,6,14,15,16",
 			"powerIntro": "天下大乱，民不聊生。有中山靖王之后刘备，以仁义为名，招贤纳士，转战四方，以图匡扶汉室，救民于水火……"
 		},
 		{
 			"id": "2",
 			"power": "吴",
-			"initialHero": "26,82",
+			"initialHero": "26,39,59,340,100,82",
 			"initialSoldier": "",
-			"initialTower": "2,6,16",
+			"initialTower": "0,2,6,14,15,16",
 			"powerIntro": "天下已成群雄割据，弱肉强食之势。孙权虎踞江东，以历三世，有贤臣能人辅佐，凭长江天险与水师十万，傲视群雄……"
 		}
 	]
