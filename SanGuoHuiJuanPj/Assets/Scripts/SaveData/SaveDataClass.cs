@@ -158,7 +158,7 @@ public class BaYeDataClass
     public int gold;
     public List<BaYeEvent> data = new List<BaYeEvent>();
     ///// <summary>
-    ///// 势力与城的绑定， Key = city， Value = force
+    ///// 势力与城的绑定， Key = city， Value = forceUi
     ///// </summary>
     //public Dictionary<int, int> cityBoundForce = new Dictionary<int, int>();
     ///// <summary>

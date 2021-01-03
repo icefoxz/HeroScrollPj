@@ -9,6 +9,6 @@ public class BaYeForceField : MonoBehaviour
     public int id =-1;
     public int boundCity = -1;
     public int boundWar = -1;
-    public Button button;
+    public BaYeForceSelectorUi forceUi;
     public GameObject selectedDisplay;
 }

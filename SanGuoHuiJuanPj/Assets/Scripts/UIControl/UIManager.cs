@@ -296,8 +296,8 @@ public class UIManager : MonoBehaviour
             int forceIndex = i;
             GameObject obj = baYeForceObj.transform.GetChild(forceIndex).gameObject;
             var field = obj.AddComponent<BaYeForceField>();
-            field.button = obj.GetComponent<Button>();
-            field.button.interactable = false;
+            field.forceUi = obj.GetComponent<BaYeForceSelectorUi>();
+            field.forceUi.button.interactable = false;
             forceFields.Add(field);
             field.id = forceIndex;
             field.selectedDisplay = obj.transform.GetChild(2).gameObject;
@@ -311,7 +311,7 @@ public class UIManager : MonoBehaviour
                 , typeof(Sprite)) as Sprite;
             obj.transform.GetChild(1).GetComponent<Image>().sprite = Resources.Load("Image/shiLi/Name/" + forceIndex
                 , typeof(Sprite)) as Sprite;
-            field.button.onClick.AddListener(delegate()
+            field.forceUi.button.onClick.AddListener(delegate()
             {
                 ChooseBaYeForceOnClick(forceIndex);
             });
@@ -375,13 +375,19 @@ public class UIManager : MonoBehaviour
             if (field.boundCity == cityId)
             {
                 ChooseBaYeForceOnClick(field.id);
-                field.button.interactable = true;
-                forceFields.Where(f => f != field).ToList().ForEach(f => f.button.interactable = false);
+                field.forceUi.button.interactable = false;
+                field.forceUi.DisplayLing(true);
+                forceFields.Where(f => f != field).ToList().ForEach(f =>
+                {
+                    f.forceUi.DisplayLing(false);
+                    f.forceUi.button.interactable = false;
+                });
                 isBound = true;
                 break;
             }
             field.selectedDisplay.SetActive(false);
-            field.button.interactable = field.boundWar < 0;
+            field.forceUi.button.interactable = field.boundWar < 0;
+            field.forceUi.DisplayLing(field.boundWar >= 0);
         }
 
         if (!isBound) selectedBaYeForceId = -1;
