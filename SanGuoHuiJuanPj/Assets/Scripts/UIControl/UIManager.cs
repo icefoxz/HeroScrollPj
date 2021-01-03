@@ -246,6 +246,9 @@ public class UIManager : MonoBehaviour
         else
         {
             print("请选择");
+            //提示选择势力后进行战斗
+            PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(65));
+
         }
     }
 
@@ -888,8 +891,8 @@ public class UIManager : MonoBehaviour
         warIntroText.DOPause();
         warIntroText.text = "";
         warIntroText.color = new Color(warIntroText.color.r, warIntroText.color.g, warIntroText.color.b, 0);
-        warIntroText.DOFade(1, 3f);
-        warIntroText.DOText(("\u2000\u2000\u2000\u2000" + LoadJsonFile.warTableDatas[warsId][2]), 3f).SetEase(Ease.Linear).SetAutoKill(false);
+        warIntroText.DOFade(1, 7f);
+        warIntroText.DOText(("\u2000\u2000\u2000\u2000" + LoadJsonFile.warTableDatas[warsId][2]), 7f).SetEase(Ease.Linear).SetAutoKill(false);
     }
 
     int showTiLiNums = 0;
