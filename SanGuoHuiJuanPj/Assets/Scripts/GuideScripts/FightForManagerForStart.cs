@@ -896,7 +896,7 @@ public class FightForManagerForStart : MonoBehaviour
                 {
                     if (attackedUnit.nowHp <= 0)
                     {
-                        FightControlForStart.instance.recordWinner = attackedUnits[cardData.posIndex].isPlayerCard ? -1 : 1;
+                        FightControlForStart.instance.recordWinner = attackedUnit.isPlayerCard ? -1 : 1;
                     }
                 }
             }

@@ -302,7 +302,7 @@ public class FightForManager : MonoBehaviour
                 {
                     if (attackedUnit.nowHp <= 0)
                     {
-                        FightController.instance.recordWinner = attackedUnits[cardData.posIndex].isPlayerCard ? -1 : 1;
+                        FightController.instance.recordWinner = attackedUnit.isPlayerCard ? -1 : 1;
                     }
                 }
             }
