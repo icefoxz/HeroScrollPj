@@ -2341,8 +2341,8 @@ public class UIManager : MonoBehaviour
                                 //背景按钮无效
                                 jinNangBackBtn.enabled = false;
                                 watchAdFordoubleBtn.enabled = false;
-                                //if (!DoNewAdController.instance.GetReWardVideo(
-                                if (!AdController.instance.ShowVideo(
+                                if (!DoNewAdController.instance.GetReWardVideo(
+                                //if (!AdController.instance.ShowVideo(
                                      ()=>
                                     {
                                         //奖励翻倍
@@ -2599,8 +2599,8 @@ public class UIManager : MonoBehaviour
         switch (indexBtn)
         {
             case 0:
-                //if (!DoNewAdController.instance.GetReWardVideo(
-                if (!AdController.instance.ShowVideo(
+                if (!DoNewAdController.instance.GetReWardVideo(
+                //if (!AdController.instance.ShowVideo(
                     delegate ()
                     {
                         GetTiLiForChicken(needYvQueNums, getTiLiNums);
