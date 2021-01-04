@@ -13,6 +13,8 @@ public class BaYeManager : MonoBehaviour
     public int SelectedForceId { get; set; }
     public int BaYeGoldDefault = 50; //霸业初始金币
     private List<BaYeEvent> map;
+    public bool isShowTips;//是否弹出文字
+    public string tipsText;//弹出文字内容
     public IReadOnlyList<BaYeEvent> Map => map;
     public static BaYeManager instance;
 

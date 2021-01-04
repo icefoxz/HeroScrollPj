@@ -320,7 +320,6 @@ public class UIManager : MonoBehaviour
             });
             obj.SetActive(true);
         }
-
         baYeGoldNumText.text = PlayerDataForGame.instance.warsData.baYe.gold.ToString();
     }
 
@@ -2029,6 +2028,13 @@ public class UIManager : MonoBehaviour
                 InitWarsListInfo(lastAvailableStageIndex);
                 break;
             case 4://霸业
+                if (BaYeManager.instance.isShowTips) 
+                {
+                    PlayerDataForGame.instance.ShowStringTips(BaYeManager.instance.tipsText) ;
+                    BaYeManager.instance.tipsText = string.Empty;
+                    BaYeManager.instance.isShowTips = false;
+                }
+                break;
             case 1:
             case 3:
                 break;
