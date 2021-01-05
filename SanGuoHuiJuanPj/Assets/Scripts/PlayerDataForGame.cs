@@ -451,6 +451,7 @@ public class PlayerDataForGame : MonoBehaviour
 
     public int selectedEventId; //当前选择的霸业城池
     public int selectedCity;
+    public string mainSceneTips;
 
     /// <summary>
     /// 场景底部文本提示

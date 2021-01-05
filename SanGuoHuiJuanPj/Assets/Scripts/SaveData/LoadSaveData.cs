@@ -1087,16 +1087,5 @@ public class LoadSaveData : MonoBehaviour
         });
         PlayerDataForGame.instance.isNeedSaveData = true;
         SaveGameData(3);
-
-        //if (!baYe.cityBoundForce.ContainsKey(cityId))
-        //{
-        //    baYe.cityBoundForce.Add(cityId, forceId);
-        //    baYe.cityBoundEvent.Add(cityId, eventId);
-        //}
-        //else
-        //{
-        //    baYe.cityBoundForce[forceId] = cityId;
-        //    baYe.cityBoundEvent[cityId] = eventId;
-        //}
     }
 }

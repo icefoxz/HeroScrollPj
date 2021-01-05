@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Newtonsoft.Json;
 using UnityEngine;
 
@@ -154,21 +155,10 @@ public class UnlockWarCount
 public class BaYeDataClass
 {
     public long lastBaYeActivityTime;
-    public int currentExp;
+    [JsonIgnore]public int CurrentExp => ExpData.Values.Sum();
     public int gold;
+    public Dictionary<int, int> ExpData = new Dictionary<int, int>();
     public List<BaYeEvent> data = new List<BaYeEvent>();
-    ///// <summary>
-    ///// 势力与城的绑定， Key = city， Value = forceUi
-    ///// </summary>
-    //public Dictionary<int, int> cityBoundForce = new Dictionary<int, int>();
-    ///// <summary>
-    ///// 城与霸业事件绑定，Key = city，Value = eventId
-    ///// </summary>
-    //public Dictionary<int, int> cityBoundEvent = new Dictionary<int, int>();
-    ///// <summary>
-    ///// 霸业战役和关卡记录，  Key = warId，Value = stage
-    ///// </summary>
-    //public Dictionary<int, int> stagePassed = new Dictionary<int, int>();
 
     private bool[] openedChest1 = new bool[5];
 

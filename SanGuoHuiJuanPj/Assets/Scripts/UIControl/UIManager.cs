@@ -124,6 +124,7 @@ public class UIManager : MonoBehaviour
     Text InfoText;
 
     bool isShowInfo;//说明窗口是否开启
+    private BaYeEventUI[] baYeEventUiList;
 
     private void Awake()
     {
@@ -159,7 +160,7 @@ public class UIManager : MonoBehaviour
         InitBaYeFun();
         PlayerDataForGame.instance.ClearGarbageStationObj();
 
-        LoadPageFromFlag();
+        OnStartMainScene();
         selectedBaYeForceId = -1;
     }
 
@@ -215,7 +216,10 @@ public class UIManager : MonoBehaviour
         //根据系统时间计算本地的天数是否是同一天
     }
 
-    private void LoadPageFromFlag()
+    /// <summary>
+    /// Main场景(切换)初始化
+    /// </summary>
+    private void OnStartMainScene()
     {
         switch (PlayerDataForGame.instance.WarType)
         {
@@ -230,6 +234,12 @@ public class UIManager : MonoBehaviour
                 throw new ArgumentOutOfRangeException();
         }
         PlayerDataForGame.instance.FlagWarTypeBeforeBattle(0);
+        var tips = PlayerDataForGame.instance.mainSceneTips;
+        if (!string.IsNullOrWhiteSpace(tips))
+        {
+            PlayerDataForGame.instance.ShowStringTips(tips);
+            PlayerDataForGame.instance.mainSceneTips = string.Empty;
+        }
     }
     public void ShowInfoBaYe() 
     {
@@ -302,35 +312,59 @@ public class UIManager : MonoBehaviour
         //霸业经验条和宝箱初始化
         ResetBaYeProgressSection(baYe);
         //城市点初始化
-        for (int i = 0; i < baYeEventsObj.transform.childCount; i++)
+        var cityLvlUnlock = new Dictionary<int, int>();
+        LoadJsonFile.playerLevelTableDatas.Select(row =>
         {
-            baYeEventsObj.transform.GetChild(i).gameObject.SetActive(false);
-        }
-        string[] eventCitys = LoadJsonFile.playerLevelTableDatas[PlayerDataForGame.instance.pyData.level - 1][7].Split(',');
-        cityFields = new List<BaYeCityField>();
-        for (int i = 0; i < eventCitys.Length; i++)
+            var lvl = int.Parse(row[0]);
+            var maxCity = row[7].Split(',').Where(s => !string.IsNullOrWhiteSpace(s))
+                .Max(int.Parse);
+            return (lvl, maxCity);
+        }).ToList().ForEach(set =>
         {
-            if (eventCitys[i] != "")
+            var (lvl, city) = set;
+            if (!cityLvlUnlock.ContainsKey(city))
             {
-                int indexId = i;
-                //得到战役id
-                var obj = baYeEventsObj.transform.GetChild(i).gameObject;
-                var field = obj.AddComponent<BaYeCityField>();
-                field.id = indexId;
-                field.button = obj.GetComponentInChildren<Button>();
-                cityFields.Add(field);
-                var baYeEvent = BaYeManager.instance.Map.Single(e => e.CityId == indexId);
-                var baYeRecord = baYe.data.SingleOrDefault(f => f.CityId == indexId);
-                if (baYeRecord != null)
-                {
-                    field.boundForce = baYeRecord.ForceId;
-                    field.boundWar = baYeRecord.WarId;
-                }
-                field.button.onClick
-                    .AddListener(() => ChooseBaYeEventOnClick(indexId, baYeEvent.EventId, baYeEvent.WarId));
-                obj.GetComponentInChildren<Text>().text = LoadJsonFile.baYeDiTuTableDatas[i][3]; //城市名
-                obj.gameObject.SetActive(true);
+                cityLvlUnlock.Add(city, lvl);
+                return;
             }
+
+            if (cityLvlUnlock[city] <= lvl)
+                cityLvlUnlock[city] = lvl;
+        });
+        var cityList = LoadJsonFile.playerLevelTableDatas[PlayerDataForGame.instance.pyData.level - 1][7]
+            .Split(',').Where(s => !string.IsNullOrWhiteSpace(s)).Select(int.Parse).ToArray();
+        
+        cityFields = new List<BaYeCityField>();
+        baYeEventUiList = baYeEventsObj.GetComponentsInChildren<BaYeEventUI>().OrderBy(e=>int.Parse(e.name)).ToArray();
+        for (int i = 0; i < baYeEventUiList.Length; i++)
+        {
+            int indexId = i;
+            //得到战役id
+            var ui = baYeEventUiList[i];
+            var field = ui.gameObject.AddComponent<BaYeCityField>();
+            field.id = indexId;
+            field.button = ui.button;
+            cityFields.Add(field);
+            var baYeEvent = BaYeManager.instance.Map.Single(e => e.CityId == indexId);
+            var baYeRecord = baYe.data.SingleOrDefault(f => f.CityId == indexId);
+            ui.button.interactable = cityList.Length > i;
+            if (cityList.Length > i)
+            {
+                var city = BaYeManager.instance.Map.Single(c => c.CityId == i);
+                ui.Init(city.ExpList.Count);
+                ui.button.onClick
+                .AddListener(() => ChooseBaYeEventOnClick(indexId, baYeEvent.EventId, baYeEvent.WarId));
+                ui.text.text = LoadJsonFile.baYeDiTuTableDatas[i][3]; //城市名
+            }
+            else
+            {
+                ui.text.text = $"{cityLvlUnlock[i]}级";
+            }
+
+            if (baYeRecord == null) continue;
+            field.boundForce = baYeRecord.ForceId;
+            field.boundWar = baYeRecord.WarId;
+            ui.SetValue(baYeRecord.PassedStages.Count(isPass => isPass));
         }
 
         //势力选择
@@ -368,11 +402,11 @@ public class UIManager : MonoBehaviour
     private void ResetBaYeProgressSection(BaYeDataClass baYe)
     {
         var baYeReward = BaYeManager.instance.GetRewardChests();
-        baYeProgressUi.Set(baYe.currentExp,baYeReward[baYeReward.Count - 1].Item2);
+        baYeProgressUi.Set(baYe.CurrentExp,baYeReward[baYeReward.Count - 1].Item2);
         for (int i = 0; i < baYeReward.Count; i++)
         {
             //如果玩家霸业的经验值大于宝箱经验值并宝箱未被开过
-            if (baYe.currentExp < baYeReward[i].Item2)
+            if (baYe.CurrentExp < baYeReward[i].Item2)
             {
                 baYeChestButtons[i].Disabled();
                 continue;

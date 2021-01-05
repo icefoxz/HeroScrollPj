@@ -65,7 +65,14 @@ public class BaYeManager : MonoBehaviour
             .ToList();
 
         var baYe = PlayerDataForGame.instance.warsData.baYe;
-        foreach (var baYeEvent in baYe.data) map[baYeEvent.CityId] = baYeEvent;
+        foreach (var baYeEvent in baYe.data)
+            map[baYeEvent.CityId] = baYeEvent;
+        //{
+        //    map[baYeEvent.CityId].CityId = baYeEvent.CityId;
+        //    map[baYeEvent.CityId].EventId = baYeEvent.EventId;
+        //    map[baYeEvent.CityId].ForceId = baYeEvent.ForceId;
+        //    map[baYeEvent.CityId].WarId = baYeEvent.WarId;
+        //}
     }
 
     public List<int> GetBaYeEventExp(int eventId)
@@ -86,7 +93,7 @@ public class BaYeManager : MonoBehaviour
         var levelTableId = LoadJsonFile.playerLevelTableDatas[playerLevelAlign][9];
         var warId = int.Parse(battleTable[int.Parse(levelTableId) + 1]);
 
-        return new BaYeEvent {EventId = eventId, CityId = cityId, WarId = warId, ExpList = baYeExp};
+        return new BaYeEvent {EventId = eventId, CityId = cityId, WarId = warId, ExpList = baYeExp, PassedStages = new bool[baYeExp.Count]};
     }
     /// <summary>
     /// 获取宝箱数据 item1 = id，item2 = 经验，item3 = 奖励id
@@ -96,16 +103,20 @@ public class BaYeManager : MonoBehaviour
         LoadJsonFile.baYeRenWuTableDatas.Select(item => (int.Parse(item[0]), int.Parse(item[1]), int.Parse(item[2])))
             .ToList();
 
-    public void AddExp(int exp)
+    public void AddExp(int code,int exp)
     {
-        PlayerDataForGame.instance.warsData.baYe.currentExp += exp;
+        if (PlayerDataForGame.instance.warsData.baYe.ExpData.ContainsKey(code))
+            PlayerDataForGame.instance.warsData.baYe.ExpData[code] += exp;
+        else PlayerDataForGame.instance.warsData.baYe.ExpData.Add(code, exp);
         PlayerDataForGame.instance.isNeedSaveData = true;
         LoadSaveData.instance.SaveGameData(3);
     }
 
-    public void SetExp(int exp)
+    public void SetExp(int code,int exp)
     {
-        PlayerDataForGame.instance.warsData.baYe.currentExp = exp;
+        if (PlayerDataForGame.instance.warsData.baYe.ExpData.ContainsKey(code))
+            PlayerDataForGame.instance.warsData.baYe.ExpData[code] = exp;
+        else PlayerDataForGame.instance.warsData.baYe.ExpData.Add(code, exp);
         PlayerDataForGame.instance.isNeedSaveData = true;
         LoadSaveData.instance.SaveGameData(3);
     }
