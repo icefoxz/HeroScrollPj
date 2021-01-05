@@ -359,7 +359,8 @@ public class UIManager : MonoBehaviour
             }
             else
             {
-                ui.text.text = $"{cityLvlUnlock[i]}级";
+                ui.text.text = $"{cityLvlUnlock[i]}级开启";
+                ui.DisActiveCityColor();
             }
 
             if (baYeRecord == null) continue;

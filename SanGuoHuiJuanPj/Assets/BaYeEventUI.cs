@@ -13,7 +13,8 @@ public class BaYeEventUI : MonoBehaviour
     public int space = 13;
     public Button button;
     private List<Image> list;
-
+    public Color cityNameColor;
+    public Color defaultCityColor;
     public void Init(int maxValue)
     {
         list = new List<Image>();
@@ -24,8 +25,13 @@ public class BaYeEventUI : MonoBehaviour
             box.gameObject.SetActive(true);
             list.Add(box);
         }
+        text.color = cityNameColor;
         contentLayout.gameObject.SetActive(true);
         contentLayout.sizeDelta = new Vector2(list.Count * space, contentLayout.sizeDelta.y);
+    }
+    public void DisActiveCityColor()
+    {
+        text.color = defaultCityColor;
     }
 
     public void SetValue(int value)
