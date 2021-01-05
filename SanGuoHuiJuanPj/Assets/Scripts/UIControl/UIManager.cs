@@ -114,6 +114,17 @@ public class UIManager : MonoBehaviour
     private List<BaYeCityField> cityFields; //霸业的地图物件
     private List<BaYeForceField> forceFields; //可选势力物件
     public RewardManager rewardManager;
+
+
+    [SerializeField]
+    GameObject InfoWindowObj; //说明窗口
+    [SerializeField]
+    Text InfoTitle;
+    [SerializeField]
+    Text InfoText;
+
+    bool isShowInfo;//说明窗口是否开启
+
     private void Awake()
     {
         if (instance == null)
@@ -220,8 +231,39 @@ public class UIManager : MonoBehaviour
         }
         PlayerDataForGame.instance.FlagWarTypeBeforeBattle(0);
     }
+    public void ShowInfoBaYe() 
+    {
+        string title = LoadJsonFile.GetStringText(68);
+        string text = LoadJsonFile.GetStringText(69);
+        ShowInfo(title,text);
+    }
 
-
+    /// <summary>
+    /// 打开说明窗口
+    /// </summary>
+    public void ShowInfo(string infoTitle,string infoText) 
+    {
+        if (!isShowInfo) 
+        {
+            InfoWindowObj.SetActive(true);
+            //标题
+            InfoTitle.text = infoTitle;
+            //文本
+            InfoText.text = infoText;
+        }
+        isShowInfo = true;
+    }
+    /// <summary>
+    /// 关闭说明窗口
+    /// </summary>
+    public void HideInfo() 
+    {
+        if (isShowInfo) 
+        {
+            InfoWindowObj.SetActive(false);
+        }
+        isShowInfo = false;
+    }
     //开始霸业战斗
     public void StartBaYeFight()
     {
@@ -2015,11 +2057,11 @@ public class UIManager : MonoBehaviour
 
         switch (index)
         {
-            case 0:
+            case 0://桃园
                 ShowOrHideGuideObj(0, true);
                 if (PlayerDataForGame.instance.gbocData.fightBoxs.Count > 0) ShowOrHideGuideObj(1, true);
                 break;
-            case 2:
+            case 2://战役
                 ShowOrHideGuideObj(3, true);
                 //重新选择战役关卡
                 //OnClickChangeWarsFun(PlayerDataForGame.instance.warsData.warUnlockSaveData[index > endId ? endId : index].warId, lastObj);
@@ -2035,15 +2077,29 @@ public class UIManager : MonoBehaviour
                     BaYeManager.instance.isShowTips = false;
                 }
                 break;
-            case 1:
-            case 3:
+            case 1://主城
+            case 3://对决
+                ShowOpenLimitation(false,9);
                 break;
             default :
                 XDebug.LogError<UIManager>($"未知页面索引[{index}]。");
                 throw new ArgumentOutOfRangeException();
         }
     }
-
+    /// <summary>
+    /// 
+    /// </summary>
+    public void ShowOpenLimitation(bool isOpened,int playerlevel) 
+    {
+        if (isOpened)
+        {
+            PlayerDataForGame.instance.ShowStringTips(string.Format( LoadJsonFile.GetStringText(66),playerlevel));
+        }
+        else 
+        {
+            PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(67));
+        }
+    }
     //显示或隐藏指引
     public void ShowOrHideGuideObj(int index, bool isShow)
     {
