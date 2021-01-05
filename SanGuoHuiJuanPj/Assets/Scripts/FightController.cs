@@ -3769,6 +3769,10 @@ public class FightController : MonoBehaviour
                 waitTime = 1f;
                 break;
             case JiBanSkillName.WuZiLiangJiang:
+                PlayAudioForSecondClip(104, 0);
+                fullScreenEffectObjs[5].SetActive(false);
+                fullScreenEffectObjs[5].transform.position = jBEffectShowPos[isPlayer ? 1 : 1].position;
+                fullScreenEffectObjs[5].SetActive(true);
                 //30 % 概率分别为羁绊武将增加1层【护盾】
                 for (int i = 0; i < jiBanActivedClass.cardTypeLists.Count; i++)
                 {
@@ -5002,7 +5006,11 @@ public enum FullScreenEffectName
     /// <summary>
     /// 水师都督主动技能特效
     /// </summary>
-    JBShuiShiDouDu
+    JBShuiShiDouDu,
+    /// <summary>
+    /// 五子良将主动技能特效
+    /// </summary>
+    JBWuZiLiangJiang
 }
 
 /// <summary>

@@ -241,6 +241,7 @@ public class UIManager : MonoBehaviour
             PlayerDataForGame.instance.mainSceneTips = string.Empty;
         }
     }
+    //显示霸业玩法说明
     public void ShowInfoBaYe() 
     {
         string title = LoadJsonFile.GetStringText(68);
@@ -2112,28 +2113,16 @@ public class UIManager : MonoBehaviour
                 }
                 break;
             case 1://主城
+                break;
             case 3://对决
-                ShowOpenLimitation(false,9);
+                PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(67));
                 break;
             default :
                 XDebug.LogError<UIManager>($"未知页面索引[{index}]。");
                 throw new ArgumentOutOfRangeException();
         }
     }
-    /// <summary>
-    /// 
-    /// </summary>
-    public void ShowOpenLimitation(bool isOpened,int playerlevel) 
-    {
-        if (isOpened)
-        {
-            PlayerDataForGame.instance.ShowStringTips(string.Format( LoadJsonFile.GetStringText(66),playerlevel));
-        }
-        else 
-        {
-            PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(67));
-        }
-    }
+
     //显示或隐藏指引
     public void ShowOrHideGuideObj(int index, bool isShow)
     {
