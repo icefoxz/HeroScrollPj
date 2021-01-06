@@ -10,7 +10,18 @@ public class UIManager : MonoBehaviour
 {
 
     public static UIManager instance;
-
+    //玩家势力
+    public enum ForceFlags
+    {
+        蜀 = 0,
+        魏 = 1,
+        吴 = 2,
+        袁 = 3,
+        吕 = 4
+    }
+    //注意：势力旗帜和名字必须对应枚举【ForceFlags】并列数相同
+    public Sprite[] forceFlags;//势力旗帜 
+    public Sprite[] forceName;//势力名字
     [SerializeField]
     GameObject zhuChengHeroContentObj;  //主城卡牌集合框
     [SerializeField]
@@ -113,7 +124,7 @@ public class UIManager : MonoBehaviour
     private int selectedBaYeForceId; //当前为霸业选择的势力ID
     private List<BaYeCityField> cityFields; //霸业的地图物件
     private List<BaYeForceField> forceFields; //可选势力物件
-    public RewardManager rewardManager;
+    [HideInInspector]public RewardManager rewardManager;
 
 
     [SerializeField]
@@ -124,7 +135,7 @@ public class UIManager : MonoBehaviour
     Text InfoText;
 
     bool isShowInfo;//说明窗口是否开启
-    private BaYeEventUI[] baYeEventUiList;
+    //private BaYeEventUI[] baYeEventUiList;
 
     private void Awake()
     {
@@ -196,7 +207,7 @@ public class UIManager : MonoBehaviour
     Button jiBanWinCloseBtn;    //羁绊界面关闭按钮
 
     [SerializeField]
-    GameObject baYeEventsObj;   //霸业事件点父级
+    BaYeEventUIController baYeEventsObj;   //霸业事件点父级
     [SerializeField]
     GameObject chooseBaYeEventImg;  //选择霸业地点的Img
     [SerializeField]
@@ -336,16 +347,15 @@ public class UIManager : MonoBehaviour
             .Split(',').Where(s => !string.IsNullOrWhiteSpace(s)).Select(int.Parse).ToArray();
         
         cityFields = new List<BaYeCityField>();
-        baYeEventUiList = baYeEventsObj.GetComponentsInChildren<BaYeEventUI>().OrderBy(e=>int.Parse(e.name)).ToArray();
-        for (int i = 0; i < baYeEventUiList.Length; i++)
+        for (int i = 0; i < baYeEventsObj.eventList.Length; i++)
         {
             int indexId = i;
             //得到战役id
-            var ui = baYeEventUiList[i];
-            var field = ui.gameObject.AddComponent<BaYeCityField>();
-            field.id = indexId;
-            field.button = ui.button;
-            cityFields.Add(field);
+            var ui = baYeEventsObj.eventList[i];
+            var cityField = ui.gameObject.AddComponent<BaYeCityField>();
+            cityField.id = indexId;
+            cityField.button = ui.button;
+            cityFields.Add(cityField);
             var baYeEvent = BaYeManager.instance.Map.Single(e => e.CityId == indexId);
             var baYeRecord = baYe.data.SingleOrDefault(f => f.CityId == indexId);
             ui.button.interactable = cityList.Length > i;
@@ -360,43 +370,44 @@ public class UIManager : MonoBehaviour
             else
             {
                 ui.text.text = $"{cityLvlUnlock[i]}级开启";
-                ui.DisActiveCityColor();
+                ui.forceFlag.Hide();
+                ui.InactiveCityColor();
             }
 
             if (baYeRecord == null) continue;
-            field.boundForce = baYeRecord.ForceId;
-            field.boundWar = baYeRecord.WarId;
+            cityField.boundForce = baYeRecord.ForceId;
+            cityField.boundWar = baYeRecord.WarId;
+            ui.forceFlag.Set((ForceFlags)baYeRecord.ForceId);
             ui.SetValue(baYeRecord.PassedStages.Count(isPass => isPass));
         }
 
         //势力选择
         int totalUnlockForce = int.Parse(LoadJsonFile.playerLevelTableDatas[PlayerDataForGame.instance.pyData.level - 1][6]);
+        var prefab = baYeForceObj.GetComponentInChildren<BaYeForceSelectorUi>(true);
         forceFields = new List<BaYeForceField>();
         for (int i = 0; i < totalUnlockForce + 1; i++)
         {
             int forceIndex = i;
-            GameObject obj = baYeForceObj.transform.GetChild(forceIndex).gameObject;
-            var field = obj.AddComponent<BaYeForceField>();
-            field.forceUi = obj.GetComponent<BaYeForceSelectorUi>();
-            field.forceUi.button.interactable = false;
-            forceFields.Add(field);
-            field.id = forceIndex;
-            field.selectedDisplay = obj.transform.GetChild(2).gameObject;
+            var obj = Instantiate(prefab, baYeForceObj.transform);
+            var forceField = obj.gameObject.AddComponent<BaYeForceField>();
+            forceField.forceUi = obj;
+            forceField.forceUi.button.interactable = false;
+            forceFields.Add(forceField);
+            forceField.id = forceIndex;
             var baYeEventRecord = baYe.data.SingleOrDefault(f => f.ForceId == forceIndex);
             if (baYeEventRecord != null)
             {
-                field.boundCity = baYeEventRecord.CityId;
-                field.boundWar = baYeEventRecord.WarId;
+                forceField.boundCity = baYeEventRecord.CityId;
+                forceField.boundWar = baYeEventRecord.WarId;
             }
-            obj.transform.GetChild(0).GetComponent<Image>().sprite = Resources.Load("Image/shiLi/Flag/" + forceIndex
-                , typeof(Sprite)) as Sprite;
-            obj.transform.GetChild(1).GetComponent<Image>().sprite = Resources.Load("Image/shiLi/Name/" + forceIndex
-                , typeof(Sprite)) as Sprite;
-            field.forceUi.button.onClick.AddListener(delegate()
+
+            obj.forceFlag.Set((ForceFlags) i);
+
+            forceField.forceUi.button.onClick.AddListener(delegate()
             {
                 ChooseBaYeForceOnClick(forceIndex);
             });
-            obj.SetActive(true);
+            obj.gameObject.SetActive(baYe.data.All(e => e.ForceId != forceIndex));
         }
         baYeGoldNumText.text = PlayerDataForGame.instance.warsData.baYe.gold.ToString();
     }
@@ -429,8 +440,8 @@ public class UIManager : MonoBehaviour
     {
         if (PlayerDataForGame.instance.selectedEventId == -1) return;
         var force = forceFields.Single(f => f.id == forceId);
-        forceFields.ForEach(f=>f.selectedDisplay.SetActive(false));
-        force.selectedDisplay.SetActive(true);
+        forceFields.ForEach(f=>f.forceUi.forceFlag.Select(false));
+        force.forceUi.forceFlag.Select(true);
         BaYeManager.instance.SelectBaYeForceCards(forceId);
         selectedBaYeForceId = forceId;
     }
@@ -447,7 +458,7 @@ public class UIManager : MonoBehaviour
         PlayerDataForGame.instance.selectedCity = cityId;
         PlayerDataForGame.instance.chooseWarsId = warId;
         PlayerDataForGame.instance.selectedEventId = eventId;
-        chooseBaYeEventImg.transform.position = baYeEventsObj.transform.GetChild(cityId).transform.position;
+        chooseBaYeEventImg.transform.position = baYeEventsObj.eventList[cityId].transform.position;
         chooseBaYeEventImg.SetActive(true);
         var isBound = false;
         foreach (var field in forceFields)
@@ -465,7 +476,7 @@ public class UIManager : MonoBehaviour
                 isBound = true;
                 break;
             }
-            field.selectedDisplay.SetActive(false);
+            field.forceUi.forceFlag.Select(false);
             field.forceUi.button.interactable = field.boundWar < 0;
             field.forceUi.DisplayLing(field.boundWar >= 0);
         }

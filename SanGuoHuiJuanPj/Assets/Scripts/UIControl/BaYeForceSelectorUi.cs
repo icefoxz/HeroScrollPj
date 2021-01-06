@@ -7,6 +7,7 @@ public class BaYeForceSelectorUi : MonoBehaviour
 {
     public Button button;
     public Image image;
+    public ForceFlagUI forceFlag;
 
     public bool displayLing;
     // Start is called before the first frame update

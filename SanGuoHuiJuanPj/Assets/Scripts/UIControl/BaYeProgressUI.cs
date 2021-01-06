@@ -12,6 +12,6 @@ public class BaYeProgressUI : MonoBehaviour
     {
         slider.maxValue = maxValue;
         slider.value = value;
-        displayText.text = $"当前经验：{value}";
+        displayText.text = $"当前经验：{PlayerDataForGame.instance.warsData.baYe.CurrentExp}";
     }
 }

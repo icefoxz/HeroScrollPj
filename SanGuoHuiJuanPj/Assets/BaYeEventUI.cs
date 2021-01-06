@@ -15,6 +15,7 @@ public class BaYeEventUI : MonoBehaviour
     private List<Image> list;
     public Color cityNameColor;
     public Color defaultCityColor;
+    public ForceFlagUI forceFlag;
     public void Init(int maxValue)
     {
         list = new List<Image>();
@@ -28,8 +29,9 @@ public class BaYeEventUI : MonoBehaviour
         text.color = cityNameColor;
         contentLayout.gameObject.SetActive(true);
         contentLayout.sizeDelta = new Vector2(list.Count * space, contentLayout.sizeDelta.y);
+        forceFlag.Hide();
     }
-    public void DisActiveCityColor()
+    public void InactiveCityColor()
     {
         text.color = defaultCityColor;
     }
