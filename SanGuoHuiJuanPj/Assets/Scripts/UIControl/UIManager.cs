@@ -255,10 +255,10 @@ public class UIManager : MonoBehaviour
         {
             case PlayerDataForGame.WarTypes.None:
             case PlayerDataForGame.WarTypes.Expedition:
-                ZhuChengInterfaceSwitching(1);
+                MainPageSwitching(1);
                 break;
             case PlayerDataForGame.WarTypes.Baye:
-                ZhuChengInterfaceSwitching(4);
+                MainPageSwitching(4);
                 break;
             default:
                 throw new ArgumentOutOfRangeException();
@@ -364,7 +364,8 @@ public class UIManager : MonoBehaviour
         });
         var cityList = LoadJsonFile.playerLevelTableDatas[PlayerDataForGame.instance.pyData.level - 1][7]
             .Split(',').Where(s => !string.IsNullOrWhiteSpace(s)).Select(int.Parse).ToArray();
-        
+        if (cityFields != null && cityFields.Count > 0)
+            cityFields.ForEach(Destroy);
         cityFields = new List<BaYeCityField>();
         for (int i = 0; i < baYeEventsObj.eventList.Length; i++)
         {
@@ -382,6 +383,7 @@ public class UIManager : MonoBehaviour
             {
                 var city = BaYeManager.instance.Map.Single(c => c.CityId == i);
                 ui.Init(city.ExpList.Count);
+                ui.button.onClick.RemoveAllListeners();
                 ui.button.onClick
                 .AddListener(() => ChooseBaYeEventOnClick(indexId, baYeEvent.EventId, baYeEvent.WarId));
                 ui.text.text = LoadJsonFile.baYeDiTuTableDatas[i][3]; //城市名
@@ -403,6 +405,8 @@ public class UIManager : MonoBehaviour
         //势力选择
         int totalUnlockForce = int.Parse(LoadJsonFile.playerLevelTableDatas[PlayerDataForGame.instance.pyData.level - 1][6]);
         var prefab = baYeForceObj.GetComponentInChildren<BaYeForceSelectorUi>(true);
+
+        if (forceFields != null && forceFields.Count > 0) forceFields.ForEach(f => Destroy(f.gameObject));
         forceFields = new List<BaYeForceField>();
         for (int i = 0; i < totalUnlockForce + 1; i++)
         {
@@ -422,10 +426,7 @@ public class UIManager : MonoBehaviour
 
             obj.forceFlag.Set((ForceFlags) i);
 
-            forceField.forceUi.button.onClick.AddListener(delegate()
-            {
-                ChooseBaYeForceOnClick(forceIndex);
-            });
+            forceField.forceUi.button.onClick.AddListener( () => ChooseBaYeForceOnClick(forceIndex));
             obj.gameObject.SetActive(baYe.data.All(e => e.ForceId != forceIndex));
         }
         baYeGoldNumText.text = PlayerDataForGame.instance.warsData.baYe.gold.ToString();
@@ -2104,7 +2105,7 @@ public class UIManager : MonoBehaviour
     /// 主城界面切换
     /// </summary>
     /// <param name="index"></param>
-    public void ZhuChengInterfaceSwitching(int index)
+    public void MainPageSwitching(int index)
     {
         if (isJumping)
         {
@@ -2136,6 +2137,11 @@ public class UIManager : MonoBehaviour
                 InitWarsListInfo(lastAvailableStageIndex);
                 break;
             case 4://霸业
+                if (!SystemTimer.IsToday(PlayerDataForGame.instance.warsData.baYe.lastBaYeActivityTime))
+                {
+                    BaYeManager.instance.Init();
+                    InitBaYeFun();
+                }
                 if (BaYeManager.instance.isShowTips) 
                 {
                     PlayerDataForGame.instance.ShowStringTips(BaYeManager.instance.tipsText) ;

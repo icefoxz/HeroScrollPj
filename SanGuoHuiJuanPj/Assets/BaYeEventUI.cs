@@ -18,6 +18,7 @@ public class BaYeEventUI : MonoBehaviour
     public ForceFlagUI forceFlag;
     public void Init(int maxValue)
     {
+        if (list != null && list.Count > 0) list.ForEach(f => Destroy(f.gameObject));
         list = new List<Image>();
         for (int i = 0; i < maxValue; i++)
         {
