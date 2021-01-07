@@ -97,6 +97,8 @@ public class PlyDataClass
     public long lastJiuTanRedeemTime { get; set; }
     //酒坛每天的获取次数
     public int dailyJiuTanRedemptionCount { get; set; }
+    //上一个游戏版本号
+    public float lastGameVersion { get; set; }
 
 }
 

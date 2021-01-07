@@ -154,6 +154,9 @@ public class UIManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        //版本修正
+        InitHistoryVersionControl();
+
         //第一次进入主场景的时候初始化霸业管理器
         if (PlayerDataForGame.instance.baYeManager == null)
         {
@@ -173,6 +176,22 @@ public class UIManager : MonoBehaviour
 
         OnStartMainScene();
         selectedBaYeForceId = -1;
+    }
+
+    //历史版本控制修正
+    //如果遇上任何重大的Bug，在这里修正
+    private void InitHistoryVersionControl()
+    {
+        var version = float.Parse(Application.version);
+        if (PlayerDataForGame.instance.pyData.lastGameVersion < version)
+        {
+            //修正玩家可以无限刷霸业宝箱3的bug，如果玩家刷玉阙到一定的值，将修改玩家玉阙数据
+            PlayerDataForGame.instance.pyData.lastGameVersion = version;
+            if (PlayerDataForGame.instance.pyData.yvque >= PlayerDataForGame.instance.Bug1_89YvQueCheck)
+                PlayerDataForGame.instance.pyData.yvque = PlayerDataForGame.instance.Bug1_89YvQueSet;
+            PlayerDataForGame.instance.isNeedSaveData = true;
+            LoadSaveData.instance.SaveGameData(1);
+        }
     }
 
     //时间管理
