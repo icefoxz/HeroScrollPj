@@ -187,8 +187,8 @@ public class UIManager : MonoBehaviour
         {
             //修正玩家可以无限刷霸业宝箱3的bug，如果玩家刷玉阙到一定的值，将修改玩家玉阙数据
             PlayerDataForGame.instance.pyData.lastGameVersion = version;
-            if (PlayerDataForGame.instance.pyData.yvque >= PlayerDataForGame.instance.Bug1_89YvQueCheck)
-                PlayerDataForGame.instance.pyData.yvque = PlayerDataForGame.instance.Bug1_89YvQueSet;
+            if (PlayerDataForGame.instance.pyData.yvque >= PlayerDataForGame.instance.Bug1_9YvQueCheck)
+                PlayerDataForGame.instance.pyData.yvque = PlayerDataForGame.instance.Bug1_9YvQueSet;
             PlayerDataForGame.instance.isNeedSaveData = true;
             LoadSaveData.instance.SaveGameData(1);
         }
