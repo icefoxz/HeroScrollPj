@@ -262,9 +262,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0bba04d8d61ad4d36b6c49dbb738b98f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  appKey: 30f84d47e6298
-  appSerect: c4c995dd348612437192739aeecb8e60
-  isWarn: 0
 --- !u!4 &16165565
 Transform:
   m_ObjectHideFlags: 0
@@ -25277,6 +25274,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c8aa45ae1749b884a8b07d925c97d129, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Bug1_9YvQueCheck: 10000
+  Bug1_9YvQueSet: 0
   WarType: 0
   isNeedSaveData: 0
   isHadNewSaveData: 0
@@ -25299,6 +25298,7 @@ MonoBehaviour:
   textTipsObj: {fileID: 1402530242}
   selectedEventId: 0
   selectedCity: 0
+  mainSceneTips: 
 --- !u!114 &1717593871
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -29874,9 +29874,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0bba04d8d61ad4d36b6c49dbb738b98f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  appKey: 30f84d47e6298
-  appSerect: c4c995dd348612437192739aeecb8e60
-  isWarn: 0
 --- !u!114 &2050792041
 MonoBehaviour:
   m_ObjectHideFlags: 0
