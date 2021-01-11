@@ -34,23 +34,24 @@ public class StartSceneToServerCS : MonoBehaviour
             instance = this;
         }
 
-        InfoButtonOnClickFun();
+        InfoButtonOnClickFun();//给按键绑定方法
     }
 
     private void Start()
     {
-        AccountDataInfoFun();
-        LoginGameInfoFun();
+        AccountDataInfoFun();//读取上一次玩家的账号信息
+        LoginGameInfoFun();//切换场景，进入游戏
+        bindPhoneBtnObj.gameObject.SetActive(false);//隐藏绑定手机按钮
     }
 
     private void InfoButtonOnClickFun()
     {
-        accountBtn.GetComponent<Button>().onClick.AddListener(TakeChackAccountBtnFun);
-        createAccountBtn.onClick.AddListener(CreateAccountFun);
-        hadAccountNumBtn.onClick.AddListener(HadAccountOnClickFun);
-        backCreateAccountBtn.onClick.AddListener(BackCreateBtnOnClickFun);
-        loginAccountBtn.onClick.AddListener(TakeLoginAccountBtnFun);
-        closeBtn.onClick.AddListener(CloseLoginInfoObjFun);
+        accountBtn.GetComponent<Button>().onClick.AddListener(TakeChackAccountBtnFun);//账号
+        createAccountBtn.onClick.AddListener(CreateAccountFun);//创建账号
+        hadAccountNumBtn.onClick.AddListener(HadAccountOnClickFun);//有账号
+        backCreateAccountBtn.onClick.AddListener(BackCreateBtnOnClickFun);//
+        loginAccountBtn.onClick.AddListener(TakeLoginAccountBtnFun);//登录
+        closeBtn.onClick.AddListener(CloseLoginInfoObjFun);//关闭
     }
 
     /// <summary>
@@ -97,25 +98,25 @@ public class StartSceneToServerCS : MonoBehaviour
     {
         loginBtn.onClick.RemoveAllListeners();
         //判断本地是否有存档，或者播放过剧情故事
-        if (LoadSaveData.instance.isHadSaveData || StartSceneUIManager.instance.isPlayedStory)
+        if (!LoadSaveData.instance.isHadSaveData && !StartSceneUIManager.instance.isPlayedStory)
         {
-            if (PlayerDataForGame.instance.atData.accountName == "")
-            {
-                //登录按钮添加创建账号方法
-                loginBtn.onClick.AddListener(LoginGameCreateAccount);
-                accountBtn.SetActive(false);
-            }
-            else
-            {
-                //登录按钮添加进入游戏方法
-                loginBtn.onClick.AddListener(delegate () { StartSceneUIManager.instance.LoadingScene(1, true); });
-                accountBtn.SetActive(true);
-            }
+            StartSceneUIManager.instance.DontHaveSaveDataPlayStory(loginBtn);//播放剧情
+            return;
+        }
+
+        if (PlayerDataForGame.instance.atData.accountName == "")
+        {
+            //登录按钮添加创建账号方法
+            loginBtn.onClick.AddListener(LoginGameCreateAccount);//【开始游戏】按钮绑定创建账号方法
+            accountBtn.SetActive(false);
         }
         else
         {
-            StartSceneUIManager.instance.DontHaveSaveDataPlayStory(loginBtn);
+            //登录按钮添加进入游戏方法
+            loginBtn.onClick.AddListener(delegate () { StartSceneUIManager.instance.LoadingScene(1, true); });
+            accountBtn.SetActive(true);
         }
+
     }
 
     /// <summary>
@@ -132,7 +133,7 @@ public class StartSceneToServerCS : MonoBehaviour
         }
         else
         {
-            bindPhoneBtnObj.SetActive(true);
+            bindPhoneBtnObj.SetActive(false);//暂时不绑定手机
         }
         phoneNumberObj.SetActive(true);
         chackAccountObj.SetActive(true);
@@ -145,40 +146,40 @@ public class StartSceneToServerCS : MonoBehaviour
     private void LoginGameCreateAccount()
     {
         //申请一个账号
-        string replyStr = HttpToServerCS.instance.LoginRelatedFunsForGet(LoginFunIndex.CREATE_ACCOUNT_NAME, null);
-        if (replyStr != HttpResponse.ERROR)
-        {
-            BackAccountClass backAccountClass = new BackAccountClass();
-            try
-            {
-                backAccountClass = JsonConvert.DeserializeObject<BackAccountClass>(replyStr);
+        //string replyStr = HttpToServerCS.instance.LoginRelatedFunsForGet(LoginFunIndex.CREATE_ACCOUNT_NAME, null);
+        //if (replyStr == HttpResponse.ERROR)//如果没有错误
+        //{
+        //    Debug.Log("服务器响应错误");
+        //    PlayerDataForGame.instance.ShowStringTips("服务器响应错误");
+        //    return;
+        //}
 
-                if (backAccountClass.error != (int)ServerBackCode.SUCCESS)
-                {
-                    string serverBackStr = HttpToServerCS.instance.ErrorAnalysisFun(null, backAccountClass.error);
-                    PlayerDataForGame.instance.ShowStringTips(serverBackStr);
-                    return;
-                }
-            }
-            catch (Exception e)
-            {
-                Debug.LogError(e.ToString());
-                string serverBackStr = HttpToServerCS.instance.ErrorAnalysisFun(replyStr);
-                PlayerDataForGame.instance.ShowStringTips(serverBackStr);
-                return;
-            }
-            accountText.text = backAccountClass.name;
-            accountTextObj.SetActive(true);
-            passwordInput.text = "";
-            passwordInput1.text = "";
-            registerAccountObj.SetActive(true);
-            loginInfoObj.SetActive(true);
-        }
-        else
-        {
-            Debug.Log("服务器响应错误");
-            PlayerDataForGame.instance.ShowStringTips("服务器响应错误");
-        }
+        //BackAccountClass backAccountClass = new BackAccountClass();
+        //try
+        //{
+        //    backAccountClass = JsonConvert.DeserializeObject<BackAccountClass>(replyStr);//字符串replyStr转化成类BackAccountClass
+
+        //    if (backAccountClass.Code != (int)ServerBackCode.SUCCESS)
+        //    {
+        //        string serverBackStr = HttpToServerCS.instance.ErrorAnalysisFun(null, backAccountClass.Code);
+        //        PlayerDataForGame.instance.ShowStringTips(serverBackStr);
+        //        return;
+        //    }
+        //}
+        //catch (Exception e)
+        //{
+        //    Debug.LogError(e.ToString());
+        //    string serverBackStr = HttpToServerCS.instance.ErrorAnalysisFun(replyStr);
+        //    PlayerDataForGame.instance.ShowStringTips(serverBackStr);
+        //    return;
+        //}
+
+        accountText.text = "本地账号";//backAccountClass.name;
+        accountTextObj.SetActive(true);
+        passwordInput.text = "";
+        passwordInput1.text = "";
+        registerAccountObj.SetActive(true);
+        loginInfoObj.SetActive(true);
     }
 
     [SerializeField]
@@ -212,36 +213,36 @@ public class StartSceneToServerCS : MonoBehaviour
 
         var arrStr = new[] { accountText.text, passwordInput.text };
         //提交账号密码，申请注册账号
-        var replyStr = HttpToServerCS.instance.LoginRelatedFunsForGet(LoginFunIndex.CREATE_ACCOUNT, arrStr);
-        if (replyStr == HttpResponse.ERROR)
-        {
-            Debug.Log("服务器响应错误");
-            PlayerDataForGame.instance.ShowStringTips("服务器响应错误");
-            return;
-        }
+        //var replyStr = HttpToServerCS.instance.LoginRelatedFunsForGet(LoginFunIndex.CREATE_ACCOUNT, arrStr);
+        //if (replyStr == HttpResponse.ERROR)
+        //{
+        //    Debug.Log("服务器响应错误");
+        //    PlayerDataForGame.instance.ShowStringTips("服务器响应错误");
+        //    return;
+        //}
 
-        var backAccountClass = new BackAccountClass();
-        try
-        {
-            backAccountClass = JsonConvert.DeserializeObject<BackAccountClass>(replyStr);
+        //var backAccountClass = new BackAccountClass();
+        //try
+        //{
+        //    backAccountClass = JsonConvert.DeserializeObject<BackAccountClass>(replyStr);
 
-            if (backAccountClass.error != (int) ServerBackCode.SUCCESS)
-            {
-                var serverBackStr = HttpToServerCS.instance.ErrorAnalysisFun(null, backAccountClass.error);
-                PlayerDataForGame.instance.ShowStringTips(serverBackStr);
-                return;
-            }
-        }
-        catch (Exception e)
-        {
-            Debug.LogError(e.ToString());
-            var serverBackStr = HttpToServerCS.instance.ErrorAnalysisFun(replyStr);
-            PlayerDataForGame.instance.ShowStringTips(serverBackStr);
-            return;
-        }
+        //    if (backAccountClass.Code != (int) ServerBackCode.SUCCESS)
+        //    {
+        //        var serverBackStr = HttpToServerCS.instance.ErrorAnalysisFun(null, backAccountClass.Code);
+        //        PlayerDataForGame.instance.ShowStringTips(serverBackStr);
+        //        return;
+        //    }
+        //}
+        //catch (Exception e)
+        //{
+        //    Debug.LogError(e.ToString());
+        //    var serverBackStr = HttpToServerCS.instance.ErrorAnalysisFun(replyStr);
+        //    PlayerDataForGame.instance.ShowStringTips(serverBackStr);
+        //    return;
+        //}
 
         //给游戏中存放账户名和密码
-        PlayerDataForGame.instance.atData.accountName = backAccountClass.name;
+        PlayerDataForGame.instance.atData.accountName = accountText.text;
         PlayerDataForGame.instance.atData.passwordStr = passwordInput.text;
         PlayerPrefs.SetString(accountNamePrefsStr, PlayerDataForGame.instance.atData.accountName);
         PlayerPrefs.SetString(passwordStrPrefsStr, PlayerDataForGame.instance.atData.passwordStr);
@@ -371,100 +372,99 @@ public class StartSceneToServerCS : MonoBehaviour
         if (accountInput.text == "")
         {
             PlayerDataForGame.instance.ShowStringTips("请输入账号");
+            return;
         }
-        else
+
+        if (pwInput.text == "")
         {
-            if (pwInput.text == "")
-            {
-                PlayerDataForGame.instance.ShowStringTips("请输入密码");
-            }
-            else
-            {
-                int isPhone = 0;
-                //判断是否是手机号登录
-                if (accountInput.text.Length == 11)
-                {
-                    isPhone = 1;
-                }
-                string[] arrStr = new string[3] { accountInput.text, pwInput.text, isPhone.ToString() };
-
-                string replyStr = HttpToServerCS.instance.LoginRelatedFunsForGet(LoginFunIndex.ACCOUNT_LOGIN, arrStr);
-                if (replyStr != HttpResponse.ERROR)
-                {
-                    BackForLoginClass backForLoginClass = new BackForLoginClass();
-                    try
-                    {
-                        backForLoginClass = JsonConvert.DeserializeObject<BackForLoginClass>(replyStr);
-                        if (backForLoginClass.error != (int)ServerBackCode.SUCCESS)
-                        {
-                            string serverBackStr = HttpToServerCS.instance.ErrorAnalysisFun(null, backForLoginClass.error);
-                            PlayerDataForGame.instance.ShowStringTips(serverBackStr);
-                            return;
-                        }
-                    }
-                    catch (Exception e)
-                    {
-                        Debug.LogError(e.ToString());
-                        string serverBackStr = HttpToServerCS.instance.ErrorAnalysisFun(replyStr);
-                        PlayerDataForGame.instance.ShowStringTips(serverBackStr);
-                        return;
-                    }
-
-                    //设置账号数据存储到游戏中
-                    PlyDataClass save0 = new PlyDataClass();
-                    HSTDataClass save1 = new HSTDataClass();
-                    WarsDataClass save2 = new WarsDataClass();
-                    GetBoxOrCodeData save3 = new GetBoxOrCodeData();
-                    //Debug.Log("下拉数据：");
-                    //Debug.Log(backForLoginClass.data);
-                    //Debug.Log(backForLoginClass.data2);
-                    //Debug.Log(backForLoginClass.data3);
-                    //Debug.Log(backForLoginClass.data4);
-                    //拉取服务器的存档文件
-                    try
-                    {
-                        save0 = JsonConvert.DeserializeObject<PlyDataClass>(backForLoginClass.data);
-                        save1 = JsonConvert.DeserializeObject<HSTDataClass>(backForLoginClass.data2);
-                        save2 = JsonConvert.DeserializeObject<WarsDataClass>(backForLoginClass.data3);
-                        save3 = JsonConvert.DeserializeObject<GetBoxOrCodeData>(backForLoginClass.data4);
-                    }
-                    catch (Exception e)
-                    {
-                        Debug.LogError("服务器存档解析失败：" + e.ToString());
-                        PlayerDataForGame.instance.ShowStringTips("服务器存档解析失败");
-                        return;
-                    }
-                    LoadSaveData.instance.SetGamePlayerBasicData(save0, save1, save2, save3);
-                    PlayerDataForGame.instance.isNeedSaveData = true;
-                    LoadSaveData.instance.SaveGameData();
-                    LoadSaveData.instance.isHadSaveData = true;
-
-                    accountText.text = backForLoginClass.name;
-                    accountTextObj.SetActive(true);
-                    phoneNumberObj.transform.GetChild(0).GetChild(0).GetComponent<Text>().text = backForLoginClass.phone;
-                    phoneNumberObj.SetActive(true);
-
-                    PlayerDataForGame.instance.atData.accountName = backForLoginClass.name;
-                    PlayerDataForGame.instance.atData.passwordStr = pwInput.text;
-                    PlayerDataForGame.instance.atData.phoneNumber = backForLoginClass.phone;
-
-                    PlayerPrefs.SetString(accountNamePrefsStr, PlayerDataForGame.instance.atData.accountName);
-                    PlayerPrefs.SetString(passwordStrPrefsStr, PlayerDataForGame.instance.atData.passwordStr);
-                    PlayerPrefs.SetString(phoneNumberPrefsStr, PlayerDataForGame.instance.atData.phoneNumber);
-
-                    bindPhoneBtnObj.SetActive(false);
-                    chackAccountObj.SetActive(true);
-
-                    changeAccountObj.SetActive(false);
-                    pwInput.text = "";
-                    PlayerDataForGame.instance.ShowStringTips("登录账号成功");
-                }
-                else
-                {
-                    Debug.Log("服务器响应错误");
-                    PlayerDataForGame.instance.ShowStringTips("服务器响应错误");
-                }
-            }
+            PlayerDataForGame.instance.ShowStringTips("请输入密码");
+            return;
         }
+
+        int isPhone = 0;//非手机号
+        //判断是否是手机号登录
+        if (accountInput.text.Length == 11)
+        {
+            isPhone = 1;//手机号
+        }
+
+        //string[] arrStr = new string[3] { accountInput.text, pwInput.text, isPhone.ToString() };
+
+        //string replyStr = HttpToServerCS.instance.LoginRelatedFunsForGet(LoginFunIndex.ACCOUNT_LOGIN, arrStr);
+        //if (replyStr != HttpResponse.ERROR)
+        //{
+        //    BackForLoginClass backForLoginClass = new BackForLoginClass();
+        //    try
+        //    {
+        //        backForLoginClass = JsonConvert.DeserializeObject<BackForLoginClass>(replyStr);
+        //        if (backForLoginClass.error != (int)ServerBackCode.SUCCESS)
+        //        {
+        //            string serverBackStr = HttpToServerCS.instance.ErrorAnalysisFun(null, backForLoginClass.error);
+        //            PlayerDataForGame.instance.ShowStringTips(serverBackStr);
+        //            return;
+        //        }
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        Debug.LogError(e.ToString());
+        //        string serverBackStr = HttpToServerCS.instance.ErrorAnalysisFun(replyStr);
+        //        PlayerDataForGame.instance.ShowStringTips(serverBackStr);
+        //        return;
+        //    }
+
+            //设置账号数据存储到游戏中
+            //PlyDataClass save0 = new PlyDataClass();
+            //HSTDataClass save1 = new HSTDataClass();
+            //WarsDataClass save2 = new WarsDataClass();
+            //GetBoxOrCodeData save3 = new GetBoxOrCodeData();
+            //Debug.Log("下拉数据：");
+            //Debug.Log(backForLoginClass.data);
+            //Debug.Log(backForLoginClass.data2);
+            //Debug.Log(backForLoginClass.data3);
+            //Debug.Log(backForLoginClass.data4);
+            //拉取服务器的存档文件
+            //try
+            //{
+            //    save0 = JsonConvert.DeserializeObject<PlyDataClass>(backForLoginClass.data);
+            //    save1 = JsonConvert.DeserializeObject<HSTDataClass>(backForLoginClass.data2);
+            //    save2 = JsonConvert.DeserializeObject<WarsDataClass>(backForLoginClass.data3);
+            //    save3 = JsonConvert.DeserializeObject<GetBoxOrCodeData>(backForLoginClass.data4);
+            //}
+            //catch (Exception e)
+            //{
+            //    Debug.LogError("服务器存档解析失败：" + e.ToString());
+            //    PlayerDataForGame.instance.ShowStringTips("服务器存档解析失败");
+            //    return;
+            //}
+            //LoadSaveData.instance.SetGamePlayerBasicData(save0, save1, save2, save3);
+            //PlayerDataForGame.instance.isNeedSaveData = true;
+            //LoadSaveData.instance.SaveGameData();
+            //LoadSaveData.instance.isHadSaveData = true;
+
+            accountText.text = PlayerDataForGame.instance.atData.accountName;
+            accountTextObj.SetActive(true);
+            phoneNumberObj.transform.GetChild(0).GetChild(0).GetComponent<Text>().text = PlayerDataForGame.instance.atData.phoneNumber;
+            phoneNumberObj.SetActive(true);
+
+            //PlayerDataForGame.instance.atData.accountName = backForLoginClass.name;
+            //PlayerDataForGame.instance.atData.passwordStr = pwInput.text;
+            //PlayerDataForGame.instance.atData.phoneNumber = backForLoginClass.phone;
+
+            //PlayerPrefs.SetString(accountNamePrefsStr, PlayerDataForGame.instance.atData.accountName);
+            //PlayerPrefs.SetString(passwordStrPrefsStr, PlayerDataForGame.instance.atData.passwordStr);
+            //PlayerPrefs.SetString(phoneNumberPrefsStr, PlayerDataForGame.instance.atData.phoneNumber);
+
+            bindPhoneBtnObj.SetActive(false);
+            chackAccountObj.SetActive(true);
+
+            changeAccountObj.SetActive(false);
+            pwInput.text = "";
+            PlayerDataForGame.instance.ShowStringTips("登录账号成功");
+        //}
+        //else
+        //{
+        //    Debug.Log("服务器响应错误");
+        //    PlayerDataForGame.instance.ShowStringTips("服务器响应错误");
+        //}
     }
 }
