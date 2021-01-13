@@ -373,7 +373,7 @@ public class UIManager : MonoBehaviour
             var baYeEvent = BaYeManager.instance.Map.Single(e => e.CityId == indexId);
             var baYeRecord = baYe.data.SingleOrDefault(f => f.CityId == indexId);
             ui.button.interactable = cityList.Length > i;
-            if (cityList.Length >= i)
+            if (cityList.Length > i)
             {
                 var city = BaYeManager.instance.Map.Single(c => c.CityId == i);
                 ui.Init(city.ExpList.Count);
