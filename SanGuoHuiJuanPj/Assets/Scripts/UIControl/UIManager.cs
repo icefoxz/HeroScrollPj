@@ -183,12 +183,12 @@ public class UIManager : MonoBehaviour
     private void InitHistoryVersionControl()
     {
         var version = float.Parse(Application.version);
-        if (PlayerDataForGame.instance.pyData.lastGameVersion < version)
+        if (PlayerDataForGame.instance.pyData.LastGameVersion < version)
         {
             //修正玩家可以无限刷霸业宝箱3的bug，如果玩家刷玉阙到一定的值，将修改玩家玉阙数据
-            PlayerDataForGame.instance.pyData.lastGameVersion = version;
-            if (PlayerDataForGame.instance.pyData.yvque >= PlayerDataForGame.instance.Bug1_9YvQueCheck)
-                PlayerDataForGame.instance.pyData.yvque = PlayerDataForGame.instance.Bug1_9YvQueSet;
+            PlayerDataForGame.instance.pyData.LastGameVersion = version;
+            if (PlayerDataForGame.instance.pyData.YvQue >= PlayerDataForGame.instance.Bug1_9YvQueCheck)
+                PlayerDataForGame.instance.pyData.YvQue = PlayerDataForGame.instance.Bug1_9YvQueSet;
             PlayerDataForGame.instance.isNeedSaveData = true;
             LoadSaveData.instance.SaveGameData(1);
         }
@@ -239,9 +239,9 @@ public class UIManager : MonoBehaviour
     /// </summary>
     public void ItemsRedemptionFunc()
     {
-        if (!SystemTimer.IsToday(PlayerDataForGame.instance.pyData.lastJinNangRedeemTime)) 
+        if (!SystemTimer.IsToday(PlayerDataForGame.instance.pyData.LastJinNangRedeemTime)) 
             PlayerDataForGame.instance.SetRedeemCount(PlayerDataForGame.RedeemTypes.JinNang, 0);
-        if (!SystemTimer.IsToday(PlayerDataForGame.instance.pyData.lastJiuTanRedeemTime)) 
+        if (!SystemTimer.IsToday(PlayerDataForGame.instance.pyData.LastJiuTanRedeemTime)) 
             PlayerDataForGame.instance.SetRedeemCount(PlayerDataForGame.RedeemTypes.JiuTan, 0);
         //根据系统时间计算本地的天数是否是同一天
     }
@@ -353,16 +353,10 @@ public class UIManager : MonoBehaviour
         }).ToList().ForEach(set =>
         {
             var (lvl, city) = set;
-            if (!cityLvlUnlock.ContainsKey(city))
-            {
-                cityLvlUnlock.Add(city, lvl);
-                return;
-            }
-
-            if (cityLvlUnlock[city] <= lvl)
-                cityLvlUnlock[city] = lvl;
+            if (cityLvlUnlock.ContainsKey(city)) return;
+            cityLvlUnlock.Add(city, lvl);
         });
-        var cityList = LoadJsonFile.playerLevelTableDatas[PlayerDataForGame.instance.pyData.level - 1][7]
+        var cityList = LoadJsonFile.playerLevelTableDatas[PlayerDataForGame.instance.pyData.Level - 1][7]
             .Split(',').Where(s => !string.IsNullOrWhiteSpace(s)).Select(int.Parse).ToArray();
         if (cityFields != null && cityFields.Count > 0)
             cityFields.ForEach(Destroy);
@@ -403,7 +397,7 @@ public class UIManager : MonoBehaviour
         }
 
         //势力选择
-        int totalUnlockForce = int.Parse(LoadJsonFile.playerLevelTableDatas[PlayerDataForGame.instance.pyData.level - 1][6]);
+        int totalUnlockForce = int.Parse(LoadJsonFile.playerLevelTableDatas[PlayerDataForGame.instance.pyData.Level - 1][6]);
         var prefab = baYeForceObj.GetComponentInChildren<BaYeForceSelectorUi>(true);
 
         if (forceFields != null && forceFields.Count > 0) forceFields.ForEach(f => Destroy(f.gameObject));
@@ -821,7 +815,7 @@ public class UIManager : MonoBehaviour
             AddTiLiNums(tiLiNums);
         }
         
-        string rewardsStr = LoadJsonFile.warTableDatas[warId][PlayerDataForGame.instance.pyData.forceId + 5];
+        string rewardsStr = LoadJsonFile.warTableDatas[warId][PlayerDataForGame.instance.pyData.ForceId + 5];
 
         List<RewardsCardClass> rewards = new List<RewardsCardClass>();
 
@@ -898,7 +892,7 @@ public class UIManager : MonoBehaviour
         {
             //远征特殊
             case 6:
-                startId = endId = int.Parse(LoadJsonFile.playerLevelTableDatas[PlayerDataForGame.instance.pyData.level - 1][5]);
+                startId = endId = int.Parse(LoadJsonFile.playerLevelTableDatas[PlayerDataForGame.instance.pyData.Level - 1][5]);
                 break;
             //炼狱特殊
             //case 5:
@@ -1076,7 +1070,7 @@ public class UIManager : MonoBehaviour
     private void UpdateCardNumsShow()
     {
         cardsListTitle.text = "出战";
-        cardsNumsTitle.text = PlayerDataForGame.instance.CalculationFightCount() + "/" + LoadJsonFile.playerLevelTableDatas[PlayerDataForGame.instance.pyData.level - 1][2];
+        cardsNumsTitle.text = PlayerDataForGame.instance.CalculationFightCount() + "/" + LoadJsonFile.playerLevelTableDatas[PlayerDataForGame.instance.pyData.Level - 1][2];
     }
 
     //是否展示卡牌详情显示
@@ -1099,7 +1093,7 @@ public class UIManager : MonoBehaviour
         AudioController0.instance.RandomPlayGuZhengAudio();
 
         indexChooseListForceId++;
-        if (indexChooseListForceId > int.Parse(LoadJsonFile.playerLevelTableDatas[PlayerDataForGame.instance.pyData.level - 1][6]))
+        if (indexChooseListForceId > int.Parse(LoadJsonFile.playerLevelTableDatas[PlayerDataForGame.instance.pyData.Level - 1][6]))
         {
             indexChooseListForceId = 0;
         }
@@ -1327,7 +1321,7 @@ public class UIManager : MonoBehaviour
         //for (int i = 0; i < PlayerDataForGame.instance.hstData.soldierSaveData.Count; i++)
         //{
         //    fuzhuDataIndex = PlayerDataForGame.instance.hstData.soldierSaveData[i];
-        //    if (fuzhuDataIndex.level > 0 || fuzhuDataIndex.chips > 0)
+        //    if (fuzhuDataIndex.Level > 0 || fuzhuDataIndex.chips > 0)
         //    {
         //        cardNums++;
         //        ShowOneFuZhuRules(LoadJsonFile.soldierTableDatas, fuzhuDataIndex, 13);
@@ -1371,7 +1365,7 @@ public class UIManager : MonoBehaviour
         //for (int i = 0; i < PlayerDataForGame.instance.hstData.spellSaveData.Count; i++)
         //{
         //    fuzhuDataIndex = PlayerDataForGame.instance.hstData.spellSaveData[i];
-        //    if (fuzhuDataIndex.level > 0 || fuzhuDataIndex.chips > 0)
+        //    if (fuzhuDataIndex.Level > 0 || fuzhuDataIndex.chips > 0)
         //    {
         //        cardNums++;
         //        ShowOneFuZhuRules(LoadJsonFile.spellTableDatas, fuzhuDataIndex, 6);
@@ -1750,7 +1744,7 @@ public class UIManager : MonoBehaviour
     /// </summary>
     private void SortHSTData(List<NowLevelAndHadChip> dataList)
     {
-        //dataList.Sort((NowLevelAndHadChip n1, NowLevelAndHadChip n2) => n2.level.CompareTo(n1.level));
+        //dataList.Sort((NowLevelAndHadChip n1, NowLevelAndHadChip n2) => n2.Level.CompareTo(n1.Level));
         dataList.Sort((NowLevelAndHadChip n1, NowLevelAndHadChip n2) =>
         {
             if (n2.isFight.CompareTo(n1.isFight) != 0)
@@ -1777,24 +1771,24 @@ public class UIManager : MonoBehaviour
     public void InitializationPlayerInfo()
     {
         //player`s name
-        playerInfoObj.transform.GetChild(1).GetChild(1).GetComponent<Text>().text = LoadJsonFile.playerInitialTableDatas[PlayerDataForGame.instance.pyData.forceId][1];
-        if (PlayerDataForGame.instance.pyData.level >= LoadJsonFile.playerLevelTableDatas.Count)
+        playerInfoObj.transform.GetChild(1).GetChild(1).GetComponent<Text>().text = LoadJsonFile.playerInitialTableDatas[PlayerDataForGame.instance.pyData.ForceId][1];
+        if (PlayerDataForGame.instance.pyData.Level >= LoadJsonFile.playerLevelTableDatas.Count)
         {
             playerInfoObj.transform.GetChild(0).GetComponent<Slider>().value = 1;
             playerInfoObj.transform.GetChild(2).GetChild(1).GetComponent<Text>().text =LoadJsonFile.GetStringText(34);
-            playerInfoObj.transform.GetChild(0).GetChild(2).GetComponent<Text>().text = PlayerDataForGame.instance.pyData.exp + "/" + 99999;
+            playerInfoObj.transform.GetChild(0).GetChild(2).GetComponent<Text>().text = PlayerDataForGame.instance.pyData.Exp + "/" + 99999;
         }
         else
         {
-            //exp
-            playerInfoObj.transform.GetChild(0).GetComponent<Slider>().value = PlayerDataForGame.instance.pyData.exp / float.Parse(LoadJsonFile.playerLevelTableDatas[PlayerDataForGame.instance.pyData.level][1]);
-            //level
-            playerInfoObj.transform.GetChild(2).GetChild(1).GetComponent<Text>().text = string.Format(LoadJsonFile.GetStringText(35), PlayerDataForGame.instance.pyData.level);//玩家等级
-            playerInfoObj.transform.GetChild(0).GetChild(2).GetComponent<Text>().text = PlayerDataForGame.instance.pyData.exp + "/" + LoadJsonFile.playerLevelTableDatas[PlayerDataForGame.instance.pyData.level][1];
+            //Exp
+            playerInfoObj.transform.GetChild(0).GetComponent<Slider>().value = PlayerDataForGame.instance.pyData.Exp / float.Parse(LoadJsonFile.playerLevelTableDatas[PlayerDataForGame.instance.pyData.Level][1]);
+            //Level
+            playerInfoObj.transform.GetChild(2).GetChild(1).GetComponent<Text>().text = string.Format(LoadJsonFile.GetStringText(35), PlayerDataForGame.instance.pyData.Level);//玩家等级
+            playerInfoObj.transform.GetChild(0).GetChild(2).GetComponent<Text>().text = PlayerDataForGame.instance.pyData.Exp + "/" + LoadJsonFile.playerLevelTableDatas[PlayerDataForGame.instance.pyData.Level][1];
         }
         //货币
-        yuanBaoNumText.text = PlayerDataForGame.instance.pyData.yuanbao.ToString();
-        yvQueNumText.text = PlayerDataForGame.instance.pyData.yvque.ToString();
+        yuanBaoNumText.text = PlayerDataForGame.instance.pyData.YuanBao.ToString();
+        yvQueNumText.text = PlayerDataForGame.instance.pyData.YvQue.ToString();
         showTiLiNums = PlayerPrefs.GetInt(TimeSystemControl.staminaStr);
         tiLiNumText.text = showTiLiNums + "/90";
 
@@ -1936,7 +1930,7 @@ public class UIManager : MonoBehaviour
     //升级卡牌后更新显示
     private void UpdateLevelCard()
     {
-        //Debug.Log("selectCardData.level: " + selectCardData.level);
+        //Debug.Log("selectCardData.Level: " + selectCardData.Level);
         Transform listCard = lastSelectImg.transform.parent;
         if (selectCardData.level < LoadJsonFile.upGradeTableDatas.Count)
         {
@@ -2213,36 +2207,36 @@ public class UIManager : MonoBehaviour
     /// <param name="expNums"></param>
     public void GetPlayerExp(int expNums)
     {
-        if (PlayerDataForGame.instance.pyData.level >= LoadJsonFile.playerLevelTableDatas.Count)
+        if (PlayerDataForGame.instance.pyData.Level >= LoadJsonFile.playerLevelTableDatas.Count)
         {
-            PlayerDataForGame.instance.pyData.exp += expNums;
-            playerInfoObj.transform.GetChild(0).GetChild(2).GetComponent<Text>().text = PlayerDataForGame.instance.pyData.exp + "/" + 99999;
+            PlayerDataForGame.instance.pyData.Exp += expNums;
+            playerInfoObj.transform.GetChild(0).GetChild(2).GetComponent<Text>().text = PlayerDataForGame.instance.pyData.Exp + "/" + 99999;
         }
         else
         {
-            PlayerDataForGame.instance.pyData.exp += expNums;
-            while (int.Parse(LoadJsonFile.playerLevelTableDatas[PlayerDataForGame.instance.pyData.level][1]) <= PlayerDataForGame.instance.pyData.exp)
+            PlayerDataForGame.instance.pyData.Exp += expNums;
+            while (int.Parse(LoadJsonFile.playerLevelTableDatas[PlayerDataForGame.instance.pyData.Level][1]) <= PlayerDataForGame.instance.pyData.Exp)
             {
-                PlayerDataForGame.instance.pyData.exp -= int.Parse(LoadJsonFile.playerLevelTableDatas[PlayerDataForGame.instance.pyData.level][1]);
-                PlayerDataForGame.instance.pyData.level++;
+                PlayerDataForGame.instance.pyData.Exp -= int.Parse(LoadJsonFile.playerLevelTableDatas[PlayerDataForGame.instance.pyData.Level][1]);
+                PlayerDataForGame.instance.pyData.Level++;
                 PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(39));
-                if (PlayerDataForGame.instance.pyData.level >= LoadJsonFile.playerLevelTableDatas.Count)
+                if (PlayerDataForGame.instance.pyData.Level >= LoadJsonFile.playerLevelTableDatas.Count)
                 {
                     PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(40));
                     break;
                 }
             }
-            if (PlayerDataForGame.instance.pyData.level >= LoadJsonFile.playerLevelTableDatas.Count)
+            if (PlayerDataForGame.instance.pyData.Level >= LoadJsonFile.playerLevelTableDatas.Count)
             {
                 playerInfoObj.transform.GetChild(0).GetComponent<Slider>().value = 1;
                 playerInfoObj.transform.GetChild(2).GetChild(1).GetComponent<Text>().text = LoadJsonFile.GetStringText(34);
-                playerInfoObj.transform.GetChild(0).GetChild(2).GetComponent<Text>().text = PlayerDataForGame.instance.pyData.exp + "/" + 99999;
+                playerInfoObj.transform.GetChild(0).GetChild(2).GetComponent<Text>().text = PlayerDataForGame.instance.pyData.Exp + "/" + 99999;
             }
             else
             {
-                playerInfoObj.transform.GetChild(0).GetComponent<Slider>().value = PlayerDataForGame.instance.pyData.exp / float.Parse(LoadJsonFile.playerLevelTableDatas[PlayerDataForGame.instance.pyData.level][1]);
-                playerInfoObj.transform.GetChild(2).GetChild(1).GetComponent<Text>().text = string.Format(LoadJsonFile.GetStringText(35), PlayerDataForGame.instance.pyData.level);
-                playerInfoObj.transform.GetChild(0).GetChild(2).GetComponent<Text>().text = PlayerDataForGame.instance.pyData.exp + "/" + LoadJsonFile.playerLevelTableDatas[PlayerDataForGame.instance.pyData.level][1];
+                playerInfoObj.transform.GetChild(0).GetComponent<Slider>().value = PlayerDataForGame.instance.pyData.Exp / float.Parse(LoadJsonFile.playerLevelTableDatas[PlayerDataForGame.instance.pyData.Level][1]);
+                playerInfoObj.transform.GetChild(2).GetChild(1).GetComponent<Text>().text = string.Format(LoadJsonFile.GetStringText(35), PlayerDataForGame.instance.pyData.Level);
+                playerInfoObj.transform.GetChild(0).GetChild(2).GetComponent<Text>().text = PlayerDataForGame.instance.pyData.Exp + "/" + LoadJsonFile.playerLevelTableDatas[PlayerDataForGame.instance.pyData.Level][1];
             }
             UpdateCardNumsShow();
         }
@@ -2368,14 +2362,14 @@ public class UIManager : MonoBehaviour
     GameObject jinNangObj;  //锦囊入口
     [SerializeField]
     GameObject jinNangWindowObj;  //锦囊窗口
-    bool isCanOpenJinNang = true;  //记录是否可以开启锦囊
+    bool isJinNangReady = true;  //记录是否可以开启锦囊
 
     //刷新锦囊入口的显示
-    public void UpdateShowJinNangBtn(bool isCanOpen)
+    public void UpdateShowJinNangBtn(bool isReady)
     {
-        if (isCanOpenJinNang == isCanOpen) return;
-        jinNangObj.SetActive(isCanOpen);
-        isCanOpenJinNang = isCanOpen;
+        if (isJinNangReady == isReady) return;
+        jinNangObj.SetActive(isReady);
+        isJinNangReady = isReady;
     }
 
     //开启锦囊

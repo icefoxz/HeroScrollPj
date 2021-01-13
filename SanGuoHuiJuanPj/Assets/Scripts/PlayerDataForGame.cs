@@ -35,9 +35,9 @@ public class PlayerDataForGame : MonoBehaviour
     [HideInInspector]
     public bool isHadNewSaveData; //记录游戏内是否有最新的读档数据
 
-    public AccountDataClass atData = new AccountDataClass();  //玩家账户信息
+    public UserInfo acData = new UserInfo();  //玩家账户信息
 
-    public PlyDataClass pyData = new PlyDataClass();  //玩家基本信息
+    public PlayerData pyData = new PlayerData();  //玩家基本信息
     public GetBoxOrCodeData gbocData = new GetBoxOrCodeData();  //玩家宝箱与兑换码信息
     public HSTDataClass hstData = new HSTDataClass();       //玩家武将士兵塔等信息
     public WarsDataClass warsData = new WarsDataClass();       //玩家战役解锁+霸业进度信息
@@ -256,7 +256,7 @@ public class PlayerDataForGame : MonoBehaviour
             case 0:
                 if (isAdd)
                 {
-                    if (CalculationFightCount() < int.Parse(LoadJsonFile.playerLevelTableDatas[pyData.level - 1][2]))
+                    if (CalculationFightCount() < int.Parse(LoadJsonFile.playerLevelTableDatas[pyData.Level - 1][2]))
                     {
                         if (!fightHeroId.Contains(cardId))
                         {
@@ -288,7 +288,7 @@ public class PlayerDataForGame : MonoBehaviour
             case 1:
                 if (isAdd)
                 {
-                    if (CalculationFightCount() < int.Parse(LoadJsonFile.playerLevelTableDatas[pyData.level - 1][2]))
+                    if (CalculationFightCount() < int.Parse(LoadJsonFile.playerLevelTableDatas[pyData.Level - 1][2]))
                     {
                         if (!fightSoLdierId.Contains(cardId))
                         {
@@ -321,7 +321,7 @@ public class PlayerDataForGame : MonoBehaviour
             case 2:
                 if (isAdd)
                 {
-                    if (CalculationFightCount() < int.Parse(LoadJsonFile.playerLevelTableDatas[pyData.level - 1][2]))
+                    if (CalculationFightCount() < int.Parse(LoadJsonFile.playerLevelTableDatas[pyData.Level - 1][2]))
                     {
                         if (!fightTowerId.Contains(cardId))
                         {
@@ -354,7 +354,7 @@ public class PlayerDataForGame : MonoBehaviour
             case 3:
                 if (isAdd)
                 {
-                    if (CalculationFightCount() < int.Parse(LoadJsonFile.playerLevelTableDatas[pyData.level - 1][2]))
+                    if (CalculationFightCount() < int.Parse(LoadJsonFile.playerLevelTableDatas[pyData.Level - 1][2]))
                     {
                         if (!fightTrapId.Contains(cardId))
                         {
@@ -387,7 +387,7 @@ public class PlayerDataForGame : MonoBehaviour
             case 4:
                 if (isAdd)
                 {
-                    if (CalculationFightCount() < int.Parse(LoadJsonFile.playerLevelTableDatas[pyData.level - 1][2]))
+                    if (CalculationFightCount() < int.Parse(LoadJsonFile.playerLevelTableDatas[pyData.Level - 1][2]))
                     {
                         if (!fightSpellId.Contains(cardId))
                         {
@@ -485,10 +485,10 @@ public class PlayerDataForGame : MonoBehaviour
         switch (type)
         {
             case RedeemTypes.JinNang:
-                pyData.dailyJinNangRedemptionCount = count;
+                pyData.DailyJinNangRedemptionCount = count;
                 break;
             case RedeemTypes.JiuTan:
-                pyData.dailyJiuTanRedemptionCount = count;
+                pyData.DailyJiuTanRedemptionCount = count;
                 break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(type), type, null);
@@ -503,12 +503,12 @@ public class PlayerDataForGame : MonoBehaviour
         switch (type)
         {
             case RedeemTypes.JinNang:
-                pyData.dailyJinNangRedemptionCount++;
-                pyData.lastJinNangRedeemTime = SystemTimer.instance.NowUnixTicks;
+                pyData.DailyJinNangRedemptionCount++;
+                pyData.LastJinNangRedeemTime = SystemTimer.instance.NowUnixTicks;
                 break;
             case RedeemTypes.JiuTan:
-                pyData.dailyJiuTanRedemptionCount++;
-                pyData.lastJiuTanRedeemTime = SystemTimer.instance.NowUnixTicks;
+                pyData.DailyJiuTanRedemptionCount++;
+                pyData.LastJiuTanRedeemTime = SystemTimer.instance.NowUnixTicks;
                 break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(type), type, null);
