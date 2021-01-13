@@ -3855,7 +3855,7 @@ public class FightController : MonoBehaviour
                 waitTime = 1f;
                 break;
             case JiBanSkillName.ShuiShiDouDu:
-                //对敌方全体武将造成一次隐士攻击（平均*0.5）
+                //对敌方全体武将造成一次隐士攻击（平均*0.25）
                 PlayAudioForSecondClip(102, 0);
                 fullScreenEffectObjs[3].SetActive(false);
                 fullScreenEffectObjs[3].transform.position = jBEffectShowPos[isPlayer ? 0 : 1].position;
@@ -3889,7 +3889,7 @@ public class FightController : MonoBehaviour
                         int nextPos = otherCardDatas[i].posIndex + 5;
                         if (nextPos <= 19 && otherCardDatas[nextPos] == null)
                         {
-                            StartCoroutine(TakeCardPosBack(otherCardDatas, otherCardDatas[i], nextPos, 0.2f, isPlayerRound));
+                            StartCoroutine(TakeCardPosBack(otherCardDatas, otherCardDatas[i], nextPos, 0.2f, otherCardDatas[i].isPlayerCard));
                         }
                     }
                 }
