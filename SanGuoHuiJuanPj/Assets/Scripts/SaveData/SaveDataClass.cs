@@ -415,7 +415,7 @@ public class BackAccountClass
     /// <summary>
     /// 查错码
     /// </summary>
-    public int error { get; set; }
+    public int Code { get; set; }
 }
 
 /// <summary>
