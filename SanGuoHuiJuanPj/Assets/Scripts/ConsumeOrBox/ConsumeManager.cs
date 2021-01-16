@@ -33,7 +33,7 @@ public class ConsumeManager : MonoBehaviour
     /// <returns></returns>
     public bool CutYuanBao(int nums)
     {
-        if (nums > PlayerDataForGame.instance.pyData.yuanbao)
+        if (nums > PlayerDataForGame.instance.pyData.YuanBao)
         {
             PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(0));
             //Debug.Log("元宝不足");
@@ -52,13 +52,13 @@ public class ConsumeManager : MonoBehaviour
         if (isAdd)
         {
             PlayerDataForGame.instance.ShowStringTips(string.Format(LoadJsonFile.GetStringText(1), nums));
-            PlayerDataForGame.instance.pyData.yuanbao += nums;
+            PlayerDataForGame.instance.pyData.YuanBao += nums;
         }
         else
         {
-            PlayerDataForGame.instance.pyData.yuanbao -= nums;
+            PlayerDataForGame.instance.pyData.YuanBao -= nums;
         }
-        UIManager.instance.yuanBaoNumText.text = PlayerDataForGame.instance.pyData.yuanbao.ToString();
+        UIManager.instance.yuanBaoNumText.text = PlayerDataForGame.instance.pyData.YuanBao.ToString();
         PlayerDataForGame.instance.isNeedSaveData = true;
         LoadSaveData.instance.SaveGameData(1);
     }
@@ -82,7 +82,7 @@ public class ConsumeManager : MonoBehaviour
     /// <returns></returns>
     public bool CutYuQue(int nums)
     {
-        if (nums > PlayerDataForGame.instance.pyData.yvque)
+        if (nums > PlayerDataForGame.instance.pyData.YvQue)
         {
             PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(2));
             return false;
@@ -100,13 +100,13 @@ public class ConsumeManager : MonoBehaviour
         if (isAdd)
         {
             PlayerDataForGame.instance.ShowStringTips(string.Format(LoadJsonFile.GetStringText(3), nums));
-            PlayerDataForGame.instance.pyData.yvque += nums;
+            PlayerDataForGame.instance.pyData.YvQue += nums;
         }
         else
         {
-            PlayerDataForGame.instance.pyData.yvque -= nums;
+            PlayerDataForGame.instance.pyData.YvQue -= nums;
         }
-        UIManager.instance.yvQueNumText.text = PlayerDataForGame.instance.pyData.yvque.ToString();
+        UIManager.instance.yvQueNumText.text = PlayerDataForGame.instance.pyData.YvQue.ToString();
         PlayerDataForGame.instance.isNeedSaveData = true;
         LoadSaveData.instance.SaveGameData(1);
     }

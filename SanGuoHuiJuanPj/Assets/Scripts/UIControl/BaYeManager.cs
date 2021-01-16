@@ -89,7 +89,7 @@ public class BaYeManager : MonoBehaviour
             .Where(s => !string.IsNullOrWhiteSpace(s)).ToList().Select(int.Parse).ToList();//从霸业事件[2]列获取对于的经验列
         var baYeBattleId = int.Parse(baYeEvent[3]);//霸业事件[3]列读取BaYeBattle表Id
         var battleTable = LoadJsonFile.baYeBattleTableDatas[baYeBattleId];
-        var playerLevelAlign = PlayerDataForGame.instance.pyData.level - 1;
+        var playerLevelAlign = PlayerDataForGame.instance.pyData.Level - 1;
         var levelTableId = LoadJsonFile.playerLevelTableDatas[playerLevelAlign][9];
         var warId = int.Parse(battleTable[int.Parse(levelTableId) + 1]);
 

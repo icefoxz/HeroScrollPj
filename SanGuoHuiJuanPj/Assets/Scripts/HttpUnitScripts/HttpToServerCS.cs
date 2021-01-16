@@ -1,8 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
-using wode.HTTP;
 
 public class HttpToServerCS : MonoBehaviour
 {
@@ -52,7 +52,7 @@ public class HttpToServerCS : MonoBehaviour
     /// <param name="loginFunIndex">方法索引</param>
     /// <param name="contentStrs">上传内容</param>
     /// <returns></returns>
-    public string LoginRelatedFunsForGet(LoginFunIndex loginFunIndex, string[] contentStrs)
+    public async Task<string> LoginRelatedFunsForGet(LoginFunIndex loginFunIndex, string[] contentStrs)
     {
         var getUrlStr = string.Empty;
 
@@ -89,7 +89,7 @@ public class HttpToServerCS : MonoBehaviour
             return HttpResponse.ERROR;
         }
         
-        return HttpUitls.Get(getUrlStr);
+        return await Http.GetAsync(getUrlStr);
     }
 
     /// <summary>
@@ -98,7 +98,7 @@ public class HttpToServerCS : MonoBehaviour
     /// <param name="loginFunIndex">方法索引</param>
     /// <param name="contentStrs">上传内容</param>
     /// <returns></returns>
-    public string LoginRelatedFunsForPost(LoginFunIndex loginFunIndex, object[] contentStrs)
+    public async Task<string> LoginRelatedFunsForPost(LoginFunIndex loginFunIndex, object[] contentStrs)
     {
         string postUrlStr = string.Empty;
 
@@ -120,7 +120,7 @@ public class HttpToServerCS : MonoBehaviour
         }
 
         //Debug.Log("postUrlStr: " + postUrlStr);
-        string replyStr = HttpUitls.PostForValue(postUrlStr, dic);
+        string replyStr = await Http.PostAsync(postUrlStr, Json.Serialize(dic));
         //Debug.Log("reply: " + replyStr);
 
         return replyStr;

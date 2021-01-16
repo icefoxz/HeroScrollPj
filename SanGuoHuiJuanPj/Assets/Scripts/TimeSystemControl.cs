@@ -387,11 +387,11 @@ public class TimeSystemControl : MonoBehaviour
     private void UpdateJiuTanTimer()
     {
         var playerData = PlayerDataForGame.instance.pyData;
-        var nextOpenJiuTanTimeTicks = playerData.lastJiuTanRedeemTime + (JiuTanTimeGapSecs * 1000);
-        var redeemCount = playerData.dailyJiuTanRedemptionCount;
+        var nextOpenJiuTanTimeTicks = playerData.LastJiuTanRedeemTime + (JiuTanTimeGapSecs * 1000);
+        var redeemCount = playerData.DailyJiuTanRedemptionCount;
         var countAvailable = redeemCount < JiuTanRedeemCountPerDay;
 
-        if (!SystemTimer.IsToday(playerData.lastJiuTanRedeemTime) && playerData.dailyJiuTanRedemptionCount > 0)
+        if (!SystemTimer.IsToday(playerData.LastJiuTanRedeemTime) && playerData.DailyJiuTanRedemptionCount > 0)
             PlayerDataForGame.instance.SetRedeemCount(PlayerDataForGame.RedeemTypes.JiuTan, 0);
 
         //如果当前时间大于下次开启时间
@@ -468,9 +468,9 @@ public class TimeSystemControl : MonoBehaviour
     private void UpdateJinNangTimer()
     {
         var playerData = PlayerDataForGame.instance.pyData;
-        var nextOpenJNTimeTicks = playerData.lastJinNangRedeemTime + (JinNangTimeGapSecs * 1000);
+        var nextOpenJNTimeTicks = playerData.LastJinNangRedeemTime + (JinNangTimeGapSecs * 1000);
 
-        if (!SystemTimer.IsToday(playerData.lastJinNangRedeemTime) && playerData.dailyJinNangRedemptionCount > 0)//如果上次获取时间不是今天
+        if (!SystemTimer.IsToday(playerData.LastJinNangRedeemTime) && playerData.DailyJinNangRedemptionCount > 0)//如果上次获取时间不是今天
             PlayerDataForGame.instance.SetRedeemCount(PlayerDataForGame.RedeemTypes.JinNang, 0);//如果获取次数大于0，重置获取次数
 
         //如果下次开启时间小于现在，(时间过期)
@@ -539,13 +539,13 @@ public class TimeSystemControl : MonoBehaviour
         }
 
         var player = PlayerDataForGame.instance.pyData;
-        var jTRedeemCount = player.dailyJiuTanRedemptionCount;
+        var jTRedeemCount = player.DailyJiuTanRedemptionCount;
 
         //如果酒坛获取已达限制次数，尝试执行是否时间过了0点重置次数
         if (jTRedeemCount >= JiuTanRedeemCountPerDay)
         {
             UIManager.instance.ItemsRedemptionFunc();
-            jTRedeemCount = player.dailyJiuTanRedemptionCount;
+            jTRedeemCount = player.DailyJiuTanRedemptionCount;
         }
 
         if (jTRedeemCount >= JiuTanRedeemCountPerDay) return false;
@@ -599,21 +599,21 @@ public class TimeSystemControl : MonoBehaviour
     {
         if (!isJNTimeValid) return false;
         var player = PlayerDataForGame.instance.pyData;
-        var jNRedeemCount = player.dailyJinNangRedemptionCount;
+        var jNRedeemCount = player.DailyJinNangRedemptionCount;
         //如果锦囊获取已达限制次数，尝试执行是否时间过了0点重置次数
         if (jNRedeemCount >= JinNangRedeemCountPerDay)
         {
             UIManager.instance.ItemsRedemptionFunc();
-            jNRedeemCount = player.dailyJinNangRedemptionCount;
+            jNRedeemCount = player.DailyJinNangRedemptionCount;
         }
 
         Debug.Log(
-            $"{nameof(TimeSystemControl)}:{nameof(OnClickToGetJinNang)} 锦囊获取次数[{player.dailyJinNangRedemptionCount+1}/{JinNangRedeemCountPerDay}]");
+            $"{nameof(TimeSystemControl)}:{nameof(OnClickToGetJinNang)} 锦囊获取次数[{player.DailyJinNangRedemptionCount+1}/{JinNangRedeemCountPerDay}]");
         if (jNRedeemCount >= JinNangRedeemCountPerDay) return false;
         //Debug.Log("打开锦囊");
         isJNTimeValid = false;
         if (UIManager.instance.JinNangQuota != null)
-            UIManager.instance.JinNangQuota.text = $"今日次数：{player.dailyJinNangRedemptionCount+1}/{JinNangRedeemCountPerDay}";
+            UIManager.instance.JinNangQuota.text = $"今日次数：{player.DailyJinNangRedemptionCount+1}/{JinNangRedeemCountPerDay}";
         return true;
 
         //Debug.Log("宝箱免费开启时间未到");

@@ -131,7 +131,7 @@ public class RewardManager : MonoBehaviour
             if (dataLists[i][indexChanChu] != "0" && dataLists[i][3] == rarity)
             {
                 string[] arrs = dataLists[i][indexColumn].Split(',');
-                if (int.Parse(arrs[0]) <= PlayerDataForGame.instance.pyData.level)
+                if (int.Parse(arrs[0]) <= PlayerDataForGame.instance.pyData.Level)
                 {
                     CardIdAndWeights cw = new CardIdAndWeights();
                     cw.cardId = i;
