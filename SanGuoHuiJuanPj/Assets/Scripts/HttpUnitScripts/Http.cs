@@ -1,10 +1,16 @@
 ﻿using System;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using UnityEngine;
 
 public static class Http
 {
+    public static async Task<T> GetAsync<T>(string url) where T : class
+    {
+        var response = await GetAsync(url);
+        return response == HttpResponse.ERROR ? null : Json.Deserialize<T>(response);
+    }
     public static async Task<string> GetAsync(string url)
     {
         var error = $"{nameof(Http)} : ";
@@ -25,7 +31,14 @@ public static class Http
         }
         return HttpResponse.ERROR;
     }
-    public static async Task<string> PostAsync(string url,string content)
+
+    public static async Task<T> PostAsync<T>(string url, string content) where T : class
+    {
+        var response = await PostAsync(url, content);
+        return response == HttpResponse.ERROR ? null : Json.Deserialize<T>(response);
+    }
+
+    public static async Task<string> PostAsync(string url, string content)
     {
         var client = new HttpClient();
         var response = await client.PostAsync(url, new StringContent(content));
