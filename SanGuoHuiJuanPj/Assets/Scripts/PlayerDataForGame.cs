@@ -10,42 +10,42 @@ using Random = UnityEngine.Random;
 public class PlayerDataForGame : MonoBehaviour
 {
     public static PlayerDataForGame instance;
-    //修复v1.89无限刷霸业宝箱3的Bug
-    //玉阙检查值
+    //修复v1.89无限刷霸业宝箱3的Bug 
+    //玉阙检查值 
     public int Bug1_9YvQueCheck = 5000;
-    //玉阙修正数量
+    //玉阙修正数量 
     public int Bug1_9YvQueSet = 4999;
     [Serializable]
     public enum WarTypes
     {
         None = 0,
-        Expedition = 1, //主线战役
-        Baye = 2, //霸业
+        Expedition = 1, //主线战役 
+        Baye = 2, //霸业 
     }
     public enum RedeemTypes
     {
-        JinNang = 0, // 锦囊
-        JiuTan = 1  //酒坛
+        JinNang = 0, // 锦囊 
+        JiuTan = 1  //酒坛 
     }
-    public WarTypes WarType;//标记当前战斗类型
+    public WarTypes WarType;//标记当前战斗类型 
 
     [HideInInspector]
-    public bool isNeedSaveData; //记录是否需要存档
+    public bool isNeedSaveData; //记录是否需要存档 
 
     [HideInInspector]
-    public bool isHadNewSaveData; //记录游戏内是否有最新的读档数据
+    public bool isHadNewSaveData; //记录游戏内是否有最新的读档数据 
 
-    public AccountDataClass atData = new AccountDataClass();  //玩家账户信息
+    public UserInfo acData = new UserInfo();  //玩家账户信息 
 
-    public PlyDataClass pyData = new PlyDataClass();  //玩家基本信息
-    public GetBoxOrCodeData gbocData = new GetBoxOrCodeData();  //玩家宝箱与兑换码信息
-    public HSTDataClass hstData = new HSTDataClass();       //玩家武将士兵塔等信息
-    public WarsDataClass warsData = new WarsDataClass();       //玩家战役解锁+霸业进度信息
+    public PlayerData pyData = new PlayerData();  //玩家基本信息 
+    public GetBoxOrCodeData gbocData = new GetBoxOrCodeData();  //玩家宝箱与兑换码信息 
+    public HSTDataClass hstData = new HSTDataClass();       //玩家武将士兵塔等信息 
+    public WarsDataClass warsData = new WarsDataClass();       //玩家战役解锁+霸业进度信息 
 
     [HideInInspector]
-    public int[] guideObjsShowed;   //存放各个指引展示情况
-    
-    //记录出战单位
+    public int[] guideObjsShowed;   //存放各个指引展示情况 
+
+    //记录出战单位 
     [HideInInspector]
     public List<int> fightHeroId = new List<int>();
     [HideInInspector]
@@ -58,31 +58,31 @@ public class PlayerDataForGame : MonoBehaviour
     public List<int> fightSpellId = new List<int>();
 
     [HideInInspector]
-    public int chooseWarsId = new int();    //记录选择的战役id
+    public int chooseWarsId = new int();    //记录选择的战役id 
 
     [HideInInspector]
-    public int zhanYiColdNums = 0;  //记录战役的金币数
-    //[HideInInspector]
-    //public int baYeGoldNums = 0;    //记录霸业金币数
+    public int zhanYiColdNums = 0;  //记录战役的金币数 
+                                    //[HideInInspector] 
+                                    //public int baYeGoldNums = 0;    //记录霸业金币数 
 
-    float fadeSpeed = 1.5f;   //渐隐渐显时间
+    float fadeSpeed = 1.5f;   //渐隐渐显时间 
     [HideInInspector]
     public bool isJumping;
-    float loadPro;      //加载进度
+    float loadPro;      //加载进度 
     AsyncOperation asyncOp;
     [SerializeField]
-    Text loadingText;   //加载进度文本
+    Text loadingText;   //加载进度文本 
     [SerializeField]
-    Text infoText;      //小提示文本
+    Text infoText;      //小提示文本 
     [SerializeField]
-    Image loadingImg;   //遮布
+    Image loadingImg;   //遮布 
 
     [HideInInspector]
-    public int lastSenceIndex;  //上一个场景索引记录
+    public int lastSenceIndex;  //上一个场景索引记录 
     [HideInInspector]
-    public int getBackTiLiNums;  //返还最大体力记录
+    public int getBackTiLiNums;  //返还最大体力记录 
     [HideInInspector]
-    public int boxForTiLiNums;  //返还体力单个宝箱扣除体力数
+    public int boxForTiLiNums;  //返还体力单个宝箱扣除体力数 
 
     public BaYeManager baYeManager;
 
@@ -116,7 +116,7 @@ public class PlayerDataForGame : MonoBehaviour
     {
         if (isJumping)
         {
-            loadPro = asyncOp.progress; //获取加载进度,最大为0.9
+            loadPro = asyncOp.progress; //获取加载进度,最大为0.9 
             if (loadPro >= 0.9f)
             {
                 loadPro = 1;
@@ -127,17 +127,17 @@ public class PlayerDataForGame : MonoBehaviour
             {
                 loadPro = 0;
                 isJumping = false;
-                asyncOp.allowSceneActivation = true;//场景加载完毕跳转
+                asyncOp.allowSceneActivation = true;//场景加载完毕跳转 
                 StartCoroutine(FadeTransitionEffect(fadeSpeed));
             }
         }
     }
 
-    /// <summary>
-    /// 跳转场景
-    /// </summary>
-    /// <param name="sceneIndex"></param>
-    /// <param name="isNeedLoadData"></param>
+    /// <summary> 
+    /// 跳转场景 
+    /// </summary> 
+    /// <param name="sceneIndex"></param> 
+    /// <param name="isNeedLoadData"></param> 
     public void JumpSceneFun(int sceneIndex, bool isNeedLoadData)
     {
         if (!isJumping)
@@ -154,7 +154,7 @@ public class PlayerDataForGame : MonoBehaviour
 
         yield return new WaitForSeconds(fadeSpeed);
 
-        asyncOp = SceneManager.LoadSceneAsync(sceneIndex, LoadSceneMode.Single);//异步加载场景，Single:不保留现有场景
+        asyncOp = SceneManager.LoadSceneAsync(sceneIndex, LoadSceneMode.Single);//异步加载场景，Single:不保留现有场景 
 
         int index = Random.Range(0, LoadJsonFile.knowledgeTableDatas.Count);
         infoText.text = LoadJsonFile.knowledgeTableDatas[index][2];
@@ -170,7 +170,7 @@ public class PlayerDataForGame : MonoBehaviour
         }
     }
 
-    //隐藏
+    //隐藏 
     IEnumerator FadeTransitionEffect(float waitTime)
     {
         yield return new WaitForSeconds(waitTime);
@@ -187,7 +187,7 @@ public class PlayerDataForGame : MonoBehaviour
     private int scaleHeight = 0;
     public void setDesignContentScale()
     {
-        //#if UNITY_ANDROID
+        //#if UNITY_ANDROID 
         if (scaleWidth == 0 && scaleHeight == 0)
         {
             int width = Screen.currentResolution.width;
@@ -223,7 +223,7 @@ public class PlayerDataForGame : MonoBehaviour
             }
             Screen.SetResolution(scaleWidth, scaleHeight, true);
         }
-        //#endif
+        //#endif 
     }
 
     void OnApplicationPause(bool paused)
@@ -236,8 +236,8 @@ public class PlayerDataForGame : MonoBehaviour
             setDesignContentScale();
         }
     }
-   
-    //计算出战总数量
+
+    //计算出战总数量 
     public int CalculationFightCount()
     {
         int count = 0;
@@ -246,9 +246,9 @@ public class PlayerDataForGame : MonoBehaviour
     }
 
 
-    /// <summary>
-    /// 添加或删除卡牌id到出战列表
-    /// </summary>
+    /// <summary> 
+    /// 添加或删除卡牌id到出战列表 
+    /// </summary> 
     public bool AddOrCutFightCardId(int typeIndex, int cardId, bool isAdd)
     {
         switch (typeIndex)
@@ -256,7 +256,7 @@ public class PlayerDataForGame : MonoBehaviour
             case 0:
                 if (isAdd)
                 {
-                    if (CalculationFightCount() < int.Parse(LoadJsonFile.playerLevelTableDatas[pyData.level - 1][2]))
+                    if (CalculationFightCount() < int.Parse(LoadJsonFile.playerLevelTableDatas[pyData.Level - 1][2]))
                     {
                         if (!fightHeroId.Contains(cardId))
                         {
@@ -264,7 +264,7 @@ public class PlayerDataForGame : MonoBehaviour
                         }
                         else
                         {
-                            //Debug.Log("fightHeroId出战列表已有" + cardId);
+                            //Debug.Log("fightHeroId出战列表已有" + cardId); 
                         }
                     }
                     else
@@ -280,7 +280,7 @@ public class PlayerDataForGame : MonoBehaviour
                     }
                     else
                     {
-                        //Debug.Log("回城错误，出战列表无此单位");
+                        //Debug.Log("回城错误，出战列表无此单位"); 
                         return false;
                     }
                 }
@@ -288,7 +288,7 @@ public class PlayerDataForGame : MonoBehaviour
             case 1:
                 if (isAdd)
                 {
-                    if (CalculationFightCount() < int.Parse(LoadJsonFile.playerLevelTableDatas[pyData.level - 1][2]))
+                    if (CalculationFightCount() < int.Parse(LoadJsonFile.playerLevelTableDatas[pyData.Level - 1][2]))
                     {
                         if (!fightSoLdierId.Contains(cardId))
                         {
@@ -296,12 +296,12 @@ public class PlayerDataForGame : MonoBehaviour
                         }
                         else
                         {
-                            //Debug.Log("fightSoLdierId出战列表已有" + cardId);
+                            //Debug.Log("fightSoLdierId出战列表已有" + cardId); 
                         }
                     }
                     else
                     {
-                        //Debug.Log("出战列表已满");
+                        //Debug.Log("出战列表已满"); 
                         return false;
                     }
                 }
@@ -313,7 +313,7 @@ public class PlayerDataForGame : MonoBehaviour
                     }
                     else
                     {
-                        //Debug.Log("回城错误，出战列表无此单位");
+                        //Debug.Log("回城错误，出战列表无此单位"); 
                         return false;
                     }
                 }
@@ -321,7 +321,7 @@ public class PlayerDataForGame : MonoBehaviour
             case 2:
                 if (isAdd)
                 {
-                    if (CalculationFightCount() < int.Parse(LoadJsonFile.playerLevelTableDatas[pyData.level - 1][2]))
+                    if (CalculationFightCount() < int.Parse(LoadJsonFile.playerLevelTableDatas[pyData.Level - 1][2]))
                     {
                         if (!fightTowerId.Contains(cardId))
                         {
@@ -329,12 +329,12 @@ public class PlayerDataForGame : MonoBehaviour
                         }
                         else
                         {
-                            //Debug.Log("fightTowerId出战列表已有" + cardId);
+                            //Debug.Log("fightTowerId出战列表已有" + cardId); 
                         }
                     }
                     else
                     {
-                        //Debug.Log("出战列表已满");
+                        //Debug.Log("出战列表已满"); 
                         return false;
                     }
                 }
@@ -346,7 +346,7 @@ public class PlayerDataForGame : MonoBehaviour
                     }
                     else
                     {
-                        //Debug.Log("回城错误，出战列表无此单位");
+                        //Debug.Log("回城错误，出战列表无此单位"); 
                         return false;
                     }
                 }
@@ -354,7 +354,7 @@ public class PlayerDataForGame : MonoBehaviour
             case 3:
                 if (isAdd)
                 {
-                    if (CalculationFightCount() < int.Parse(LoadJsonFile.playerLevelTableDatas[pyData.level - 1][2]))
+                    if (CalculationFightCount() < int.Parse(LoadJsonFile.playerLevelTableDatas[pyData.Level - 1][2]))
                     {
                         if (!fightTrapId.Contains(cardId))
                         {
@@ -362,12 +362,12 @@ public class PlayerDataForGame : MonoBehaviour
                         }
                         else
                         {
-                            //Debug.Log("fightTrapId出战列表已有" + cardId);
+                            //Debug.Log("fightTrapId出战列表已有" + cardId); 
                         }
                     }
                     else
                     {
-                        //Debug.Log("出战列表已满");
+                        //Debug.Log("出战列表已满"); 
                         return false;
                     }
                 }
@@ -379,7 +379,7 @@ public class PlayerDataForGame : MonoBehaviour
                     }
                     else
                     {
-                        //Debug.Log("回城错误，出战列表无此单位");
+                        //Debug.Log("回城错误，出战列表无此单位"); 
                         return false;
                     }
                 }
@@ -387,7 +387,7 @@ public class PlayerDataForGame : MonoBehaviour
             case 4:
                 if (isAdd)
                 {
-                    if (CalculationFightCount() < int.Parse(LoadJsonFile.playerLevelTableDatas[pyData.level - 1][2]))
+                    if (CalculationFightCount() < int.Parse(LoadJsonFile.playerLevelTableDatas[pyData.Level - 1][2]))
                     {
                         if (!fightSpellId.Contains(cardId))
                         {
@@ -395,12 +395,12 @@ public class PlayerDataForGame : MonoBehaviour
                         }
                         else
                         {
-                            //Debug.Log("fightSpellId出战列表已有" + cardId);
+                            //Debug.Log("fightSpellId出战列表已有" + cardId); 
                         }
                     }
                     else
                     {
-                        //Debug.Log("出战列表已满");
+                        //Debug.Log("出战列表已满"); 
                         return false;
                     }
                 }
@@ -412,7 +412,7 @@ public class PlayerDataForGame : MonoBehaviour
                     }
                     else
                     {
-                        //Debug.Log("回城错误，出战列表无此单位");
+                        //Debug.Log("回城错误，出战列表无此单位"); 
                         return false;
                     }
                 }
@@ -423,17 +423,17 @@ public class PlayerDataForGame : MonoBehaviour
         return true;
     }
 
-    ///////////////////////////////////游戏垃圾回收//////////////////////////////////////////////
+    ///////////////////////////////////游戏垃圾回收////////////////////////////////////////////// 
 
-    //游戏内GameObject垃圾池
+    //游戏内GameObject垃圾池 
     public static List<GameObject> garbageStationObjs;
 
-    /// <summary>
-    /// 清空GameObject垃圾池
-    /// </summary>
+    /// <summary> 
+    /// 清空GameObject垃圾池 
+    /// </summary> 
     public void ClearGarbageStationObj()
     {
-        //Debug.Log("GameObject垃圾池数量：" + garbageStationObjs.Count);
+        //Debug.Log("GameObject垃圾池数量：" + garbageStationObjs.Count); 
         try
         {
             for (int i = garbageStationObjs.Count - 1; i >= 0; i--)
@@ -452,16 +452,16 @@ public class PlayerDataForGame : MonoBehaviour
     }
 
     [SerializeField]
-    GameObject textTipsObj;     //文本提示obj 
+    GameObject textTipsObj;     //文本提示obj  
 
-    public int selectedEventId; //当前选择的霸业城池
+    public int selectedEventId; //当前选择的霸业城池 
     public int selectedCity;
     public string mainSceneTips;
 
-    /// <summary>
-    /// 场景底部文本提示
-    /// </summary>
-    /// <param name="str"></param>
+    /// <summary> 
+    /// 场景底部文本提示 
+    /// </summary> 
+    /// <param name="str"></param> 
     public void ShowStringTips(string str)
     {
         textTipsObj.SetActive(false);
@@ -469,14 +469,14 @@ public class PlayerDataForGame : MonoBehaviour
         textTipsObj.SetActive(true);
     }
 
-    /// <summary>
-    /// 为战斗类型预设个记号，在场景转换的时候将读取战斗记号并打开相应的页面
-    /// </summary>
-    /// <param name="warType"></param>
+    /// <summary> 
+    /// 为战斗类型预设个记号，在场景转换的时候将读取战斗记号并打开相应的页面 
+    /// </summary> 
+    /// <param name="warType"></param> 
     public void FlagWarTypeBeforeBattle(int warType)
     {
         WarType = warType >= 0 && warType <= 2
-            ? (WarTypes) warType
+            ? (WarTypes)warType
             : throw new ArgumentOutOfRangeException($"Type of {nameof(WarTypes)} : {warType}");
     }
 
@@ -485,10 +485,10 @@ public class PlayerDataForGame : MonoBehaviour
         switch (type)
         {
             case RedeemTypes.JinNang:
-                pyData.dailyJinNangRedemptionCount = count;
+                pyData.DailyJinNangRedemptionCount = count;
                 break;
             case RedeemTypes.JiuTan:
-                pyData.dailyJiuTanRedemptionCount = count;
+                pyData.DailyJiuTanRedemptionCount = count;
                 break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(type), type, null);
@@ -503,12 +503,12 @@ public class PlayerDataForGame : MonoBehaviour
         switch (type)
         {
             case RedeemTypes.JinNang:
-                pyData.dailyJinNangRedemptionCount++;
-                pyData.lastJinNangRedeemTime = SystemTimer.instance.NowUnixTicks;
+                pyData.DailyJinNangRedemptionCount++;
+                pyData.LastJinNangRedeemTime = SystemTimer.instance.NowUnixTicks;
                 break;
             case RedeemTypes.JiuTan:
-                pyData.dailyJiuTanRedemptionCount++;
-                pyData.lastJiuTanRedeemTime = SystemTimer.instance.NowUnixTicks;
+                pyData.DailyJiuTanRedemptionCount++;
+                pyData.LastJiuTanRedeemTime = SystemTimer.instance.NowUnixTicks;
                 break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(type), type, null);

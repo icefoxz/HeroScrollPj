@@ -1624,7 +1624,7 @@ public class WarsUIManager : MonoBehaviour
     private void InitMainUIShow()
     {
         battleNameText.text = LoadJsonFile.warTableDatas[PlayerDataForGame.instance.chooseWarsId][1];
-        playerInfoObj.transform.GetChild(0).GetComponent<Text>().text = LoadJsonFile.playerInitialTableDatas[PlayerDataForGame.instance.pyData.forceId][1];
+        playerInfoObj.transform.GetChild(0).GetComponent<Text>().text = LoadJsonFile.playerInitialTableDatas[PlayerDataForGame.instance.pyData.ForceId][1];
         UpdateGoldandBoxNumsShow();
         UpdateLevelInfo();
         UpdateBattleSchedule();

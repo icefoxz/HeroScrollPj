@@ -19,7 +19,7 @@ public class ForceSelectorUi : MonoBehaviour
     public void Start()
     {
         int totalUnlockForce =
-            int.Parse(LoadJsonFile.playerLevelTableDatas[PlayerDataForGame.instance.pyData.level - 1][6]);
+            int.Parse(LoadJsonFile.playerLevelTableDatas[PlayerDataForGame.instance.pyData.Level - 1][6]);
 
         for (int i = 0; i < totalUnlockForce + 1; i++)
         {

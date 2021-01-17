@@ -103,7 +103,7 @@ public class FightForManager : MonoBehaviour
         FightCardData playerHomeData = new FightCardData();
         playerHomeData.cardObj = Instantiate(homeCardObj, playerCardsBox);
         playerHomeData.cardObj.transform.position = playerCardsPos[17].transform.position;
-        playerHomeData.fullHp = playerHomeData.nowHp = int.Parse(LoadJsonFile.cityLevelTableDatas[WarsUIManager.instance.cityLevel - 1][2]) + int.Parse(LoadJsonFile.playerLevelTableDatas[PlayerDataForGame.instance.pyData.level - 1][4]);
+        playerHomeData.fullHp = playerHomeData.nowHp = int.Parse(LoadJsonFile.cityLevelTableDatas[WarsUIManager.instance.cityLevel - 1][2]) + int.Parse(LoadJsonFile.playerLevelTableDatas[PlayerDataForGame.instance.pyData.Level - 1][4]);
         playerHomeData.hpr = 0;
         playerHomeData.cardType = 522;
         playerHomeData.posIndex = 17;
@@ -124,7 +124,7 @@ public class FightForManager : MonoBehaviour
 
         battleIdIndex = battleId;
 
-        playerFightCardsDatas[17].fullHp = playerFightCardsDatas[17].nowHp = int.Parse(LoadJsonFile.cityLevelTableDatas[WarsUIManager.instance.cityLevel - 1][2]) + int.Parse(LoadJsonFile.playerLevelTableDatas[PlayerDataForGame.instance.pyData.level - 1][4]);
+        playerFightCardsDatas[17].fullHp = playerFightCardsDatas[17].nowHp = int.Parse(LoadJsonFile.cityLevelTableDatas[WarsUIManager.instance.cityLevel - 1][2]) + int.Parse(LoadJsonFile.playerLevelTableDatas[PlayerDataForGame.instance.pyData.Level - 1][4]);
         FightController.instance.UpdateUnitHpShow(playerFightCardsDatas[17]);
         FightController.instance.ClearEmTieQiCardList();
 
