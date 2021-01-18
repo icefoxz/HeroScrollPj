@@ -24,6 +24,8 @@ public class StartSceneUIManager : MonoBehaviour
     GameObject EffectPoolManagerObj;   //特效组
     bool isJumping; //是否在跳转
 
+    public bool isPlayedStory;//是否已播放了剧情
+
     private void Awake()
     {
         if (instance == null)
@@ -55,33 +57,18 @@ public class StartSceneUIManager : MonoBehaviour
         AudioController1.instance.PlayLongBackMusInit();
     }
 
-    /// <summary>
-    /// 没有存档开始按钮播放剧情
-    /// </summary>
-    /// <param name="startBtn"></param>
-    public void DontHaveSaveDataPlayStory(Button startBtn)
+    public void DontHaveSaveDataPlayStory()
     {
         EffectPoolManagerObj.SetActive(true);
 
         //chooseForceCityObj.transform.GetChild(0).GetComponent<Button>().onClick.Invoke();
         for (int i = 0; i < chooseForceCityObj.transform.childCount; i++)
         {
-            chooseForceCityObj.transform.GetChild(i).GetComponent<Button>().onClick.AddListener(delegate ()
-            {
-                AudioController0.instance.RandomPlayGuZhengAudio();
-            });
+            chooseForceCityObj.transform.GetChild(i).GetComponent<Button>().onClick.AddListener(() =>
+                AudioController0.instance.RandomPlayGuZhengAudio());
         }
-        startBtn.onClick.AddListener(delegate ()
-        {
-            if (isJumping)
-                return;
-            isJumping = true;
-            FightForManagerForStart.instance.InitEnemyCardForFight();
-        });
+        FightForManagerForStart.instance.InitEnemyCardForFight();
     }
-
-    [HideInInspector]
-    public bool isPlayedStory;
 
     //结束剧情选择势力
     public void EndStoryToChooseForce()

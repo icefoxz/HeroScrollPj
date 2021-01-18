@@ -37,7 +37,7 @@ public class PlayerDataForGame : MonoBehaviour
 
     public UserInfo acData = new UserInfo();  //玩家账户信息 
 
-    public PlayerData pyData = new PlayerData();  //玩家基本信息 
+    public PlayerData pyData;  //玩家基本信息 
     public GetBoxOrCodeData gbocData = new GetBoxOrCodeData();  //玩家宝箱与兑换码信息 
     public HSTDataClass hstData = new HSTDataClass();       //玩家武将士兵塔等信息 
     public WarsDataClass warsData = new WarsDataClass();       //玩家战役解锁+霸业进度信息 

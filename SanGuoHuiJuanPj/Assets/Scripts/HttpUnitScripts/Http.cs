@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Net;
 using System.Net.Http;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using UnityEngine;
@@ -9,44 +11,46 @@ public static class Http
     public static async Task<T> GetAsync<T>(string url) where T : class
     {
         var response = await GetAsync(url);
-        return response == HttpResponse.ERROR ? null : Json.Deserialize<T>(response);
+        return response.IsSuccess() ? Json.Deserialize<T>(await response.Content.ReadAsStringAsync()) : null;
     }
-    public static async Task<string> GetAsync(string url)
+
+    public static async Task<HttpResponseMessage> GetAsync(string url)
     {
-        var error = $"{nameof(Http)} : ";
         try
         {
-            var client = new HttpClient();
-            var response = await client.GetAsync(url);
-            if (response.IsSuccessStatusCode)
-                return await response.Content.ReadAsStringAsync();
-            error += $"Code[{response.StatusCode}]";
+            var client = Server.InstanceClient();
+            return await client.GetAsync(url);
         }
-        catch (Exception e)
+        catch (Exception)
         {
-#if DEBUG
-            error += e.ToString();
-            XDebug.Log(typeof(Http), error);
-#endif
+            return new HttpResponseMessage(HttpStatusCode.ServiceUnavailable);
         }
-        return HttpResponse.ERROR;
+
     }
 
     public static async Task<T> PostAsync<T>(string url, string content) where T : class
     {
         var response = await PostAsync(url, content);
-        return response == HttpResponse.ERROR ? null : Json.Deserialize<T>(response);
+        return response.IsSuccess() ? Json.Deserialize<T>(await response.Content.ReadAsStringAsync()) : null;
     }
 
-    public static async Task<string> PostAsync(string url, string content)
+    public static async Task<HttpResponseMessage> PostAsync(string url, string content)
     {
-        var client = new HttpClient();
-        var response = await client.PostAsync(url, new StringContent(content));
-        if (response.IsSuccessStatusCode)
-            return await response.Content.ReadAsStringAsync();
-#if DEBUG
-        Debug.LogError($"{nameof(Http)}:Code[{response.StatusCode}]  ");
-#endif
-        return HttpResponse.ERROR;
+        try
+        {
+            var client = Server.InstanceClient();
+            return await client.PostAsync(url, new StringContent(content));
+        }
+        catch (Exception)
+        {
+            return new HttpResponseMessage(HttpStatusCode.ServiceUnavailable);
+        }
     }
+
+}
+
+public static class HttpResponseMessageExtension
+{
+    public static bool IsSuccess(this HttpResponseMessage response) =>
+        (response.IsSuccessStatusCode && response.StatusCode == 0) || response.IsSuccessStatusCode;
 }

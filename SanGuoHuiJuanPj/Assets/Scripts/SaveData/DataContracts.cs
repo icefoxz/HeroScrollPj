@@ -8,10 +8,143 @@ using UnityEngine;
 
 #region 玩家数据相关类
 
+
 /// <summary>
 /// 玩家账户信息存档
 /// </summary>
-public class UserInfo
+public interface IUserInfo
+{
+    /// <summary>
+    /// 账号
+    /// </summary>
+    string Username { get; set; }
+    /// <summary>
+    /// 密码
+    /// </summary>
+    string Password { get; set; }
+    /// <summary>
+    /// 手机号
+    /// </summary>
+    string Phone { get; set; }
+    /// <summary>
+    /// 硬件唯一标识id
+    /// </summary>
+    string DeviceId { get; set; }
+    /// <summary>
+    /// 与服务器最后一次互交的时间
+    /// </summary>
+    long LastUpdate { get; set; }
+}
+
+
+/// <summary>
+/// 玩家基本信息存档数据类
+/// </summary>
+public interface IPlayerData
+{
+    //等级
+    int Level { get; set; }
+    //经验
+    int Exp { get; set; }
+    //元宝
+    int YuanBao { get; set; }
+    //玉阙
+    int YvQue { get; set; }
+    //玩家初始势力id
+    int ForceId { get; set; }
+    //上次锦囊获取时间
+    long LastJinNangRedeemTime { get; set; }
+    //锦囊每天的获取次数
+    int DailyJinNangRedemptionCount { get; set; }
+    //上次酒坛获取时间
+    long LastJiuTanRedeemTime { get; set; }
+    //酒坛每天的获取次数
+    int DailyJiuTanRedemptionCount { get; set; }
+    //上一个游戏版本号
+    float LastGameVersion { get; set; }
+
+}
+
+/// <summary>
+/// 玩家上传下载的数据规范
+/// </summary>
+public interface IUserSaveArchive
+{
+    // 账号
+    string Username { get; set; }
+    // 密码
+    string Password { get; set; }
+    // 手机号
+    string Phone { get; set; }
+    // 硬件唯一标识id
+    string DeviceId { get; set; }
+    // 与服务器最后一次互交的时间
+    long LastUpdate { get; set; }
+    //玩家信息
+    string PlayerInfo { get; set; }
+    /// <summary>
+    ///卡牌数据 HSTDataClass
+    /// </summary>
+    string CardsData { get; set; }
+    /// <summary>
+    /// 征战记录 WarsDataClass
+    /// </summary>
+    string Expedition { get; set; }
+    /// <summary>
+    ///奖励或兑换码记录 GetBoxOrCodeData
+    /// </summary>
+    string RewardsRecord { get; set; }
+}
+
+public class UserSaveArchive : IUserSaveArchive
+{
+    public string Username { get; set; }
+    public string Password { get; set; }
+    public string Phone { get; set; }
+    public string DeviceId { get; set; }
+    public long LastUpdate { get; set; }
+    public string PlayerInfo { get; set; }
+    public string CardsData { get; set; }
+    public string Expedition { get; set; }
+    public string RewardsRecord { get; set; }
+
+    public UserSaveArchive(IUserInfo userInfo, IPlayerData playerData, HSTDataClass h, WarsDataClass w,
+        GetBoxOrCodeData b)
+    {
+        var hst = new HSTDataClass
+        {
+            heroSaveData = h.heroSaveData.Where(c => c.IsOwned).ToList(),
+            soldierSaveData = h.soldierSaveData.Where(c => c.IsOwned).ToList(),
+            spellSaveData = h.spellSaveData.Where(c => c.IsOwned).ToList(),
+            towerSaveData = h.towerSaveData.Where(c => c.IsOwned).ToList(),
+            trapSaveData = h.trapSaveData.Where(c => c.IsOwned).ToList()
+        };
+        var war = new WarsDataClass
+        {
+            baYe = w.baYe,
+            warUnlockSaveData = w.warUnlockSaveData.Where(o => o.unLockCount > 0).ToList()
+        };
+        var reward = new GetBoxOrCodeData
+        {
+            fightBoxs = b.fightBoxs,
+            redemptionCodeGotList = b.redemptionCodeGotList.Where(r => r.isGot).ToList()
+        };
+        Username = userInfo.Username;
+        Password = userInfo.Password;
+        Phone = userInfo.Phone;
+        DeviceId = userInfo.DeviceId;
+        LastUpdate = userInfo.LastUpdate;
+        PlayerInfo = Json.Serialize(playerData);
+        CardsData = Json.Serialize(hst);
+        Expedition = Json.Serialize(war);
+        RewardsRecord = Json.Serialize(reward);
+    }
+}
+
+/// <summary>
+/// 玩家账户信息存档
+/// </summary>
+public class UserInfo : IUserInfo
 {
     /// <summary>
     /// 账号
@@ -87,7 +220,7 @@ public class ObsoletedPyData
 /// <summary>
 /// 玩家基本信息存档数据类
 /// </summary>
-public class PlayerData
+public class PlayerData : IPlayerData
 {
     //等级
     public int Level { get; set; } = 1;
@@ -107,7 +240,7 @@ public class PlayerData
     public long LastJiuTanRedeemTime { get; set; }
     //酒坛每天的获取次数
     public int DailyJiuTanRedemptionCount { get; set; }
-    //上一个游戏版本号
+    //游戏版本号
     public float LastGameVersion { get; set; }
 
 }
@@ -135,6 +268,8 @@ public class NowLevelAndHadChip
     public int typeIndex;   //单位类型0武将1士兵2塔3陷阱4技能
     public bool isHad;      //是否拥有过
     public int maxLevel;    //历史最高星级
+
+    public bool IsOwned => chips > 0 || level > 0;//是否拥有
 }
 
 /// <summary>
@@ -496,22 +631,11 @@ public class JiBanCardTypeClass
 }
 
 /// <summary>
-/// 代码相应提示字符
-/// </summary>
-public static class HttpResponse
-{
-    /// <summary>
-    /// 错误
-    /// </summary>
-    public const string ERROR = "ERROR";
-}
-
-/// <summary>
 /// 服务器返回的状态码
 /// </summary>
 public enum ServerBackCode
 {
-    SUCCESS = 0,
+    SUCCESS = 200,
     ERR_NAME_EXIST = 1001,
     ERR_NAME_SHORT = 1002,
     /// <summary>

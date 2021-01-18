@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using System.IO;
 using System.Collections.Generic;
 using System.Linq;
@@ -94,6 +95,9 @@ public class LoadSaveData : MonoBehaviour
         {
             File.Delete(filePath);
         }
+#if DEBUG
+        throw new Exception("删除完成，请重启游戏！");
+#endif
         SceneManager.LoadScene(0);
         Destroy(LoadJsonFile.instance.gameObject);
         Destroy(PlayerDataForGame.instance.gameObject);
@@ -105,17 +109,17 @@ public class LoadSaveData : MonoBehaviour
     /// </summary> 
     private void SaveByJson(PlayerData save)
     {
-        if (save.Exp == 0 &&
-            save.ForceId == 0 &&
-            save.DailyJinNangRedemptionCount == 0 &&
-            save.DailyJiuTanRedemptionCount == 0 &&
-            save.LastJinNangRedeemTime == 0 &&
-            save.LastJiuTanRedeemTime == 0 &&
-            save.Level == 1 &&
-            save.YuanBao == 0 &&
-            save.YvQue == 0)
+        if (save.Exp <= 0 &&
+            save.ForceId <= 0 &&
+            save.DailyJinNangRedemptionCount <= 0 &&
+            save.DailyJiuTanRedemptionCount <= 0 &&
+            save.LastJinNangRedeemTime <= 0 &&
+            save.LastJiuTanRedeemTime <= 0 &&
+            save.Level <= 1 &&
+            save.YuanBao <= 0 &&
+            save.YvQue <= 0)
         {
-            throw new InvalidDataException();
+            XDebug.LogError<LoadSaveData>("存档数据异常");
         }
 
         isLoadingSaveData = true;
@@ -210,81 +214,6 @@ public class LoadSaveData : MonoBehaviour
         //    UploadArchiveToServer(pyDataStr, hSTDataStr, warsDataStr, gbocDataStr); 
         //} 
     }
-
-    /// <summary> 
-    /// 上传存档到服务器 
-    /// </summary> 
-    /// <param name="pyDataStr"></param> 
-    /// <param name="hSTDataStr"></param> 
-    /// <param name="warsDataStr"></param> 
-    /// <param name="gbocDataStr"></param> 
-    //private void UploadArchiveToServer(string pyDataStr, string hSTDataStr, string warsDataStr, string gbocDataStr) 
-    //{ 
-    //    UploadArchiveToServerClass uploadArchiveToServerClass = new UploadArchiveToServerClass(); 
-    //    uploadArchiveToServerClass.name = PlayerDataForGame.instance.acData.accountName; 
-    //    uploadArchiveToServerClass.pw = PlayerDataForGame.instance.acData.Password; 
-    //    uploadArchiveToServerClass.isPhone = "0"; 
-    //    uploadArchiveToServerClass.data = pyDataStr; 
-    //    uploadArchiveToServerClass.data2 = hSTDataStr; 
-    //    uploadArchiveToServerClass.data3 = warsDataStr; 
-    //    uploadArchiveToServerClass.data4 = gbocDataStr; 
-
-    //    //压缩存档 
-    //    pyDataStr = CharacterCompresCS.CompressString(pyDataStr); 
-    //    hSTDataStr = CharacterCompresCS.CompressString(hSTDataStr); 
-    //    warsDataStr = CharacterCompresCS.CompressString(warsDataStr); 
-    //    gbocDataStr = CharacterCompresCS.CompressString(gbocDataStr); 
-
-    //    object[] arrobjs = new object[7] { 
-    //        PlayerDataForGame.instance.acData.Phone, 
-    //        PlayerDataForGame.instance.acData.Password, 
-    //        1, 
-    //        pyDataStr, 
-    //        hSTDataStr, 
-    //        warsDataStr, 
-    //        gbocDataStr 
-    //    }; 
-
-    //    try 
-    //    { 
-    //        //string jsonData = JsonConvert.SerializeObject(uploadArchiveToServerClass); 
-    //        //上传存档到服务器 
-    //        string replyStr = HttpToServerCS.instance.LoginRelatedFunsForPost(LoginFunIndex.UPLOAD_ARCHIVE, arrobjs); 
-    //        if (replyStr != HttpResponse.ERROR) 
-    //        { 
-    //            try 
-    //            { 
-    //                BackForUploadArchiveClass backForUploadArchiveClass = new BackForUploadArchiveClass(); 
-    //                backForUploadArchiveClass = JsonConvert.DeserializeObject<BackForUploadArchiveClass>(replyStr); 
-
-    //                if (backForUploadArchiveClass.error != (int)ServerBackCode.SUCCESS) 
-    //                { 
-    //                    string serverBackStr = HttpToServerCS.instance.ErrorAnalysisFun(null, backForUploadArchiveClass.error); 
-    //                    Debug.LogError(serverBackStr); 
-    //                    return; 
-    //                } 
-    //            } 
-    //            catch (System.Exception e) 
-    //            { 
-    //                Debug.LogError(e.ToString()); 
-    //                string serverBackStr = HttpToServerCS.instance.ErrorAnalysisFun(replyStr); 
-    //                Debug.LogError(serverBackStr); 
-    //                return; 
-    //            } 
-    //            Debug.Log("上传存档到服务器成功"); 
-    //        } 
-    //        else 
-    //        { 
-    //            Debug.Log("服务器响应错误"); 
-    //        } 
-    //    } 
-    //    catch (System.Exception e) 
-    //    { 
-    //        Debug.Log(e.ToString()); 
-    //    } 
-    //} 
-
-
     /// <summary> 
     /// 读档json 
     /// </summary> 
@@ -779,7 +708,7 @@ public class LoadSaveData : MonoBehaviour
     /// 游戏数据初次存档 
     /// </summary> 
     /// <returns></returns> 
-    private void CreatePlayerDataSave()
+    public void CreatePlayerDataSave()
     {
         //////////////////////////////////////////////////////////////////////////////////////// 
         PlayerData pySaveData = new PlayerData();
@@ -787,7 +716,8 @@ public class LoadSaveData : MonoBehaviour
         pySaveData.Exp = 0;
         pySaveData.YvQue = int.Parse(LoadJsonFile.assetTableDatas[0].startValue);
         pySaveData.YuanBao = int.Parse(LoadJsonFile.assetTableDatas[1].startValue);
-        pySaveData.ForceId = firstForceId;   //暂给初始势力 
+        pySaveData.ForceId = firstForceId;   //暂给初始势力
+        pySaveData.LastGameVersion = float.Parse(Application.version);
         SaveByJson(pySaveData);
         //////////////////////////////////////////////////////////////////////////////////////// 
         GetBoxOrCodeData gbocSaveData = new GetBoxOrCodeData();

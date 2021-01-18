@@ -145,10 +145,10 @@ public class TimeSystemControl : MonoBehaviour
         openNeedSeconds2 = LoadJsonFile.GetGameValue(2);
 
         isCanGetBox1 = (PlayerPrefs.GetInt(fBoxOpenNeedTimes1) <= 0);
-        openFreeBoxTimeLong1 = long.Parse(PlayerPrefs.GetString(freeBoxOpenTime1));
+        long.TryParse(PlayerPrefs.GetString(freeBoxOpenTime1), out openFreeBoxTimeLong1);
 
         isCanGetBox2 = (PlayerPrefs.GetInt(fBoxOpenNeedTimes2) <= 0);
-        openFreeBoxTimeLong2 = long.Parse(PlayerPrefs.GetString(freeBoxOpenTime2));
+        long.TryParse(PlayerPrefs.GetString(freeBoxOpenTime2), out openFreeBoxTimeLong2);
 
         //openJinNangTimeLong = long.Parse(PlayerPrefs.GetString(jinNangOpenTime));
 
@@ -387,6 +387,7 @@ public class TimeSystemControl : MonoBehaviour
     private void UpdateJiuTanTimer()
     {
         var playerData = PlayerDataForGame.instance.pyData;
+        if (playerData == null) return;
         var nextOpenJiuTanTimeTicks = playerData.LastJiuTanRedeemTime + (JiuTanTimeGapSecs * 1000);
         var redeemCount = playerData.DailyJiuTanRedemptionCount;
         var countAvailable = redeemCount < JiuTanRedeemCountPerDay;
@@ -468,6 +469,7 @@ public class TimeSystemControl : MonoBehaviour
     private void UpdateJinNangTimer()
     {
         var playerData = PlayerDataForGame.instance.pyData;
+        if (playerData == null) return;
         var nextOpenJNTimeTicks = playerData.LastJinNangRedeemTime + (JinNangTimeGapSecs * 1000);
 
         if (!SystemTimer.IsToday(playerData.LastJinNangRedeemTime) && playerData.DailyJinNangRedemptionCount > 0)//如果上次获取时间不是今天
