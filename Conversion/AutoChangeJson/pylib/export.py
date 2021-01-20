@@ -51,6 +51,9 @@ import e_create_baYeDiTuTable
 import e_create_baYeShiJianTable
 import e_create_baYeBattleTable
 import e_create_baYeRenWuTable
+import e_create_storyPoolTable
+import e_create_storyIdTable
+import e_create_baYeTVTable
 
 
 taskList = (
@@ -93,7 +96,9 @@ taskList = (
 	('/Hero.xlsx', e_create_baYeShiJianTable, '/BaYeShiJianTable.json'),
 	('/Hero.xlsx', e_create_baYeBattleTable, '/BaYeBattleTable.json'),
 	('/Hero.xlsx', e_create_baYeRenWuTable, '/BaYeRenWuTable.json'),
-
+	('/Hero.xlsx', e_create_storyPoolTable, '/StoryPoolTable.json'),
+	('/Hero.xlsx', e_create_storyIdTable, '/StoryIdTable.json'),
+	('/Hero.xlsx', e_create_baYeTVTable, '/BaYeTVTable.json'),
 )
 
 
