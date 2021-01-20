@@ -14,8 +14,7 @@ public class LoadJsonFile : MonoBehaviour
     private static readonly string tableNameStrs = "PlayerInitialTable;AssetTable;HeroTable;PlayerLevelTable;SoldierTable;" +
         "TowerTable;ClassTable;UpGradeTable;TrapTable;SpellTable;WarChestTable;WarTable;CityLevelTable;PointTable;" +
         "BattleEventTable;EnemyTable;EnemyUnitTable;StoryTable;StoryRTable;TestTable;TestRTable;EncounterTable;" +
-        "ShoppingTable;ChoseWarTable;GuideTable;KnowledgeTable;RCodeTable;TiLiStoreTable;EnemyBOSSTable;StringTextTable;" +
-        "NumParametersTable;JiBanTable;ShiLiTable;BaYeDiTuTable;BaYeShiJianTable;BaYeBattleTable;BaYeRenWuTable";
+        "ShoppingTable;ChoseWarTable;GuideTable;KnowledgeTable;RCodeTable;TiLiStoreTable;EnemyBOSSTable;StringTextTable;" +        "NumParametersTable;JiBanTable;ShiLiTable;BaYeDiTuTable;BaYeShiJianTable;BaYeBattleTable;BaYeRenWuTable;StoryPoolTable;StoryIdTable;BaYeTVTable";
 
 
     /// <summary>
@@ -202,6 +201,21 @@ public class LoadJsonFile : MonoBehaviour
     ///霸业任务表 
     /// </summary>
     public static List<List<string>> baYeRenWuTableDatas;
+    
+    /// <summary>
+    /// 霸业故事点表
+    /// </summary>
+    public static List<List<string>> storyPoolTableDatas;
+    
+    /// <summary>
+    ///霸业故事id表 
+    /// </summary>
+    public static List<List<string>> storyIdTableDatas;
+
+    /// <summary>
+    /// 霸业TV表
+    /// </summary>
+    public static List<List<string>> baYeTVTableDatas;
 
     /// <summary>
     /// 加载json文件获取数据至链表中
@@ -1008,6 +1022,54 @@ public class LoadJsonFile : MonoBehaviour
             //Debug.Log("Json文件加载成功---" + tableNames[indexTable] + ".Json");
             indexTable++;
         }
+        //加载霸业故事点数据：StoryPoolTable
+        {
+            jsonData = LoadJsonByName(tableNames[indexTable]);
+            root = JsonConvert.DeserializeObject<Roots>(jsonData);
+            storyPoolTableDatas = new List<List<string>>(root.StoryPoolTable.Count);
+            for (int i = 0; i < root.StoryPoolTable.Count; i++)
+            {
+                storyPoolTableDatas.Add(new List<string>());
+                storyPoolTableDatas[i].Add(root.StoryPoolTable[i].poolId);
+                storyPoolTableDatas[i].Add(root.StoryPoolTable[i].storyId);
+            }
+            //Debug.Log("Json文件加载成功---" + tableNames[indexTable] + ".Json");
+            indexTable++;
+        }
+        //加载故事id数据：StoryIdTable
+        {
+            jsonData = LoadJsonByName(tableNames[indexTable]);
+            root = JsonConvert.DeserializeObject<Roots>(jsonData);
+            storyIdTableDatas = new List<List<string>>(root.StoryIdTable.Count);
+            for (int i = 0; i < root.StoryIdTable.Count; i++)
+            {
+                storyIdTableDatas.Add(new List<string>());
+                storyIdTableDatas[i].Add(root.StoryIdTable[i].storyId);
+                storyIdTableDatas[i].Add(root.StoryIdTable[i].weight);
+                storyIdTableDatas[i].Add(root.StoryIdTable[i].storyType);
+                storyIdTableDatas[i].Add(root.StoryIdTable[i].jinBiR);
+                storyIdTableDatas[i].Add(root.StoryIdTable[i].jingYanR);
+            }
+            //Debug.Log("Json文件加载成功---" + tableNames[indexTable] + ".Json");
+            indexTable++;
+        }
+        //加载霸业TV数据：BaYeTVTable
+        {
+            jsonData = LoadJsonByName(tableNames[indexTable]);
+            root = JsonConvert.DeserializeObject<Roots>(jsonData);
+            baYeTVTableDatas = new List<List<string>>(root.BaYeTVTable.Count);
+            for (int i = 0; i < root.BaYeTVTable.Count; i++)
+            {
+                baYeTVTableDatas.Add(new List<string>());
+                baYeTVTableDatas[i].Add(root.BaYeTVTable[i].id);
+                baYeTVTableDatas[i].Add(root.BaYeTVTable[i].weight);
+                baYeTVTableDatas[i].Add(root.BaYeTVTable[i].text);
+                baYeTVTableDatas[i].Add(root.BaYeTVTable[i].time);
+            }
+            //Debug.Log("Json文件加载成功---" + tableNames[indexTable] + ".Json");
+            indexTable++;
+        }
+
 
         if (indexTable >= tableNames.Length)
         {

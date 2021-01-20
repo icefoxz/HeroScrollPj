@@ -97,10 +97,11 @@ public class FightController : MonoBehaviour
     //普攻
     IEnumerator PuTongGongji(float damageBonus, FightCardData attackUnit, FightCardData attackedUnit, bool isCanFightBack)
     {
-        isNeedToAttack = true;
+        isNeedToAttack = true;//*远程兵种是普攻
         //攻击的是老家
         if (attackedUnit.cardType == 522)
         {
+            //术士和统帅
             if (LoadJsonFile.heroTableDatas[attackUnit.cardId][5] == "28" ||
                 LoadJsonFile.heroTableDatas[attackUnit.cardId][5] == "29" ||
                 LoadJsonFile.heroTableDatas[attackUnit.cardId][5] == "32" ||

@@ -153,4 +153,16 @@ public class Roots
     /// 霸业任务表
     /// </summary>
     public List<BaYeRenWuTableItem> BaYeRenWuTable { get; set; }
+    /// <summary>
+    /// 霸业故事点表
+    /// </summary>
+    public List<StoryPoolTableItem> StoryPoolTable { get; set; }
+    /// <summary>
+    /// 故事表
+    /// </summary>
+    public List<StoryIdTableItem> StoryIdTable { get; set; }
+    /// <summary>
+    /// 霸业TV表
+    /// </summary>
+    public List<BaYeTVTableItem> BaYeTVTable { get; set; }
 }

@@ -457,3 +457,23 @@ public class BaYeRenWuTableItem
     public string jingYan { get; set; }
     public string jiangLi { get; set; }
 }
+public class StoryPoolTableItem 
+{
+    public string poolId { get; set; }
+    public string storyId { get; set; }
+}
+public class StoryIdTableItem 
+{
+    public string storyId { get; set; }
+    public string weight { get; set; }
+    public string storyType { get; set; }
+    public string jinBiR { get; set; }
+    public string jingYanR { get; set; }
+}
+public class BaYeTVTableItem 
+{
+    public string id { get; set; }
+    public string weight { get; set; }
+    public string text { get; set; }
+    public string time { get; set; }
+}

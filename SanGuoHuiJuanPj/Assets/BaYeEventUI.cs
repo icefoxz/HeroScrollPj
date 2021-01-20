@@ -5,9 +5,12 @@ using UnityEngine.UI;
 
 public class BaYeEventUI : MonoBehaviour
 {
+    //进度条
     public Image prefab;
     public Color defaultColor;
     public Color activeColor;
+
+    //
     public Text text;
     public RectTransform contentLayout;
     public int space = 13;
