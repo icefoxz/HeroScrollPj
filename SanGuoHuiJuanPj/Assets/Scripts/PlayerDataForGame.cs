@@ -58,7 +58,7 @@ public class PlayerDataForGame : MonoBehaviour
     public List<int> fightSpellId = new List<int>();
 
     [HideInInspector]
-    public int chooseWarsId = new int();    //记录选择的战役id 
+    public int selectedWarId = -1;    //记录选择的战役id 
 
     [HideInInspector]
     public int zhanYiColdNums = 0;  //记录战役的金币数 
@@ -98,7 +98,7 @@ public class PlayerDataForGame : MonoBehaviour
         }
 
         DontDestroyOnLoad(gameObject);
-        chooseWarsId = 0;
+        selectedWarId = -1;
         isJumping = false;
         loadPro = 0;
         asyncOp = null;
@@ -454,7 +454,7 @@ public class PlayerDataForGame : MonoBehaviour
     [SerializeField]
     GameObject textTipsObj;     //文本提示obj  
 
-    public int selectedEventId; //当前选择的霸业城池 
+    public int selectedBaYeEventId; //当前选择的霸业城池 
     public int selectedCity;
     public string mainSceneTips;
 

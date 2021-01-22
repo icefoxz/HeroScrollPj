@@ -127,7 +127,7 @@
 	<string name="smssdk_error_detail_484">Template not exist, please check template code or do not specify template</string>
 	<string name="smssdk_error_detail_485">The current template id is not verified</string>
 	<string name="smssdk_error_detail_486">The specified template id is not a valid template</string>
-	<string name="smssdk_error_detail_487">The message content is over 60 characters</string>
+	<string name="smssdk_error_detail_487">The message listView is over 60 characters</string>
 	<string name="smssdk_error_detail_489">The current md5 of keystore is not configured at mob console, it is required since SMSSDK 3.3.0</string>
 
 	<string name="smssdk_error_detail_500">Internal Server Error</string>

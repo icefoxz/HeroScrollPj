@@ -11,6 +11,8 @@ public class StartSceneToServerCS : MonoBehaviour
     public const string AccountId = "accountName";
     private const string Password = "Password";
     private const string PhoneNumber = "Phone";
+    public bool isSkipLogin;//是否跳过登录
+    public bool isSkipInitBattle;//是否跳过初始战斗
 
     public static StartSceneToServerCS instance;
 
@@ -118,16 +120,26 @@ public class StartSceneToServerCS : MonoBehaviour
         beginningWarBtn.gameObject.SetActive(false);
         //判断本地是否有存档，或者播放过剧情故事 
         //如果有存档或初始剧情已播或是用户名已注册，不播剧情
-        if (!string.IsNullOrWhiteSpace(PlayerDataForGame.instance.acData.Username) ||
-            LoadSaveData.instance.isHadSaveData || StartSceneUIManager.instance.isPlayedStory)
+        if (!string.IsNullOrWhiteSpace(PlayerDataForGame.instance.acData.Username) 
+            || LoadSaveData.instance.isHadSaveData 
+#if DEBUG
+            || isSkipInitBattle
+#endif
+            || StartSceneUIManager.instance.isPlayedStory)
         {
             busyPanel.SetActive(true);
             LoadSaveData.instance.LoadByJson();
-            //如果条件允许尝试注册新服务器
-            var isSuccess = await BugHotFix.OnFixMigrateServerAccountCreationV1_95(SystemInfo.deviceUniqueIdentifier,
-                PlayerDataForGame.instance.acData.Password);
-            if(!isSuccess)
-                PlayerDataForGame.instance.ShowStringTips("网络异常！");
+#if DEBUG
+            if(!isSkipLogin)
+#endif
+            {
+                //如果条件允许尝试注册新服务器
+                var isSuccess = await BugHotFix.OnFixMigrateServerAccountCreationV1_95(
+                    SystemInfo.deviceUniqueIdentifier,
+                    PlayerDataForGame.instance.acData.Password);
+                if (!isSuccess)
+                    PlayerDataForGame.instance.ShowStringTips("网络异常！");
+            }
             busyPanel.SetActive(false);
             loginBtn.gameObject.SetActive(true);
         }
@@ -157,13 +169,20 @@ public class StartSceneToServerCS : MonoBehaviour
     /// </summary>
     private async void LoginAndLoadMainScene()
     {
-        busyPanel.SetActive(true);
+#if DEBUG
+        if (isSkipLogin)
+        {
+            StartSceneUIManager.instance.LoadingScene(1, true);
+            return;
+        }
+#endif
+        busyPanel?.SetActive(true);
         //尝试登录并获取登录信息 
         var response =
             await Http.PostAsync(Server.USER_LOGIN_API,
                 Json.Serialize(PlayerDataForGame.instance.acData));
         //如果服务器获取信息 
-        busyPanel.SetActive(false);
+        busyPanel?.SetActive(false);
         if (!response.IsSuccess())
         {
             var code = (ServerBackCode) response.StatusCode;

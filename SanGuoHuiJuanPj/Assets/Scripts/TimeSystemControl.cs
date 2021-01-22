@@ -3,6 +3,7 @@ using System.Collections;
 using System.Net;
 using System.Text;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 public class TimeSystemControl : MonoBehaviour
@@ -21,6 +22,9 @@ public class TimeSystemControl : MonoBehaviour
     public int JinNangRedeemCountPerDay = 10;//锦囊一天可获取次数
     public int JiuTanRedeemCountPerDay = 10;//酒坛一天可获取次数
     #endregion
+
+    public event Action OnHourly;
+    private DateTimeOffset hour;//现在时间(小时制，只会跨小时不会跨分钟)
 
     public static string NetworkTimestampStr = "NetworkTimestamp";
 
@@ -159,6 +163,8 @@ public class TimeSystemControl : MonoBehaviour
 
     private void Update()
     {
+        if (SystemTimer.Now == default) return;
+        UpdateTimeTrigger();
         UpdateJinNangTimer();
         UpdateJiuTanTimer();
         UpdateFreeBoxTimer1();
@@ -166,6 +172,16 @@ public class TimeSystemControl : MonoBehaviour
         UpdateStaminaTimer();
 
         UpdateChickenShoping();
+    }
+
+    /// <summary>
+    /// 更新时间触发器
+    /// </summary>
+    private void UpdateTimeTrigger()
+    {
+        if (SystemTimer.Now - hour <= TimeSpan.FromHours(1)) return;
+        hour = SystemTimer.Now.Date.AddHours(SystemTimer.Now.Hour);
+        OnHourly?.Invoke();
     }
 
     /// <summary>

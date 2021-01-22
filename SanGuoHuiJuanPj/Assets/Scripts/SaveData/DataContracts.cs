@@ -302,10 +302,18 @@ public class UnlockWarCount
 public class BaYeDataClass
 {
     public long lastBaYeActivityTime;
+    public DateTimeOffset lastStoryEventsRefreshHour;
     [JsonIgnore]public int CurrentExp => ExpData.Values.Sum();
     public int gold;
+    /// <summary>
+    /// 经验映像记录，key = 城池/事件id 注意：-1为额外添加的奖励事件, value = 奖励的经验值
+    /// </summary>
     public Dictionary<int, int> ExpData = new Dictionary<int, int>();
-    public List<BaYeEvent> data = new List<BaYeEvent>();
+    public List<BaYeCityEvent> data = new List<BaYeCityEvent>();
+    /// <summary>
+    /// 故事剧情映像表，key = eventPoint地点, value = storyEvent故事事件
+    /// </summary>
+    public Dictionary<int, BaYeStoryEvent> storyMap = new Dictionary<int, BaYeStoryEvent>();
 
     private bool[] openedChest1 = new bool[5];
 

@@ -7,6 +7,7 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using UnityEngine;
+using UnityEngine.Events;
 using Debug = UnityEngine.Debug;
 
 /// <summary>
@@ -16,7 +17,6 @@ public class SystemTimer : MonoBehaviour
 {
     private const string TaobaoTimeStampApi = "http://api.m.taobao.com/rest/api3.do?api=mtop.common.getTimestamp";
     private static readonly DateTimeOffset Epoch = new DateTimeOffset(1970, 1, 1, 0, 0, 0, TimeSpan.Zero);
-
     public static SystemTimer instance;
     public static DateTimeOffset UnixToDateTime(long unixTicks)
     {
@@ -32,15 +32,7 @@ public class SystemTimer : MonoBehaviour
     /// <summary>
     /// 当前时间
     /// </summary>
-    public DateTimeOffset Now
-    {
-        get
-        {
-            if (startTime == default)
-                throw new InvalidOperationException("startTime = default!");
-            return startTime.AddTicks(StopWatch.ElapsedTicks);
-        }
-    }
+    public DateTimeOffset Now => startTime == default ? default : startTime.AddTicks(StopWatch.ElapsedTicks);
 
     /// <summary>
     /// 网络请求同步失败重试次数。
@@ -153,27 +145,6 @@ public class SystemTimer : MonoBehaviour
             throw;
         }
     }
-
-    private void DebugLog(string message, [CallerMemberName] string methodName = null) =>
-        XDebug.Log<SystemTimer>(message, methodName);
-
-    //private void UpdateDateTime(long ticks)
-    //{
-    //    var now = startTime.AddTicks(ticks);
-    //    Now = now;
-    //    Year = now.Year;
-    //    Month = now.Month;
-    //    Day = now.Day;
-    //    Hour = now.Hour;
-    //    Min = now.Minute;
-    //    Sec = now.Second;
-    //}
-
-    //private void Update()
-    //{
-    //    TimeTicks = StopWatch.ElapsedTicks;
-    //    UpdateDateTime(TimeTicks);
-    //}
     private class TaobaoJsonApi
     {
         public string api { get; set; }

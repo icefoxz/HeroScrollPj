@@ -1,0 +1,20 @@
+{
+	"StoryPoolTable": [
+		{
+			"poolId": "0",
+			"storyId": "0,1,2,3,"
+		},
+		{
+			"poolId": "1",
+			"storyId": "0,1,2,3,"
+		},
+		{
+			"poolId": "2",
+			"storyId": "0,1,2,3,"
+		},
+		{
+			"poolId": "3",
+			"storyId": "0,1,2,3,4,"
+		}
+	]
+}

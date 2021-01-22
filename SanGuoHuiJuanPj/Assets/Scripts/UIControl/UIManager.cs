@@ -119,6 +119,8 @@ public class UIManager : MonoBehaviour
 
     public BaYeProgressUI baYeProgressUi; //霸业经验条
     public ChestUI[] baYeChestButtons; //霸业宝箱
+    public StoryEventUIController storyEventUiController;//霸业的故事事件控制器
+    public BaYeMiniWindowUI baYeMiniWindowUi;//霸业地图小弹窗
 
     private int lastAvailableStageIndex;//最远可战的战役索引
     private int selectedBaYeForceId; //当前为霸业选择的势力ID
@@ -135,7 +137,7 @@ public class UIManager : MonoBehaviour
     Text InfoText;
 
     bool isShowInfo;//说明窗口是否开启
-    //private BaYeEventUI[] baYeEventUiList;
+    
 
     private void Awake()
     {
@@ -176,6 +178,7 @@ public class UIManager : MonoBehaviour
 
         OnStartMainScene();
         selectedBaYeForceId = -1;
+        PlayerDataForGame.instance.selectedWarId = -1;
     }
 
     //时间管理
@@ -292,7 +295,7 @@ public class UIManager : MonoBehaviour
     //开始霸业战斗
     public void StartBaYeFight()
     {
-        if (PlayerDataForGame.instance.selectedEventId != -1 && selectedBaYeForceId != -1)
+        if (PlayerDataForGame.instance.selectedBaYeEventId != -1 && selectedBaYeForceId != -1)
         {
             print("可以开始战斗");
             if (!isJumping)
@@ -301,8 +304,10 @@ public class UIManager : MonoBehaviour
                 AudioController0.instance.ChangeAudioClip(AudioController0.instance.audioClips[12], AudioController0.instance.audioVolumes[12]);
                 AudioController0.instance.PlayAudioSource(0);
                 PlayerDataForGame.instance.FlagWarTypeBeforeBattle(2);
-                LoadSaveData.instance.BindBaYeForceAndStage(PlayerDataForGame.instance.selectedEventId,
-                    PlayerDataForGame.instance.selectedCity, selectedBaYeForceId, PlayerDataForGame.instance.chooseWarsId);
+                PlayerDataForGame.instance.selectedWarId = BaYeManager.instance.Map.Single(e =>
+                    e.EventId == PlayerDataForGame.instance.selectedBaYeEventId).WarId;
+                LoadSaveData.instance.BindBaYeForceAndStage(PlayerDataForGame.instance.selectedBaYeEventId,
+                    PlayerDataForGame.instance.selectedCity, selectedBaYeForceId, PlayerDataForGame.instance.selectedWarId);
                 StartCoroutine(LateGoToFightScene());
             }
             else
@@ -322,10 +327,12 @@ public class UIManager : MonoBehaviour
     //初始化霸业界面内容
     private void InitBaYeFun()
     {
+        storyEventUiController.ResetUI();
+        baYeMiniWindowUi.Init();
         var baYe = PlayerDataForGame.instance.warsData.baYe;
-        PlayerDataForGame.instance.selectedEventId = -1;
+        PlayerDataForGame.instance.selectedBaYeEventId = -1;
         //霸业经验条和宝箱初始化
-        ResetBaYeProgressSection(baYe);
+        ResetBaYeProgressAndGold(baYe);
         //城市点初始化
         var cityLvlUnlock = new Dictionary<int, int>();
         LoadJsonFile.playerLevelTableDatas.Select(row =>
@@ -407,12 +414,12 @@ public class UIManager : MonoBehaviour
             forceField.forceUi.button.onClick.AddListener( () => ChooseBaYeForceOnClick(forceIndex));
             obj.gameObject.SetActive(baYe.data.All(e => e.ForceId != forceIndex));
         }
-        baYeGoldNumText.text = PlayerDataForGame.instance.warsData.baYe.gold.ToString();
     }
 
-    private void ResetBaYeProgressSection(BaYeDataClass baYe)
+    public void ResetBaYeProgressAndGold(BaYeDataClass baYe)
     {
         var baYeReward = BaYeManager.instance.GetRewardChests();
+        baYeGoldNumText.text = $"{baYe.gold}/{BaYeManager.instance.BaYeMaxGold}";
         baYeProgressUi.Set(baYe.CurrentExp,baYeReward[baYeReward.Count - 1].Item2);
         for (int i = 0; i < baYeReward.Count; i++)
         {
@@ -436,7 +443,7 @@ public class UIManager : MonoBehaviour
     //选择霸业的势力方法
     public void ChooseBaYeForceOnClick(int forceId)
     {
-        if (PlayerDataForGame.instance.selectedEventId == -1) return;
+        if (PlayerDataForGame.instance.selectedBaYeEventId == -1) return;
         var force = forceFields.Single(f => f.id == forceId);
         forceFields.ForEach(f=>f.forceUi.forceFlag.Select(false));
         force.forceUi.forceFlag.Select(true);
@@ -447,15 +454,14 @@ public class UIManager : MonoBehaviour
     //选择某个霸业城池点的方法
     private void ChooseBaYeEventOnClick(int cityId,int eventId, int warId)
     {
-        if (eventId == PlayerDataForGame.instance.selectedEventId)
+        if (eventId == PlayerDataForGame.instance.selectedBaYeEventId)
         {
-            PlayerDataForGame.instance.selectedEventId = -1;
+            PlayerDataForGame.instance.selectedBaYeEventId = -1;
             chooseBaYeEventImg.SetActive(false);
             return;
         }
         PlayerDataForGame.instance.selectedCity = cityId;
-        PlayerDataForGame.instance.chooseWarsId = warId;
-        PlayerDataForGame.instance.selectedEventId = eventId;
+        PlayerDataForGame.instance.selectedBaYeEventId = eventId;
         chooseBaYeEventImg.transform.position = baYeEventsObj.eventList[cityId].transform.position;
         chooseBaYeEventImg.SetActive(true);
         var isBound = false;
@@ -972,7 +978,7 @@ public class UIManager : MonoBehaviour
         obj.GetComponentInChildren<Image>().enabled = true;
 
         PlayerDataForGame.instance.zhanYiColdNums = 10;
-        PlayerDataForGame.instance.chooseWarsId = warsId;
+        PlayerDataForGame.instance.selectedWarId = warsId;
         //战役介绍
         warIntroText.DOPause();
         warIntroText.text = "";
@@ -1003,6 +1009,12 @@ public class UIManager : MonoBehaviour
     /// </summary>
     public void OnClickStartWars(int warType)
     {
+        if (PlayerDataForGame.instance.selectedWarId < 0)
+        {
+            PlayerDataForGame.instance.ShowStringTips("请选择战役！");
+            PlayOnClickMusic();
+            return;
+        }
         PlayerDataForGame.instance.FlagWarTypeBeforeBattle(warType);
         if (!isJumping)
         {
@@ -1118,7 +1130,7 @@ public class UIManager : MonoBehaviour
             zhuChengHeroContentObj.GetComponent<RectTransform>().offsetMax = new Vector2(1, 1);
         }
         zhuChengHeroContentObj.transform.parent.parent.GetComponent<ScrollRect>().DOVerticalNormalizedPos(1f, 0.2f);
-        //zhuChengHeroContentObj.transform.parent.parent.GetComponent<ScrollRect>().content.localPosition = Vector2.left;
+        //zhuChengHeroContentObj.transform.parent.parent.GetComponent<ScrollRect>().listView.localPosition = Vector2.left;
     }
 
     /// <summary>
@@ -2099,7 +2111,6 @@ public class UIManager : MonoBehaviour
         }
         zhuChengInterFaces[index].SetActive(true);
         particlesForInterface[index].SetActive(true);
-
         switch (index)
         {
             case 0://桃园

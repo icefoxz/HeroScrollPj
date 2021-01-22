@@ -1,0 +1,39 @@
+{
+	"StoryIdTable": [
+		{
+			"storyId": "0",
+			"weight": "10",
+			"storyType": "0",
+			"jinBiR": "0,0",
+			"jingYanR": "0,0"
+		},
+		{
+			"storyId": "1",
+			"weight": "5",
+			"storyType": "1",
+			"jinBiR": "5,10",
+			"jingYanR": "0,0"
+		},
+		{
+			"storyId": "2",
+			"weight": "3",
+			"storyType": "1",
+			"jinBiR": "10,20",
+			"jingYanR": "0,0"
+		},
+		{
+			"storyId": "3",
+			"weight": "1",
+			"storyType": "1",
+			"jinBiR": "15,30",
+			"jingYanR": "0,0"
+		},
+		{
+			"storyId": "4",
+			"weight": "0",
+			"storyType": "2",
+			"jinBiR": "0,0",
+			"jingYanR": "1,2"
+		}
+	]
+}

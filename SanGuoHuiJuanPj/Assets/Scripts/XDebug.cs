@@ -19,6 +19,12 @@ public static class XDebug
         Debug.LogError($"{type?.GetType().Name}:{methodName}() {message}");
 #endif
     }
+    public static void LogError(string message,string typeName,[CallerMemberName] string methodName = null) 
+    {
+#if DEBUG
+        Debug.LogError($"{typeName}:{methodName}() {message}");
+#endif
+    }
     public static void Log(Type type,string message,[CallerMemberName] string methodName = null)
     {
 #if DEBUG

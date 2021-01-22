@@ -23,8 +23,7 @@ public class StartSceneUIManager : MonoBehaviour
     [SerializeField]
     GameObject EffectPoolManagerObj;   //特效组
     bool isJumping; //是否在跳转
-
-    public bool isPlayedStory;//是否已播放了剧情
+    [HideInInspector]public bool isPlayedStory;//是否已播放了剧情
 
     private void Awake()
     {

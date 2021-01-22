@@ -65,9 +65,7 @@ public class WarsUIManager : MonoBehaviour
         {
             goldForCity = value;
             if (PlayerDataForGame.instance.WarType != PlayerDataForGame.WarTypes.Baye) return;
-            PlayerDataForGame.instance.warsData.baYe.gold = value;
-            PlayerDataForGame.instance.isNeedSaveData = true;
-            LoadSaveData.instance.SaveGameData(3);
+            BaYeManager.instance.SetGold(value);
         }
     }
 
@@ -158,7 +156,7 @@ public class WarsUIManager : MonoBehaviour
         lastEvent = EventTypes.Generic;
         //尝试展示指引
         ShowOrHideGuideObj(0, true);
-        InitShowParentGuanQia(LoadJsonFile.warTableDatas[PlayerDataForGame.instance.chooseWarsId][3]);
+        InitShowParentGuanQia(LoadJsonFile.warTableDatas[PlayerDataForGame.instance.selectedWarId][3]);
     }
 
     int selectParentIndex = -1;
@@ -182,7 +180,7 @@ public class WarsUIManager : MonoBehaviour
 
         //最后一关
         string str = LoadJsonFile.pointTableDatas[parentGuanQiaId][1];
-        if (nowGuanQiaIndex >= int.Parse(LoadJsonFile.warTableDatas[PlayerDataForGame.instance.chooseWarsId][4]))
+        if (nowGuanQiaIndex >= int.Parse(LoadJsonFile.warTableDatas[PlayerDataForGame.instance.selectedWarId][4]))
         {
             str = "";
         }
@@ -274,13 +272,13 @@ public class WarsUIManager : MonoBehaviour
             PlayerDataForGame.instance.getBackTiLiNums = 0;
         }
 
-        int guanQiaSum = int.Parse(LoadJsonFile.warTableDatas[PlayerDataForGame.instance.chooseWarsId][4]);
+        int guanQiaSum = int.Parse(LoadJsonFile.warTableDatas[PlayerDataForGame.instance.selectedWarId][4]);
 
         gameOverObj.transform.GetChild(1).GetChild(1).GetChild(0).GetComponent<Text>().text = "×" + treasureChestNums;
 
-        if (passedGuanQiaNums > PlayerDataForGame.instance.warsData.warUnlockSaveData[PlayerDataForGame.instance.chooseWarsId].unLockCount)
+        if (passedGuanQiaNums > PlayerDataForGame.instance.warsData.warUnlockSaveData[PlayerDataForGame.instance.selectedWarId].unLockCount)
         {
-            PlayerDataForGame.instance.warsData.warUnlockSaveData[PlayerDataForGame.instance.chooseWarsId].unLockCount = passedGuanQiaNums;
+            PlayerDataForGame.instance.warsData.warUnlockSaveData[PlayerDataForGame.instance.selectedWarId].unLockCount = passedGuanQiaNums;
         }
         
         PlayerDataForGame.instance.isNeedSaveData = true;
@@ -298,7 +296,7 @@ public class WarsUIManager : MonoBehaviour
     private void InitShowParentGuanQia(string str)
     {
         passedGuanQiaNums++;
-        if (passedGuanQiaNums >= int.Parse(LoadJsonFile.warTableDatas[PlayerDataForGame.instance.chooseWarsId][4]))
+        if (passedGuanQiaNums >= int.Parse(LoadJsonFile.warTableDatas[PlayerDataForGame.instance.selectedWarId][4]))
         {//最后一关
             str = "";
         }
@@ -630,7 +628,7 @@ public class WarsUIManager : MonoBehaviour
     //展示关卡前进的云朵动画
     private void ShowClouds()
     {
-        if (passedGuanQiaNums + 1 < int.Parse(LoadJsonFile.warTableDatas[PlayerDataForGame.instance.chooseWarsId][4]))
+        if (passedGuanQiaNums + 1 < int.Parse(LoadJsonFile.warTableDatas[PlayerDataForGame.instance.selectedWarId][4]))
         {
             if (warCityCloudsObj.activeInHierarchy)
             {
@@ -1623,7 +1621,7 @@ public class WarsUIManager : MonoBehaviour
     //初始化场景内容
     private void InitMainUIShow()
     {
-        battleNameText.text = LoadJsonFile.warTableDatas[PlayerDataForGame.instance.chooseWarsId][1];
+        battleNameText.text = LoadJsonFile.warTableDatas[PlayerDataForGame.instance.selectedWarId][1];
         playerInfoObj.transform.GetChild(0).GetComponent<Text>().text = LoadJsonFile.playerInitialTableDatas[PlayerDataForGame.instance.pyData.ForceId][1];
         UpdateGoldandBoxNumsShow();
         UpdateLevelInfo();
@@ -1656,12 +1654,12 @@ public class WarsUIManager : MonoBehaviour
             }
         }
         nowGuanQiaIndex++;
-        if (nowGuanQiaIndex >= int.Parse(LoadJsonFile.warTableDatas[PlayerDataForGame.instance.chooseWarsId][4]))
+        if (nowGuanQiaIndex >= int.Parse(LoadJsonFile.warTableDatas[PlayerDataForGame.instance.selectedWarId][4]))
         {
-            nowGuanQiaIndex = int.Parse(LoadJsonFile.warTableDatas[PlayerDataForGame.instance.chooseWarsId][4]);
+            nowGuanQiaIndex = int.Parse(LoadJsonFile.warTableDatas[PlayerDataForGame.instance.selectedWarId][4]);
         }
 
-        string str = nowGuanQiaIndex + "/" + LoadJsonFile.warTableDatas[PlayerDataForGame.instance.chooseWarsId][4];
+        string str = nowGuanQiaIndex + "/" + LoadJsonFile.warTableDatas[PlayerDataForGame.instance.selectedWarId][4];
         battleScheduleText.text = str;
     }
 

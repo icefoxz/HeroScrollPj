@@ -8138,7 +8138,7 @@ GameObject:
   - component: {fileID: 654977877}
   - component: {fileID: 654977878}
   m_Layer: 5
-  m_Name: BackImage
+  m_Name: StartScenceManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8239,6 +8239,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e96df91d8871ba9479ffbfe23771aad0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isSkipLogin: 1
+  isSkipInitBattle: 1
   closeBtn: {fileID: 116243771}
   loginBtn: {fileID: 1477689249}
   beginningWarBtn: {fileID: 301380373}
@@ -25656,7 +25658,7 @@ MonoBehaviour:
   fightTowerId: 
   fightTrapId: 
   fightSpellId: 
-  chooseWarsId: 0
+  selectedWarId: -1
   zhanYiColdNums: 0
   isJumping: 0
   loadingText: {fileID: 662825763}
@@ -25667,7 +25669,7 @@ MonoBehaviour:
   boxForTiLiNums: 0
   baYeManager: {fileID: 0}
   textTipsObj: {fileID: 1402530242}
-  selectedEventId: 0
+  selectedBaYeEventId: 0
   selectedCity: 0
   mainSceneTips: 
 --- !u!114 &1717593871

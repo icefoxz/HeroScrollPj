@@ -1009,7 +1009,7 @@ public class LoadSaveData : MonoBehaviour
         var baYe = PlayerDataForGame.instance.warsData.baYe;
         if (baYe.data.Any(d => d.CityId == cityId)) return;
         var expList = BaYeManager.instance.GetBaYeEventExp(eventId);
-        baYe.data.Add(new BaYeEvent
+        baYe.data.Add(new BaYeCityEvent
         {
             CityId = cityId,
             EventId = eventId,
