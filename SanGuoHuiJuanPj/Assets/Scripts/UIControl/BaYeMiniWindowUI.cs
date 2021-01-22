@@ -6,6 +6,7 @@ using UnityEngine.UI;
 
 public class BaYeMiniWindowUI : MonoBehaviour
 {
+    public GameObject BaYeMiniWindow;
     public MiniWindowElementUI prefab;
     public Sprite[] rewardImages;
     public Transform listView;
@@ -58,4 +59,10 @@ public class BaYeMiniWindowUI : MonoBehaviour
     }
 
     public void Close() => gameObject.SetActive(false);
+
+    //关闭窗口
+    public void CloseBaYeMiniWindow() 
+    {
+        BaYeMiniWindow.gameObject.SetActive(false);
+    }
 }

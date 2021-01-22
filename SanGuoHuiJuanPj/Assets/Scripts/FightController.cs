@@ -11,15 +11,15 @@ public class FightController : MonoBehaviour
     StateOfFight stateOfFight;  //战斗状态
 
     [HideInInspector]
-    public int recordWinner;    //标记胜负-1输.0.1胜
+    public int recordWinner;    //标记胜负 -1：输  1：胜
 
-    private int roundNums;
-
-    [HideInInspector]
-    public bool isRoundBegin;
+    private int roundNums;    //回合数
 
     [HideInInspector]
-    public bool isPlayerRound;
+    public bool isRoundBegin; //回合是否开始
+
+    [HideInInspector]
+    public bool isPlayerRound;   //是否是玩家回合
 
     private int fightUnitIndex; //行动单位索引
 
@@ -98,10 +98,10 @@ public class FightController : MonoBehaviour
     IEnumerator PuTongGongji(float damageBonus, FightCardData attackUnit, FightCardData attackedUnit, bool isCanFightBack)
     {
         isNeedToAttack = true;//*远程兵种是普攻
-        //攻击的是老家
+        //受击者是老家
         if (attackedUnit.cardType == 522)
         {
-            //术士和统帅
+            //术士和统帅没有普通攻击
             if (LoadJsonFile.heroTableDatas[attackUnit.cardId][5] == "28" ||
                 LoadJsonFile.heroTableDatas[attackUnit.cardId][5] == "29" ||
                 LoadJsonFile.heroTableDatas[attackUnit.cardId][5] == "32" ||
@@ -114,6 +114,7 @@ public class FightController : MonoBehaviour
                 {
                     attackedUnit.nowHp -= cutHpNum;
                     AttackedAnimShow(attackedUnit, cutHpNum, false);
+                    //判定胜负
                     if (attackedUnit.nowHp <= 0)
                     {
                         recordWinner = attackedUnit.isPlayerCard ? -1 : 1;
@@ -163,13 +164,13 @@ public class FightController : MonoBehaviour
                 else
                 {
                     //攻击的是武将单位
-                    int finalDamage = (int)(HeroCardMakeSomeDamages(isCanFightBack, attackUnit) * damageBonus);
-                    finalDamage = FightDamageForSpecialSkill(finalDamage, attackUnit, attackedUnit, isCanFightBack);
-                    finalDamage = DefDamageProcessFun(attackUnit, attackedUnit, finalDamage);
-                    finalDamage = TieQiFenTan(finalDamage, attackedUnit);
+                    int finalDamage = (int)(HeroCardMakeSomeDamages(isCanFightBack, attackUnit) * damageBonus);//基础，暴击、会心等
+                    finalDamage = FightDamageForSpecialSkill(finalDamage, attackUnit, attackedUnit, isCanFightBack);//计算技能
+                    finalDamage = DefDamageProcessFun(attackUnit, attackedUnit, finalDamage);//计算防御
+                    finalDamage = TieQiFenTan(finalDamage, attackedUnit);//铁骑伤害分摊
                     if (isNeedToAttack)
                     {
-                        finalDamage = AddOrCutShieldValue(finalDamage, attackedUnit, false);
+                        finalDamage = AddOrCutShieldValue(finalDamage, attackedUnit, false);//计算防护盾
                         attackedUnit.nowHp -= finalDamage;
                         AttackedAnimShow(attackedUnit, finalDamage, false);
                     }
@@ -193,8 +194,8 @@ public class FightController : MonoBehaviour
     /// <returns></returns>
     private int HeroCardMakeSomeDamages(bool isCanAdd, FightCardData fightCardData)
     {
-        List<string> heroData = LoadJsonFile.heroTableDatas[fightCardData.cardId];
-        int damage = (int)(fightCardData.damage * (fightCardData.fightState.zhangutaiAddtion + 100) / 100f);
+        List<string> heroData = LoadJsonFile.heroTableDatas[fightCardData.cardId];//？？？
+        int damage = (int)(fightCardData.damage * (fightCardData.fightState.zhangutaiAddtion + 100) / 100f);//战鼓台伤害加成
         if (isCanAdd)
         {
             switch (indexAttackType)
@@ -855,7 +856,7 @@ public class FightController : MonoBehaviour
     {
         if (isCanFightBack)
         {
-            if (attackedUnit.fightState.dizzyNums <= 0 && attackedUnit.fightState.imprisonedNums <= 0)
+            if (attackedUnit.fightState.dizzyNums <= 0 && attackedUnit.fightState.imprisonedNums <= 0)//没有被眩晕或禁锢
             {
                 //禁卫
                 if (LoadJsonFile.heroTableDatas[attackedUnit.cardId][5] == "13" && attackUnit.cardMoveType == 0)
