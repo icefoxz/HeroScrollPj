@@ -1,39 +1,41 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class StoryEventUIController : MonoBehaviour
 {
-    public List<Button> StoryEventPoints;
-    public List<Sprite> StoryEventImages;
-    private Dictionary<int, Button> buttons;
+    public List<StoryEventPoint> storyEventPoints;
+    public List<GameObject> eventTypePrefabs;
+    private Dictionary<int, StoryEventPoint> points;
 
     public void ResetUI()
     {
-        StoryEventPoints.ForEach(b => b.gameObject.SetActive(false));
-        var storyMap = PlayerDataForGame.instance.warsData.baYe.storyMap;
-        buttons = new Dictionary<int, Button>();
-        for (int i = 0; i < StoryEventPoints.Count; i++)
+        storyEventPoints.ForEach(b =>
         {
-            var btn = StoryEventPoints[i];
+            b.gameObject.SetActive(false);
+            if(b.content)
+                Destroy(b.content);
+        });
+        var storyMap = PlayerDataForGame.instance.warsData.baYe.storyMap;
+        points = new Dictionary<int, StoryEventPoint>();
+        for (int i = 0; i < storyEventPoints.Count; i++)
+        {
+            var point =  storyEventPoints[i];
             var isContainEvent = storyMap.ContainsKey(i);
-            btn.interactable = isContainEvent;
-            btn.gameObject.SetActive(isContainEvent);
-            buttons.Add(i, btn);
+            point.gameObject.SetActive(isContainEvent);
             if (!isContainEvent) continue;
             var sEvent = storyMap[i];
-            btn.image.sprite = StoryEventImages[sEvent.Type - 1];//由于0为无事件，所以第一个是事件1的图标
+            point.content = Instantiate(eventTypePrefabs[sEvent.Type - 1],point.transform);//由于0为无事件，所以第一个是事件1的图标
+            points.Add(i, point);
         }
     }
 
     public void OnStoryEventClick(int id)
     {
         var isSuccess = BaYeManager.instance.OnStoryEventTrigger(id);
-        var btn = buttons[id];
-        btn.interactable = false;
-        btn.gameObject.SetActive(false);
-        btn.image.sprite = null;
+        var point = points[id];
+        Destroy(point.content);
+        point.gameObject.SetActive(false);
         if(isSuccess)return;
 #if DEBUG
         var resultText = isSuccess ? "成功" : "失败";
