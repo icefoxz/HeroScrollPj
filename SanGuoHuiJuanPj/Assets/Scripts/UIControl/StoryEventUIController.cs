@@ -32,6 +32,8 @@ public class StoryEventUIController : MonoBehaviour
 
     public void OnStoryEventClick(int id)
     {
+        var sEvent = PlayerDataForGame.instance.warsData.baYe.storyMap[id];
+        OnClickAudioPlay(sEvent.Type);
         var isSuccess = BaYeManager.instance.OnStoryEventTrigger(id);
         var point = points[id];
         Destroy(point.content);
@@ -41,5 +43,20 @@ public class StoryEventUIController : MonoBehaviour
         var resultText = isSuccess ? "成功" : "失败";
         XDebug.Log<StoryEventUIController>($"霸业故事事件[{id}]获取{resultText}！");
 #endif
+    }
+    private void OnClickAudioPlay(int type) 
+    {
+        switch (type) 
+        {
+            case 0:
+                break;                
+            case 1://宝箱
+                AudioController0.instance.ChangeAudioClip(AudioController0.instance.audioClips[17], AudioController0.instance.audioVolumes[17]);
+                break;
+            case 2://答题
+                AudioController0.instance.ChangeAudioClip(AudioController0.instance.audioClips[19], AudioController0.instance.audioVolumes[19]);
+                break;       
+        }
+        AudioController0.instance.PlayAudioSource(0);
     }
 }

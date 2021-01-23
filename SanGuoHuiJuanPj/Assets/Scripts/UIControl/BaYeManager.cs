@@ -11,7 +11,7 @@ using Random = UnityEngine.Random;
 public class BaYeManager : MonoBehaviour
 {
     public int SelectedForceId { get; set; }
-    public int BaYeGoldDefault = 50; //霸业初始金币
+    public int BaYeGoldDefault = 30; //霸业初始金币
     public int BaYeMaxGold = 50; //霸业金币上限
     private List<BaYeCityEvent> map;
     private Dictionary<int, int[]> storyEventSet;//数据表缓存
@@ -303,7 +303,7 @@ public class BaYeManager : MonoBehaviour
                 UIManager.instance.baYeMiniWindowUi.Show(row[1], new[] {row[3], row[4], row[5]}, answerIndex, () =>
                     {
                         OnReward(sEvent);
-                        PlayerDataForGame.instance.ShowStringTips("回答正确！");
+                        PlayerDataForGame.instance.ShowStringTips("三日不见，当刮目相看！");
                     },
                     () => PlayerDataForGame.instance.ShowStringTips("糊涂啊~"));
                 break;

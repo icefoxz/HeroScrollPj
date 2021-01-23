@@ -1086,7 +1086,7 @@ public class UIManager : MonoBehaviour
     /// </summary>
     public void ChangeScrollView()
     {
-        AudioController0.instance.RandomPlayGuZhengAudio();
+        AudioController0.instance.RandomPlayGuZhengAudio();//播放随机音效
 
         indexChooseListForceId++;
         if (indexChooseListForceId > int.Parse(LoadJsonFile.playerLevelTableDatas[PlayerDataForGame.instance.pyData.Level - 1][6]))
