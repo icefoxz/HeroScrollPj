@@ -92,7 +92,7 @@ public class BaYeManager : MonoBehaviour
         isHourlyEventRegistered = true;
         TimeSystemControl.instance.OnHourly += GenerateBaYeStoryEvents;
         if (SystemTimer.instance.Now - PlayerDataForGame.instance.warsData.baYe.lastStoryEventsRefreshHour >=
-#if DEBUG
+#if UNITY_EDITOR
             TimeSpan.FromHours(0) //调试期间每次开启游戏都会刷新霸业
 #else
             TimeSpan.FromHours(1)

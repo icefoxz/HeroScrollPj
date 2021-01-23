@@ -75,6 +75,7 @@
     <Compile Include="Assets\Editor\Beebyte\Obfuscator\Postbuild.cs" />
     <Compile Include="Assets\Editor\Beebyte\Obfuscator\Project.cs" />
     <Compile Include="Assets\Editor\Beebyte\Obfuscator\Restore.cs" />
+    <Compile Include="Assets\Editor\Config\GameConfigWindow.cs" />
     <None Include="Assets\Editor\Beebyte\Obfuscator\Third-Party Notices.txt" />
     <None Include="Assets\Editor\Beebyte\Obfuscator\Obfuscator_README.txt" />
     <Reference Include="UnityEditor.TestRunner">

@@ -40,7 +40,7 @@ public static class BugHotFix
         //    Json.Serialize(PlayerDataForGame.instance.acData));
         //if (!response.IsSuccess()) return;
         //var countString = await response.Content.ReadAsStringAsync();
-#if DEBUG
+#if UNITY_EDITOR
         ////if (!int.TryParse(countString, out int count)) return;
 #else
         //if (count > 1)
@@ -63,7 +63,7 @@ public static class BugHotFix
     {
         const float fixVersion = 1.95f;
         if (PlayerDataForGame.instance.pyData.LastGameVersion > fixVersion) return true;
-#if !DEBUG
+#if !UNITY_EDITOR
         if (PlayerPrefs.GetInt(V1_95MigrateServer, 0) > 0) return true;
 #endif
         var loginResponse = await Http.PostAsync(Server.USER_LOGIN_API,

@@ -3,8 +3,26 @@ using UnityEngine;
 
 public class AppDebugClass
 {
-#if UNITY_EDITOR
-    
+#if UNITY_ANDROID  && !UNITY_EDITOR
+
+    private static readonly string logFileUrl = Application.persistentDataPath + "/DebugFileV1.89.txt";
+    private static readonly string logFileUrlOld = Application.persistentDataPath + "/DebugFileV1.86.txt";
+
+    public static readonly string playerDataString = Application.persistentDataPath + "/PlayerDataSave.json";
+    public static readonly string pyDataString = Application.persistentDataPath + "/PyDataSave.json";
+    public static readonly string plyDataString = Application.persistentDataPath + "/PlyDataSave.json";
+    public static readonly string gbocDataString = Application.persistentDataPath + "/GbocDataSave.json";
+    public static readonly string hstDataString = Application.persistentDataPath + "/HSTDataSave.json";
+    public static readonly string warUnlockDataString = Application.persistentDataPath + "/WarUnlockDataSave.json";
+
+    public static readonly string playerDataString1 = Application.persistentDataPath + "/PlayerDataSave_old";
+    public static readonly string pyDataString1 = Application.persistentDataPath + "/PyDataSave_old.json";
+    public static readonly string plyDataString1 = Application.persistentDataPath + "/PlyDataSave_old";
+    public static readonly string gbocDataString1 = Application.persistentDataPath + "/GbocDataSave_old";
+    public static readonly string hstDataString1 = Application.persistentDataPath + "/HSTDataSave_old";
+    public static readonly string warUnlockDataString1 = Application.persistentDataPath + "/WarUnlockDataSave_old";
+#else
+
     private static readonly string logFileUrl = Application.dataPath + "/StreamingAssets/DebugFileV1.89.txt";
     private static readonly string logFileUrlOld = Application.dataPath + "/StreamingAssets/DebugFileV1.86.txt";
 
@@ -23,25 +41,6 @@ public class AppDebugClass
     public static readonly string gbocDataString1 = Application.dataPath + "/StreamingAssets/GbocDataSave_old";
     public static readonly string hstDataString1 = Application.dataPath + "/StreamingAssets/HSTDataSave_old";
     public static readonly string warUnlockDataString1 = Application.dataPath + "/StreamingAssets/WarUnlockDataSave_old";
-
-#elif UNITY_ANDROID  && !UNITY_EDITOR
-
-    private static readonly string logFileUrl = Application.persistentDataPath + "/DebugFileV1.89.txt";
-    private static readonly string logFileUrlOld = Application.persistentDataPath + "/DebugFileV1.86.txt";
-
-    public static readonly string playerDataString = Application.persistentDataPath + "/PlayerDataSave.json";
-    public static readonly string pyDataString = Application.persistentDataPath + "/PyDataSave.json";
-    public static readonly string plyDataString = Application.persistentDataPath + "/PlyDataSave.json";
-    public static readonly string gbocDataString = Application.persistentDataPath + "/GbocDataSave.json";
-    public static readonly string hstDataString = Application.persistentDataPath + "/HSTDataSave.json";
-    public static readonly string warUnlockDataString = Application.persistentDataPath + "/WarUnlockDataSave.json";
-
-    public static readonly string playerDataString1 = Application.persistentDataPath + "/PlayerDataSave_old";
-    public static readonly string pyDataString1 = Application.persistentDataPath + "/PyDataSave_old.json";
-    public static readonly string plyDataString1 = Application.persistentDataPath + "/PlyDataSave_old";
-    public static readonly string gbocDataString1 = Application.persistentDataPath + "/GbocDataSave_old";
-    public static readonly string hstDataString1 = Application.persistentDataPath + "/HSTDataSave_old";
-    public static readonly string warUnlockDataString1 = Application.persistentDataPath + "/WarUnlockDataSave_old";
 
 #endif
 

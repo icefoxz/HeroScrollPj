@@ -3,6 +3,7 @@ using UnityEngine;
 using System.IO;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using UnityEngine.SceneManagement;
 using Newtonsoft.Json;
 
@@ -95,7 +96,7 @@ public class LoadSaveData : MonoBehaviour
         {
             File.Delete(filePath);
         }
-#if DEBUG
+#if UNITY_EDITOR
         throw new Exception("删除完成，请重启游戏！");
 #endif
         SceneManager.LoadScene(0);
@@ -901,6 +902,9 @@ public class LoadSaveData : MonoBehaviour
     /// <param name="indexFun">默认0：全部存储，1：存储pyData，2：存储hstData，3：存储warsData，4：存储gbocData</param> 
     public void SaveGameData(int indexFun = 0)
     {
+        if (PlayerDataForGame.instance.warsData.warUnlockSaveData == null)
+            throw new InvalidDataContractException(
+                $"{nameof(LoadSaveData)}.{nameof(SaveGameData)}: warUnlockSaveData = null!");
         if (PlayerDataForGame.instance.isNeedSaveData)
         {
             switch (indexFun)
