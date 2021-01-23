@@ -103,21 +103,21 @@ public class SystemTimer : MonoBehaviour
 
     private async void RequestSynchronizeDatetime()
     {
-#if DEBUG
+#if UNITY_EDITOR
         //DebugLog($"请求服务器...{TaobaoTimeStampApi}");
 #endif
         var sw = new Stopwatch();
         sw.Start();
         var response = await Http.GetAsync(TaobaoTimeStampApi);
         sw.Stop();
-#if DEBUG
+#if UNITY_EDITOR
         //DebugLog($"服务器返回[{jsonApi}]"+$"DateTimeNow:[{DateTime.Now.Ticks}]");
 #endif
         if (!response.IsSuccess())
         {
             if (connectionFailureCount >= RetryLimit)
             {
-#if DEBUG
+#if UNITY_EDITOR
                 Debug.LogError($"{nameof(RequestSynchronizeDatetime)}:尝试重连服务器失败次数={connectionFailureCount}/{RetryLimit}");
 #endif
                 PlayerDataForGame.instance.ShowStringTips("服务器连接失败，请检查网络！");
@@ -134,7 +134,7 @@ public class SystemTimer : MonoBehaviour
             var apiObj = Json.Deserialize<TaobaoJsonApi>(jsonApi);
             var serverTicks = long.Parse(apiObj.data.t);
             var serverTimeNow = UnixToDateTime(serverTicks).AddTicks(sw.ElapsedTicks);
-#if DEBUG
+#if UNITY_EDITOR
             //DebugLog($"同步游戏[{DateTime.Now:T}]和服务器[{serverTimeNow:T}]+请求时间[{sw.Elapsed.Seconds}]秒");
 #endif
             UpdateSystemTime(serverTimeNow.AddSeconds(SyncSecs).LocalDateTime);

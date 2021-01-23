@@ -28,7 +28,7 @@ MonoBehaviour:
   addFakeCode: 1
   minFalseMethodsPerClass: 10
   maxFalseMethodsPerClass: 150
-  unicodeStartInDecimal: 746
+  unicodeStartInDecimal: 91
   numberOfCharacters: 2
   createNameTranslationFile: 0
   nameTranslationFile: nameTranslation.txt
@@ -196,10 +196,10 @@ MonoBehaviour:
   - PunRPC
   - Photon.Pun.PunRPC
   includePublicClasses: 1
-  includePublicMethods: 1
-  includePublicFields: 1
+  includePublicMethods: 0
+  includePublicFields: 0
   includePublicProperties: 1
-  includePublicEvents: 1
+  includePublicEvents: 0
   includeProtectedClasses: 1
   includeProtectedMethods: 1
   includeProtectedFields: 1
@@ -282,9 +282,9 @@ MonoBehaviour:
   - C:\Program Files (x86)\Microsoft SDKs\NETCoreSDK\System.Runtime.Extensions\4.0.0\ref\netcore50
   - C:\Program Files (x86)\Microsoft SDKs\NETCoreSDK\System.Runtime.Extensions\4.0.0\ref\dotnet
   onlyObfuscateLiteralsInObfuscatedMethods: 0
-  obfuscateLiteralsInAllMethods: 0
+  obfuscateLiteralsInAllMethods: 1
   noPublicFakeMethods: 0
-  progressBar: 1
+  progressBar: 2
   obfuscateReleaseOnly: 0
   attributesToRemoveIfObfuscatedMember:
   - UnityEngine.AddComponentMenu

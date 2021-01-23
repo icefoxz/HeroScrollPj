@@ -40,7 +40,7 @@ public static class BugHotFix
         //    Json.Serialize(PlayerDataForGame.instance.acData));
         //if (!response.IsSuccess()) return;
         //var countString = await response.Content.ReadAsStringAsync();
-#if DEBUG
+#if UNITY_EDITOR
         ////if (!int.TryParse(countString, out int count)) return;
 #else
         //if (count > 1)

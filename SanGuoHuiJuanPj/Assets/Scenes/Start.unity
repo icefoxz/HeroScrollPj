@@ -8239,8 +8239,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e96df91d8871ba9479ffbfe23771aad0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isSkipLogin: 1
-  isSkipInitBattle: 1
+  isSkipLogin: 0
+  isSkipInitBattle: 0
   closeBtn: {fileID: 116243771}
   loginBtn: {fileID: 1477689249}
   beginningWarBtn: {fileID: 301380373}
@@ -8297,7 +8297,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -23.398438, y: 50}
+  m_AnchoredPosition: {x: -23.398499, y: 50}
   m_SizeDelta: {x: -46.9, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &662825763
@@ -25613,6 +25613,7 @@ GameObject:
   - component: {fileID: 1717593869}
   - component: {fileID: 1717593870}
   - component: {fileID: 1717593871}
+  - component: {fileID: 1717593872}
   m_Layer: 0
   m_Name: PlayerSaveData
   m_TagString: Untagged
@@ -25684,6 +25685,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4056ec8fc8c46b645a3104ec4ffffca5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1717593872
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1717593868}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2704049f9a11c1d4290edf44af92ad1b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gameConfig: {fileID: 4900000, guid: 0bb4217bd3aa1f54ea1314f2dae8445e, type: 3}
 --- !u!1 &1718732356
 GameObject:
   m_ObjectHideFlags: 0

@@ -39,7 +39,7 @@ public class StoryEventUIController : MonoBehaviour
         Destroy(point.content);
         point.gameObject.SetActive(false);
         if(isSuccess)return;
-#if DEBUG
+#if UNITY_EDITOR
         var resultText = isSuccess ? "成功" : "失败";
         XDebug.Log<StoryEventUIController>($"霸业故事事件[{id}]获取{resultText}！");
 #endif

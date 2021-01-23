@@ -11,8 +11,11 @@ public class StartSceneToServerCS : MonoBehaviour
     public const string AccountId = "accountName";
     private const string Password = "Password";
     private const string PhoneNumber = "Phone";
+
+#if UNITY_EDITOR
     public bool isSkipLogin;//是否跳过登录
     public bool isSkipInitBattle;//是否跳过初始战斗
+#endif
 
     public static StartSceneToServerCS instance;
 
@@ -33,7 +36,7 @@ public class StartSceneToServerCS : MonoBehaviour
         PlayerDataForGame.instance.acData.Username = string.Empty;
         PlayerDataForGame.instance.acData.LastUpdate = default;
         PlayerPrefs.DeleteAll();
-#if DEBUG
+#if UNITY_EDITOR
         throw new Exception("清除账号完成,请重启游戏！");
 #endif
         LoginGameInfoFun();
@@ -120,17 +123,17 @@ public class StartSceneToServerCS : MonoBehaviour
         beginningWarBtn.gameObject.SetActive(false);
         //判断本地是否有存档，或者播放过剧情故事 
         //如果有存档或初始剧情已播或是用户名已注册，不播剧情
-        if (!string.IsNullOrWhiteSpace(PlayerDataForGame.instance.acData.Username) 
-            || LoadSaveData.instance.isHadSaveData 
-#if DEBUG
+        if (!string.IsNullOrWhiteSpace(PlayerDataForGame.instance.acData.Username)
+            || LoadSaveData.instance.isHadSaveData
+#if UNITY_EDITOR
             || isSkipInitBattle
 #endif
             || StartSceneUIManager.instance.isPlayedStory)
         {
             busyPanel.SetActive(true);
             LoadSaveData.instance.LoadByJson();
-#if DEBUG
-            if(!isSkipLogin)
+#if UNITY_EDITOR
+            if (!isSkipLogin)
 #endif
             {
                 //如果条件允许尝试注册新服务器
@@ -169,7 +172,7 @@ public class StartSceneToServerCS : MonoBehaviour
     /// </summary>
     private async void LoginAndLoadMainScene()
     {
-#if DEBUG
+#if UNITY_EDITOR
         if (isSkipLogin)
         {
             StartSceneUIManager.instance.LoadingScene(1, true);
@@ -185,7 +188,7 @@ public class StartSceneToServerCS : MonoBehaviour
         busyPanel?.SetActive(false);
         if (!response.IsSuccess())
         {
-            var code = (ServerBackCode) response.StatusCode;
+            var code = (ServerBackCode)response.StatusCode;
             if (code == ServerBackCode.ERR_PW_ERROR) //如果密码错误
             {
                 PlayerDataForGame.instance.ShowStringTips("密码错误！");
@@ -206,7 +209,7 @@ public class StartSceneToServerCS : MonoBehaviour
             StartSceneUIManager.instance.LoadingScene(1, true);
             return;
         }
-        PlayerDataForGame.instance.ShowStringTips($"请求异常[{(int) response.StatusCode}]，请联系管理人！");
+        PlayerDataForGame.instance.ShowStringTips($"请求异常[{(int)response.StatusCode}]，请联系管理人！");
         loginBtn.gameObject.SetActive(true);
     }
 
@@ -241,7 +244,7 @@ public class StartSceneToServerCS : MonoBehaviour
         loginBtn.interactable = false;
         busyPanel.SetActive(true);
         var ac = await Http.PostAsync<UserInfo>(Server.INSTANCE_ID_API,
-            Json.Serialize(new UserInfo {DeviceId = SystemInfo.deviceUniqueIdentifier}));
+            Json.Serialize(new UserInfo { DeviceId = SystemInfo.deviceUniqueIdentifier }));
         busyPanel.SetActive(false);
         if (ac == null)
         {
@@ -294,7 +297,9 @@ public class StartSceneToServerCS : MonoBehaviour
         var ac = await Http.PostAsync<UserInfo>(Server.PLAYER_REG_ACCOUNT_API,
             JsonConvert.SerializeObject(new UserInfo
             {
-                Username = accountText.text, Password = passwordInput.text, DeviceId = SystemInfo.deviceUniqueIdentifier
+                Username = accountText.text,
+                Password = passwordInput.text,
+                DeviceId = SystemInfo.deviceUniqueIdentifier
             }));
         busyPanel.SetActive(false);
         if (ac == null)
