@@ -5,6 +5,7 @@ using DG.Tweening;
 using System.Collections;
 using System;
 using System.Linq;
+using Beebyte.Obfuscator;
 
 public class UIManager : MonoBehaviour
 {
@@ -121,6 +122,7 @@ public class UIManager : MonoBehaviour
     public ChestUI[] baYeChestButtons; //霸业宝箱
     public StoryEventUIController storyEventUiController;//霸业的故事事件控制器
     public BaYeMiniWindowUI baYeMiniWindowUi;//霸业地图小弹窗
+    public Button baYeWarButton;//霸业开始战斗按键
 
     private int lastAvailableStageIndex;//最远可战的战役索引
     private int selectedBaYeForceId; //当前为霸业选择的势力ID
@@ -327,6 +329,8 @@ public class UIManager : MonoBehaviour
     //初始化霸业界面内容
     private void InitBaYeFun()
     {
+        baYeWarButton.onClick.RemoveAllListeners();
+        baYeWarButton.onClick.AddListener(StartBaYeFight);
         storyEventUiController.ResetUI();
         baYeMiniWindowUi.Init();
         var baYe = PlayerDataForGame.instance.warsData.baYe;

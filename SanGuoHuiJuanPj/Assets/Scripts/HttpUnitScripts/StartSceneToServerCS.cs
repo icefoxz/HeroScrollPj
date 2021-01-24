@@ -137,7 +137,7 @@ public class StartSceneToServerCS : MonoBehaviour
 #endif
             {
                 //如果条件允许尝试注册新服务器
-                var isSuccess = await BugHotFix.OnFixMigrateServerAccountCreationV1_95(
+                var isSuccess = await BugHotFix.OnFixMigrateServerAccountCreationV1_94(
                     SystemInfo.deviceUniqueIdentifier,
                     PlayerDataForGame.instance.acData.Password);
                 if (!isSuccess)

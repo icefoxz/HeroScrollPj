@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using UnityEngine;
 
 public static class BugHotFix
@@ -59,13 +60,11 @@ public static class BugHotFix
         //SavePlayerDataWithFixVersion(fixVersion);
     }
 
-    public static async Task<bool> OnFixMigrateServerAccountCreationV1_95(string deviceId, string password)
+    public static async Task<bool> OnFixMigrateServerAccountCreationV1_94(string deviceId, string password)
     {
-        const float fixVersion = 1.95f;
+        const float fixVersion = 1.94f;
         if (PlayerDataForGame.instance.pyData.LastGameVersion > fixVersion) return true;
-#if !UNITY_EDITOR
-        if (PlayerPrefs.GetInt(V1_95MigrateServer, 0) > 0) return true;
-#endif
+
         var loginResponse = await Http.PostAsync(Server.USER_LOGIN_API,
             Json.Serialize(new UserInfo
                 {DeviceId = deviceId, Username = PlayerDataForGame.instance.acData.Username, Password = password}));
@@ -90,9 +89,8 @@ public static class BugHotFix
         if (userInfo == null) return false;
         ac.Username = userInfo.Username;
         ac.LastUpdate = userInfo.LastUpdate;
-
         PlayerPrefs.SetInt(V1_95MigrateServer, 1);
-        SavePlayerDataWithFixVersion(1.95f);
+        SavePlayerDataWithFixVersion(float.Parse(Application.version));
         return true;
     }
 
