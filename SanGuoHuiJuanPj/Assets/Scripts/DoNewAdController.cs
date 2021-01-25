@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Threading.Tasks;
+using Beebyte.Obfuscator;
 using UnityEngine;
 
-public class DoNewAdController : MonoBehaviour
+[Skip]public class DoNewAdController : MonoBehaviour
 {
     public static DoNewAdController instance;
 
@@ -9,9 +11,12 @@ public class DoNewAdController : MonoBehaviour
     public bool isWacthing; //是否正在观看视频
     private bool isCanGetReward;    //是否可以获取奖励
 
-    delegate void DelForOverVideo();    //定义委托
-    DelForOverVideo delForOverVideo;    //结束奖励视频后应执行的事件
-    DelForOverVideo delForOverVideoForError;    //请求失败后应执行的事件
+    private const string UnityPlayer = "com.unity3d.player.UnityPlayer";
+    private const string CurrentActivity = "currentActivity";
+    private const string RequestRewardVideo = "RequestRewardVideo";
+
+    Action delForOverVideo;    //结束奖励视频后应执行的事件
+    Action delForOverVideoForError;    //请求失败后应执行的事件
 
     private void Awake()
     {
@@ -84,34 +89,54 @@ public class DoNewAdController : MonoBehaviour
 
 
     //尝试观看视频
-    public bool GetReWardVideo(Action action, Action actionForError)
+    [Skip]public Task<bool> GetReWardVideo()
     {
-#if UNITY_ANDROID  && !UNITY_EDITOR
+#if UNITY_EDITOR
+        return Task.FromResult(true);
+#else
         try
         {
             if (jo == null)
             {
-                jc = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
-                jo = jc.GetStatic<AndroidJavaObject>("currentActivity");
+                jc = new AndroidJavaClass(UnityPlayer);
+                jo = jc.GetStatic<AndroidJavaObject>(CurrentActivity);
             }
-            jo.Call("RequestRewardVideo");
             isWacthing = true;
-
-            delForOverVideo = new DelForOverVideo(action);
-
-            delForOverVideoForError = new DelForOverVideo(actionForError);
-
-            return true;
+            jo.Call(RequestRewardVideo);
+            isWacthing = false;
+            return Task.FromResult(true);
         }
-        catch (System.Exception e)
+        catch (Exception)
         {
-            Debug.Log(e.ToString());
-            return false;
+            return Task.FromResult(false);
         }
 #endif
-        action();
-        return false;
     }
+
+    [Skip]public void GetReWardVideo(Action action, Action actionForError)
+    {
+#if UNITY_EDITOR
+        action?.Invoke();
+        return;
+#else
+        try
+        {
+            if (jo == null)
+            {
+                jc = new AndroidJavaClass(UnityPlayer);
+                jo = jc.GetStatic<AndroidJavaObject>(CurrentActivity);
+            }
+            jo.Call(RequestRewardVideo);
+            action?.Invoke();
+            
+        }
+        catch (Exception)
+        {
+            actionForError?.Invoke();
+        }
+#endif
+    }
+
 }
 
 //void InitNative()

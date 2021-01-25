@@ -71,12 +71,10 @@ public class UIManager : MonoBehaviour
     Text tiLiRecordTimer;   //体力恢复倒计时
     [SerializeField]
     GameObject queRenWindows;   //操作确认窗口
-    [SerializeField]
+    //[SerializeField]
     public GameObject[] boxBtnObjs;    //宝箱obj
-
+    public TaoYuan taoYuan;//桃园
     public Text JinNangQuota;    //锦囊配额文本
-    public Text JiuTanQuota;    //酒坛配额文本
-    public Text JiuTanTimeTips; //酒坛剩余时间文本
 
     [SerializeField]
     Transform rewardsParent;    //奖品父级
@@ -307,7 +305,7 @@ public class UIManager : MonoBehaviour
                 AudioController0.instance.PlayAudioSource(0);
                 PlayerDataForGame.instance.FlagWarTypeBeforeBattle(2);
                 PlayerDataForGame.instance.selectedWarId = BaYeManager.instance.Map.Single(e =>
-                    e.EventId == PlayerDataForGame.instance.selectedBaYeEventId).WarId;
+                    e.CityId == PlayerDataForGame.instance.selectedCity).WarId;
                 LoadSaveData.instance.BindBaYeForceAndStage(PlayerDataForGame.instance.selectedBaYeEventId,
                     PlayerDataForGame.instance.selectedCity, selectedBaYeForceId, PlayerDataForGame.instance.selectedWarId);
                 StartCoroutine(LateGoToFightScene());
@@ -331,7 +329,7 @@ public class UIManager : MonoBehaviour
     {
         baYeWarButton.onClick.RemoveAllListeners();
         baYeWarButton.onClick.AddListener(StartBaYeFight);
-        storyEventUiController.ResetUI();
+        storyEventUiController.ResetUi();
         baYeMiniWindowUi.Init();
         var baYe = PlayerDataForGame.instance.warsData.baYe;
         PlayerDataForGame.instance.selectedBaYeEventId = -1;
@@ -1830,7 +1828,7 @@ public class UIManager : MonoBehaviour
     {
         if (selectCardData.chips >= int.Parse(LoadJsonFile.upGradeTableDatas[selectCardData.level][1]))
         {
-            if (ConsumeManager.instance.CutYuanBao(needYuanBaoNums))
+            if (ConsumeManager.instance.DeductYuanBao(needYuanBaoNums))
             {
                 selectCardData.chips -= int.Parse(LoadJsonFile.upGradeTableDatas[selectCardData.level][1]);
 
@@ -2001,11 +1999,7 @@ public class UIManager : MonoBehaviour
     IEnumerator OpenRewardsWindows(float startTime)
     {
         yield return new WaitForSeconds(startTime);
-        for (int i = 0; i < boxBtnObjs.Length; i++)
-        {
-            boxBtnObjs[i].transform.GetChild(0).GetChild(1).gameObject.SetActive(true);
-            boxBtnObjs[i].transform.GetChild(0).GetChild(2).gameObject.SetActive(false);
-        }
+        taoYuan.CloseAllChests();
         rewardsShowObj.SetActive(true);
         //刷新主城列表
         ChangeScrollView();
@@ -2372,7 +2366,7 @@ public class UIManager : MonoBehaviour
     }
 
     //开启锦囊
-    public void OpenJinNangFun()
+    [Skip]public void OpenJinNangFun()
     {
         if (TimeSystemControl.instance.OnClickToGetJinNang())
         {
@@ -2450,9 +2444,9 @@ public class UIManager : MonoBehaviour
                                 //背景按钮无效
                                 jinNangBackBtn.enabled = false;
                                 watchAdFordoubleBtn.enabled = false;
-                                if (!DoNewAdController.instance.GetReWardVideo(
-                                //if (!AdController.instance.ShowVideo(
-                                     ()=>
+                                DoNewAdController.instance.GetReWardVideo(
+                                    //if (!AdController.instance.ShowVideo(
+                                    () =>
                                     {
                                         //奖励翻倍
                                         addYuanBaoNums = addYuanBaoNums * 2;
@@ -2462,19 +2456,13 @@ public class UIManager : MonoBehaviour
                                         watchAdFordoubleBtn.gameObject.SetActive(false);
                                         watchAdFordoubleBtn.enabled = true;
                                     },
-                                     ()=>
+                                    () =>
                                     {
                                         PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(6));
                                         jinNangBackBtn.enabled = true;
                                         watchAdFordoubleBtn.enabled = true;
                                     }
-                                    ))
-                                {
-                                    PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(6));
-                                    jinNangBackBtn.enabled = true;
-                                    watchAdFordoubleBtn.enabled = true;
-                                }
-
+                                );
                             });
                         });
                         jinNangBackBtn.onClick.RemoveAllListeners();
@@ -2687,7 +2675,7 @@ public class UIManager : MonoBehaviour
     //消耗玉阙获得体力
     private bool GetTiLiForChicken(int quQueNums, int tiLiNums)
     {
-        if (ConsumeManager.instance.CutYuQue(quQueNums))
+        if (ConsumeManager.instance.DeductYuQue(quQueNums))
         {
             AddTiLiNums(tiLiNums);
             return true;
@@ -2699,7 +2687,7 @@ public class UIManager : MonoBehaviour
     }
 
     //商店购买体力
-    private void ChickenShoppingGetTiLi(int indexBtn)
+    [Skip] private void ChickenShoppingGetTiLi(int indexBtn)
     {
         AudioController0.instance.ChangeAudioClip(AudioController0.instance.audioClips[13], AudioController0.instance.audioVolumes[13]);
         OpenOrCloseChickenBtn(false);
@@ -2708,38 +2696,24 @@ public class UIManager : MonoBehaviour
         switch (indexBtn)
         {
             case 0:
-                if (!DoNewAdController.instance.GetReWardVideo(
-                //if (!AdController.instance.ShowVideo(
-                    delegate ()
+                DoNewAdController.instance.GetReWardVideo(
+                    () =>
                     {
                         GetTiLiForChicken(needYvQueNums, getTiLiNums);
-                        PlayerDataForGame.instance.ShowStringTips(string.Format(LoadJsonFile.GetStringText(50), getTiLiNums));
+                        PlayerDataForGame.instance.ShowStringTips(string.Format(LoadJsonFile.GetStringText(50),
+                            getTiLiNums));
                         GetCkChangeTimeAndWindow();
-                        AudioController0.instance.ChangeAudioClip(AudioController0.instance.audioClips[25], AudioController0.instance.audioVolumes[25]);
+                        AudioController0.instance.ChangeAudioClip(AudioController0.instance.audioClips[25],
+                            AudioController0.instance.audioVolumes[25]);
                         AudioController0.instance.PlayAudioSource(0);
                     },
-                    delegate ()
+                    () =>
                     {
                         PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(6));
                         OpenOrCloseChickenBtn(true);
-                    }))
-                {
-                    PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(6));
-                    OpenOrCloseChickenBtn(true);
-                }
+                    });
                 break;
             case 1:
-                if (GetTiLiForChicken(needYvQueNums, getTiLiNums))
-                {
-                    PlayerDataForGame.instance.ShowStringTips(string.Format(LoadJsonFile.GetStringText(51), getTiLiNums));
-                    GetCkChangeTimeAndWindow();
-                    AudioController0.instance.ChangeAudioClip(AudioController0.instance.audioClips[25], AudioController0.instance.audioVolumes[25]);
-                }
-                else
-                {
-                    OpenOrCloseChickenBtn(true);
-                }
-                break;
             case 2:
                 if (GetTiLiForChicken(needYvQueNums, getTiLiNums))
                 {

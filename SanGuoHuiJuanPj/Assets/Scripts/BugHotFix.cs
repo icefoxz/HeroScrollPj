@@ -52,9 +52,9 @@ public static class BugHotFix
         //}
 #endif
         var pData = PlayerDataForGame.instance;
-        var result = await Http.PostAsync(Server.PLAYER_SAVE_DATA_UPLOAD_API,
-            Json.Serialize(new UserSaveArchive(pData.acData, pData.pyData, pData.hstData, pData.warsData,
-                pData.gbocData)));
+        var saveArchive = Json.Serialize(new UserSaveArchive(pData.acData, pData.pyData, pData.hstData, pData.warsData,
+            pData.gbocData));
+        var result = await Http.PostAsync(Server.PLAYER_SAVE_DATA_UPLOAD_API,saveArchive);
         if (!result.IsSuccess()) return;
         //PlayerPrefs.SetInt(V1_95UpLoadDataServer, 0);
         //SavePlayerDataWithFixVersion(fixVersion);

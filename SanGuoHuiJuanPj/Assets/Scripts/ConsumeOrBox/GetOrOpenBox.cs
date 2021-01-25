@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using Beebyte.Obfuscator;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -85,14 +86,15 @@ public class GetOrOpenBox : MonoBehaviour
     /// <summary>
     /// 观看视频免费开启酒坛
     ///// </summary>
+    [Skip]
     public void WatchAdOpenJiuTan()
     {
         //获得酒坛消耗元宝按钮
         Button getFreeBoxBtn = UIManager.instance.adBtnForFreeBox.transform.parent.GetChild(1).GetComponent<Button>();
         UIManager.instance.adBtnForFreeBox.enabled = false;
         getFreeBoxBtn.enabled = false;
-        if (!DoNewAdController.instance.GetReWardVideo(
-        //if (!AdController.instance.ShowVideo(
+        DoNewAdController.instance.GetReWardVideo(
+            //if (!AdController.instance.ShowVideo(
             delegate ()
             {
                 int index = openJiuTanYBNums;
@@ -108,13 +110,7 @@ public class GetOrOpenBox : MonoBehaviour
                 PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(6));
                 UIManager.instance.adBtnForFreeBox.enabled = true;
                 getFreeBoxBtn.enabled = true;
-            }
-            ))
-        {
-            PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(6));
-            UIManager.instance.adBtnForFreeBox.enabled = true;
-            getFreeBoxBtn.enabled = true;
-        }
+            });
     }
 
     /// <summary>
@@ -177,7 +173,7 @@ public class GetOrOpenBox : MonoBehaviour
             }
         }
 
-        if ((boxNumber != 0) ? ConsumeManager.instance.CutYuQue(cutYvQueNums) : ConsumeManager.instance.CutYuanBao(cutYvQueNums))
+        if ((boxNumber != 0) ? ConsumeManager.instance.DeductYuQue(cutYvQueNums) : ConsumeManager.instance.DeductYuanBao(cutYvQueNums))
         {
             if (boxNumber == 3)   //战役宝箱
             {

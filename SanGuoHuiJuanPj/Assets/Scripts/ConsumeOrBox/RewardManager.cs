@@ -97,22 +97,14 @@ public class RewardManager : MonoBehaviour
             case "0":
                 cardId = GetBackRandomCardId(LoadJsonFile.heroTableDatas, isZyBox ? 19 : 20, 21, rarity);
                 break;
-            //case "1":
-            //    cardIds = GetMustRarityCardSToList(LoadJsonFile.soldierTableDatas, rarity, 16);
-            //    cardId = cardIds[UnityEngine.Random.Range(0, cardIds.Count)];
-            //    break;
             case "2":
                 cardId = GetBackRandomCardId(LoadJsonFile.towerTableDatas, isZyBox ? 11 : 13, 14, rarity);
                 break;
             case "3":
                 cardId = GetBackRandomCardId(LoadJsonFile.trapTableDatas, isZyBox ? 9 : 12, 13, rarity);
                 break;
-            //case "4":
-            //    cardIds = GetMustRarityCardSToList(LoadJsonFile.spellTableDatas, rarity, 7);
-            //    cardId = cardIds[UnityEngine.Random.Range(0, cardIds.Count)];
-            //    break;
             default:
-                break;
+                throw new ArgumentOutOfRangeException($"cardType = {cardType}");
         }
         return cardId;
     }

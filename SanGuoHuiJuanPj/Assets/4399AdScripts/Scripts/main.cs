@@ -26,6 +26,10 @@ public class main : MonoBehaviour
 
     private AdUnionVideo video;     //激励视频
 
+    private const string AdUnionSDK = "com.mob4399.adunion.AdUnionSDK";
+    private const string AppId = "3048";
+    private const string Init = "init";
+
     // Start is called before the first frame update
     void Start()
     {
@@ -60,12 +64,9 @@ public class main : MonoBehaviour
     public void InitSDK()
     {
         ToastUtils.showToast("InitSDK");
-        AndroidJavaClass adUnionClass = new AndroidJavaClass("com.mob4399.adunion.AdUnionSDK");
-        //应用id
-        string appId = "3048";
+        AndroidJavaClass adUnionClass = new AndroidJavaClass(AdUnionSDK);
         //调用初始化方法      
-        adUnionClass.CallStatic("init", adContext.GetActivity(), appId, new OnAuInitListenerProxy());
-
+        adUnionClass.CallStatic(Init, adContext.GetActivity(), AppId, new OnAuInitListenerProxy());
     }
 
     public void LoadBanner()

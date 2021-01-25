@@ -414,72 +414,63 @@ public class TimeSystemControl : MonoBehaviour
         //如果当前时间大于下次开启时间
         isJiuTanReady = nextOpenJiuTanTimeTicks <= SystemTimer.NowUnixTicks;
         if (!isOpenMainScene) return;
-        if (UIManager.instance.JiuTanQuota != null)
-            UIManager.instance.JiuTanQuota.text = $"{JiuTanRedeemCountPerDay-redeemCount}";
+        var jiuTanCount = $"{JiuTanRedeemCountPerDay-redeemCount}";
         if (!isJiuTanReady)
         {
             var displayText = string.Empty;
             if (countAvailable)
-                displayText =
-                    $"灌满酒坛还需：{TimeDisplayText((int) (nextOpenJiuTanTimeTicks - SystemTimer.NowUnixTicks) / 1000)}";
-            UIManager.instance.transform.GetComponent<GetOrOpenBox>().UpdateOpenTimeTips(displayText, 0, false);
+                displayText = $"{TimeDisplayText((int) (nextOpenJiuTanTimeTicks - SystemTimer.NowUnixTicks) / 1000)}";
+            UIManager.instance.taoYuan.UpdateJiuTan(isJiuTanReady,$"{JiuTanRedeemCountPerDay - redeemCount}", displayText);
+            return;
         }
-        else
-            UIManager.instance.transform.GetComponent<GetOrOpenBox>().UpdateOpenTimeTips(string.Empty, 0, true);
+
+        UIManager.instance.taoYuan.UpdateJiuTan(isJiuTanReady, jiuTanCount, string.Empty);
     }
 
     private void UpdateFreeBoxTimer1()
     {
-        if (!isCanGetBox1)
+        if (!isOpenMainScene) return;
+        if (isCanGetBox1)
         {
-            if (openFreeBoxTimeLong1 == 0)
-            {
-                openFreeBoxTimeLong1 = SystemTimer.NowUnixTicks + PlayerPrefs.GetInt(fBoxOpenNeedTimes1) * 1000;
-                PlayerPrefs.SetString(freeBoxOpenTime1, openFreeBoxTimeLong1.ToString());
-            }
+            UIManager.instance.taoYuan.copperChest.UpdateChest(string.Empty, true);
+            return;
+        }
 
-            int secondCha = (int) ((openFreeBoxTimeLong1 - SystemTimer.NowUnixTicks) / 1000);
-            if (secondsNetTime_FreeBox1 > secondCha || (secondsNetTime_FreeBox1 <= 0 && secondCha != 0))
-            {
-                secondsNetTime_FreeBox1 = secondCha;
-                int totalTimes = PlayerPrefs.GetInt(fBoxOpenNeedTimes1);
-                UpdateBoxOpenTimeFromGame1(totalTimes - secondsNetTime_FreeBox1, totalTimes);
-            }
-        }
-        else
+        if (openFreeBoxTimeLong1 == 0)
         {
-            if (isOpenMainScene)
-            {
-                UIManager.instance.transform.GetComponent<GetOrOpenBox>().UpdateOpenTimeTips(string.Empty, 1, true);
-            }
+            openFreeBoxTimeLong1 = SystemTimer.NowUnixTicks + PlayerPrefs.GetInt(fBoxOpenNeedTimes1) * 1000;
+            PlayerPrefs.SetString(freeBoxOpenTime1, openFreeBoxTimeLong1.ToString());
         }
+
+        int secondCha = (int) ((openFreeBoxTimeLong1 - SystemTimer.NowUnixTicks) / 1000);
+        if (secondsNetTime_FreeBox1 <= secondCha && (secondsNetTime_FreeBox1 > 0 || secondCha == 0)) return;
+        secondsNetTime_FreeBox1 = secondCha;
+        int totalTimes = PlayerPrefs.GetInt(fBoxOpenNeedTimes1);
+        UpdateBoxOpenTimeFromGame1(totalTimes - secondsNetTime_FreeBox1, totalTimes);
+
     }
 
     private void UpdateFreeBoxTimer2()
     {
-        if (!isCanGetBox2)
-        {
-            if (openFreeBoxTimeLong2 == 0)
-            {
-                openFreeBoxTimeLong2 = SystemTimer.NowUnixTicks + PlayerPrefs.GetInt(fBoxOpenNeedTimes2) * 1000;
-                PlayerPrefs.SetString(freeBoxOpenTime2, openFreeBoxTimeLong2.ToString());
-            }
+        if (!isOpenMainScene) return;
 
-            int secondCha = (int) ((openFreeBoxTimeLong2 - SystemTimer.NowUnixTicks) / 1000);
-            if (secondsNetTime_FreeBox2 > secondCha || (secondsNetTime_FreeBox2 <= 0 && secondCha != 0))
-            {
-                secondsNetTime_FreeBox2 = secondCha;
-                int totalTimes = PlayerPrefs.GetInt(fBoxOpenNeedTimes2);
-                UpdateBoxOpenTimeFromGame2(totalTimes - secondsNetTime_FreeBox2, totalTimes);
-            }
-        }
-        else
+        if (isCanGetBox2)
         {
-            if (isOpenMainScene)
-            {
-                UIManager.instance.transform.GetComponent<GetOrOpenBox>().UpdateOpenTimeTips(string.Empty, 2, true);
-            }
+            UIManager.instance.taoYuan.goldChest.UpdateChest(string.Empty, true);
+            return;
         }
+
+        if (openFreeBoxTimeLong2 == 0)
+        {
+            openFreeBoxTimeLong2 = SystemTimer.NowUnixTicks + PlayerPrefs.GetInt(fBoxOpenNeedTimes2) * 1000;
+            PlayerPrefs.SetString(freeBoxOpenTime2, openFreeBoxTimeLong2.ToString());
+        }
+
+        int secondCha = (int) ((openFreeBoxTimeLong2 - SystemTimer.NowUnixTicks) / 1000);
+        if (secondsNetTime_FreeBox2 <= secondCha && (secondsNetTime_FreeBox2 > 0 || secondCha == 0)) return;
+        secondsNetTime_FreeBox2 = secondCha;
+        int totalTimes = PlayerPrefs.GetInt(fBoxOpenNeedTimes2);
+        UpdateBoxOpenTimeFromGame2(totalTimes - secondsNetTime_FreeBox2, totalTimes);
     }
 
     private void UpdateJinNangTimer()
@@ -506,18 +497,9 @@ public class TimeSystemControl : MonoBehaviour
         {
             countDownNums = 0;
             isCanGetBox1 = true;
-            if (isOpenMainScene)
-            {
-                UIManager.instance.transform.GetComponent<GetOrOpenBox>().UpdateOpenTimeTips(string.Empty, 1, true);
-            }
+            UIManager.instance.taoYuan.copperChest.UpdateChest(string.Empty, true);
         }
-        else
-        {
-            if (isOpenMainScene)
-            {
-                UIManager.instance.transform.GetComponent<GetOrOpenBox>().UpdateOpenTimeTips(TimeDisplayText(countDownNums), 1, false);
-            }
-        }
+        else UIManager.instance.taoYuan.copperChest.UpdateChest(TimeDisplayText(countDownNums), false);
         PlayerPrefs.SetInt(fBoxOpenNeedTimes1, countDownNums);
     }
 
@@ -529,17 +511,11 @@ public class TimeSystemControl : MonoBehaviour
         {
             countDownNums = 0;
             isCanGetBox2 = true;
-            if (isOpenMainScene)
-            {
-                UIManager.instance.transform.GetComponent<GetOrOpenBox>().UpdateOpenTimeTips(string.Empty, 2, true);
-            }
+                UIManager.instance.taoYuan.goldChest.UpdateChest(string.Empty, true);
         }
         else
         {
-            if (isOpenMainScene)
-            {
-                UIManager.instance.transform.GetComponent<GetOrOpenBox>().UpdateOpenTimeTips(TimeDisplayText(countDownNums), 2, false);
-            }
+            UIManager.instance.taoYuan.goldChest.UpdateChest(TimeDisplayText(countDownNums), false);
         }
         PlayerPrefs.SetInt(fBoxOpenNeedTimes2, countDownNums);
     }

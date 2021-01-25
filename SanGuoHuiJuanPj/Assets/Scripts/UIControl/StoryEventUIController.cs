@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class StoryEventUIController : MonoBehaviour
 {
@@ -8,12 +9,14 @@ public class StoryEventUIController : MonoBehaviour
     public List<GameObject> eventTypePrefabs;
     private Dictionary<int, StoryEventPoint> points;
 
-    public void ResetUI()
+    public void ResetUi()
     {
+        if(SceneManager.GetActiveScene().buildIndex != 1)return;//如果不是主场景不更新。
         storyEventPoints.ForEach(b =>
         {
+            if (!b) return;
             b.gameObject.SetActive(false);
-            if(b.content)
+            if (b.content)
                 Destroy(b.content);
         });
         var storyMap = PlayerDataForGame.instance.warsData.baYe.storyMap;

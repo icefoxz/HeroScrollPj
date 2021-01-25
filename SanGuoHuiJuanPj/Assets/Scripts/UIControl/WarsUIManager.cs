@@ -3,6 +3,7 @@ using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Beebyte.Obfuscator;
 using UnityEngine;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
@@ -743,7 +744,7 @@ public class WarsUIManager : MonoBehaviour
     /// 刷新商店列表
     /// </summary>
     /// <param name="updateMoney">刷新所需金币</param>
-    private bool UpdateShoppingList(int updateMoney)
+    [Skip] private bool UpdateShoppingList(int updateMoney)
     {
         if (updateMoney != 0)
         {
@@ -869,27 +870,23 @@ public class WarsUIManager : MonoBehaviour
                     needMoney = 0;
                     getBtnTran.GetChild(1).gameObject.SetActive(false);
                     getBtnTran.GetChild(2).gameObject.SetActive(true);
-                    adBtn.onClick.AddListener(delegate ()
+                    adBtn.onClick.AddListener(() =>
                     {
                         adBtn.enabled = false;
-                        if (!DoNewAdController.instance.GetReWardVideo(
-                        //if (!AdController.instance.ShowVideo(
-                            delegate ()
+                        DoNewAdController.instance.GetReWardVideo(
+                            //if (!AdController.instance.ShowVideo(
+                            () =>
                             {
                                 GetOrBuyCards(true, needMoney, cardType, cardId, cardLevel, btnIndex);
                                 getBtnTran.GetChild(2).gameObject.SetActive(false);
                                 PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(57));
                                 adBtn.enabled = true;
                             },
-                            delegate ()
+                            () =>
                             {
                                 PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(6));
                                 adBtn.enabled = true;
-                            }))
-                        {
-                            PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(6));
-                            adBtn.enabled = true;
-                        }
+                            });
                     });
                 }
                 else
@@ -991,28 +988,24 @@ public class WarsUIManager : MonoBehaviour
     }
 
     //观看视频刷新奇遇
-    public void WatchAdForUpdateQiYv()
+    [Skip] public void WatchAdForUpdateQiYv()
     {
         Button adBtn = eventsWindows[3].transform.GetChild(0).GetChild(5).GetComponent<Button>();
         adBtn.enabled = false;
-        if (!DoNewAdController.instance.GetReWardVideo(
-        //if (!AdController.instance.ShowVideo(
-            delegate ()
+        DoNewAdController.instance.GetReWardVideo(
+            //if (!AdController.instance.ShowVideo(
+            () =>
             {
                 adBtn.gameObject.SetActive(false);
                 UpdateQiYvWoods();
                 adBtn.enabled = true;
             },
-            delegate ()
+            () =>
             {
                 PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(6));
                 adBtn.enabled = true;
             }
-            ))
-        {
-            PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(6));
-            adBtn.enabled = true;
-        }
+        );
     }
 
     //刷新奇遇商品

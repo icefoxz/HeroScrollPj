@@ -150,7 +150,7 @@ public class BaYeManager : MonoBehaviour
             SystemTimer.instance.Now.Date.AddHours(SystemTimer.instance.Now.Hour);
         PlayerDataForGame.instance.isNeedSaveData = true;
         LoadSaveData.instance.SaveGameData(3);
-        UIManager.instance.storyEventUiController.ResetUI();
+        UIManager.instance.storyEventUiController.ResetUi();
     }
 
     public List<int> GetBaYeEventExp(int eventId)
