@@ -187,7 +187,7 @@ public class FightController : MonoBehaviour
     }
 
     /// <summary>
-    /// 计算暴击会心等伤害加成
+    /// 计算暴击会心羁绊等伤害加成
     /// </summary>
     /// <param name="isCanAdd"></param>
     /// <param name="fightCardData"></param>
@@ -211,7 +211,7 @@ public class FightController : MonoBehaviour
             }
         }
         //羁绊相关伤害
-        Dictionary<int, JiBanActivedClass> jiBanAllTypes = fightCardData.isPlayerCard ? playerJiBanAllTypes : enemyJiBanAllTypes;
+        Dictionary<int, JiBanActivedClass> jiBanAllTypes = fightCardData.isPlayerCard ? playerJiBanAllTypes : enemyJiBanAllTypes;//判断敌方还是我方
         //判断势力
         switch (LoadJsonFile.heroTableDatas[fightCardData.cardId][6])
         {
@@ -618,11 +618,11 @@ public class FightController : MonoBehaviour
             {
                 switch (LoadJsonFile.heroTableDatas[attackUnit.cardId][5])
                 {
-                    case "3":
+                    case "3"://飞甲
                         PlayAudioForSecondClip(3, 0);
                         AttackToEffectShow(attackedUnit, false, "3A");
                         break;
-                    case "4":
+                    case "4"://大盾
                         ShowSpellTextObj(attackUnit.cardObj, "4", false);
                         AttackToEffectShow(attackUnit, false, "4A");
                         if (attackUnit.fightState.withStandNums <= 0)
@@ -632,14 +632,14 @@ public class FightController : MonoBehaviour
                         attackUnit.fightState.withStandNums++;
                         PlayAudioForSecondClip(4, 0);
                         break;
-                    case "6":
+                    case "6"://虎卫
                         AttackToEffectShow(attackedUnit, false, "6A");
                         PlayAudioForSecondClip(6, 0);
                         break;
-                    case "8":
+                    case "8"://象兵
                         XiangBingTrampleAttAck(attackedUnit, attackUnit);
                         break;
-                    case "9":
+                    case "9"://先锋
                         AttackToEffectShow(attackedUnit, false, "9A");
                         PlayAudioForSecondClip(9, 0);
                         break;
@@ -834,7 +834,7 @@ public class FightController : MonoBehaviour
             }
         }
 
-        if (attackedUnit.cardType == 0)
+        if (attackedUnit.cardType == 0)//如果受击单位是武将
         {
             switch (LoadJsonFile.heroTableDatas[attackedUnit.cardId][5])
             {

@@ -873,10 +873,9 @@ public class WarsUIManager : MonoBehaviour
                     adBtn.onClick.AddListener(() =>
                     {
                         adBtn.enabled = false;
-                        DoNewAdController.instance.GetReWardVideo(
-                            //if (!AdController.instance.ShowVideo(
-                            () =>
+                        DoNewAdController.instance.GetReWardVideo(() =>
                             {
+                                //if (!AdController.instance.ShowVideo(
                                 GetOrBuyCards(true, needMoney, cardType, cardId, cardLevel, btnIndex);
                                 getBtnTran.GetChild(2).gameObject.SetActive(false);
                                 PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(57));
@@ -992,20 +991,17 @@ public class WarsUIManager : MonoBehaviour
     {
         Button adBtn = eventsWindows[3].transform.GetChild(0).GetChild(5).GetComponent<Button>();
         adBtn.enabled = false;
-        DoNewAdController.instance.GetReWardVideo(
+        DoNewAdController.instance.GetReWardVideo(() =>
+        {
             //if (!AdController.instance.ShowVideo(
-            () =>
-            {
-                adBtn.gameObject.SetActive(false);
-                UpdateQiYvWoods();
-                adBtn.enabled = true;
-            },
-            () =>
-            {
-                PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(6));
-                adBtn.enabled = true;
-            }
-        );
+            adBtn.gameObject.SetActive(false);
+            UpdateQiYvWoods();
+            adBtn.enabled = true;
+        }, () =>
+        {
+            PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(6));
+            adBtn.enabled = true;
+        });
     }
 
     //刷新奇遇商品

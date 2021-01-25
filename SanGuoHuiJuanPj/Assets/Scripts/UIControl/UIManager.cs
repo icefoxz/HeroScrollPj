@@ -2366,7 +2366,7 @@ public class UIManager : MonoBehaviour
     }
 
     //开启锦囊
-    [Skip]public void OpenJinNangFun()
+    public void OpenJinNangFun()
     {
         if (TimeSystemControl.instance.OnClickToGetJinNang())
         {
@@ -2444,28 +2444,27 @@ public class UIManager : MonoBehaviour
                                 //背景按钮无效
                                 jinNangBackBtn.enabled = false;
                                 watchAdFordoubleBtn.enabled = false;
-                                DoNewAdController.instance.GetReWardVideo(
+                                DoNewAdController.instance.GetReWardVideo(() =>
+                                {
+                                    PlayerDataForGame.instance.ShowStringTips("翻倍成功！");
                                     //if (!AdController.instance.ShowVideo(
-                                    () =>
-                                    {
-                                        //奖励翻倍
-                                        addYuanBaoNums = addYuanBaoNums * 2;
-                                        addTiLiNums = addTiLiNums * 2;
-                                        UpdateJinNangRewards(addYuanBaoNums, addTiLiNums);
-                                        jinNangBackBtn.enabled = true;
-                                        watchAdFordoubleBtn.gameObject.SetActive(false);
-                                        watchAdFordoubleBtn.enabled = true;
-                                    },
-                                    () =>
-                                    {
-                                        PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(6));
-                                        jinNangBackBtn.enabled = true;
-                                        watchAdFordoubleBtn.enabled = true;
-                                    }
-                                );
+                                    //奖励翻倍
+                                    addYuanBaoNums *= 2;
+                                    addTiLiNums *= 2;
+                                    UpdateJinNangRewards(addYuanBaoNums, addTiLiNums);
+                                    jinNangBackBtn.enabled = true;
+                                    watchAdFordoubleBtn.gameObject.SetActive(false);
+                                    watchAdFordoubleBtn.enabled = true;
+                                    jinNangBackBtn.onClick.RemoveAllListeners();
+                                }, () =>
+                                {
+                                    PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(6));
+                                    jinNangBackBtn.enabled = true;
+                                    watchAdFordoubleBtn.enabled = true;
+                                    jinNangBackBtn.onClick.RemoveAllListeners();
+                                });
                             });
                         });
-                        jinNangBackBtn.onClick.RemoveAllListeners();
                     });
                 });
             });
@@ -2687,7 +2686,7 @@ public class UIManager : MonoBehaviour
     }
 
     //商店购买体力
-    [Skip] private void ChickenShoppingGetTiLi(int indexBtn)
+    private void ChickenShoppingGetTiLi(int indexBtn)
     {
         AudioController0.instance.ChangeAudioClip(AudioController0.instance.audioClips[13], AudioController0.instance.audioVolumes[13]);
         OpenOrCloseChickenBtn(false);
@@ -2696,22 +2695,21 @@ public class UIManager : MonoBehaviour
         switch (indexBtn)
         {
             case 0:
-                DoNewAdController.instance.GetReWardVideo(
-                    () =>
-                    {
-                        GetTiLiForChicken(needYvQueNums, getTiLiNums);
-                        PlayerDataForGame.instance.ShowStringTips(string.Format(LoadJsonFile.GetStringText(50),
-                            getTiLiNums));
-                        GetCkChangeTimeAndWindow();
-                        AudioController0.instance.ChangeAudioClip(AudioController0.instance.audioClips[25],
-                            AudioController0.instance.audioVolumes[25]);
-                        AudioController0.instance.PlayAudioSource(0);
-                    },
-                    () =>
-                    {
-                        PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(6));
-                        OpenOrCloseChickenBtn(true);
-                    });
+                DoNewAdController.instance.GetReWardVideo(() =>
+                {
+                    GetTiLiForChicken(needYvQueNums, getTiLiNums);
+                    PlayerDataForGame.instance.ShowStringTips(string.Format(LoadJsonFile.GetStringText(50),
+                        getTiLiNums));
+                    GetCkChangeTimeAndWindow();
+                    AudioController0.instance.ChangeAudioClip(AudioController0.instance.audioClips[25],
+                        AudioController0.instance.audioVolumes[25]);
+                    AudioController0.instance.PlayAudioSource(0);
+                }, () =>
+                {
+                    PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(6));
+                    OpenOrCloseChickenBtn(true);
+                });
+
                 break;
             case 1:
             case 2:

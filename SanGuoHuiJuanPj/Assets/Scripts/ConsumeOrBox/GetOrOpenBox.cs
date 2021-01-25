@@ -86,31 +86,30 @@ public class GetOrOpenBox : MonoBehaviour
     /// <summary>
     /// 观看视频免费开启酒坛
     ///// </summary>
-    [Skip]
     public void WatchAdOpenJiuTan()
     {
         //获得酒坛消耗元宝按钮
         Button getFreeBoxBtn = UIManager.instance.adBtnForFreeBox.transform.parent.GetChild(1).GetComponent<Button>();
         UIManager.instance.adBtnForFreeBox.enabled = false;
         getFreeBoxBtn.enabled = false;
-        DoNewAdController.instance.GetReWardVideo(
+        DoNewAdController.instance.GetReWardVideo(() =>
+        {
             //if (!AdController.instance.ShowVideo(
-            delegate ()
-            {
-                int index = openJiuTanYBNums;
-                openJiuTanYBNums = 0;
-                OpenTaoYuanBox(0);
-                openJiuTanYBNums = index;
-                PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(5));
-                UIManager.instance.adBtnForFreeBox.enabled = true;
-                getFreeBoxBtn.enabled = true;
-            },
-            delegate ()
-            {
-                PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(6));
-                UIManager.instance.adBtnForFreeBox.enabled = true;
-                getFreeBoxBtn.enabled = true;
-            });
+
+            int index = openJiuTanYBNums;
+            openJiuTanYBNums = 0;
+            OpenTaoYuanBox(0);
+            openJiuTanYBNums = index;
+            PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(5));
+            UIManager.instance.adBtnForFreeBox.enabled = true;
+            getFreeBoxBtn.enabled = true;
+        }, () =>
+        {
+            PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(6));
+            UIManager.instance.adBtnForFreeBox.enabled = true;
+            getFreeBoxBtn.enabled = true;
+        });
+
     }
 
     /// <summary>

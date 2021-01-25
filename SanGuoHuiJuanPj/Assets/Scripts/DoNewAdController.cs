@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Beebyte.Obfuscator;
 using UnityEngine;
 
-[Skip]public class DoNewAdController : MonoBehaviour
+public class DoNewAdController : MonoBehaviour
 {
     public static DoNewAdController instance;
 
@@ -14,9 +14,11 @@ using UnityEngine;
     private const string UnityPlayer = "com.unity3d.player.UnityPlayer";
     private const string CurrentActivity = "currentActivity";
     private const string RequestRewardVideo = "RequestRewardVideo";
+    private const string RunOnUiThread = "runOnUiThread";
 
-    Action delForOverVideo;    //结束奖励视频后应执行的事件
-    Action delForOverVideoForError;    //请求失败后应执行的事件
+    delegate void VideoAction();
+    VideoAction delForOverVideo;    //结束奖励视频后应执行的事件
+    VideoAction delForOverVideoForError;    //请求失败后应执行的事件
 
     private void Awake()
     {
@@ -29,7 +31,6 @@ using UnityEngine;
             instance = this;
         }
         DontDestroyOnLoad(gameObject);
-
         isWacthing = false;
         isCanGetReward = false;  
     }
@@ -85,58 +86,112 @@ using UnityEngine;
     //private string JAVA_CLASS = "com.MoTa.LegendOfHeroAs.MainActivity";
 
     private AndroidJavaClass jc;    //unityPlayer安卓类
-    private AndroidJavaObject jo;
+    private AndroidJavaObject currentActivity;
 
 
     //尝试观看视频
-    [Skip]public Task<bool> GetReWardVideo()
+    //public bool GetReWardVideo()
+    //{
+    //    try
+    //    {
+    //        if (currentActivity == null)
+    //        {
+    //            jc = new AndroidJavaClass(UnityPlayer);
+    //            currentActivity = jc.GetStatic<AndroidJavaObject>(CurrentActivity);
+    //        }
+    //        isWacthing = true;
+    //        currentActivity.Call<Task>(RunOnUiThread,
+    //            new AndroidJavaRunnable(() => currentActivity.Call(RequestRewardVideo))).Wait();
+    //        isWacthing = false;
+    //        PlayerDataForGame.instance.ShowStringTips("CallBack");
+    //        return true;
+    //    }
+    //    catch (Exception e)
+    //    {
+    //        return false;
+    //    }
+        
+    //    return false;
+    //}
+    //public bool GetReWardVideo()
+    //{
+    //    try
+    //    {
+    //        if (jo == null)
+    //        {
+    //            jc = new AndroidJavaClass(UnityPlayer);
+    //            jo = jc.GetStatic<AndroidJavaObject>(CurrentActivity);
+    //        }
+    //        jo.Call(RequestRewardVideo);
+    //        isWacthing = true;
+    //        return true;
+    //    }
+    //    catch (System.Exception e)
+    //    {
+    //        Debug.Log(e.ToString());
+    //        return false;
+    //    }
+    //    return false;
+    //}
+    public void GetReWardVideo(Action actionOnComplete, Action actionForError)
     {
-#if UNITY_EDITOR
-        return Task.FromResult(true);
+#if UNITY_EDITOR || !UNITY_ANDROID
+        actionOnComplete.Invoke();
 #else
+        if(isWacthing)return;
+        isWacthing = true;
+        delForOverVideo = new VideoAction(actionOnComplete);
+        delForOverVideoForError = new VideoAction(actionForError);
         try
         {
-            if (jo == null)
+            if (currentActivity == null)
             {
                 jc = new AndroidJavaClass(UnityPlayer);
-                jo = jc.GetStatic<AndroidJavaObject>(CurrentActivity);
+                currentActivity = jc.GetStatic<AndroidJavaObject>(CurrentActivity);
             }
-            isWacthing = true;
-            jo.Call(RequestRewardVideo);
+            currentActivity.Call(RunOnUiThread,new AndroidJavaRunnable(Script)); 
+        }
+        catch (Exception e)
+        {
+            delForOverVideoForError.Invoke();
             isWacthing = false;
-            return Task.FromResult(true);
         }
-        catch (Exception)
+
+        void Script()
         {
-            return Task.FromResult(false);
+            currentActivity.Call(RequestRewardVideo);
+            delForOverVideo.Invoke();
+            isWacthing = false;
         }
 #endif
     }
+    //public bool GetReWardVideo(Action action, Action actionForError) 
+    //{ 
 
-    [Skip]public void GetReWardVideo(Action action, Action actionForError)
-    {
-#if UNITY_EDITOR
-        action?.Invoke();
-        return;
-#else
-        try
-        {
-            if (jo == null)
-            {
-                jc = new AndroidJavaClass(UnityPlayer);
-                jo = jc.GetStatic<AndroidJavaObject>(CurrentActivity);
-            }
-            jo.Call(RequestRewardVideo);
-            action?.Invoke();
-            
-        }
-        catch (Exception)
-        {
-            actionForError?.Invoke();
-        }
-#endif
-    }
-
+    //    try 
+    //    { 
+    //        if (jo == null) 
+    //        { 
+    //            jc = new AndroidJavaClass("com.unity3d.player.UnityPlayer"); 
+    //            jo = jc.GetStatic<AndroidJavaObject>("currentActivity"); 
+    //        } 
+    //        jo.Call("RequestRewardVideo"); 
+    //        isWacthing = true; 
+ 
+    //        delForOverVideo = new DelForOverVideo(action); 
+ 
+    //        delForOverVideoForError = new DelForOverVideo(actionForError); 
+ 
+    //        return true; 
+    //    } 
+    //    catch (System.Exception e) 
+    //    { 
+    //        Debug.Log(e.ToString()); 
+    //        return false; 
+    //    } 
+    //    action(); 
+    //    return false; 
+    //} 
 }
 
 //void InitNative()
