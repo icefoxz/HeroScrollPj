@@ -1,215 +1,242 @@
 ﻿using System;
+using System.Collections;
+using System.Threading;
 using System.Threading.Tasks;
 using Beebyte.Obfuscator;
+using Donews.mediation;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
-public class DoNewAdController : MonoBehaviour
+public interface IAdController
 {
-    public static DoNewAdController instance;
+    DoNewAdController.AdStates Status { get; }
+    int Timer { get; }
+    event Action OnCached;
+    void RequestRewardAd(Action onSuccess, CancellationTokenSource tokenSource);
+    /// <summary>
+    /// 小心使用，多次调用会导致底层调用过多而崩溃
+    /// </summary>
+    /// <param name="forceReload"></param>
+    void LoadRewardAd(bool forceReload = false);
+}
 
-    [HideInInspector]
-    public bool isWacthing; //是否正在观看视频
-    private bool isCanGetReward;    //是否可以获取奖励
-
-    private const string UnityPlayer = "com.unity3d.player.UnityPlayer";
-    private const string CurrentActivity = "currentActivity";
-    private const string RequestRewardVideo = "RequestRewardVideo";
-    private const string RunOnUiThread = "runOnUiThread";
-
-    delegate void VideoAction();
-    VideoAction delForOverVideo;    //结束奖励视频后应执行的事件
-    VideoAction delForOverVideoForError;    //请求失败后应执行的事件
-
-    private void Awake()
+[Skip]public class DoNewAdController : MonoBehaviour, IAdController
+{
+    public static IAdController AdController => instance;
+    private static DoNewAdController instance;
+    public enum AdStates
     {
-        if (instance != null)
-        {
-            Destroy(gameObject);
-        }
-        else
-        {
-            instance = this;
-        }
+        None,
+        RequestingCache,
+        Cached
+    }
+
+    public AdStates Status => status;
+    public AdStates status;
+    public bool isEditableActionSuccess;//仅用于unity编辑器
+    public int forceReloadAfterSecond = 20;//重新请求的等待秒数
+
+    public int Timer { get; private set; }
+    public event Action OnCached;
+    private bool isCachedTriggered;
+    public static AndroidJavaObject CurrentActivityJo =>
+        new AndroidJavaObject(UnityPlayer).GetStatic<AndroidJavaObject>(CurrentActivity);
+    public static void CallUiThread(Action action) => CurrentActivityJo.Call(RunOnUiThread, action);
+
+    public const string UnityPlayer = "com.unity3d.player.UnityPlayer";
+    public const string CurrentActivity = "currentActivity";
+    public const string RequestRewardVideo = "RequestRewardVideo";
+    public const string RunOnUiThread = "runOnUiThread";
+    public const string PlaceId = "5294";
+    public const string MainCanvas = "MainCanvas";
+
+    private RewardedVideoAd rewardedVideoAd;
+    private RewardAdListener currentAdListener;
+    public RewardAdListener CurrentAdListener => currentAdListener;
+    public AdAgent adAgentPrefab;
+    public AdAgent AdAgent { get; private set; }
+
+    private bool isInit;
+
+    void Awake()
+    {
+        if (instance != null && instance != this)
+            throw XDebug.Throw<DoNewAdController>("Duplicate singleton instance!");
+
+        instance = this;
+        Init();
+    }
+
+    private void Init()
+    {
+        if (isInit) throw XDebug.Throw<DoNewAdController>("Duplicate init!");
+        isInit = true;
+        SDK.apiType = SDK.ApiType.Release;
+        SDK.StartService();
+        status = AdStates.None;
+
+        StartCoroutine(UpdateEverySecond());
         DontDestroyOnLoad(gameObject);
-        isWacthing = false;
-        isCanGetReward = false;  
+        SceneManager.sceneLoaded += SceneLoadRelocateCanvas;
+        var mainCanvas = GameObject.FindGameObjectWithTag(MainCanvas);
+        AdAgent = Instantiate(adAgentPrefab,mainCanvas.transform);
+        AdAgent.Init(this);
     }
 
-    ////////////////安卓回调//////////////////////////////////////
-
-    //视频观看有效与否回调
-    private void CallBackFromRewardedVideo(string isDone)
+    IEnumerator UpdateEverySecond()
     {
-        if (isDone == "1")
+        while (true)
         {
-            isCanGetReward = true;
+            if (status == AdStates.Cached)
+            {
+                if (isCachedTriggered) yield break;
+                isCachedTriggered = true;
+                OnCached?.Invoke();
+                yield break;
+            }
+            Timer = Timer >= forceReloadAfterSecond ? 0 : Timer + 1;
+            LoadRewardAd(Timer >= forceReloadAfterSecond);
+            yield return new WaitForSeconds(1);
+        }
+    }
 
-            //Debug.Log("观看成功回调");
+    private void SceneLoadRelocateCanvas(Scene scene, LoadSceneMode mode)
+    {
+        if (scene.buildIndex == 0) return;
+        var mainCanvas = GameObject.FindGameObjectWithTag(MainCanvas);
+        if (AdAgent) Destroy(AdAgent);
+        AdAgent = Instantiate(adAgentPrefab,mainCanvas.transform);
+        AdAgent.Init(this);
+    }
+
+    public void LoadRewardAd(bool forceReload = false)
+    {
+#if UNITY_EDITOR
+        if (forceReload) status = AdStates.None;
+        if (status == AdStates.RequestingCache) return;
+        return;
+#endif
+        if (forceReload)
+        {
+            status = AdStates.None;
+            currentAdListener = null;
+        }
+        if (status != AdStates.None) return;
+        if (currentAdListener != null && !currentAdListener.IsLoadSuccess) return;
+        status = AdStates.RequestingCache;
+        currentAdListener = new RewardAdListener(() => status = AdStates.Cached);
+        rewardedVideoAd = RewardedVideoAd.LoadRewardedVideoAd(PlaceId, currentAdListener);
+    }
+
+    public void RequestRewardAd(Action onSuccess, CancellationTokenSource tokenSource)
+    {
+#if UNITY_EDITOR
+        if (isEditableActionSuccess)
+        {
+            onSuccess.Invoke();
+            LoadRewardAd(true);
         }
         else
         {
-            isCanGetReward = false;
-
-            //Debug.Log("观看失败回调");
+            Task.Delay(TimeSpan.FromSeconds(3)); //编辑器里，三秒后失败
+            PlayerDataForGame.instance.ShowStringTips("视频加载失败!");
+            tokenSource.Cancel();
+            LoadRewardAd(true);
         }
-    }
 
-    //广告视频关闭回调
-    private void ClosedRewardedVideo(string str)
-    {
-        if (isCanGetReward)
+        return;
+#endif
+        if (status == AdStates.None || status == AdStates.RequestingCache)
         {
-            delForOverVideo();
-            //获取奖励
+            throw XDebug.Throw<DoNewAdController>($"Ad isn't cached! status = {status}");
         }
-        else
+        try
         {
-            delForOverVideoForError();
-            //无法获取
+            currentAdListener.onFailed = tokenSource.Cancel;
+            currentAdListener.onSuccess = () =>
+            {
+                onSuccess.Invoke();
+                LoadRewardAd(true);
+            };
+            rewardedVideoAd.ShowRewardedVideoAd();
         }
-        isCanGetReward = false;
-        isWacthing = false;
+        catch (Exception e)
+        {
+            PlayerDataForGame.instance.ShowStringTips($"视频加载失败!");
+            tokenSource.Cancel();
+            LoadRewardAd(true);
+        }
     }
 
-    //广告请求错误回调
-    private void ErrorRewardedVideo(string str)
-    {
-        delForOverVideoForError();
-        Debug.LogError("广告请求错误：" + str);
-        isCanGetReward = false;
-        isWacthing = false;
-    }
-
-    ////////////////交互安卓//////////////////////////////////////
-
-    private string UNITY_CLASS = "com.unity3d.player.UnityPlayer";
-    //private string JAVA_CLASS = "com.MoTa.LegendOfHeroAs.MainActivity";
-
-    private AndroidJavaClass jc;    //unityPlayer安卓类
     private AndroidJavaObject currentActivity;
+    
+
+    public class RewardAdListener : IRewardedVideoAdListener
+    {
+        public Action onSuccess;
+
+        public Action onFailed;
+        public bool IsLoadSuccess { get; private set; }
+        public RewardedVideoAd videoAd;
+
+        private Action onLoadSuccessAction;
+        public RewardAdListener(Action onLoadSuccess)
+        {
+            onLoadSuccessAction = onLoadSuccess;
+        }
+
+        // 广告数据加载成功回调
+        public void RewardVideoAdDidLoadSuccess()
+        {
+            onLoadSuccessAction.Invoke();
+            IsLoadSuccess = true;
+        }
+
+        // 视频广告播放达到激励条件回调
+        public void RewardVideoAdDidRewardEffective() => onSuccess.Invoke();
+        // 视频广告视频播放完成
+        public void RewardVideoAdDidPlayFinish() { }
+        // 视频广告曝光回调
+        public void RewardVideoAdExposured() { }
+
+        // 视频广告各种错误信息回调
+        public void RewardVideoAdDidLoadFaild(int errorCode, string errorMsg) => onFailed.Invoke();
+        // 视频数据下载成功回调，已经下载过的视频会直接回调
+        public void RewardVideoAdVideoDidLoad(){}
+        // 视频播放页即将展示回调
+        public void RewardVideoAdWillVisible(){}
+        // 视频播放页关闭回调
+        public void RewardVideoAdDidClose(){}
+        // 视频广告信息点击回调
+        public void RewardVideoAdDidClicked(){}
+    }
 
 
-    //尝试观看视频
-    //public bool GetReWardVideo()
-    //{
-    //    try
-    //    {
-    //        if (currentActivity == null)
-    //        {
-    //            jc = new AndroidJavaClass(UnityPlayer);
-    //            currentActivity = jc.GetStatic<AndroidJavaObject>(CurrentActivity);
-    //        }
-    //        isWacthing = true;
-    //        currentActivity.Call<Task>(RunOnUiThread,
-    //            new AndroidJavaRunnable(() => currentActivity.Call(RequestRewardVideo))).Wait();
-    //        isWacthing = false;
-    //        PlayerDataForGame.instance.ShowStringTips("CallBack");
-    //        return true;
-    //    }
-    //    catch (Exception e)
-    //    {
-    //        return false;
-    //    }
-        
-    //    return false;
-    //}
-    //public bool GetReWardVideo()
+
+
+
+    private AndroidJavaObject jo;
+    private AndroidJavaClass jc;    //unityPlayer安卓类
+
+    //[Skip]
+    //public Task<bool> GetReWardVideo()
     //{
     //    try
     //    {
     //        if (jo == null)
     //        {
-    //            jc = new AndroidJavaClass(UnityPlayer);
-    //            jo = jc.GetStatic<AndroidJavaObject>(CurrentActivity);
+    //            jc = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
+    //            jo = jc.GetStatic<AndroidJavaObject>("currentActivity");
     //        }
-    //        jo.Call(RequestRewardVideo);
-    //        isWacthing = true;
-    //        return true;
+
+    //        jo.Call("RequestRewardVideo");
+    //        return Task.FromResult(true);
     //    }
-    //    catch (System.Exception e)
+    //    catch (Exception)
     //    {
-    //        Debug.Log(e.ToString());
-    //        return false;
+    //        return Task.FromResult(false);
     //    }
-    //    return false;
     //}
-    public void GetReWardVideo(Action actionOnComplete, Action actionForError)
-    {
-#if UNITY_EDITOR || !UNITY_ANDROID
-        actionOnComplete.Invoke();
-#else
-        if(isWacthing)return;
-        isWacthing = true;
-        delForOverVideo = new VideoAction(actionOnComplete);
-        delForOverVideoForError = new VideoAction(actionForError);
-        try
-        {
-            if (currentActivity == null)
-            {
-                jc = new AndroidJavaClass(UnityPlayer);
-                currentActivity = jc.GetStatic<AndroidJavaObject>(CurrentActivity);
-            }
-            currentActivity.Call(RunOnUiThread,new AndroidJavaRunnable(Script)); 
-        }
-        catch (Exception e)
-        {
-            delForOverVideoForError.Invoke();
-            isWacthing = false;
-        }
 
-        void Script()
-        {
-            currentActivity.Call(RequestRewardVideo);
-            delForOverVideo.Invoke();
-            isWacthing = false;
-        }
-#endif
-    }
-    //public bool GetReWardVideo(Action action, Action actionForError) 
-    //{ 
-
-    //    try 
-    //    { 
-    //        if (jo == null) 
-    //        { 
-    //            jc = new AndroidJavaClass("com.unity3d.player.UnityPlayer"); 
-    //            jo = jc.GetStatic<AndroidJavaObject>("currentActivity"); 
-    //        } 
-    //        jo.Call("RequestRewardVideo"); 
-    //        isWacthing = true; 
- 
-    //        delForOverVideo = new DelForOverVideo(action); 
- 
-    //        delForOverVideoForError = new DelForOverVideo(actionForError); 
- 
-    //        return true; 
-    //    } 
-    //    catch (System.Exception e) 
-    //    { 
-    //        Debug.Log(e.ToString()); 
-    //        return false; 
-    //    } 
-    //    action(); 
-    //    return false; 
-    //} 
 }
-
-//void InitNative()
-//{
-//    //调用有参方法
-//    object[] objects = new object[] { "", "", false };
-//    jo.Call("initNativeAd", objects);
-//}
-
-//void ShowNative()
-//{
-//    //调用有返回值方法
-//    if (jo.Call<bool>("isNativeReady"))
-//        jo.Call("showNativeAd");
-//}
-
-//void HideNative()
-//{
-//    //调用无参方法
-//    jo.Call("hideNativeAd");
-//}

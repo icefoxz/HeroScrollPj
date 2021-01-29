@@ -3,6 +3,7 @@ using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using Beebyte.Obfuscator;
 using UnityEngine;
 using UnityEngine.UI;
@@ -31,6 +32,8 @@ public class WarsUIManager : MonoBehaviour
     GameObject startBtn;    //关卡开始按钮
     [SerializeField]
     GameObject upLevelBtn;   //升级城池btn
+
+    public Button adRefreshBtn;//看广告刷新按键
 
     public GameObject[] eventsWindows; //各种事件窗口 0-战斗；1-故事；2-答题；3-奇遇；4-通用
     public enum EventTypes
@@ -144,6 +147,7 @@ public class WarsUIManager : MonoBehaviour
         //如果战斗是霸业，初始化霸业战斗id记录器，非霸业不使用
         if (PlayerDataForGame.instance.WarType == PlayerDataForGame.WarTypes.Baye)
             baYeBattleList = new List<int>();
+        adRefreshBtn.onClick.AddListener(WatchAdForUpdateQiYv);
         InitMainUIShow();
 
         InitCardListShow();
@@ -870,23 +874,19 @@ public class WarsUIManager : MonoBehaviour
                     needMoney = 0;
                     getBtnTran.GetChild(1).gameObject.SetActive(false);
                     getBtnTran.GetChild(2).gameObject.SetActive(true);
-                    adBtn.onClick.AddListener(() =>
+                    adBtn.onClick.AddListener(() => AdAgent.instance.BusyRetry(() =>
                     {
                         adBtn.enabled = false;
-                        DoNewAdController.instance.GetReWardVideo(() =>
-                            {
-                                //if (!AdController.instance.ShowVideo(
-                                GetOrBuyCards(true, needMoney, cardType, cardId, cardLevel, btnIndex);
-                                getBtnTran.GetChild(2).gameObject.SetActive(false);
-                                PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(57));
-                                adBtn.enabled = true;
-                            },
-                            () =>
-                            {
-                                PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(6));
-                                adBtn.enabled = true;
-                            });
-                    });
+                        //if (!AdController.instance.ShowVideo(
+                        GetOrBuyCards(true, needMoney, cardType, cardId, cardLevel, btnIndex);
+                        getBtnTran.GetChild(2).gameObject.SetActive(false);
+                        PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(57));
+                        adBtn.enabled = true;
+                    }, () =>
+                    {
+                        PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(6));
+                        adBtn.enabled = true;
+                    }));
                 }
                 else
                 {
@@ -987,21 +987,17 @@ public class WarsUIManager : MonoBehaviour
     }
 
     //观看视频刷新奇遇
-    [Skip] public void WatchAdForUpdateQiYv()
+    [Skip]
+    public void WatchAdForUpdateQiYv()
     {
         Button adBtn = eventsWindows[3].transform.GetChild(0).GetChild(5).GetComponent<Button>();
         adBtn.enabled = false;
-        DoNewAdController.instance.GetReWardVideo(() =>
+        AdAgent.instance.BusyRetry(() =>
         {
-            //if (!AdController.instance.ShowVideo(
             adBtn.gameObject.SetActive(false);
             UpdateQiYvWoods();
-            adBtn.enabled = true;
-        }, () =>
-        {
-            PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(6));
-            adBtn.enabled = true;
-        });
+        }, () => PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(6)));
+        adBtn.enabled = true;
     }
 
     //刷新奇遇商品

@@ -39,7 +39,7 @@ namespace Assets.Editor.Config
                 USER_LOGIN_API = configAsset.USER_LOGIN_API
             };
             var encrypt = EncryptDecipherTool.DESEncrypt(Json.Serialize(serverConfig));
-            System.IO.File.WriteAllText("assets/resources/jsons/pz.bytes", encrypt);
+            System.IO.File.WriteAllText("assets/resources/game/pz.bytes", encrypt);
             XDebug.Log<GameConfigWindow>("配置文件已加密存档！");
         }
     }

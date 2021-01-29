@@ -5,6 +5,7 @@ using DG.Tweening;
 using System.Collections;
 using System;
 using System.Linq;
+using System.Threading;
 using Beebyte.Obfuscator;
 
 public class UIManager : MonoBehaviour
@@ -2351,158 +2352,14 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    [SerializeField]
-    GameObject jinNangObj;  //锦囊入口
-    [SerializeField]
-    GameObject jinNangWindowObj;  //锦囊窗口
     bool isJinNangReady = true;  //记录是否可以开启锦囊
 
     //刷新锦囊入口的显示
     public void UpdateShowJinNangBtn(bool isReady)
     {
         if (isJinNangReady == isReady) return;
-        jinNangObj.SetActive(isReady);
+        taoYuan.jinNangBtn.gameObject.SetActive(isReady);
         isJinNangReady = isReady;
-    }
-
-    //开启锦囊
-    public void OpenJinNangFun()
-    {
-        if (TimeSystemControl.instance.OnClickToGetJinNang())
-        {
-            AudioController0.instance.ChangeAudioClip(AudioController0.instance.audioClips[11], AudioController0.instance.audioVolumes[11]);
-            AudioController0.instance.PlayAudioSource(0);
-
-            //锦囊奖励界面
-            Transform rewardsTran = jinNangWindowObj.transform.GetChild(1).GetChild(1);
-            rewardsTran.gameObject.SetActive(false);
-            //点击继续obj
-            GameObject contuineObj = jinNangWindowObj.transform.GetChild(3).gameObject;
-            contuineObj.SetActive(false);
-
-            int randId = UnityEngine.Random.Range(0, LoadJsonFile.knowledgeTableDatas.Count);
-            //锦囊底框
-            Image jinNangImg = jinNangWindowObj.transform.GetChild(1).GetComponent<Image>();
-            jinNangImg.color = new Color(jinNangImg.color.r, jinNangImg.color.g, jinNangImg.color.b, 0);
-            //锦囊内容
-            Text jinNangText = jinNangWindowObj.transform.GetChild(1).GetChild(0).GetComponent<Text>();
-            //新增人物名
-            Text jinNangTextName = jinNangWindowObj.transform.GetChild(1).GetChild(0).GetChild(0).GetComponent<Text>();
-            jinNangText.text = "";
-            jinNangTextName.text = "";//新增人物名
-            jinNangText.gameObject.SetActive(true);
-            jinNangText.color = LoadJsonFile.knowledgeTableDatas[randId][1] == "1" ? ColorDataStatic.name_deepRed : ColorDataStatic.name_brown;
-            jinNangText.color = new Color(jinNangText.color.r, jinNangText.color.g, jinNangText.color.b, 0);
-            jinNangTextName.color = new Color(jinNangTextName.color.r, jinNangTextName.color.g, jinNangTextName.color.b, 0);
-
-            //奖励内容
-            int addTiLiNums = int.Parse(LoadJsonFile.knowledgeTableDatas[randId][3]);
-            string[] arrs = LoadJsonFile.knowledgeTableDatas[randId][4].Split(',');
-            int addYuanBaoNums = UnityEngine.Random.Range(int.Parse(arrs[0]), int.Parse(arrs[1]));
-            //背景点击继续按钮
-            Button jinNangBackBtn = jinNangWindowObj.transform.GetChild(0).GetComponent<Button>();
-            jinNangBackBtn.onClick.RemoveAllListeners();
-            //点击广告按钮
-            Button watchAdFordoubleBtn = rewardsTran.GetChild(1).GetComponent<Button>();
-            watchAdFordoubleBtn.onClick.RemoveAllListeners();
-            watchAdFordoubleBtn.gameObject.SetActive(true);
-
-            jinNangImg.DOFade(1, 0.5f).OnComplete(()=>
-            {
-                jinNangText.text = LoadJsonFile.knowledgeTableDatas[randId][2];
-                jinNangTextName.text = LoadJsonFile.knowledgeTableDatas[randId][5];//新增人物名
-                jinNangTextName.DOFade(1, 1.5f);
-                jinNangText.DOFade(1, 1.5f).OnComplete(()=>
-                {
-                    contuineObj.SetActive(true);
-                    jinNangBackBtn.onClick.AddListener( ()=>
-                    {
-                        PlayOnClickMusic();
-                        jinNangTextName.DOFade(0, 1f);
-                        jinNangText.DOFade(0, 1f).OnComplete(()=>
-                        {
-                            //展示奖励内容
-                            UpdateJinNangRewards(addYuanBaoNums, addTiLiNums);
-                            rewardsTran.gameObject.SetActive(true);
-
-                            //点击背景领取并退出锦囊
-                            jinNangBackBtn.onClick.AddListener(()=>
-                            {
-                                PlayOnClickMusic();
-                                if (addYuanBaoNums > 0)
-                                    ConsumeManager.instance.AddYuanBao(addYuanBaoNums);
-                                if (addTiLiNums > 0)
-                                    TimeSystemControl.instance.AddTiLiNums(addTiLiNums);
-                                PlayerDataForGame.instance.Redemption(PlayerDataForGame.RedeemTypes.JinNang);
-                                PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(43));
-                                jinNangWindowObj.SetActive(false);
-                            });
-                            //点击广告双倍奖励
-                            watchAdFordoubleBtn.onClick.AddListener(()=>
-                            {
-                                PlayOnClickMusic();
-                                //背景按钮无效
-                                jinNangBackBtn.enabled = false;
-                                watchAdFordoubleBtn.enabled = false;
-                                DoNewAdController.instance.GetReWardVideo(() =>
-                                {
-                                    PlayerDataForGame.instance.ShowStringTips("翻倍成功！");
-                                    //if (!AdController.instance.ShowVideo(
-                                    //奖励翻倍
-                                    addYuanBaoNums *= 2;
-                                    addTiLiNums *= 2;
-                                    UpdateJinNangRewards(addYuanBaoNums, addTiLiNums);
-                                    jinNangBackBtn.enabled = true;
-                                    watchAdFordoubleBtn.gameObject.SetActive(false);
-                                    watchAdFordoubleBtn.enabled = true;
-                                    jinNangBackBtn.onClick.RemoveAllListeners();
-                                }, () =>
-                                {
-                                    PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(6));
-                                    jinNangBackBtn.enabled = true;
-                                    watchAdFordoubleBtn.enabled = true;
-                                    jinNangBackBtn.onClick.RemoveAllListeners();
-                                });
-                            });
-                        });
-                    });
-                });
-            });
-            jinNangWindowObj.SetActive(true);
-        }
-        else
-        {
-            PlayOnClickMusic();
-            PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(44));
-        }
-    }
-
-    [SerializeField]
-    Transform jinNangRewardsTran;   //锦囊奖励父级
-
-    //展示锦囊中的奖励内容
-    private void UpdateJinNangRewards(int yuanBaoNums, int tiLiNums)
-    {
-        //元宝
-        if (yuanBaoNums > 0)
-        {
-            jinNangRewardsTran.GetChild(0).GetChild(4).GetComponent<Text>().text = "×" + yuanBaoNums;
-            jinNangRewardsTran.GetChild(0).gameObject.SetActive(true);
-        }
-        else
-        {
-            jinNangRewardsTran.GetChild(0).gameObject.SetActive(false);
-        }
-        //体力
-        if (tiLiNums > 0)
-        {
-            jinNangRewardsTran.GetChild(3).GetChild(4).GetComponent<Text>().text = "×" + tiLiNums;
-            jinNangRewardsTran.GetChild(3).gameObject.SetActive(true);
-        }
-        else
-        {
-            jinNangRewardsTran.GetChild(3).gameObject.SetActive(false);
-        }
     }
 
     [SerializeField]
@@ -2686,7 +2543,7 @@ public class UIManager : MonoBehaviour
     }
 
     //商店购买体力
-    private void ChickenShoppingGetTiLi(int indexBtn)
+    [Skip] private void ChickenShoppingGetTiLi(int indexBtn)
     {
         AudioController0.instance.ChangeAudioClip(AudioController0.instance.audioClips[13], AudioController0.instance.audioVolumes[13]);
         OpenOrCloseChickenBtn(false);
@@ -2695,8 +2552,9 @@ public class UIManager : MonoBehaviour
         switch (indexBtn)
         {
             case 0:
-                DoNewAdController.instance.GetReWardVideo(() =>
+                AdAgent.instance.BusyRetry(() =>
                 {
+
                     GetTiLiForChicken(needYvQueNums, getTiLiNums);
                     PlayerDataForGame.instance.ShowStringTips(string.Format(LoadJsonFile.GetStringText(50),
                         getTiLiNums));
@@ -2709,7 +2567,6 @@ public class UIManager : MonoBehaviour
                     PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(6));
                     OpenOrCloseChickenBtn(true);
                 });
-
                 break;
             case 1:
             case 2:
