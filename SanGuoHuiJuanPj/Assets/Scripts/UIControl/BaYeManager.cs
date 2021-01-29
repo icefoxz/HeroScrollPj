@@ -12,7 +12,7 @@ public class BaYeManager : MonoBehaviour
 {
     public int SelectedForceId { get; set; }
     public int BaYeGoldDefault = 30; //霸业初始金币
-    public int BaYeMaxGold = 50; //霸业金币上限
+    public int BaYeMaxGold = 75; //霸业金币上限
     private List<BaYeCityEvent> map;
     private Dictionary<int, int[]> storyEventSet;//数据表缓存
     public bool isShowTips;//是否弹出文字
