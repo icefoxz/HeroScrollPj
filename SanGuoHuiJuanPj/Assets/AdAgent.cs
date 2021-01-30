@@ -24,6 +24,8 @@ public class AdAgent : MonoBehaviour
     public Button retryButton;
     public int retrySeconds = 6;
     public int retrySecs;
+    private int retries;
+    private Coroutine coroutine;
     private CancellationTokenSource cancellationToken;
     private bool isBusy;
     private Action onSuccessAction;
@@ -58,6 +60,8 @@ public class AdAgent : MonoBehaviour
         isSuccess = false;
         isCanceled = false;
         message.text = string.Empty;
+        retries = 0;
+        coroutine = null;
     }
 
     private void OnCancel()
@@ -81,7 +85,6 @@ public class AdAgent : MonoBehaviour
         cancelButton.gameObject.SetActive(true);
         countdown.gameObject.SetActive(false);
         isBusy = true;
-        retrySecs = secsForRetry;
         onCancelAction = cancelAction;
         onSuccessAction = requestAction;//success must cancel the countdown invocation
 
@@ -104,10 +107,8 @@ public class AdAgent : MonoBehaviour
             });
             return;
         }
-        else
-        {
-            StartService();
-        }
+
+        StartService(retrySecs);
     }
 
     void OnTokenCancelled(CancellationToken token)
@@ -116,23 +117,21 @@ public class AdAgent : MonoBehaviour
             isCanceled = true;
     }
 
-    private void StartService()
+    private void StartService(int countDown)
     {
-        RequestAdInit();
-        StartCoroutine(CountDown());
-    }
-
-    private void RequestAdInit()
-    {
-        cancellationToken = new CancellationTokenSource();//用于直接取消。
-        cancellationToken.Token.Register(()=>OnTokenCancelled(cancellationToken.Token));
+        if (coroutine != null)
+            StopCoroutine(coroutine);
+        cancellationToken = new CancellationTokenSource(); //用于直接取消。
+        cancellationToken.Token.Register(() => OnTokenCancelled(cancellationToken.Token));
         message.text = "请求视频中...";
         adController.LoadRewardAd(RequestAdVideo, cancellationToken);
+        coroutine = StartCoroutine(CountDown(countDown));
     }
 
     private void RequestAdVideo()
     {
         message.text = "请求完成，正加载视频...";
+        cancellationToken = new CancellationTokenSource();
         adController.RequestRewardAd(()=>
         {
             onSuccessAction.Invoke();
@@ -140,12 +139,12 @@ public class AdAgent : MonoBehaviour
         }, cancellationToken);//当请求视频的时候，token是作为取消调用的
     }
 
-    private IEnumerator CountDown()
+    private IEnumerator CountDown(int count = default)
     {
         countdown.gameObject.SetActive(true);
         retryButton.gameObject.SetActive(false);
         retryButton.onClick.RemoveAllListeners();
-        var count = retrySecs;
+        if (count == default) count = retrySecs;
         while (count > 0 
                && !isCanceled
                && !isSuccess) //while cancel must be the action success or user cancel
@@ -153,7 +152,10 @@ public class AdAgent : MonoBehaviour
             countdown.text = count.ToString();
             yield return new WaitForSeconds(1);
             count--;
-            if (count == retrySecs / 2) RequestAdInit();
+            if (count > retrySecs / 2 || retries > 0) continue;
+            retries++;
+            StartService(count);
+            yield return null;
         }
 
         if (isSuccess)
@@ -162,12 +164,13 @@ public class AdAgent : MonoBehaviour
             yield return null;
         }
         if (!isBusy) yield return null;
+        retries = 0;
         countdown.gameObject.SetActive(false);
         retryButton.gameObject.SetActive(true);
         retryButton.onClick.AddListener(()=>
         {
             isCanceled = false;
-            StartService();
+            StartService(retrySecs);
             retryButton.gameObject.SetActive(false);
         });//重新引用请求
     }
