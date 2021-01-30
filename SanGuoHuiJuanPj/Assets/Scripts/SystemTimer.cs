@@ -20,12 +20,17 @@ public class SystemTimer : MonoBehaviour
     public static SystemTimer instance;
     public static DateTimeOffset UnixToDateTime(long unixTicks)
     {
-        var utc = Epoch.AddMilliseconds(unixTicks);
-        return utc.ToLocalTime();
+        return Epoch.AddMilliseconds(unixTicks);
     }
-    public static bool IsToday(DateTimeOffset date) => instance.Now.LocalDateTime.Day == date.LocalDateTime.Day &&
-                                           instance.Now.LocalDateTime.Month == date.LocalDateTime.Month &&
-                                           instance.Now.LocalDateTime.Year == date.LocalDateTime.Year;
+    public static bool IsToday(DateTimeOffset date)
+    {
+        var dateLocal = date.LocalDateTime;
+        var nowLocal = instance.Now.LocalDateTime;
+        return nowLocal.Day == dateLocal.Day &&
+               nowLocal.Month == dateLocal.Month &&
+               nowLocal.Year == dateLocal.Year;
+    }
+
     public static bool IsToday(long unixTicks) => IsToday(UnixToDateTime(unixTicks));
 
     private DateTimeOffset startTime;

@@ -12,13 +12,20 @@ using UnityEngine.UI;
 /// </summary>
 public class AdAgent : MonoBehaviour
 {
+    public Image adFreeWindow;
+    public Button successButton;
+    public Button failedButton;
+    [Header("点击不开启广告调用")]public bool isAdFree;
+
     public static AdAgent instance;
     public Text countdown;
+    public Text message;
     public Button cancelButton;
     public Button retryButton;
+    public int retrySeconds = 6;
+    public int retrySecs;
     private CancellationTokenSource cancellationToken;
     private bool isBusy;
-    private int retrySecs;
     private Action onSuccessAction;
     private Action onCancelAction;
     private bool isSuccess;
@@ -45,11 +52,12 @@ public class AdAgent : MonoBehaviour
         retryButton.gameObject.SetActive(false);
         cancelButton.gameObject.SetActive(false);
         isBusy = false;
-        retrySecs = 0;
+        retrySecs = retrySeconds;
         onSuccessAction = null;
         onCancelAction = null;
         isSuccess = false;
         isCanceled = false;
+        message.text = string.Empty;
     }
 
     private void OnCancel()
@@ -59,13 +67,15 @@ public class AdAgent : MonoBehaviour
         OnReset();
     }
 
-    public void BusyRetry(Action requestAction, Action cancelAction , int secsForRetry = 10)
+    public void BusyRetry(Action requestAction, Action cancelAction , int secsForRetry = default)
     {
         if (isBusy)
         {
             XDebug.LogError<AdAgent>("等待网络响应挡板只允许同时运行一次！");
             throw new InvalidOperationException();
         }
+
+        retrySecs = secsForRetry == default ? retrySeconds : secsForRetry;
         gameObject.SetActive(true);
         retryButton.gameObject.SetActive(false);
         cancelButton.gameObject.SetActive(true);
@@ -73,23 +83,56 @@ public class AdAgent : MonoBehaviour
         isBusy = true;
         retrySecs = secsForRetry;
         onCancelAction = cancelAction;
-        cancellationToken = new CancellationTokenSource();//初始token，用于直接取消。
-        cancellationToken.Token.Register(() => isCanceled = true);
         onSuccessAction = requestAction;//success must cancel the countdown invocation
-        StartService();
+
+        successButton.gameObject.SetActive(isAdFree);
+        failedButton.gameObject.SetActive(isAdFree);
+        adFreeWindow.gameObject.SetActive(isAdFree);
+        if (isAdFree)
+        {
+            successButton.onClick.RemoveAllListeners();
+            successButton.onClick.AddListener(()=>
+            {
+                requestAction();
+                OnReset();
+            });
+            failedButton.onClick.RemoveAllListeners();
+            failedButton.onClick.AddListener(() =>
+            {
+                cancelAction();
+                OnReset();
+            });
+            return;
+        }
+        else
+        {
+            StartService();
+        }
+    }
+
+    void OnTokenCancelled(CancellationToken token)
+    {
+        if (token == cancellationToken.Token)//如果已经换token代表已经有另一个请求了。所以无视
+            isCanceled = true;
     }
 
     private void StartService()
     {
-        if (adController.Status == DoNewAdController.AdStates.Cached)
-            RequestAdVideo();
-        else adController.OnCached += RequestAdVideo;
+        RequestAdInit();
         StartCoroutine(CountDown());
+    }
+
+    private void RequestAdInit()
+    {
+        cancellationToken = new CancellationTokenSource();//用于直接取消。
+        cancellationToken.Token.Register(()=>OnTokenCancelled(cancellationToken.Token));
+        message.text = "请求视频中...";
+        adController.LoadRewardAd(RequestAdVideo, cancellationToken);
     }
 
     private void RequestAdVideo()
     {
-        adController.OnCached -= RequestAdVideo;
+        message.text = "请求完成，正加载视频...";
         adController.RequestRewardAd(()=>
         {
             onSuccessAction.Invoke();
@@ -109,9 +152,8 @@ public class AdAgent : MonoBehaviour
         {
             countdown.text = count.ToString();
             yield return new WaitForSeconds(1);
-            if (count == 7)//一般上请求是预載的，如果第三秒仍然没播放，刷新请求
-                adController.LoadRewardAd(true);
             count--;
+            if (count == retrySecs / 2) RequestAdInit();
         }
 
         if (isSuccess)

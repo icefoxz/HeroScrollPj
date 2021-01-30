@@ -23,8 +23,9 @@ namespace Donews.mediation
         {
             AndroidInsterstialCallback callback = new AndroidInsterstialCallback(listener);
             InterstitialAd ad = new InterstitialAd(callback);
-            using (var javaObj = SDK.InstanceDnAdObject())
-                javaObj.Call("requestInstertialAd", placeId, Screen.width, 0, callback);
+            //using (var javaObj = SDK.InstanceDnAdObject())
+            //    javaObj.Call("requestInstertialAd", placeId, Screen.width, 0, callback);
+            SDK.DnSdkObj.Call("requestInstertialAd", placeId, Screen.width, 0, callback);
             return ad;
         }
 

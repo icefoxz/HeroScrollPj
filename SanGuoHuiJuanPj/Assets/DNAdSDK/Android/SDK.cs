@@ -1,18 +1,23 @@
 ﻿// 
 //
+using Beebyte.Obfuscator;
+using UnityEngine;
 
 namespace Donews.mediation
 {
 #if UNITY_ANDROID
-    using UnityEngine;
 
+    [Skip]
     public static class SDK
     {
-        private const string DnUnitySdk = "com.donews.android.DnUnitySDK";
+        public const string DnUnitySdk = "com.donews.android.DnUnitySDK";
         /// <summary>
         /// 每次呼叫后用必须调用IDisposable
         /// </summary>
-        public static AndroidJavaObject InstanceDnAdObject() => new AndroidJavaObject(DnUnitySdk);
+        //public static AndroidJavaObject InstanceDnAdObject() => new AndroidJavaObject(DnUnitySdk);
+
+        public static AndroidJavaObject DnSdkObj => dnSdkObj = dnSdkObj ?? new AndroidJavaObject(DnUnitySdk);
+        //public static AndroidJavaObject InstanceDnAdClass() => new AndroidJavaClass(DnUnitySdk);
 
         public enum ApiType
         {
@@ -41,6 +46,7 @@ namespace Donews.mediation
             }
         }
         public static ApiType apiType = ApiType.Release;
+        private static AndroidJavaObject dnSdkObj;
     }
 
 #endif

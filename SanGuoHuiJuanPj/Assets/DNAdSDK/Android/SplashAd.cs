@@ -1,11 +1,13 @@
 ﻿//
 //
 
+using Beebyte.Obfuscator;
+
 namespace Donews.mediation
 {
 #if UNITY_ANDROID
     using UnityEngine;
-
+    [Skip]
     public class SplashAd
     {
         private readonly AndroidSplashCallback callback;
@@ -21,8 +23,9 @@ namespace Donews.mediation
         {
             AndroidSplashCallback callback = new AndroidSplashCallback(listener);
             SplashAd ad = new SplashAd(callback);
-            using (var javaObj = SDK.InstanceDnAdObject())
-                javaObj.Call("showSplashAd", placeId, callback);
+            //using (var javaObj = SDK.InstanceDnAdObject())
+            //    javaObj.Call("showSplashAd", placeId, callback);
+            SDK.DnSdkObj.Call("showSplashAd", placeId, callback);
             return ad;
         }
 

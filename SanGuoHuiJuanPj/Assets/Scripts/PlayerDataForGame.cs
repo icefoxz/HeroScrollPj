@@ -84,6 +84,7 @@ public class PlayerDataForGame : MonoBehaviour
     [HideInInspector]
     public int boxForTiLiNums;  //返还体力单个宝箱扣除体力数 
 
+    public GameResources gameResources;
     public BaYeManager baYeManager;
 
     private void Awake()
@@ -110,6 +111,8 @@ public class PlayerDataForGame : MonoBehaviour
 
         garbageStationObjs = new List<GameObject>();
         StartCoroutine(FadeTransitionEffect(0));
+        gameResources = new GameResources();
+        gameResources.Init();
     }
 
     private void Update()

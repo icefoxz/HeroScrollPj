@@ -109,6 +109,12 @@ public class WarsUIManager : MonoBehaviour
             instance = this;
         }
         isPointMoveNow = false;
+    }
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        //------------Awake----------------//
         cityLevel = 1;
         switch (PlayerDataForGame.instance.WarType)
         {
@@ -120,8 +126,7 @@ public class WarsUIManager : MonoBehaviour
                 GoldForCity = PlayerDataForGame.instance.warsData.baYe.gold;
                 break;
             case PlayerDataForGame.WarTypes.None:
-                XDebug.LogError<WarsUIManager>($"未确认战斗类型[{PlayerDataForGame.WarTypes.None}]，请在调用战斗场景前预设战斗类型。");
-                throw new InvalidOperationException();
+                throw XDebug.Throw<WarsUIManager>($"未确认战斗类型[{PlayerDataForGame.WarTypes.None}]，请在调用战斗场景前预设战斗类型。");
             default:
                 throw new ArgumentOutOfRangeException();
         }
@@ -138,11 +143,7 @@ public class WarsUIManager : MonoBehaviour
         Input.multiTouchEnabled = false;    //限制多指拖拽
         _isDragItem = false;
         isEnteredLevel = false;
-    }
-
-    // Start is called before the first frame update
-    void Start()
-    {
+        //------------Awake----------------//
         PlayerDataForGame.instance.lastSenceIndex = 2;
         //如果战斗是霸业，初始化霸业战斗id记录器，非霸业不使用
         if (PlayerDataForGame.instance.WarType == PlayerDataForGame.WarTypes.Baye)
@@ -750,6 +751,7 @@ public class WarsUIManager : MonoBehaviour
     /// <param name="updateMoney">刷新所需金币</param>
     [Skip] private bool UpdateShoppingList(int updateMoney)
     {
+        var re = PlayerDataForGame.instance.gameResources;
         if (updateMoney != 0)
         {
             PlayAudioClip(13);
@@ -788,13 +790,13 @@ public class WarsUIManager : MonoBehaviour
                 {
                     case 0:
                         cardId = BackIdFromTableByRarity(LoadJsonFile.heroTableDatas, cardRarity);
-                        woodsList.GetChild(i).GetChild(1).GetComponent<Image>().sprite = Resources.Load("Image/Cards/Hero/" + LoadJsonFile.heroTableDatas[cardId][16], typeof(Sprite)) as Sprite;
+                        woodsList.GetChild(i).GetChild(1).GetComponent<Image>().sprite = re.HeroImg[cardId];
                         ShowNameTextRules(woodsList.GetChild(i).GetChild(3).GetComponent<Text>(), LoadJsonFile.heroTableDatas[cardId][1]);
                         //名字颜色
                         woodsList.GetChild(i).GetChild(3).GetComponent<Text>().color = NameColorChoose(LoadJsonFile.heroTableDatas[cardId][3]);
                         woodsList.GetChild(i).GetChild(5).GetComponentInChildren<Text>().text = LoadJsonFile.classTableDatas[int.Parse(LoadJsonFile.heroTableDatas[cardId][5])][3];
                         //兵种框
-                        woodsList.GetChild(i).GetChild(5).GetComponent<Image>().sprite = Resources.Load("Image/classImage/" + 0, typeof(Sprite)) as Sprite;
+                        woodsList.GetChild(i).GetChild(5).GetComponent<Image>().sprite = re.ClassImg[0];
                         FrameChoose(LoadJsonFile.heroTableDatas[cardId][3], woodsList.GetChild(i).GetChild(6).GetComponent<Image>());
 
                         woodsList.GetChild(i).GetComponent<Button>().onClick.RemoveAllListeners();
@@ -805,13 +807,13 @@ public class WarsUIManager : MonoBehaviour
                         break;
                     case 1:
                         cardId = BackIdFromTableByRarity(LoadJsonFile.soldierTableDatas, cardRarity);
-                        woodsList.GetChild(i).GetChild(1).GetComponent<Image>().sprite = Resources.Load("Image/Cards/FuZhu/" + LoadJsonFile.soldierTableDatas[cardId][13], typeof(Sprite)) as Sprite;
+                        woodsList.GetChild(i).GetChild(1).GetComponent<Image>().sprite = re.FuZhuImg[int.Parse(LoadJsonFile.soldierTableDatas[cardId][13])];
                         ShowNameTextRules(woodsList.GetChild(i).GetChild(3).GetComponent<Text>(), LoadJsonFile.soldierTableDatas[cardId][1]);
                         //名字颜色
                         woodsList.GetChild(i).GetChild(3).GetComponent<Text>().color = NameColorChoose(LoadJsonFile.soldierTableDatas[cardId][3]);
                         woodsList.GetChild(i).GetChild(5).GetComponentInChildren<Text>().text = LoadJsonFile.classTableDatas[int.Parse(LoadJsonFile.soldierTableDatas[cardId][5])][3];
                         //兵种框
-                        woodsList.GetChild(i).GetChild(5).GetComponent<Image>().sprite = Resources.Load("Image/classImage/" + 1, typeof(Sprite)) as Sprite;
+                        woodsList.GetChild(i).GetChild(5).GetComponent<Image>().sprite = re.ClassImg[1];
                         FrameChoose(LoadJsonFile.soldierTableDatas[cardId][3], woodsList.GetChild(i).GetChild(6).GetComponent<Image>());
                         woodsList.GetChild(i).GetComponent<Button>().onClick.RemoveAllListeners();
                         woodsList.GetChild(i).GetComponent<Button>().onClick.AddListener(delegate ()
@@ -821,13 +823,13 @@ public class WarsUIManager : MonoBehaviour
                         break;
                     case 2:
                         cardId = BackIdFromTableByRarity(LoadJsonFile.towerTableDatas, cardRarity);
-                        woodsList.GetChild(i).GetChild(1).GetComponent<Image>().sprite = Resources.Load("Image/Cards/FuZhu/" + LoadJsonFile.towerTableDatas[cardId][10], typeof(Sprite)) as Sprite;
+                        woodsList.GetChild(i).GetChild(1).GetComponent<Image>().sprite = re.FuZhuImg[int.Parse(LoadJsonFile.towerTableDatas[cardId][10])];
                         ShowNameTextRules(woodsList.GetChild(i).GetChild(3).GetComponent<Text>(), LoadJsonFile.towerTableDatas[cardId][1]);
                         //名字颜色
                         woodsList.GetChild(i).GetChild(3).GetComponent<Text>().color = NameColorChoose(LoadJsonFile.towerTableDatas[cardId][3]);
                         woodsList.GetChild(i).GetChild(5).GetComponentInChildren<Text>().text = LoadJsonFile.towerTableDatas[cardId][5];
                         //兵种框
-                        woodsList.GetChild(i).GetChild(5).GetComponent<Image>().sprite = Resources.Load("Image/classImage/" + 1, typeof(Sprite)) as Sprite;
+                        woodsList.GetChild(i).GetChild(5).GetComponent<Image>().sprite = re.ClassImg[1];
                         FrameChoose(LoadJsonFile.towerTableDatas[cardId][3], woodsList.GetChild(i).GetChild(6).GetComponent<Image>());
                         woodsList.GetChild(i).GetComponent<Button>().onClick.RemoveAllListeners();
                         woodsList.GetChild(i).GetComponent<Button>().onClick.AddListener(delegate ()
@@ -837,13 +839,13 @@ public class WarsUIManager : MonoBehaviour
                         break;
                     case 3:
                         cardId = BackIdFromTableByRarity(LoadJsonFile.trapTableDatas, cardRarity);
-                        woodsList.GetChild(i).GetChild(1).GetComponent<Image>().sprite = Resources.Load("Image/Cards/FuZhu/" + LoadJsonFile.trapTableDatas[cardId][8], typeof(Sprite)) as Sprite;
+                        woodsList.GetChild(i).GetChild(1).GetComponent<Image>().sprite = re.FuZhuImg[int.Parse(LoadJsonFile.trapTableDatas[cardId][8])];
                         ShowNameTextRules(woodsList.GetChild(i).GetChild(3).GetComponent<Text>(), LoadJsonFile.trapTableDatas[cardId][1]);
                         //名字颜色
                         woodsList.GetChild(i).GetChild(3).GetComponent<Text>().color = NameColorChoose(LoadJsonFile.trapTableDatas[cardId][3]);
                         woodsList.GetChild(i).GetChild(5).GetComponentInChildren<Text>().text = LoadJsonFile.trapTableDatas[cardId][5];
                         //兵种框
-                        woodsList.GetChild(i).GetChild(5).GetComponent<Image>().sprite = Resources.Load("Image/classImage/" + 1, typeof(Sprite)) as Sprite;
+                        woodsList.GetChild(i).GetChild(5).GetComponent<Image>().sprite = re.ClassImg[1];
                         FrameChoose(LoadJsonFile.trapTableDatas[cardId][3], woodsList.GetChild(i).GetChild(6).GetComponent<Image>());
                         woodsList.GetChild(i).GetComponent<Button>().onClick.RemoveAllListeners();
                         woodsList.GetChild(i).GetComponent<Button>().onClick.AddListener(delegate ()
@@ -856,7 +858,7 @@ public class WarsUIManager : MonoBehaviour
                     default:
                         break;
                 }
-                woodsList.GetChild(i).GetChild(4).GetComponent<Image>().sprite = Resources.Load("Image/gradeImage/" + cardLevel, typeof(Sprite)) as Sprite;
+                woodsList.GetChild(i).GetChild(4).GetComponent<Image>().sprite = re.GradeImg[cardLevel];
 
                 Transform getBtnTran = woodsList.GetChild(i).GetChild(9);
 
@@ -1003,6 +1005,7 @@ public class WarsUIManager : MonoBehaviour
     //刷新奇遇商品
     private void UpdateQiYvWoods()
     {
+        var resources = PlayerDataForGame.instance.gameResources;
         int indexId = BackCardIdByWeightValue(LoadJsonFile.encounterTableDatas, 1);
         int cardType = int.Parse(LoadJsonFile.encounterTableDatas[indexId][2]);
         string cardRarity = LoadJsonFile.encounterTableDatas[indexId][3];
@@ -1014,14 +1017,14 @@ public class WarsUIManager : MonoBehaviour
                 for (int i = 0; i < 3; i++)
                 {
                     int cardId = BackIdFromTableByRarity(LoadJsonFile.heroTableDatas, cardRarity);
-                    woodsList.GetChild(i).GetChild(1).GetComponent<Image>().sprite = Resources.Load("Image/Cards/Hero/" + LoadJsonFile.heroTableDatas[cardId][16], typeof(Sprite)) as Sprite;
+                    woodsList.GetChild(i).GetChild(1).GetComponent<Image>().sprite = resources.HeroImg[cardId];
                     ShowNameTextRules(woodsList.GetChild(i).GetChild(3).GetComponent<Text>(), LoadJsonFile.heroTableDatas[cardId][1]);
                     //名字颜色
                     woodsList.GetChild(i).GetChild(3).GetComponent<Text>().color = NameColorChoose(LoadJsonFile.heroTableDatas[cardId][3]);
-                    woodsList.GetChild(i).GetChild(4).GetComponent<Image>().sprite = Resources.Load("Image/gradeImage/" + cardLevel, typeof(Sprite)) as Sprite;
+                    woodsList.GetChild(i).GetChild(4).GetComponent<Image>().sprite = resources.GradeImg[cardLevel];
                     woodsList.GetChild(i).GetChild(5).GetComponentInChildren<Text>().text = LoadJsonFile.classTableDatas[int.Parse(LoadJsonFile.heroTableDatas[cardId][5])][3];
                     //兵种框
-                    woodsList.GetChild(i).GetChild(5).GetComponent<Image>().sprite = Resources.Load("Image/classImage/" + 0, typeof(Sprite)) as Sprite;
+                    woodsList.GetChild(i).GetChild(5).GetComponent<Image>().sprite = resources.ClassImg[0];
                     FrameChoose(LoadJsonFile.heroTableDatas[cardId][3], woodsList.GetChild(i).GetChild(6).GetComponent<Image>());
                     Transform getBtnTran = woodsList.GetChild(i).GetChild(9);
                     getBtnTran.GetChild(0).gameObject.SetActive(true);
@@ -1046,14 +1049,14 @@ public class WarsUIManager : MonoBehaviour
                 for (int i = 0; i < 3; i++)
                 {
                     int cardId = BackIdFromTableByRarity(LoadJsonFile.soldierTableDatas, cardRarity);
-                    woodsList.GetChild(i).GetChild(1).GetComponent<Image>().sprite = Resources.Load("Image/Cards/FuZhu/" + LoadJsonFile.soldierTableDatas[cardId][13], typeof(Sprite)) as Sprite;
+                    woodsList.GetChild(i).GetChild(1).GetComponent<Image>().sprite = resources.FuZhuImg[int.Parse(LoadJsonFile.soldierTableDatas[cardId][13])];
                     ShowNameTextRules(woodsList.GetChild(i).GetChild(3).GetComponent<Text>(), LoadJsonFile.soldierTableDatas[cardId][1]);
                     //名字颜色
                     woodsList.GetChild(i).GetChild(3).GetComponent<Text>().color = NameColorChoose(LoadJsonFile.soldierTableDatas[cardId][3]);
-                    woodsList.GetChild(i).GetChild(4).GetComponent<Image>().sprite = Resources.Load("Image/gradeImage/" + cardLevel, typeof(Sprite)) as Sprite;
+                    woodsList.GetChild(i).GetChild(4).GetComponent<Image>().sprite = resources.GradeImg[cardLevel];
                     woodsList.GetChild(i).GetChild(5).GetComponentInChildren<Text>().text = LoadJsonFile.classTableDatas[int.Parse(LoadJsonFile.soldierTableDatas[cardId][5])][3];
                     //兵种框
-                    woodsList.GetChild(i).GetChild(5).GetComponent<Image>().sprite = Resources.Load("Image/classImage/" + 1, typeof(Sprite)) as Sprite;
+                    woodsList.GetChild(i).GetChild(5).GetComponent<Image>().sprite = resources.ClassImg[1];
                     FrameChoose(LoadJsonFile.soldierTableDatas[cardId][3], woodsList.GetChild(i).GetChild(6).GetComponent<Image>());
                     Transform getBtnTran = woodsList.GetChild(i).GetChild(9);
                     getBtnTran.GetChild(0).gameObject.SetActive(true);
@@ -1078,15 +1081,16 @@ public class WarsUIManager : MonoBehaviour
                 for (int i = 0; i < 3; i++)
                 {
                     int cardId = BackIdFromTableByRarity(LoadJsonFile.towerTableDatas, cardRarity);
-                    woodsList.GetChild(i).GetChild(1).GetComponent<Image>().sprite = Resources.Load("Image/Cards/FuZhu/" + LoadJsonFile.towerTableDatas[cardId][10], typeof(Sprite)) as Sprite;
+                    woodsList.GetChild(i).GetChild(1).GetComponent<Image>().sprite =
+                        resources.FuZhuImg[int.Parse(LoadJsonFile.towerTableDatas[cardId][10])];
                     ShowNameTextRules(woodsList.GetChild(i).GetChild(3).GetComponent<Text>(), LoadJsonFile.towerTableDatas[cardId][1]);
                     //名字颜色
                     woodsList.GetChild(i).GetChild(3).GetComponent<Text>().color = NameColorChoose(LoadJsonFile.towerTableDatas[cardId][3]);
-                    woodsList.GetChild(i).GetChild(4).GetComponent<Image>().sprite = Resources.Load("Image/gradeImage/" + cardLevel, typeof(Sprite)) as Sprite;
+                    woodsList.GetChild(i).GetChild(4).GetComponent<Image>().sprite = resources.GradeImg[cardLevel];
                     woodsList.GetChild(i).GetChild(5).GetComponentInChildren<Text>().text = LoadJsonFile.towerTableDatas[cardId][5];
                     FrameChoose(LoadJsonFile.towerTableDatas[cardId][3], woodsList.GetChild(i).GetChild(6).GetComponent<Image>());
                     //兵种框
-                    woodsList.GetChild(i).GetChild(5).GetComponent<Image>().sprite = Resources.Load("Image/classImage/" + 1, typeof(Sprite)) as Sprite;
+                    woodsList.GetChild(i).GetChild(5).GetComponent<Image>().sprite = resources.ClassImg[1];
                     Transform getBtnTran = woodsList.GetChild(i).GetChild(9);
                     getBtnTran.GetChild(0).gameObject.SetActive(true);
                     getBtnTran.GetChild(1).gameObject.SetActive(false);
@@ -1110,14 +1114,14 @@ public class WarsUIManager : MonoBehaviour
                 for (int i = 0; i < 3; i++)
                 {
                     int cardId = BackIdFromTableByRarity(LoadJsonFile.trapTableDatas, cardRarity);
-                    woodsList.GetChild(i).GetChild(1).GetComponent<Image>().sprite = Resources.Load("Image/Cards/FuZhu/" + LoadJsonFile.trapTableDatas[cardId][8], typeof(Sprite)) as Sprite;
+                    woodsList.GetChild(i).GetChild(1).GetComponent<Image>().sprite = resources.FuZhuImg[int.Parse(LoadJsonFile.trapTableDatas[cardId][8])];
                     ShowNameTextRules(woodsList.GetChild(i).GetChild(3).GetComponent<Text>(), LoadJsonFile.trapTableDatas[cardId][1]);
                     //名字颜色
                     woodsList.GetChild(i).GetChild(3).GetComponent<Text>().color = NameColorChoose(LoadJsonFile.trapTableDatas[cardId][3]);
-                    woodsList.GetChild(i).GetChild(4).GetComponent<Image>().sprite = Resources.Load("Image/gradeImage/" + cardLevel, typeof(Sprite)) as Sprite;
+                    woodsList.GetChild(i).GetChild(4).GetComponent<Image>().sprite = resources.GradeImg[cardLevel];
                     woodsList.GetChild(i).GetChild(5).GetComponentInChildren<Text>().text = LoadJsonFile.trapTableDatas[cardId][5];
                     //兵种框
-                    woodsList.GetChild(i).GetChild(5).GetComponent<Image>().sprite = Resources.Load("Image/classImage/" + 1, typeof(Sprite)) as Sprite;
+                    woodsList.GetChild(i).GetChild(5).GetComponent<Image>().sprite = resources.ClassImg[1];
                     FrameChoose(LoadJsonFile.trapTableDatas[cardId][3], woodsList.GetChild(i).GetChild(6).GetComponent<Image>());
                     Transform getBtnTran = woodsList.GetChild(i).GetChild(9);
                     getBtnTran.GetChild(0).gameObject.SetActive(true);
@@ -1440,16 +1444,17 @@ public class WarsUIManager : MonoBehaviour
     //创建玩家武将卡牌
     private void CreateHeroCardToFightList(NowLevelAndHadChip cardData)
     {
+        var re = PlayerDataForGame.instance.gameResources;
         GameObject obj = Instantiate(cardForWarListPres, heroCardListObj.transform);
         obj.GetComponent<CardForDrag>().posIndex = -1;
-        obj.transform.GetChild(1).GetComponent<Image>().sprite = Resources.Load("Image/Cards/Hero/" + LoadJsonFile.heroTableDatas[cardData.id][16], typeof(Sprite)) as Sprite;
+        obj.transform.GetChild(1).GetComponent<Image>().sprite = re.HeroImg[cardData.id];
         ShowNameTextRules(obj.transform.GetChild(3).GetComponent<Text>(), LoadJsonFile.heroTableDatas[cardData.id][1]);
         //名字颜色
         obj.transform.GetChild(3).GetComponent<Text>().color = NameColorChoose(LoadJsonFile.heroTableDatas[cardData.id][3]);
-        obj.transform.GetChild(4).GetComponent<Image>().sprite = Resources.Load("Image/gradeImage/" + cardData.level, typeof(Sprite)) as Sprite;
+        obj.transform.GetChild(4).GetComponent<Image>().sprite = re.GradeImg[cardData.level];
         obj.transform.GetChild(5).GetComponentInChildren<Text>().text = LoadJsonFile.classTableDatas[int.Parse(LoadJsonFile.heroTableDatas[cardData.id][5])][3];
         //兵种框
-        obj.transform.GetChild(5).GetComponent<Image>().sprite = Resources.Load("Image/classImage/" + 0, typeof(Sprite)) as Sprite;
+        obj.transform.GetChild(5).GetComponent<Image>().sprite = re.ClassImg[0];
         FrameChoose(LoadJsonFile.heroTableDatas[cardData.id][3], obj.transform.GetChild(6).GetComponent<Image>());
         //添加按住抬起方法
         FightForManager.instance.GiveGameObjEventForHoldOn(obj, LoadJsonFile.classTableDatas[int.Parse(LoadJsonFile.heroTableDatas[cardData.id][5])][4]);
@@ -1473,16 +1478,17 @@ public class WarsUIManager : MonoBehaviour
     //创建玩家士兵卡牌
     private void CreateSoldierCardToFightList(NowLevelAndHadChip cardData)
     {
+        var re = PlayerDataForGame.instance.gameResources;
         GameObject obj = Instantiate(cardForWarListPres, heroCardListObj.transform);
         obj.GetComponent<CardForDrag>().posIndex = -1;
-        obj.transform.GetChild(1).GetComponent<Image>().sprite = Resources.Load("Image/Cards/FuZhu/" + LoadJsonFile.soldierTableDatas[cardData.id][13], typeof(Sprite)) as Sprite;
+        obj.transform.GetChild(1).GetComponent<Image>().sprite = re.FuZhuImg[int.Parse(LoadJsonFile.soldierTableDatas[cardData.id][13])];
         ShowNameTextRules(obj.transform.GetChild(3).GetComponent<Text>(), LoadJsonFile.soldierTableDatas[cardData.id][1]);
         //名字颜色
         obj.transform.GetChild(3).GetComponent<Text>().color = NameColorChoose(LoadJsonFile.soldierTableDatas[cardData.id][3]);
-        obj.transform.GetChild(4).GetComponent<Image>().sprite = Resources.Load("Image/gradeImage/" + cardData.level, typeof(Sprite)) as Sprite;
+        obj.transform.GetChild(4).GetComponent<Image>().sprite = re.GradeImg[cardData.level];
         obj.transform.GetChild(5).GetComponentInChildren<Text>().text = LoadJsonFile.classTableDatas[int.Parse(LoadJsonFile.soldierTableDatas[cardData.id][5])][3];
         //兵种框
-        obj.transform.GetChild(5).GetComponent<Image>().sprite = Resources.Load("Image/classImage/" + 1, typeof(Sprite)) as Sprite;
+        obj.transform.GetChild(5).GetComponent<Image>().sprite = re.ClassImg[1];
         FrameChoose(LoadJsonFile.soldierTableDatas[cardData.id][3], obj.transform.GetChild(6).GetComponent<Image>());
         //添加按住抬起方法
         FightForManager.instance.GiveGameObjEventForHoldOn(obj, LoadJsonFile.classTableDatas[int.Parse(LoadJsonFile.soldierTableDatas[cardData.id][5])][4]);
@@ -1504,16 +1510,17 @@ public class WarsUIManager : MonoBehaviour
     //创建玩家塔卡牌
     private void CreateTowerCardToFightList(NowLevelAndHadChip cardData)
     {
+        var re = PlayerDataForGame.instance.gameResources;
         GameObject obj = Instantiate(cardForWarListPres, heroCardListObj.transform);
         obj.GetComponent<CardForDrag>().posIndex = -1;
-        obj.transform.GetChild(1).GetComponent<Image>().sprite = Resources.Load("Image/Cards/FuZhu/" + LoadJsonFile.towerTableDatas[cardData.id][10], typeof(Sprite)) as Sprite;
+        obj.transform.GetChild(1).GetComponent<Image>().sprite = re.FuZhuImg[int.Parse(LoadJsonFile.towerTableDatas[cardData.id][10])];
         ShowNameTextRules(obj.transform.GetChild(3).GetComponent<Text>(), LoadJsonFile.towerTableDatas[cardData.id][1]);
         //名字颜色
         obj.transform.GetChild(3).GetComponent<Text>().color = NameColorChoose(LoadJsonFile.towerTableDatas[cardData.id][3]);
-        obj.transform.GetChild(4).GetComponent<Image>().sprite = Resources.Load("Image/gradeImage/" + cardData.level, typeof(Sprite)) as Sprite;
+        obj.transform.GetChild(4).GetComponent<Image>().sprite = re.GradeImg[cardData.level];
         obj.transform.GetChild(5).GetComponentInChildren<Text>().text = LoadJsonFile.towerTableDatas[cardData.id][5];
         //兵种框
-        obj.transform.GetChild(5).GetComponent<Image>().sprite = Resources.Load("Image/classImage/" + 1, typeof(Sprite)) as Sprite;
+        obj.transform.GetChild(5).GetComponent<Image>().sprite = re.ClassImg[1];
         FrameChoose(LoadJsonFile.towerTableDatas[cardData.id][3], obj.transform.GetChild(6).GetComponent<Image>());
         //添加按住抬起方法
         FightForManager.instance.GiveGameObjEventForHoldOn(obj, LoadJsonFile.towerTableDatas[cardData.id][12]);
@@ -1537,16 +1544,17 @@ public class WarsUIManager : MonoBehaviour
     //创建玩家陷阱卡牌
     private void CreateTrapCardToFightList(NowLevelAndHadChip cardData)
     {
+        var re = PlayerDataForGame.instance.gameResources;
         GameObject obj = Instantiate(cardForWarListPres, heroCardListObj.transform);
         obj.GetComponent<CardForDrag>().posIndex = -1;
-        obj.transform.GetChild(1).GetComponent<Image>().sprite = Resources.Load("Image/Cards/FuZhu/" + LoadJsonFile.trapTableDatas[cardData.id][8], typeof(Sprite)) as Sprite;
+        obj.transform.GetChild(1).GetComponent<Image>().sprite = re.FuZhuImg[int.Parse(LoadJsonFile.trapTableDatas[cardData.id][8])];
         ShowNameTextRules(obj.transform.GetChild(3).GetComponent<Text>(), LoadJsonFile.trapTableDatas[cardData.id][1]);
         //名字颜色
         obj.transform.GetChild(3).GetComponent<Text>().color = NameColorChoose(LoadJsonFile.trapTableDatas[cardData.id][3]);
-        obj.transform.GetChild(4).GetComponent<Image>().sprite = Resources.Load("Image/gradeImage/" + cardData.level, typeof(Sprite)) as Sprite;
+        obj.transform.GetChild(4).GetComponent<Image>().sprite = re.GradeImg[cardData.level];
         obj.transform.GetChild(5).GetComponentInChildren<Text>().text = LoadJsonFile.trapTableDatas[cardData.id][5];
         //兵种框
-        obj.transform.GetChild(5).GetComponent<Image>().sprite = Resources.Load("Image/classImage/" + 1, typeof(Sprite)) as Sprite;
+        obj.transform.GetChild(5).GetComponent<Image>().sprite = re.ClassImg[1];
         FrameChoose(LoadJsonFile.trapTableDatas[cardData.id][3], obj.transform.GetChild(6).GetComponent<Image>());
         //添加按住抬起方法
         FightForManager.instance.GiveGameObjEventForHoldOn(obj, LoadJsonFile.trapTableDatas[cardData.id][11]);

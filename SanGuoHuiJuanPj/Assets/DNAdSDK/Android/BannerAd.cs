@@ -1,11 +1,13 @@
 ﻿//
 //
 
+using Beebyte.Obfuscator;
+
 namespace Donews.mediation
 {
 #if UNITY_ANDROID
     using UnityEngine;
-
+    [Skip]
     public class BannerAd
     {
 
@@ -33,8 +35,11 @@ namespace Donews.mediation
         {
             AndroidBannerCallback callback = new AndroidBannerCallback(listener);
             BannerAd ad = new BannerAd(callback);
-            using (var javaObj = SDK.InstanceDnAdObject())
-                javaObj.Call("requestBannerAd", placeId, layout.width, layout.height, layout.left, layout.right,
+            //using (var javaObj = SDK.InstanceDnAdObject())
+            //    javaObj.Call("requestBannerAd", placeId, layout.width, layout.height, layout.left, layout.right,
+            //        layout.top,
+            //        layout.bottom, callback);
+            SDK.DnSdkObj.Call("requestBannerAd", placeId, layout.width, layout.height, layout.left, layout.right,
                     layout.top,
                     layout.bottom, callback);
             return ad;

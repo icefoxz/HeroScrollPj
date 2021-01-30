@@ -8,7 +8,10 @@ public class TestUiAdStatus : MonoBehaviour
 {
     public Text statusText;
     public Text timer;
+    public Text mode;
+    public Image modeBulb;
     public Image bulb;
+    public Button modeButton;
     public Button forceLoadButton;
     private IAdController adController;
 
@@ -16,11 +19,9 @@ public class TestUiAdStatus : MonoBehaviour
     {
         adController = DoNewAdController.AdController;
         forceLoadButton.onClick.RemoveAllListeners();
-        forceLoadButton.onClick.AddListener(OnForceLoad);
-    }
-    public void OnForceLoad()
-    {
-        adController.LoadRewardAd(true);
+        forceLoadButton.onClick.AddListener(()=>adController.LoadRewardAd(true));
+        modeButton.onClick.RemoveAllListeners();
+        modeButton.onClick.AddListener(()=>adController.SetPreloadMode(!adController.IsPreloadMode));
     }
 
     public void UpdateStatus()
@@ -28,6 +29,8 @@ public class TestUiAdStatus : MonoBehaviour
         var status = adController.Status;
         statusText.text = status.ToString();
         var color = Color.gray;
+        modeBulb.color = adController.IsPreloadMode ? Color.cyan : Color.magenta;
+        mode.text = adController.IsPreloadMode ? "预加载模式" : "旧广告模式";
         switch (status)
         {
             case DoNewAdController.AdStates.None:

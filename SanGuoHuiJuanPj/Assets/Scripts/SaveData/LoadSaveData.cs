@@ -36,14 +36,17 @@ public class LoadSaveData : MonoBehaviour
         DontDestroyOnLoad(gameObject);
         isLoadingSaveData = true;
         isHadSaveData = IsSaveFilesExist();
-        if (isHadSaveData)
+        if(AudioController0.instance)
         {
-            AudioController0.instance.isPlayMusic = PlayerPrefs.GetInt(IsPlayMusicStr); //游戏音乐开关标签 
-        }
-        else
-        {
-            PlayerPrefs.SetInt(IsPlayMusicStr, 1);
-            AudioController0.instance.isPlayMusic = 1;
+            if (isHadSaveData)
+            {
+                AudioController0.instance.isPlayMusic = PlayerPrefs.GetInt(IsPlayMusicStr); //游戏音乐开关标签 
+            }
+            else
+            {
+                PlayerPrefs.SetInt(IsPlayMusicStr, 1);
+                AudioController0.instance.isPlayMusic = 1;
+            }
         }
 
         //打印log附加代码 
@@ -460,7 +463,10 @@ public class LoadSaveData : MonoBehaviour
             LoadByJson();
         }
         //设置游戏音乐开关标签 
-        AudioController0.instance.isPlayMusic = PlayerPrefs.GetInt(IsPlayMusicStr);
+        if(AudioController0.instance)
+        {
+            AudioController0.instance.isPlayMusic = PlayerPrefs.GetInt(IsPlayMusicStr);
+        }
 
         isLoadingSaveData = false;
     }

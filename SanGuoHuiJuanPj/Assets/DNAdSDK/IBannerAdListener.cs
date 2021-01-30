@@ -1,9 +1,10 @@
 ﻿//
 //
 
+using Beebyte.Obfuscator;
+
 namespace Donews.mediation
 {
-
     public interface IBannerAdListener
     {
 

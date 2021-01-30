@@ -192,8 +192,8 @@ public class TaoYuan : MonoBehaviour
             var yvQue = RewardManager.instance.GetYvQue(chestId);//获取玉阙
             ConsumeManager.instance.AddYuQue(yvQue);//增加玉阙
             ConsumeManager.instance.AddYuanBao(yuanBao);//增加元宝
-
-            var rewards = RewardManager.instance.GetCards(chestId, chest == zhanYiChest);//获取卡牌
+            var isZhanYiChest = chest == zhanYiChest;
+            var rewards = RewardManager.instance.GetCards(chestId, isZhanYiChest);//获取卡牌
             PlayerDataForGame.instance.isNeedSaveData = true;
             LoadSaveData.instance.SaveGameData();
 

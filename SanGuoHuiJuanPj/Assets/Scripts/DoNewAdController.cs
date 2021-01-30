@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Beebyte.Obfuscator;
 using Donews.mediation;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -12,16 +13,20 @@ public interface IAdController
 {
     DoNewAdController.AdStates Status { get; }
     int Timer { get; }
-    event Action OnCached;
     void RequestRewardAd(Action onSuccess, CancellationTokenSource tokenSource);
+    bool IsPreloadMode { get; }
+    [Obsolete]
     /// <summary>
     /// 小心使用，多次调用会导致底层调用过多而崩溃
     /// </summary>
     /// <param name="forceReload"></param>
     void LoadRewardAd(bool forceReload = false);
+
+    void LoadRewardAd(Action onLoad, CancellationTokenSource cancellationToken);
+    void SetPreloadMode(bool isPreload);
 }
 
-[Skip]public class DoNewAdController : MonoBehaviour, IAdController
+public class DoNewAdController : MonoBehaviour, IAdController
 {
     public static IAdController AdController => instance;
     private static DoNewAdController instance;
@@ -35,10 +40,12 @@ public interface IAdController
     public AdStates Status => status;
     public AdStates status;
     public bool isEditableActionSuccess;//仅用于unity编辑器
+    public bool isPreLoadAd;//是否预加载广告
     public int forceReloadAfterSecond = 20;//重新请求的等待秒数
+    public bool IsPreloadMode => isPreLoadAd;
 
     public int Timer { get; private set; }
-    public event Action OnCached;
+    public UnityEvent OnCached = new UnityEvent();
     private bool isCachedTriggered;
     public static AndroidJavaObject CurrentActivityJo =>
         new AndroidJavaObject(UnityPlayer).GetStatic<AndroidJavaObject>(CurrentActivity);
@@ -73,39 +80,42 @@ public interface IAdController
         if (isInit) throw XDebug.Throw<DoNewAdController>("Duplicate init!");
         isInit = true;
         SDK.apiType = SDK.ApiType.Release;
-        SDK.StartService();
+        //SDK.StartService();
         status = AdStates.None;
 
-        StartCoroutine(UpdateEverySecond());
+        //StartCoroutine(UpdateEverySecond());
         DontDestroyOnLoad(gameObject);
-        SceneManager.sceneLoaded += SceneLoadRelocateCanvas;
         var mainCanvas = GameObject.FindGameObjectWithTag(MainCanvas);
         AdAgent = Instantiate(adAgentPrefab,mainCanvas.transform);
         AdAgent.Init(this);
+        SceneManager.sceneLoaded += SceneLoadRelocateCanvas;
     }
 
-    IEnumerator UpdateEverySecond()
-    {
-        while (true)
-        {
-            if (status == AdStates.Cached)
-            {
-                if (isCachedTriggered) yield break;
-                isCachedTriggered = true;
-                OnCached?.Invoke();
-                yield break;
-            }
-            Timer = Timer >= forceReloadAfterSecond ? 0 : Timer + 1;
-            LoadRewardAd(Timer >= forceReloadAfterSecond);
-            yield return new WaitForSeconds(1);
-        }
-    }
+    //IEnumerator UpdateEverySecond()
+    //{
+    //    while (true)
+    //    {
+    //        if (status == AdStates.Cached)
+    //        {
+    //            if (isCachedTriggered) continue;
+    //            isCachedTriggered = true;
+    //            OnCached?.Invoke();
+    //            continue;
+    //        }
+    //        if(IsPreloadMode)
+    //        {
+    //            Timer = Timer >= forceReloadAfterSecond ? 0 : Timer + 1;
+    //            LoadRewardAd(Timer >= forceReloadAfterSecond);
+    //        }
+    //        yield return new WaitForSeconds(1);
+    //    }
+    //}
 
     private void SceneLoadRelocateCanvas(Scene scene, LoadSceneMode mode)
     {
         if (scene.buildIndex == 0) return;
         var mainCanvas = GameObject.FindGameObjectWithTag(MainCanvas);
-        if (AdAgent) Destroy(AdAgent);
+        if (AdAgent) return;
         AdAgent = Instantiate(adAgentPrefab,mainCanvas.transform);
         AdAgent.Init(this);
     }
@@ -129,43 +139,79 @@ public interface IAdController
         rewardedVideoAd = RewardedVideoAd.LoadRewardedVideoAd(PlaceId, currentAdListener);
     }
 
-    public void RequestRewardAd(Action onSuccess, CancellationTokenSource tokenSource)
+#if UNITY_EDITOR
+    
+    private bool isWaitingStateChange;
+    void Update()//这个仅仅用在编辑器
+    {
+        if(!isWaitingStateChange)return;
+        if (status == AdStates.Cached)
+        {
+            isWaitingStateChange = false;
+            OnCached.Invoke();
+            OnCached.RemoveAllListeners();
+        }
+    }
+#endif
+    public void LoadRewardAd(Action onLoad, CancellationTokenSource cancellationToken)
     {
 #if UNITY_EDITOR
-        if (isEditableActionSuccess)
-        {
-            onSuccess.Invoke();
-            LoadRewardAd(true);
-        }
-        else
-        {
-            Task.Delay(TimeSpan.FromSeconds(3)); //编辑器里，三秒后失败
-            PlayerDataForGame.instance.ShowStringTips("视频加载失败!");
-            tokenSource.Cancel();
-            LoadRewardAd(true);
-        }
-
+        isWaitingStateChange = true;
+        OnCached.AddListener(()=>onLoad());
+        status = AdStates.RequestingCache;
         return;
-#endif
-        if (status == AdStates.None || status == AdStates.RequestingCache)
-        {
-            throw XDebug.Throw<DoNewAdController>($"Ad isn't cached! status = {status}");
-        }
+#endif        
         try
         {
-            currentAdListener.onFailed = tokenSource.Cancel;
-            currentAdListener.onSuccess = () =>
-            {
-                onSuccess.Invoke();
-                LoadRewardAd(true);
-            };
-            rewardedVideoAd.ShowRewardedVideoAd();
+            currentAdListener = new RewardAdListener(onLoad);
+            rewardedVideoAd = RewardedVideoAd.LoadRewardedVideoAd(PlaceId, currentAdListener);
         }
         catch (Exception e)
         {
-            PlayerDataForGame.instance.ShowStringTips($"视频加载失败!");
-            tokenSource.Cancel();
-            LoadRewardAd(true);
+            PlayerDataForGame.instance.ShowStringTips("视频加载失败1");
+            cancellationToken.Cancel();
+        }
+    }
+
+    public void SetPreloadMode(bool isPreload) => isPreLoadAd = isPreload;
+
+    public void RequestRewardAd(Action onSuccess, CancellationTokenSource tokenSource)
+    {
+#if UNITY_EDITOR
+        if(isEditableActionSuccess)
+            onSuccess.Invoke();
+        else tokenSource.Cancel();
+        return;
+#endif
+        if(!isPreLoadAd)
+        {
+            try
+            {
+                OldRewardVideoAd.RequestAd(async () =>
+                {
+                    await Task.Delay(3000);
+                    onSuccess();
+                }, tokenSource);
+            }
+            catch (Exception e)
+            {
+                if (!tokenSource.IsCancellationRequested)
+                    tokenSource.Cancel();
+            }
+        }
+        else
+        {
+            try
+            {
+                currentAdListener.onFailed = tokenSource.Cancel;
+                currentAdListener.onSuccess = onSuccess.Invoke;
+                rewardedVideoAd.ShowRewardedVideoAd();
+            }
+            catch (Exception e)
+            {
+                PlayerDataForGame.instance.ShowStringTips("视频加载失败!");
+                tokenSource.Cancel();
+            }
         }
     }
 
