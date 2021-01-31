@@ -412,11 +412,13 @@ MonoBehaviour:
   adFreeWindow: {fileID: 2039655546328153870}
   successButton: {fileID: 9132430981240253866}
   failedButton: {fileID: 2849807686103187698}
-  isAdFree: 0
+  mode: 0
   countdown: {fileID: 269508568000528615}
   message: {fileID: 4560672341138860934}
   cancelButton: {fileID: 269508566842805400}
   retryButton: {fileID: 269508567160549549}
+  retrySeconds: 6
+  retrySecs: 0
 --- !u!1 &3886416108957353784
 GameObject:
   m_ObjectHideFlags: 0

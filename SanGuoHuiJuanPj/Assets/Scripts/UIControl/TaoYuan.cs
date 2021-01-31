@@ -208,6 +208,8 @@ public class TaoYuan : MonoBehaviour
 
     public void CloseAllChests()
     {
+        //todo: 检查为什么会null，在打开战役第一次宝箱
+        if (chestCostMap == null) return;
         foreach (var map in chestCostMap)
         {
             var chest = map.Key;

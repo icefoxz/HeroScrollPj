@@ -12,10 +12,16 @@ using UnityEngine.UI;
 /// </summary>
 public class AdAgent : MonoBehaviour
 {
+    public enum Modes
+    {
+        Advertising,
+        Selection,
+        AlwaysFail
+    }
     public Image adFreeWindow;
     public Button successButton;
     public Button failedButton;
-    [Header("点击不开启广告调用")]public bool isAdFree;
+    [Header("广告模式：有广告模式，选择返回，仅失败")] public Modes mode;
 
     public static AdAgent instance;
     public Text countdown;
@@ -88,27 +94,49 @@ public class AdAgent : MonoBehaviour
         onCancelAction = cancelAction;
         onSuccessAction = requestAction;//success must cancel the countdown invocation
 
-        successButton.gameObject.SetActive(isAdFree);
-        failedButton.gameObject.SetActive(isAdFree);
-        adFreeWindow.gameObject.SetActive(isAdFree);
-        if (isAdFree)
+        successButton.gameObject.SetActive(mode == Modes.Selection);
+        failedButton.gameObject.SetActive(mode == Modes.Selection);
+        adFreeWindow.gameObject.SetActive(mode == Modes.Selection);
+        switch (mode)
         {
-            successButton.onClick.RemoveAllListeners();
-            successButton.onClick.AddListener(()=>
+            case Modes.Advertising:
+                StartService(retrySecs);
+                break;
+            case Modes.Selection:
             {
-                requestAction();
-                OnReset();
-            });
-            failedButton.onClick.RemoveAllListeners();
-            failedButton.onClick.AddListener(() =>
-            {
-                cancelAction();
-                OnReset();
-            });
-            return;
+                successButton.onClick.RemoveAllListeners();
+                successButton.onClick.AddListener(() =>
+                {
+                    requestAction();
+                    OnReset();
+                });
+                failedButton.onClick.RemoveAllListeners();
+                failedButton.onClick.AddListener(() =>
+                {
+                    cancelAction();
+                    OnReset();
+                });
+            }
+                break;
+            case Modes.AlwaysFail:
+                StartCoroutine(FailedAfter3Seconds());
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
         }
+    }
 
-        StartService(retrySecs);
+    private IEnumerator FailedAfter3Seconds()
+    {
+        var sec = 3;
+        while (sec > 0)
+        {
+            message.text = sec.ToString();
+            yield return new WaitForSeconds(1);
+            sec--;
+        }
+        OnReset();
+        PlayerDataForGame.instance.ShowStringTips("广告获取失败！");
     }
 
     void OnTokenCancelled(CancellationToken token)
