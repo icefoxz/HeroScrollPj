@@ -322,12 +322,12 @@ public class DnUnitySDK {
 
     /**
      * 请求激励视频的方法
-     *
+     * 这个方法名已经被我改了，因为原名[requestRewardVideo]获取不到。
      * @param positionId
      * @param rewardVideoCallBack
      * @return
      */
-    public void requestRewardVideo(final String positionId, final RewardVideoCallBack rewardVideoCallBack) {
+    public void requestDirectAd(final String positionId, final RewardVideoCallBack rewardVideoCallBack) {
         final Activity unityActivity = getActivity();
         unityActivity.runOnUiThread(new Runnable() {
             @Override
@@ -458,7 +458,7 @@ public class DnUnitySDK {
      *
      * @param positionId
      */
-    public void requestRVPloadShow(final String positionId) {
+    public void requestRewardVideo(final String positionId) {
         final Activity unityActivity = getActivity();
         unityActivity.runOnUiThread(new Runnable() {
             @Override

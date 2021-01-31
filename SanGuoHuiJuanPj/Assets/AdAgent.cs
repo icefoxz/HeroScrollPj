@@ -42,7 +42,7 @@ public class AdAgent : MonoBehaviour
     public void Init(IAdController adController)
     {
         if (instance != null && instance != this)
-            throw XDebug.Throw<DoNewAdController>("Duplicate singleton instance!");
+            throw XDebug.Throw<AdAgent>("Duplicate singleton instance!");
         instance = this;
         this.adController = adController;
         cancelButton.onClick.RemoveAllListeners();
@@ -97,6 +97,15 @@ public class AdAgent : MonoBehaviour
         successButton.gameObject.SetActive(mode == Modes.Selection);
         failedButton.gameObject.SetActive(mode == Modes.Selection);
         adFreeWindow.gameObject.SetActive(mode == Modes.Selection);
+
+        if (adController.Mode == DoNewAdController.Modes.DirectLoad)
+        {
+            RequestAdVideo();
+            retries = 1;//为了不让播放重复，延迟直接播放的请求
+            StartCoroutine(CountDown(retrySecs));
+            return;
+        }
+
         switch (mode)
         {
             case Modes.Advertising:

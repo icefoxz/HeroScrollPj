@@ -11,6 +11,7 @@ namespace Donews.mediation
     public static class SDK
     {
         public const string DnUnitySdk = "com.donews.android.DnUnitySDK";
+        public const string PlaceId = "5294";
         /// <summary>
         /// 每次呼叫后用必须调用IDisposable
         /// </summary>

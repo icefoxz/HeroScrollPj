@@ -126,14 +126,14 @@ namespace Donews.mediation
         }
     }
 
-    public class OldRewardVideoAd
+    [Skip]public class DirectPlayRewardVideoAd
     {
-        private const string UnityPlayer = "com.unity3d.player.UnityPlayer";
-        private const string CurrentActivity = "currentActivity";
+        private const string DirectAdMethod = "requestDirectAd";
+        private const string CallBackProxy = "com.donews.android.RewardVideoCallBack";
         public Action OnAdClose;//当视频关闭
         public Action<bool> OnRewardVerify;//当视频播放完成后的奖励验证回调是否有效
 
-        public OldRewardVideoAd(Action onSuccess,CancellationTokenSource tokenSource,Action onAdClose)
+        public DirectPlayRewardVideoAd(Action onSuccess,CancellationTokenSource tokenSource,Action onAdClose)
         {
             OnAdClose = onAdClose;
             OnRewardVerify = success =>
@@ -144,48 +144,47 @@ namespace Donews.mediation
             };
         }
 
-        internal static OldRewardVideoAd RequestAd(Action onSuccess, CancellationTokenSource tokenSource,
+        internal static DirectPlayRewardVideoAd RequestAd(Action onSuccess, CancellationTokenSource tokenSource,
             Action onAdClose = null)
         {
-            var rewardAdObj = new OldRewardVideoAd(onSuccess, tokenSource, onAdClose);
+            var rewardAdObj = new DirectPlayRewardVideoAd(onSuccess, tokenSource, onAdClose);
 
-            //using (var javaObj = SDK.InstanceDnAdObject())
-            //{
-            //    javaObj.Call("requestRewardVideo", new RewardVideoAdCallBack(rewardAdObj));
-            //}
-            SDK.DnSdkObj.Call("requestRewardVideo", new RewardVideoAdCallBack(rewardAdObj));
+            SDK.DnSdkObj.Call(DirectAdMethod, SDK.PlaceId ,new RewardVideoAdCallBack(rewardAdObj));
             return rewardAdObj;
         }
 
         private class RewardVideoAdCallBack : AndroidJavaProxy
         {
-            private OldRewardVideoAd rewardVideoAdObj;
-            public RewardVideoAdCallBack(OldRewardVideoAd rewardVideoAdObj) : base("com.donews.android.RewardVideoCallBack")
+            private bool isCalledBack;
+            private DirectPlayRewardVideoAd rewardVideoAdObj;
+            public RewardVideoAdCallBack(DirectPlayRewardVideoAd rewardVideoAdObj) : base(CallBackProxy)
             {
                 this.rewardVideoAdObj = rewardVideoAdObj;
             }
 
-            public void onAdError(string msg) => rewardVideoAdObj.OnRewardVerify?.Invoke(false);
-
-            public void onAdShow()
+            public void onAdError(string msg)
             {
+                if(isCalledBack)return;
+                rewardVideoAdObj.OnRewardVerify?.Invoke(false);
+                isCalledBack = true;
             }
 
-            public void onAdClick()
+            public void onAdShow() {}
+
+            public void onAdClick() {}
+
+            public void onAdClose() {}
+
+            public void onVideoComplete() {}
+
+            public void onRewardVerify(bool rewardVerify)
             {
+                if(isCalledBack)return;
+                rewardVideoAdObj.OnRewardVerify?.Invoke(rewardVerify);
+                isCalledBack = true;
             }
 
-            public void onAdClose() => rewardVideoAdObj.OnAdClose?.Invoke();
-
-            public void onVideoComplete()
-            {
-            }
-
-            public void onRewardVerify(bool rewardVerify) => rewardVideoAdObj.OnRewardVerify?.Invoke(rewardVerify);
-
-            public void onSkippedVideo()
-            {
-            }
+            public void onSkippedVideo() {}
         }
     }
 #endif
