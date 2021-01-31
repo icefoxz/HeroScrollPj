@@ -3665,7 +3665,7 @@ public class FightController : MonoBehaviour
             {
                 //Debug.Log("玩家触发羁绊： " + item.Value.jiBanIndex);
                 ShowAllScreenFightEffect(FullScreenEffectName.JiBanEffect, item.Value.jiBanIndex);
-                yield return new WaitForSeconds(0);//羁绊名动图和羁绊全屏特效等待时长
+                yield return new WaitForSeconds(1f);//羁绊名动图和羁绊全屏特效等待时长
                 waitTime = JiBanAddStateForCard(item.Value, true);//羁绊加状态前等待
                 yield return new WaitForSeconds(waitTime);
             }
