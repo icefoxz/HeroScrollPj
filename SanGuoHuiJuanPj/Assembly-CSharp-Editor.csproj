@@ -303,6 +303,21 @@
     <Reference Include="LitJson">
       <HintPath>H:/HeroScroll/HeroScrollPj/SanGuoHuiJuanPj/Assets/Plugins/LitJson/LitJson.dll</HintPath>
     </Reference>
+    <Reference Include="Google.PackageManagerResolver_v1.2.163">
+      <HintPath>H:/HeroScroll/HeroScrollPj/SanGuoHuiJuanPj/Library/PackageCache/com.google.external-dependency-manager@1.2.163/ExternalDependencyManager/Editor/Google.PackageManagerResolver_v1.2.163.dll</HintPath>
+    </Reference>
+    <Reference Include="Google.VersionHandlerImpl_v1.2.163">
+      <HintPath>H:/HeroScroll/HeroScrollPj/SanGuoHuiJuanPj/Library/PackageCache/com.google.external-dependency-manager@1.2.163/ExternalDependencyManager/Editor/Google.VersionHandlerImpl_v1.2.163.dll</HintPath>
+    </Reference>
+    <Reference Include="Google.IOSResolver_v1.2.163">
+      <HintPath>H:/HeroScroll/HeroScrollPj/SanGuoHuiJuanPj/Library/PackageCache/com.google.external-dependency-manager@1.2.163/ExternalDependencyManager/Editor/Google.IOSResolver_v1.2.163.dll</HintPath>
+    </Reference>
+    <Reference Include="Google.VersionHandler">
+      <HintPath>H:/HeroScroll/HeroScrollPj/SanGuoHuiJuanPj/Library/PackageCache/com.google.external-dependency-manager@1.2.163/ExternalDependencyManager/Editor/Google.VersionHandler.dll</HintPath>
+    </Reference>
+    <Reference Include="Google.JarResolver_v1.2.163">
+      <HintPath>H:/HeroScroll/HeroScrollPj/SanGuoHuiJuanPj/Library/PackageCache/com.google.external-dependency-manager@1.2.163/ExternalDependencyManager/Editor/Google.JarResolver_v1.2.163.dll</HintPath>
+    </Reference>
     <Reference Include="nunit.framework">
       <HintPath>H:/HeroScroll/HeroScrollPj/SanGuoHuiJuanPj/Library/PackageCache/com.unity.ext.nunit@1.0.6/net35/unity-custom/nunit.framework.dll</HintPath>
     </Reference>
@@ -706,6 +721,14 @@
     <ProjectReference Include="Assembly-CSharp-Editor-firstpass.csproj">
       <Project>{FB3B9DAA-7C37-C761-1A37-DD6D1A9572F4}</Project>
       <Name>Assembly-CSharp-Editor-firstpass</Name>
+    </ProjectReference>
+    <ProjectReference Include="GoogleMobileAds.csproj">
+      <Project>{DA58A3A8-FC7C-9946-4E40-15FAE887643F}</Project>
+      <Name>GoogleMobileAds</Name>
+    </ProjectReference>
+    <ProjectReference Include="GoogleMobileAds.Editor.csproj">
+      <Project>{D4ED0639-1412-1839-F2C2-D626B41D027D}</Project>
+      <Name>GoogleMobileAds.Editor</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

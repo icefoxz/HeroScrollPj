@@ -44,9 +44,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   status: 0
+  mode: 1
   isEditableActionSuccess: 0
-  isPreLoadAd: 1
-  forceReloadAfterSecond: 15
   OnCached:
     m_PersistentCalls:
       m_Calls: []

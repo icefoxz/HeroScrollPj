@@ -12,18 +12,10 @@ using UnityEngine.UI;
 public interface IAdController
 {
     DoNewAdController.AdStates Status { get; }
+    DoNewAdController.Modes Mode { get; }
     int Timer { get; }
     void RequestRewardAd(Action onSuccess, CancellationTokenSource tokenSource);
-    bool IsPreloadMode { get; }
-    [Obsolete]
-    /// <summary>
-    /// 小心使用，多次调用会导致底层调用过多而崩溃
-    /// </summary>
-    /// <param name="forceReload"></param>
-    void LoadRewardAd(bool forceReload = false);
-
     void LoadRewardAd(Action onLoad, CancellationTokenSource cancellationToken);
-    void SetPreloadMode(bool isPreload);
 }
 
 public class DoNewAdController : MonoBehaviour, IAdController
@@ -36,13 +28,17 @@ public class DoNewAdController : MonoBehaviour, IAdController
         RequestingCache,
         Cached
     }
-
+    public enum Modes
+    {
+        NoAd,
+        DirectLoad,
+        Preload
+    }
     public AdStates Status => status;
+    public Modes Mode => mode;
     public AdStates status;
+    public Modes mode;
     public bool isEditableActionSuccess;//仅用于unity编辑器
-    public bool isPreLoadAd;//是否预加载广告
-    public int forceReloadAfterSecond = 20;//重新请求的等待秒数
-    public bool IsPreloadMode => isPreLoadAd;
 
     public int Timer { get; private set; }
     public UnityEvent OnCached = new UnityEvent();
@@ -156,15 +152,28 @@ public class DoNewAdController : MonoBehaviour, IAdController
     public void LoadRewardAd(Action onLoad, CancellationTokenSource cancellationToken)
     {
 #if UNITY_EDITOR
+        mode = Modes.NoAd;
         isWaitingStateChange = true;
-        OnCached.AddListener(()=>onLoad());
-        status = AdStates.RequestingCache;
-        return;
-#endif        
+#endif
         try
         {
-            currentAdListener = new RewardAdListener(onLoad);
-            rewardedVideoAd = RewardedVideoAd.LoadRewardedVideoAd(PlaceId, currentAdListener);
+            switch (mode)
+            {
+                case Modes.NoAd:
+                    OnCached.AddListener(() => onLoad());
+                    status = AdStates.RequestingCache;
+                    break;
+                case Modes.DirectLoad:
+                    onLoad.Invoke();
+                    break;
+                case Modes.Preload:
+                    currentAdListener = new RewardAdListener(onLoad);
+                    rewardedVideoAd = RewardedVideoAd.LoadRewardedVideoAd(PlaceId, currentAdListener);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+
         }
         catch (Exception e)
         {
@@ -173,45 +182,37 @@ public class DoNewAdController : MonoBehaviour, IAdController
         }
     }
 
-    public void SetPreloadMode(bool isPreload) => isPreLoadAd = isPreload;
-
     public void RequestRewardAd(Action onSuccess, CancellationTokenSource tokenSource)
     {
 #if UNITY_EDITOR
-        if(isEditableActionSuccess)
-            onSuccess.Invoke();
-        else tokenSource.Cancel();
-        return;
+        mode = Modes.NoAd;
 #endif
-        if(!isPreLoadAd)
+        try
         {
-            try
+            switch (mode)
             {
-                OldRewardVideoAd.RequestAd(async () =>
-                {
-                    await Task.Delay(3000);
-                    onSuccess();
-                }, tokenSource);
-            }
-            catch (Exception e)
-            {
-                if (!tokenSource.IsCancellationRequested)
-                    tokenSource.Cancel();
+                case Modes.NoAd:
+                    if (isEditableActionSuccess)
+                        onSuccess.Invoke();
+                    else tokenSource.Cancel();
+                    break;
+                case Modes.DirectLoad:
+                    DirectPlayRewardVideoAd.RequestAd(onSuccess, tokenSource);
+                    break;
+                case Modes.Preload:
+                    currentAdListener.onFailed = tokenSource.Cancel;
+                    currentAdListener.onSuccess = onSuccess.Invoke;
+                    rewardedVideoAd.ShowRewardedVideoAd();
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
         }
-        else
+        catch (Exception e)
         {
-            try
-            {
-                currentAdListener.onFailed = tokenSource.Cancel;
-                currentAdListener.onSuccess = onSuccess.Invoke;
-                rewardedVideoAd.ShowRewardedVideoAd();
-            }
-            catch (Exception e)
-            {
-                PlayerDataForGame.instance.ShowStringTips("视频加载失败!");
-                tokenSource.Cancel();
-            }
+            if (tokenSource.IsCancellationRequested) return;
+            tokenSource.Cancel();
+            PlayerDataForGame.instance.ShowStringTips("视频加载失败!");
         }
     }
 
