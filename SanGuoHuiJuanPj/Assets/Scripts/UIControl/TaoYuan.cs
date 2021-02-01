@@ -121,7 +121,7 @@ public class TaoYuan : MonoBehaviour
     /// 打开桃园宝箱
     /// </summary>
     /// <param name="chest"></param>
-    public void OpenChest(TaoYuanChestUI chest)
+    [Skip]public void OpenChest(TaoYuanChestUI chest)
     {
         var isSuccessSpend = false;
         var chestId = -1; //宝箱在表里的Id
@@ -210,8 +210,7 @@ public class TaoYuan : MonoBehaviour
     private IEnumerator SavePlayerData()
     {
         PlayerDataForGame.instance.isNeedSaveData = true;
-        LoadSaveData.instance.SaveGameData(1);
-        LoadSaveData.instance.SaveGameData(2);
+        LoadSaveData.instance.SaveGameData();
         yield return null;
     }
 
