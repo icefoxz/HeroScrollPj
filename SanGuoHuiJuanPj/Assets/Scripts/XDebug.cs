@@ -1,12 +1,22 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
-using UnityEngine;
+using Debug = UnityEngine.Debug;
 
 /// <summary>
 /// Unity调试帮助类
 /// </summary>
 public static class XDebug
 {
+    public static void StopWatch(Action action, string actionName = null, [CallerMemberName] string methodName = null)
+    {
+        var sw = new Stopwatch();
+        sw.Start();
+        action.Invoke();
+        sw.Stop();
+        Debug.Log($"{methodName}[{actionName}]() Time spend(ms): {sw.ElapsedMilliseconds}");
+    }
+
     public static void Log<T>(string message,[CallerMemberName] string methodName = null,T type = default) where T : class
     {
 #if UNITY_EDITOR

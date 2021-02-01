@@ -100,16 +100,14 @@ public class AdAgent : MonoBehaviour
 
         if (adController.Mode == DoNewAdController.Modes.DirectLoad)
         {
-            RequestAdVideo();
-            retries = 1;//为了不让播放重复，延迟直接播放的请求
-            StartCoroutine(CountDown(retrySecs));
+            StartPlayService();
             return;
         }
 
         switch (mode)
         {
             case Modes.Advertising:
-                StartService(retrySecs);
+                StartPreloadService(retrySecs);
                 break;
             case Modes.Selection:
             {
@@ -135,6 +133,13 @@ public class AdAgent : MonoBehaviour
         }
     }
 
+    private void StartPlayService()
+    {
+        RequestAdVideo();
+        retries = 1;//为了不让播放重复，延迟直接播放的请求
+        StartCoroutine(CountDown(retrySecs));
+    }
+
     private IEnumerator FailedAfter3Seconds()
     {
         var sec = 3;
@@ -154,7 +159,7 @@ public class AdAgent : MonoBehaviour
             isCanceled = true;
     }
 
-    private void StartService(int countDown)
+    private void StartPreloadService(int countDown)
     {
         if (coroutine != null)
             StopCoroutine(coroutine);
@@ -191,7 +196,7 @@ public class AdAgent : MonoBehaviour
             count--;
             if (count > retrySecs / 2 || retries > 0) continue;
             retries++;
-            StartService(count);
+            StartPreloadService(count);
             yield return null;
         }
 
@@ -204,10 +209,14 @@ public class AdAgent : MonoBehaviour
         retries = 0;
         countdown.gameObject.SetActive(false);
         retryButton.gameObject.SetActive(true);
+        Action retryAction;
+        if (adController.Mode == DoNewAdController.Modes.DirectLoad)
+            retryAction = StartPlayService;
+        else retryAction = ()=> StartPreloadService(retrySecs);
         retryButton.onClick.AddListener(()=>
         {
             isCanceled = false;
-            StartService(retrySecs);
+            retryAction();
             retryButton.gameObject.SetActive(false);
         });//重新引用请求
     }

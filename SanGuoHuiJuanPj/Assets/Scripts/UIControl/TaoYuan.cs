@@ -123,10 +123,12 @@ public class TaoYuan : MonoBehaviour
     /// <param name="chest"></param>
     public void OpenChest(TaoYuanChestUI chest)
     {
-        AudioController0.instance.ChangeAudioClip(AudioController0.instance.audioClips[13], AudioController0.instance.audioVolumes[13]);
-
         var isSuccessSpend = false;
-        var chestId = -1;//宝箱在表里的Id
+        var chestId = -1; //宝箱在表里的Id
+
+        AudioController0.instance.ChangeAudioClip(AudioController0.instance.audioClips[13],
+            AudioController0.instance.audioVolumes[13]);
+
         if (chest == jiuTan) //酒坛
         {
             chestId = 0;
@@ -139,7 +141,7 @@ public class TaoYuan : MonoBehaviour
                 return;
             }
 
-            PlayerDataForGame.instance.Redemption(PlayerDataForGame.RedeemTypes.JiuTan);//标记已消费酒坛
+            PlayerDataForGame.instance.Redemption(PlayerDataForGame.RedeemTypes.JiuTan); //标记已消费酒坛
             if (!isConsumeAd)
                 isSuccessSpend = ConsumeManager.instance.DeductYuanBao(openJiuTanYBNums); //扣除酒坛元宝
             else
@@ -167,7 +169,7 @@ public class TaoYuan : MonoBehaviour
 
         if (chest == zhanYiChest) //战役宝箱
         {
-            if (PlayerDataForGame.instance.gbocData.fightBoxs.Count <= 0)//如果没有宝箱记录
+            if (PlayerDataForGame.instance.gbocData.fightBoxs.Count <= 0) //如果没有宝箱记录
             {
                 PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(7));
                 AudioController0.instance.PlayAudioSource(0);
@@ -175,33 +177,42 @@ public class TaoYuan : MonoBehaviour
                 return;
             }
 
-            chestId = PlayerDataForGame.instance.gbocData.fightBoxs[0];//获取叠在最上面的奖励id
-            PlayerDataForGame.instance.gbocData.fightBoxs.Remove(chestId);//存档移除奖励
-            var chestCount = PlayerDataForGame.instance.gbocData.fightBoxs.Count;//剩余的宝箱数量
-            chest.value.text = chestCount.ToString();//改变宝箱数量
+            chestId = PlayerDataForGame.instance.gbocData.fightBoxs[0]; //获取叠在最上面的奖励id
+            PlayerDataForGame.instance.gbocData.fightBoxs.Remove(chestId); //存档移除奖励
+            var chestCount = PlayerDataForGame.instance.gbocData.fightBoxs.Count; //剩余的宝箱数量
+            chest.value.text = chestCount.ToString(); //改变宝箱数量
             UIManager.instance.ShowOrHideGuideObj(1, false);
             chest.chestButton.enabled = chestCount > 0;
             isSuccessSpend = true;
         }
 
+
         if (isSuccessSpend)
         {
-            int exp = int.Parse(LoadJsonFile.warChestTableDatas[chestId][3]);//获取经验
-            UIManager.instance.GetPlayerExp(exp);//增加经验
-            var yuanBao = RewardManager.instance.GetYuanBao(chestId);//获取元宝
-            var yvQue = RewardManager.instance.GetYvQue(chestId);//获取玉阙
-            ConsumeManager.instance.AddYuQue(yvQue);//增加玉阙
-            ConsumeManager.instance.AddYuanBao(yuanBao);//增加元宝
+            var exp = int.Parse(LoadJsonFile.warChestTableDatas[chestId][3]); //获取经验
+            UIManager.instance.GetPlayerExp(exp); //增加经验
+            var yuanBao = RewardManager.instance.GetYuanBao(chestId); //获取元宝
+            var yvQue = RewardManager.instance.GetYvQue(chestId); //获取玉阙
+            ConsumeManager.instance.AddYuQue(yvQue); //增加玉阙
+            ConsumeManager.instance.AddYuanBao(yuanBao); //增加元宝
             var isZhanYiChest = chest == zhanYiChest;
-            var rewards = RewardManager.instance.GetCards(chestId, isZhanYiChest);//获取卡牌
-            PlayerDataForGame.instance.isNeedSaveData = true;
-            LoadSaveData.instance.SaveGameData();
-
-            UIManager.instance.ShowRewardsThings(yuanBao, yvQue, exp, 0, rewards, 1.5f);//显示奖励窗口
-            chest.SetChest(true);//UI，打开箱子
-            AudioController0.instance.ChangeAudioClip(AudioController0.instance.audioClips[0], AudioController0.instance.audioVolumes[0]);
+            var rewards = RewardManager.instance.GetCards(chestId, isZhanYiChest); //获取卡牌
+            StartCoroutine(SavePlayerData());
+            UIManager.instance.ShowRewardsThings(yuanBao, yvQue, exp, 0, rewards, 1.5f); //显示奖励窗口
+            chest.SetChest(true); //UI，打开箱子
+            AudioController0.instance.ChangeAudioClip(AudioController0.instance.audioClips[0],
+                AudioController0.instance.audioVolumes[0]);
         }
+
         AudioController0.instance.PlayAudioSource(0);
+    }
+
+    private IEnumerator SavePlayerData()
+    {
+        PlayerDataForGame.instance.isNeedSaveData = true;
+        LoadSaveData.instance.SaveGameData(1);
+        LoadSaveData.instance.SaveGameData(2);
+        yield return null;
     }
 
     public void OpenJiuTan() => OpenChest(jiuTan);
