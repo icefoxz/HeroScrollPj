@@ -64,6 +64,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Editor\AnchorToSize.cs" />
     <Compile Include="Assets\Editor\Beebyte\Obfuscator\Assembly\AssemblyReferenceLocator.cs" />
     <Compile Include="Assets\Editor\Beebyte\Obfuscator\Assembly\AssemblySelector.cs" />
     <Compile Include="Assets\Editor\Beebyte\Obfuscator\FileBackup.cs" />
@@ -76,7 +77,15 @@
     <Compile Include="Assets\Editor\Beebyte\Obfuscator\Project.cs" />
     <Compile Include="Assets\Editor\Beebyte\Obfuscator\Restore.cs" />
     <Compile Include="Assets\Editor\Config\GameConfigWindow.cs" />
+    <Compile Include="Assets\GoogleMobileAds\Editor\GoogleMobileAdsSettings.cs" />
+    <Compile Include="Assets\GoogleMobileAds\Editor\GoogleMobileAdsSettingsEditor.cs" />
+    <Compile Include="Assets\GoogleMobileAds\Editor\ManifestProcessor.cs" />
+    <Compile Include="Assets\GoogleMobileAds\Editor\PListProcessor.cs" />
+    <None Include="Assets\ExternalDependencyManager\Editor\GoogleRegistries.xml" />
     <None Include="Assets\Editor\Beebyte\Obfuscator\Third-Party Notices.txt" />
+    <None Include="Assets\GoogleMobileAds\Editor\GoogleMobileAdsSKAdNetworkItems.xml" />
+    <None Include="Assets\GoogleMobileAds\Editor\GoogleMobileAdsDependencies.xml" />
+    <None Include="Assets\ExternalDependencyManager\Editor\external-dependency-manager_version-1.2.161_manifest.txt" />
     <None Include="Assets\Editor\Beebyte\Obfuscator\Obfuscator_README.txt" />
     <Reference Include="UnityEngine">
       <HintPath>Z:/Unity/2019.4.18f1/Editor/Data/Managed/UnityEngine/UnityEngine.dll</HintPath>
@@ -303,6 +312,18 @@
     <Reference Include="LitJson">
       <HintPath>H:/HeroScroll/HeroScrollPj/SanGuoHuiJuanPj/Assets/Plugins/LitJson/LitJson.dll</HintPath>
     </Reference>
+    <Reference Include="Google.VersionHandlerImpl_v1.2.161">
+      <HintPath>H:/HeroScroll/HeroScrollPj/SanGuoHuiJuanPj/Assets/ExternalDependencyManager/Editor/Google.VersionHandlerImpl_v1.2.161.dll</HintPath>
+    </Reference>
+    <Reference Include="Google.PackageManagerResolver_v1.2.161">
+      <HintPath>H:/HeroScroll/HeroScrollPj/SanGuoHuiJuanPj/Assets/ExternalDependencyManager/Editor/Google.PackageManagerResolver_v1.2.161.dll</HintPath>
+    </Reference>
+    <Reference Include="Google.JarResolver_v1.2.161">
+      <HintPath>H:/HeroScroll/HeroScrollPj/SanGuoHuiJuanPj/Assets/ExternalDependencyManager/Editor/Google.JarResolver_v1.2.161.dll</HintPath>
+    </Reference>
+    <Reference Include="Google.IOSResolver_v1.2.161">
+      <HintPath>H:/HeroScroll/HeroScrollPj/SanGuoHuiJuanPj/Assets/ExternalDependencyManager/Editor/Google.IOSResolver_v1.2.161.dll</HintPath>
+    </Reference>
     <Reference Include="Google.PackageManagerResolver_v1.2.163">
       <HintPath>H:/HeroScroll/HeroScrollPj/SanGuoHuiJuanPj/Library/PackageCache/com.google.external-dependency-manager@1.2.163/ExternalDependencyManager/Editor/Google.PackageManagerResolver_v1.2.163.dll</HintPath>
     </Reference>
@@ -317,6 +338,27 @@
     </Reference>
     <Reference Include="Google.JarResolver_v1.2.163">
       <HintPath>H:/HeroScroll/HeroScrollPj/SanGuoHuiJuanPj/Library/PackageCache/com.google.external-dependency-manager@1.2.163/ExternalDependencyManager/Editor/Google.JarResolver_v1.2.163.dll</HintPath>
+    </Reference>
+    <Reference Include="GoogleMobileAds.Platforms">
+      <HintPath>H:/HeroScroll/HeroScrollPj/SanGuoHuiJuanPj/Assets/GoogleMobileAds/GoogleMobileAds.Platforms.dll</HintPath>
+    </Reference>
+    <Reference Include="GoogleMobileAds.Placement">
+      <HintPath>H:/HeroScroll/HeroScrollPj/SanGuoHuiJuanPj/Assets/GoogleMobileAds/GoogleMobileAds.Placement.dll</HintPath>
+    </Reference>
+    <Reference Include="GoogleMobileAds.Core">
+      <HintPath>H:/HeroScroll/HeroScrollPj/SanGuoHuiJuanPj/Assets/GoogleMobileAds/GoogleMobileAds.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Google.MiniJson">
+      <HintPath>H:/HeroScroll/HeroScrollPj/SanGuoHuiJuanPj/Assets/Plugins/Google.MiniJson.dll</HintPath>
+    </Reference>
+    <Reference Include="GoogleMobileAds.Editor">
+      <HintPath>H:/HeroScroll/HeroScrollPj/SanGuoHuiJuanPj/Assets/GoogleMobileAds/Editor/GoogleMobileAds.Editor.dll</HintPath>
+    </Reference>
+    <Reference Include="GoogleMobileAds.Common">
+      <HintPath>H:/HeroScroll/HeroScrollPj/SanGuoHuiJuanPj/Assets/GoogleMobileAds/GoogleMobileAds.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="GoogleMobileAds">
+      <HintPath>H:/HeroScroll/HeroScrollPj/SanGuoHuiJuanPj/Assets/GoogleMobileAds/GoogleMobileAds.dll</HintPath>
     </Reference>
     <Reference Include="nunit.framework">
       <HintPath>H:/HeroScroll/HeroScrollPj/SanGuoHuiJuanPj/Library/PackageCache/com.unity.ext.nunit@1.0.6/net35/unity-custom/nunit.framework.dll</HintPath>

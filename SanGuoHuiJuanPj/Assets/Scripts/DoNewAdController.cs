@@ -6,19 +6,9 @@ using Beebyte.Obfuscator;
 using Donews.mediation;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public interface IAdController
-{
-    DoNewAdController.AdStates Status { get; }
-    DoNewAdController.Modes Mode { get; }
-    int Timer { get; }
-    void RequestRewardAd(Action onSuccess, CancellationTokenSource tokenSource);
-    void LoadRewardAd(Action onLoad, CancellationTokenSource cancellationToken);
-}
-
-public class DoNewAdController : MonoBehaviour, IAdController
+public class DoNewAdController : AdControllerBase,IAdController
 {
     public static IAdController AdController => instance;
     private static DoNewAdController instance;
@@ -28,16 +18,12 @@ public class DoNewAdController : MonoBehaviour, IAdController
         RequestingCache,
         Cached
     }
-    public enum Modes
-    {
-        NoAd,
-        DirectLoad,
-        Preload
-    }
+
     public AdStates Status => status;
-    public Modes Mode => mode;
     public AdStates status;
-    public Modes mode;
+
+    public override AdModes Mode => mode;
+    public AdModes mode;
     public bool isEditableActionSuccess;//仅用于unity编辑器
 
     public int Timer { get; private set; }
@@ -57,34 +43,16 @@ public class DoNewAdController : MonoBehaviour, IAdController
     private RewardedVideoAd rewardedVideoAd;
     private RewardAdListener currentAdListener;
     public RewardAdListener CurrentAdListener => currentAdListener;
-    public AdAgent adAgentPrefab;
-    public AdAgent AdAgent { get; private set; }
-
-    private bool isInit;
 
     void Awake()
     {
         if (instance != null && instance != this)
             throw XDebug.Throw<DoNewAdController>("Duplicate singleton instance!");
-
         instance = this;
-        Init();
-    }
-
-    private void Init()
-    {
-        if (isInit) throw XDebug.Throw<DoNewAdController>("Duplicate init!");
-        isInit = true;
         SDK.apiType = SDK.ApiType.Release;
         //SDK.StartService();
         status = AdStates.None;
-
-        //StartCoroutine(UpdateEverySecond());
-        DontDestroyOnLoad(gameObject);
-        var mainCanvas = GameObject.FindGameObjectWithTag(MainCanvas);
-        AdAgent = Instantiate(adAgentPrefab,mainCanvas.transform);
-        AdAgent.Init(this);
-        SceneManager.sceneLoaded += SceneLoadRelocateCanvas;
+        Init();
     }
 
     //IEnumerator UpdateEverySecond()
@@ -106,15 +74,6 @@ public class DoNewAdController : MonoBehaviour, IAdController
     //        yield return new WaitForSeconds(1);
     //    }
     //}
-
-    private void SceneLoadRelocateCanvas(Scene scene, LoadSceneMode mode)
-    {
-        if (scene.buildIndex == 0) return;
-        var mainCanvas = GameObject.FindGameObjectWithTag(MainCanvas);
-        if (AdAgent) return;
-        AdAgent = Instantiate(adAgentPrefab,mainCanvas.transform);
-        AdAgent.Init(this);
-    }
 
     public void LoadRewardAd(bool forceReload = false)
     {
@@ -152,21 +111,21 @@ public class DoNewAdController : MonoBehaviour, IAdController
     public void LoadRewardAd(Action onLoad, CancellationTokenSource cancellationToken)
     {
 #if UNITY_EDITOR
-        mode = Modes.NoAd;
+        mode = AdModes.NoAd;
         isWaitingStateChange = true;
 #endif
         try
         {
             switch (mode)
             {
-                case Modes.NoAd:
+                case AdModes.NoAd:
                     OnCached.AddListener(() => onLoad());
                     status = AdStates.RequestingCache;
                     break;
-                case Modes.DirectLoad:
+                case AdModes.DirectLoad:
                     onLoad.Invoke();
                     break;
-                case Modes.Preload:
+                case AdModes.Preload:
                     currentAdListener = new RewardAdListener(onLoad);
                     rewardedVideoAd = RewardedVideoAd.LoadRewardedVideoAd(PlaceId, currentAdListener);
                     break;
@@ -182,26 +141,26 @@ public class DoNewAdController : MonoBehaviour, IAdController
         }
     }
 
-    public void RequestRewardAd(Action onSuccess, CancellationTokenSource tokenSource)
+    public void RequestRewardAd(Action onSuccessAction, CancellationTokenSource tokenSource)
     {
 #if UNITY_EDITOR
-        mode = Modes.NoAd;
+        mode = AdModes.NoAd;
 #endif
         try
         {
             switch (mode)
             {
-                case Modes.NoAd:
+                case AdModes.NoAd:
                     if (isEditableActionSuccess)
-                        onSuccess.Invoke();
+                        onSuccessAction.Invoke();
                     else tokenSource.Cancel();
                     break;
-                case Modes.DirectLoad:
-                    DirectPlayRewardVideoAd.RequestAd(onSuccess, tokenSource);
+                case AdModes.DirectLoad:
+                    DirectPlayRewardVideoAd.RequestAd(onSuccessAction, tokenSource);
                     break;
-                case Modes.Preload:
+                case AdModes.Preload:
                     currentAdListener.onFailed = tokenSource.Cancel;
-                    currentAdListener.onSuccess = onSuccess.Invoke;
+                    currentAdListener.onSuccess = onSuccessAction.Invoke;
                     rewardedVideoAd.ShowRewardedVideoAd();
                     break;
                 default:
