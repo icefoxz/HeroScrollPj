@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections;
+using Assets.Scripts.Utl;
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -17,7 +19,7 @@ public class AdmobAgent : AdAgent
     public bool isAutoRequest;
     private bool isBusy { get; set; }
     private AdManager controller;
-    private UnityAction<bool> callBackAction;
+    private UnityAction<bool,string> callBackAction;
 
     public override void Init(AdControllerBase adController)
     {
@@ -30,25 +32,34 @@ public class AdmobAgent : AdAgent
         showButton.onClick.AddListener(OnShow);
         cancelButton.onClick.AddListener(() =>
         {
-            callBackAction(false);
+            callBackAction(false, "cancel");
             OnReset();
         });
     }
 
+    public override void BusyRetry(UnityAction<string> requestAction, UnityAction cancelAction)
+    {
+        CallAd((success,msg) =>
+        {
+            if (success) requestAction(msg);
+            else cancelAction();
+        });
+
+    }
     public override void BusyRetry(UnityAction requestAction, UnityAction cancelAction)
     {
-        CallAd(success =>
+        CallAd((success,_) =>
         {
             if (success) requestAction();
             else cancelAction();
         });
     }
 
-    public override void CallAd(UnityAction<bool> callBack)
+    public override void CallAd(UnityAction<bool,string> callBack)
     {
         gameObject.SetActive(true);
         callBackAction = callBack;
-        if(controller.Status != AdAgent.States.Loaded)
+        if(controller.Status != States.Loaded)
             OnLoad();
         else OnShow();
     }
@@ -57,7 +68,7 @@ public class AdmobAgent : AdAgent
     {
         isBusy = true;
         proceedMessage.text = "请求广告中，请等待...";
-        controller.RequestLoad(OnLoadResponse);
+        controller.RequestLoad((success, msg) => UnityMainThread.run.AddJob(() => OnLoadResponse(success, msg)));
         loadButton.gameObject.SetActive(false);
         StartCoroutine(StartTimer());
     }
@@ -66,7 +77,8 @@ public class AdmobAgent : AdAgent
     {
         isBusy = true;
         proceedMessage.text = "请求成功，请等待广告加载...";
-        controller.RequestShow(OnShowResponse);
+        message.text = "加载广告!";
+        controller.RequestShow((success, msg) => UnityMainThread.run.AddJob(() => OnShowResponse(success, msg)));
         showButton.gameObject.SetActive(false);
         StartCoroutine(StartTimer());
     }
@@ -105,7 +117,6 @@ public class AdmobAgent : AdAgent
             loadButton.gameObject.SetActive(true);
             return;
         }
-        message.text = "请求成功!";
         loadButton.gameObject.SetActive(false);
         showButton.gameObject.SetActive(true);
         if (!isAutoRequest) return;
@@ -116,15 +127,18 @@ public class AdmobAgent : AdAgent
     private void OnShowResponse(bool success, string msg)
     {
         isBusy = false;
+        countdownWindow.gameObject.SetActive(false);
         if (!success)
         {
+            StopAllCoroutines();
             message.text = $"广告加载失败!\n重试？({msg})";
             showButton.gameObject.SetActive(false);
             loadButton.gameObject.SetActive(true);
-            StopAllCoroutines();
             return;
         }
-        callBackAction(true);
+
+        message.text = "请求成功！";
+        callBackAction(true, msg);
         OnReset();
     }
 }

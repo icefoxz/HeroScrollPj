@@ -7,18 +7,15 @@ using UnityEngine.UI;
 
 public class TestAd : MonoBehaviour
 {
-    public Text statusText;
+    public Text reportText;
 
-    public AdmobController controller;
-
-    void Update()
+    public void Load() => AdAgent.instance.BusyRetry((msg)=>
     {
-        if(!controller)return;
-        statusText.text = controller.Status.ToString();
-    }
-
-    //public void Show() => controller.RequestShow();
-    //
-    public void Load() => AdmobAgent.Instance.CallAd(success=>Debug.Log($"Ad call reward = {success}"));
+        Debug.Log($"Ad call reward = {msg}");
+        reportText.text += $"Call : {msg}\n";
+    }, () =>
+    {
+        reportText.text += "cancel!\n";
+    });
 
 }

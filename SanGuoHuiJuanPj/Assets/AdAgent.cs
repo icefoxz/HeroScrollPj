@@ -20,5 +20,6 @@ public abstract class AdAgent : MonoBehaviour
     public static AdAgent instance;
     public abstract void Init(AdControllerBase controller);
     public abstract void BusyRetry(UnityAction requestAction, UnityAction cancelAction);
-    public abstract void CallAd(UnityAction<bool> callBack);
+    public abstract void BusyRetry(UnityAction<string> requestAction, UnityAction cancelAction);
+    public abstract void CallAd(UnityAction<bool, string> callBack);
 }

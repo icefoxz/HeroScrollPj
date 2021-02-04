@@ -149,35 +149,34 @@ namespace Donews.mediation
         private class RewardVideoAdCallBack : AndroidJavaProxy
         {
             private bool isCalledBack;
+            private bool isSuccess;
             private DirectPlayRewardVideoAd rewardVideoAdObj;
             public RewardVideoAdCallBack(DirectPlayRewardVideoAd rewardVideoAdObj) : base(CallBackProxy)
             {
                 this.rewardVideoAdObj = rewardVideoAdObj;
             }
 
-            public void onAdError(string msg)
-            {
-                if(isCalledBack)return;
-                rewardVideoAdObj.OnRewardVerify?.Invoke(false,msg);
-                isCalledBack = true;
-            }
+            public void onAdError(string msg) => OnDone(false, msg);
 
             public void onAdShow() {}
 
             public void onAdClick() {}
 
-            public void onAdClose() {}
+            public void onAdClose() => OnDone(isSuccess, "Close");
 
-            public void onVideoComplete() {}
+            public void onVideoComplete() => OnDone(isSuccess, "Complete");
 
-            public void onRewardVerify(bool rewardVerify)
+            public void onRewardVerify(bool rewardVerify) => OnDone(rewardVerify, "Verify");
+
+            public void onSkippedVideo() => OnDone(isSuccess, "Skip");
+
+            private void OnDone(bool success, string message)
             {
                 if(isCalledBack)return;
-                rewardVideoAdObj.OnRewardVerify?.Invoke(rewardVerify, string.Empty);
                 isCalledBack = true;
+                isSuccess = success;
+                rewardVideoAdObj.OnRewardVerify?.Invoke(isSuccess, message);
             }
-
-            public void onSkippedVideo() {}
         }
     }
 #endif
