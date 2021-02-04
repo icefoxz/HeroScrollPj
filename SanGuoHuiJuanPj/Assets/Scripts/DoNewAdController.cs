@@ -8,9 +8,8 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
-public class DoNewAdController : AdControllerBase,IAdController
+public class DoNewAdController : AdControllerBase
 {
-    public static IAdController AdController => instance;
     private static DoNewAdController instance;
     public enum AdStates
     {
@@ -22,76 +21,24 @@ public class DoNewAdController : AdControllerBase,IAdController
     public AdStates Status => status;
     public AdStates status;
 
-    public override AdModes Mode => mode;
+    public AdModes Mode => mode;
     public AdModes mode;
     public bool isEditableActionSuccess;//仅用于unity编辑器
 
     public int Timer { get; private set; }
     public UnityEvent OnCached = new UnityEvent();
     private bool isCachedTriggered;
-    public static AndroidJavaObject CurrentActivityJo =>
-        new AndroidJavaObject(UnityPlayer).GetStatic<AndroidJavaObject>(CurrentActivity);
-    public static void CallUiThread(Action action) => CurrentActivityJo.Call(RunOnUiThread, action);
 
     public const string UnityPlayer = "com.unity3d.player.UnityPlayer";
     public const string CurrentActivity = "currentActivity";
     public const string RequestRewardVideo = "RequestRewardVideo";
     public const string RunOnUiThread = "runOnUiThread";
     public const string PlaceId = "5294";
-    public const string MainCanvas = "MainCanvas";
-
-    private RewardedVideoAd rewardedVideoAd;
-    private RewardAdListener currentAdListener;
-    public RewardAdListener CurrentAdListener => currentAdListener;
 
     void Awake()
     {
-        if (instance != null && instance != this)
-            throw XDebug.Throw<DoNewAdController>("Duplicate singleton instance!");
-        instance = this;
         SDK.apiType = SDK.ApiType.Release;
-        //SDK.StartService();
         status = AdStates.None;
-        Init();
-    }
-
-    //IEnumerator UpdateEverySecond()
-    //{
-    //    while (true)
-    //    {
-    //        if (status == AdStates.Cached)
-    //        {
-    //            if (isCachedTriggered) continue;
-    //            isCachedTriggered = true;
-    //            OnCached?.Invoke();
-    //            continue;
-    //        }
-    //        if(IsPreloadMode)
-    //        {
-    //            Timer = Timer >= forceReloadAfterSecond ? 0 : Timer + 1;
-    //            LoadRewardAd(Timer >= forceReloadAfterSecond);
-    //        }
-    //        yield return new WaitForSeconds(1);
-    //    }
-    //}
-
-    public void LoadRewardAd(bool forceReload = false)
-    {
-#if UNITY_EDITOR
-        if (forceReload) status = AdStates.None;
-        if (status == AdStates.RequestingCache) return;
-        return;
-#endif
-        if (forceReload)
-        {
-            status = AdStates.None;
-            currentAdListener = null;
-        }
-        if (status != AdStates.None) return;
-        if (currentAdListener != null && !currentAdListener.IsLoadSuccess) return;
-        status = AdStates.RequestingCache;
-        currentAdListener = new RewardAdListener(() => status = AdStates.Cached);
-        rewardedVideoAd = RewardedVideoAd.LoadRewardedVideoAd(PlaceId, currentAdListener);
     }
 
 #if UNITY_EDITOR
@@ -108,75 +55,32 @@ public class DoNewAdController : AdControllerBase,IAdController
         }
     }
 #endif
-    public void LoadRewardAd(Action onLoad, CancellationTokenSource cancellationToken)
+    public override void RequestLoad(UnityAction<bool,string> requestAction)
     {
 #if UNITY_EDITOR
         mode = AdModes.NoAd;
         isWaitingStateChange = true;
 #endif
-        try
-        {
-            switch (mode)
-            {
-                case AdModes.NoAd:
-                    OnCached.AddListener(() => onLoad());
-                    status = AdStates.RequestingCache;
-                    break;
-                case AdModes.DirectLoad:
-                    onLoad.Invoke();
-                    break;
-                case AdModes.Preload:
-                    currentAdListener = new RewardAdListener(onLoad);
-                    rewardedVideoAd = RewardedVideoAd.LoadRewardedVideoAd(PlaceId, currentAdListener);
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-
-        }
-        catch (Exception e)
-        {
-            PlayerDataForGame.instance.ShowStringTips("视频加载失败1");
-            cancellationToken.Cancel();
-        }
+        requestAction.Invoke(true, string.Empty);//直接播放，不需要load
     }
 
-    public void RequestRewardAd(Action onSuccessAction, CancellationTokenSource tokenSource)
+    public override void RequestShow(UnityAction<bool,string> onSuccessAction)
     {
 #if UNITY_EDITOR
         mode = AdModes.NoAd;
 #endif
         try
         {
-            switch (mode)
-            {
-                case AdModes.NoAd:
-                    if (isEditableActionSuccess)
-                        onSuccessAction.Invoke();
-                    else tokenSource.Cancel();
-                    break;
-                case AdModes.DirectLoad:
-                    DirectPlayRewardVideoAd.RequestAd(onSuccessAction, tokenSource);
-                    break;
-                case AdModes.Preload:
-                    currentAdListener.onFailed = tokenSource.Cancel;
-                    currentAdListener.onSuccess = onSuccessAction.Invoke;
-                    rewardedVideoAd.ShowRewardedVideoAd();
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
+            DirectPlayRewardVideoAd.RequestAd(onSuccessAction);
         }
         catch (Exception e)
         {
-            if (tokenSource.IsCancellationRequested) return;
-            tokenSource.Cancel();
+            onSuccessAction(false, e.ToString());
             PlayerDataForGame.instance.ShowStringTips("视频加载失败!");
         }
     }
 
     private AndroidJavaObject currentActivity;
-    
 
     public class RewardAdListener : IRewardedVideoAdListener
     {
@@ -217,32 +121,4 @@ public class DoNewAdController : AdControllerBase,IAdController
         // 视频广告信息点击回调
         public void RewardVideoAdDidClicked(){}
     }
-
-
-
-
-
-    private AndroidJavaObject jo;
-    private AndroidJavaClass jc;    //unityPlayer安卓类
-
-    //[Skip]
-    //public Task<bool> GetReWardVideo()
-    //{
-    //    try
-    //    {
-    //        if (jo == null)
-    //        {
-    //            jc = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
-    //            jo = jc.GetStatic<AndroidJavaObject>("currentActivity");
-    //        }
-
-    //        jo.Call("RequestRewardVideo");
-    //        return Task.FromResult(true);
-    //    }
-    //    catch (Exception)
-    //    {
-    //        return Task.FromResult(false);
-    //    }
-    //}
-
 }

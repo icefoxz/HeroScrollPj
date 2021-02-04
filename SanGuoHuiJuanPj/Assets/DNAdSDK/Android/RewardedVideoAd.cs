@@ -4,6 +4,7 @@
 using System;
 using System.Threading;
 using Beebyte.Obfuscator;
+using UnityEngine.Events;
 
 namespace Donews.mediation
 {
@@ -130,24 +131,16 @@ namespace Donews.mediation
     {
         private const string DirectAdMethod = "requestDirectAd";
         private const string CallBackProxy = "com.donews.android.RewardVideoCallBack";
-        public Action OnAdClose;//当视频关闭
-        public Action<bool> OnRewardVerify;//当视频播放完成后的奖励验证回调是否有效
+        public UnityAction<bool,string> OnRewardVerify;//当视频播放完成后的奖励验证回调是否有效
 
-        public DirectPlayRewardVideoAd(Action onSuccess,CancellationTokenSource tokenSource,Action onAdClose)
+        public DirectPlayRewardVideoAd(UnityAction<bool,string> action)
         {
-            OnAdClose = onAdClose;
-            OnRewardVerify = success =>
-            {
-                if (success)
-                    onSuccess?.Invoke();
-                else tokenSource.Cancel();
-            };
+            OnRewardVerify = action;
         }
 
-        internal static DirectPlayRewardVideoAd RequestAd(Action onSuccess, CancellationTokenSource tokenSource,
-            Action onAdClose = null)
+        internal static DirectPlayRewardVideoAd RequestAd(UnityAction<bool,string> onSuccess)
         {
-            var rewardAdObj = new DirectPlayRewardVideoAd(onSuccess, tokenSource, onAdClose);
+            var rewardAdObj = new DirectPlayRewardVideoAd(onSuccess);
 
             SDK.DnSdkObj.Call(DirectAdMethod, SDK.PlaceId ,new RewardVideoAdCallBack(rewardAdObj));
             return rewardAdObj;
@@ -165,7 +158,7 @@ namespace Donews.mediation
             public void onAdError(string msg)
             {
                 if(isCalledBack)return;
-                rewardVideoAdObj.OnRewardVerify?.Invoke(false);
+                rewardVideoAdObj.OnRewardVerify?.Invoke(false,msg);
                 isCalledBack = true;
             }
 
@@ -180,7 +173,7 @@ namespace Donews.mediation
             public void onRewardVerify(bool rewardVerify)
             {
                 if(isCalledBack)return;
-                rewardVideoAdObj.OnRewardVerify?.Invoke(rewardVerify);
+                rewardVideoAdObj.OnRewardVerify?.Invoke(rewardVerify, string.Empty);
                 isCalledBack = true;
             }
 

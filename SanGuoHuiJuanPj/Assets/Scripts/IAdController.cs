@@ -7,10 +7,3 @@ public enum AdModes
     DirectLoad,
     Preload
 }
-
-public interface IAdController
-{
-    AdModes Mode { get; }
-    void RequestRewardAd(Action onSuccessAction, CancellationTokenSource tokenSource);
-    void LoadRewardAd(Action onLoad, CancellationTokenSource cancellationToken);
-}

@@ -16,12 +16,12 @@ public class AdmobAgent : AdAgent
     public Image countdownWindow;
     public bool isAutoRequest;
     private bool isBusy { get; set; }
-    private AdmobController controller;
+    private AdManager controller;
     private UnityAction<bool> callBackAction;
 
     public override void Init(AdControllerBase adController)
     {
-        controller = adController as AdmobController;
+        controller = adController as AdManager;
         instance = this;
         Instance = this;
         loadButton.gameObject.SetActive(false);
@@ -35,7 +35,7 @@ public class AdmobAgent : AdAgent
         });
     }
 
-    public override void BusyRetry(Action requestAction, Action cancelAction)
+    public override void BusyRetry(UnityAction requestAction, UnityAction cancelAction)
     {
         CallAd(success =>
         {
@@ -44,11 +44,11 @@ public class AdmobAgent : AdAgent
         });
     }
 
-    public void CallAd(UnityAction<bool> callBack)
+    public override void CallAd(UnityAction<bool> callBack)
     {
         gameObject.SetActive(true);
         callBackAction = callBack;
-        if(controller.Status != AdmobController.States.Loaded)
+        if(controller.Status != AdAgent.States.Loaded)
             OnLoad();
         else OnShow();
     }
