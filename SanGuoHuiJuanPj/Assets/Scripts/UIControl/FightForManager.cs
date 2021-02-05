@@ -1345,7 +1345,7 @@ public class FightForManager : MonoBehaviour
                 //兵种框
                 data.cardObj.transform.GetChild(5).GetComponent<Image>().sprite = Resources.Load("Image/classImage/" + 0, typeof(Sprite)) as Sprite;
                 //边框
-                WarsUIManager.instance.FrameChoose(LoadJsonFile.heroTableDatas[data.cardId][3], data.cardObj.transform.GetChild(6).GetComponent<Image>());
+                WarsUIManager.instance.FrameChoose(int.Parse(LoadJsonFile.heroTableDatas[data.cardId][3]), data.cardObj.transform.GetChild(6).GetComponent<Image>());
 
                 data.damage = int.Parse(LoadJsonFile.heroTableDatas[data.cardId][7].Split(',')[data.cardGrade - 1]);
                 data.hpr = int.Parse(LoadJsonFile.heroTableDatas[data.cardId][9]);
@@ -1365,7 +1365,7 @@ public class FightForManager : MonoBehaviour
                 data.cardObj.transform.GetChild(5).GetComponentInChildren<Text>().text = LoadJsonFile.classTableDatas[int.Parse(LoadJsonFile.soldierTableDatas[data.cardId][5])][3];
                 //兵种框
                 data.cardObj.transform.GetChild(5).GetComponent<Image>().sprite = Resources.Load("Image/classImage/" + 1, typeof(Sprite)) as Sprite;
-                WarsUIManager.instance.FrameChoose(LoadJsonFile.soldierTableDatas[data.cardId][3], data.cardObj.transform.GetChild(6).GetComponent<Image>());
+                WarsUIManager.instance.FrameChoose(int.Parse(LoadJsonFile.soldierTableDatas[data.cardId][3]), data.cardObj.transform.GetChild(6).GetComponent<Image>());
 
                 data.damage = int.Parse(LoadJsonFile.soldierTableDatas[data.cardId][6].Split(',')[data.cardGrade - 1]);
                 data.hpr = int.Parse(LoadJsonFile.soldierTableDatas[data.cardId][8]);
@@ -1382,7 +1382,7 @@ public class FightForManager : MonoBehaviour
                 data.cardObj.transform.GetChild(3).GetComponent<Text>().color = NameColorChoose(LoadJsonFile.towerTableDatas[data.cardId][3]);
                 data.cardObj.transform.GetChild(4).GetComponent<Image>().sprite = Resources.Load("Image/gradeImage/" + data.cardGrade, typeof(Sprite)) as Sprite;
                 data.cardObj.transform.GetChild(5).GetComponentInChildren<Text>().text = LoadJsonFile.towerTableDatas[data.cardId][5];
-                WarsUIManager.instance.FrameChoose(LoadJsonFile.towerTableDatas[data.cardId][3], data.cardObj.transform.GetChild(6).GetComponent<Image>());
+                WarsUIManager.instance.FrameChoose(int.Parse(LoadJsonFile.towerTableDatas[data.cardId][3]), data.cardObj.transform.GetChild(6).GetComponent<Image>());
                 //兵种框
                 data.cardObj.transform.GetChild(5).GetComponent<Image>().sprite = Resources.Load("Image/classImage/" + 1, typeof(Sprite)) as Sprite;
                 data.damage = int.Parse(LoadJsonFile.towerTableDatas[data.cardId][6].Split(',')[data.cardGrade - 1]);
@@ -1403,7 +1403,7 @@ public class FightForManager : MonoBehaviour
                 data.cardObj.transform.GetChild(5).GetComponentInChildren<Text>().text = LoadJsonFile.trapTableDatas[data.cardId][5];
                 //兵种框
                 data.cardObj.transform.GetChild(5).GetComponent<Image>().sprite = Resources.Load("Image/classImage/" + 1, typeof(Sprite)) as Sprite;
-                WarsUIManager.instance.FrameChoose(LoadJsonFile.trapTableDatas[data.cardId][3], data.cardObj.transform.GetChild(6).GetComponent<Image>());
+                WarsUIManager.instance.FrameChoose(int.Parse(LoadJsonFile.trapTableDatas[data.cardId][3]), data.cardObj.transform.GetChild(6).GetComponent<Image>());
 
                 data.damage = int.Parse(LoadJsonFile.trapTableDatas[data.cardId][6].Split(',')[data.cardGrade - 1]);
                 data.hpr = int.Parse(LoadJsonFile.trapTableDatas[data.cardId][10]);

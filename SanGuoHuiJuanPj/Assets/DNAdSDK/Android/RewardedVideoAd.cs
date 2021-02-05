@@ -164,7 +164,7 @@ namespace Donews.mediation
 
             public void onAdClose() => OnDone(isSuccess, "Close");
 
-            public void onVideoComplete() => OnDone(isSuccess, "Complete");
+            public void onVideoComplete() {}
 
             public void onRewardVerify(bool rewardVerify) => OnDone(rewardVerify, "Verify");
 

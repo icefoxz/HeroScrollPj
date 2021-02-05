@@ -126,7 +126,7 @@ public class UIManager : MonoBehaviour
     private List<BaYeCityField> cityFields; //霸业的地图物件
     private List<BaYeForceField> forceFields; //可选势力物件
     [HideInInspector]public RewardManager rewardManager;
-
+    private GameResources GameResources => PlayerDataForGame.instance.gameResources;
 
     [SerializeField]
     GameObject InfoWindowObj; //说明窗口
@@ -542,11 +542,11 @@ public class UIManager : MonoBehaviour
                     //名字颜色根据稀有度
                     obj.transform.GetChild(2).GetComponent<Text>().color = NameColorChoose(LoadJsonFile.heroTableDatas[heroId][3]);
                     //卡牌
-                    obj.transform.GetChild(1).GetComponent<Image>().sprite = Resources.Load("Image/Cards/Hero/" + LoadJsonFile.heroTableDatas[heroId][16], typeof(Sprite)) as Sprite;
+                    obj.transform.GetChild(1).GetComponent<Image>().sprite = GameResources.HeroImg[int.Parse(LoadJsonFile.heroTableDatas[heroId][16])];
                     //兵种名
                     obj.transform.GetChild(4).GetComponentInChildren<Text>().text = LoadJsonFile.classTableDatas[int.Parse(LoadJsonFile.heroTableDatas[heroId][5])][3];
                     //兵种框
-                    obj.transform.GetChild(4).GetComponent<Image>().sprite = Resources.Load("Image/classImage/" + 0, typeof(Sprite)) as Sprite;
+                    obj.transform.GetChild(4).GetComponent<Image>().sprite = GameResources.ClassImg[0];
                     tran.gameObject.SetActive(true);
                 }
             }
@@ -1149,9 +1149,9 @@ public class UIManager : MonoBehaviour
         //名字颜色根据稀有度
         obj.transform.GetChild(3).GetComponent<Text>().color = NameColorChoose(jsonDatas[fuzhuData.id][3]);
         //卡牌
-        obj.transform.GetChild(1).GetComponent<Image>().sprite = Resources.Load("Image/Cards/FuZhu/" + jsonDatas[fuzhuData.id][indexIcon], typeof(Sprite)) as Sprite;
+        obj.transform.GetChild(1).GetComponent<Image>().sprite = GameResources.FuZhuImg[int.Parse(jsonDatas[fuzhuData.id][indexIcon])];
         //兵种框
-        obj.transform.GetChild(5).GetComponent<Image>().sprite = Resources.Load("Image/classImage/" + 1, typeof(Sprite)) as Sprite;
+        obj.transform.GetChild(5).GetComponent<Image>().sprite = GameResources.ClassImg[1];
         //兵种名
         obj.transform.GetChild(5).GetComponentInChildren<Text>().text = jsonDatas[fuzhuData.id][5];
         //边框
@@ -1171,7 +1171,7 @@ public class UIManager : MonoBehaviour
         {
             obj.transform.GetChild(4).GetComponent<Image>().enabled = true;
             //设置星级展示
-            obj.transform.GetChild(4).GetComponent<Image>().sprite = Resources.Load("Image/gradeImage/" + fuzhuData.level, typeof(Sprite)) as Sprite;
+            obj.transform.GetChild(4).GetComponent<Image>().sprite = GameResources.GradeImg[fuzhuData.level];
             obj.transform.GetChild(8).gameObject.SetActive(false);
             //出战标记
             if (fuzhuData.isFight > 0)
@@ -1219,9 +1219,9 @@ public class UIManager : MonoBehaviour
         //名字颜色
         showCardObj.transform.GetChild(3).GetComponent<Text>().color = NameColorChoose(jsonDatas[fuzhuData.id][3]);
         //卡牌
-        showCardObj.transform.GetChild(1).GetComponent<Image>().sprite = Resources.Load("Image/Cards/FuZhu/" + jsonDatas[fuzhuData.id][indexIcon], typeof(Sprite)) as Sprite;
+        showCardObj.transform.GetChild(1).GetComponent<Image>().sprite = GameResources.FuZhuImg[int.Parse(jsonDatas[fuzhuData.id][indexIcon])];
         //兵种框
-        showCardObj.transform.GetChild(5).GetComponent<Image>().sprite = Resources.Load("Image/classImage/" + 1, typeof(Sprite)) as Sprite;
+        showCardObj.transform.GetChild(5).GetComponent<Image>().sprite = GameResources.ClassImg[1];
         //兵种名
         showCardObj.transform.GetChild(5).GetComponentInChildren<Text>().text = jsonDatas[fuzhuData.id][5];
         //边框
@@ -1250,7 +1250,7 @@ public class UIManager : MonoBehaviour
         {
             showCardObj.transform.GetChild(4).GetComponent<Image>().enabled = true;
             //设置星级展示
-            showCardObj.transform.GetChild(4).GetComponent<Image>().sprite = Resources.Load("Image/gradeImage/" + fuzhuData.level, typeof(Sprite)) as Sprite;
+            showCardObj.transform.GetChild(4).GetComponent<Image>().sprite = GameResources.GradeImg[fuzhuData.level];
             //出战相关设置
             holdOrFightBtn.SetActive(true);
             if (fuzhuData.isFight > 0)
@@ -1428,11 +1428,11 @@ public class UIManager : MonoBehaviour
         //名字颜色根据稀有度
         obj.transform.GetChild(3).GetComponent<Text>().color = NameColorChoose(LoadJsonFile.heroTableDatas[heroData.id][3]);
         //卡牌
-        obj.transform.GetChild(1).GetComponent<Image>().sprite = Resources.Load("Image/Cards/Hero/" + LoadJsonFile.heroTableDatas[heroData.id][16], typeof(Sprite)) as Sprite;
+        obj.transform.GetChild(1).GetComponent<Image>().sprite = GameResources.HeroImg[int.Parse(LoadJsonFile.heroTableDatas[heroData.id][16])];
         //兵种名
         obj.transform.GetChild(5).GetComponentInChildren<Text>().text = LoadJsonFile.classTableDatas[int.Parse(LoadJsonFile.heroTableDatas[heroData.id][5])][3];
         //兵种框
-        obj.transform.GetChild(5).GetComponent<Image>().sprite = Resources.Load("Image/classImage/" + 0, typeof(Sprite)) as Sprite;
+        obj.transform.GetChild(5).GetComponent<Image>().sprite = GameResources.ClassImg[0];
         //边框
         FrameChoose(LoadJsonFile.heroTableDatas[heroData.id][3], obj.transform.GetChild(6).GetComponent<Image>());
         //碎片
@@ -1450,7 +1450,7 @@ public class UIManager : MonoBehaviour
             obj.transform.GetChild(4).GetComponent<Image>().enabled = true;
             obj.transform.GetChild(8).gameObject.SetActive(false);
             //设置星级展示
-            obj.transform.GetChild(4).GetComponent<Image>().sprite = Resources.Load("Image/gradeImage/" + heroData.level, typeof(Sprite)) as Sprite;
+            obj.transform.GetChild(4).GetComponent<Image>().sprite = GameResources.GradeImg[heroData.level];
             obj.transform.GetChild(7).gameObject.SetActive(false);
             if (heroData.isFight > 0) //出战标记
             {
@@ -1501,11 +1501,11 @@ public class UIManager : MonoBehaviour
         //名字颜色
         showCardObj.transform.GetChild(3).GetComponent<Text>().color = NameColorChoose(LoadJsonFile.heroTableDatas[heroData.id][3]);
         //卡牌
-        showCardObj.transform.GetChild(1).GetComponent<Image>().sprite = Resources.Load("Image/Cards/Hero/" + LoadJsonFile.heroTableDatas[heroData.id][16], typeof(Sprite)) as Sprite;
+        showCardObj.transform.GetChild(1).GetComponent<Image>().sprite = GameResources.HeroImg[int.Parse(LoadJsonFile.heroTableDatas[heroData.id][16])];
         //兵种名
         showCardObj.transform.GetChild(5).GetComponentInChildren<Text>().text = LoadJsonFile.classTableDatas[int.Parse(LoadJsonFile.heroTableDatas[heroData.id][5])][3];
         //兵种框
-        showCardObj.transform.GetChild(5).GetComponent<Image>().sprite = Resources.Load("Image/classImage/" + 0, typeof(Sprite)) as Sprite;
+        showCardObj.transform.GetChild(5).GetComponent<Image>().sprite = GameResources.ClassImg[0];
         //边框
         FrameChoose(LoadJsonFile.heroTableDatas[heroData.id][3], showCardObj.transform.GetChild(6).GetComponent<Image>());
         //碎片
@@ -1532,7 +1532,7 @@ public class UIManager : MonoBehaviour
         {
             showCardObj.transform.GetChild(4).GetComponent<Image>().enabled = true;
             //设置星级展示
-            showCardObj.transform.GetChild(4).GetComponent<Image>().sprite = Resources.Load("Image/gradeImage/" + heroData.level, typeof(Sprite)) as Sprite;
+            showCardObj.transform.GetChild(4).GetComponent<Image>().sprite = GameResources.GradeImg[heroData.level];
             //出战相关设置
             holdOrFightBtn.SetActive(true);
             if (heroData.isFight > 0)
@@ -1726,13 +1726,13 @@ public class UIManager : MonoBehaviour
         switch (rarity)
         {
             case "4":
-                img.sprite = Resources.Load("Image/frameImage/tong", typeof(Sprite)) as Sprite;
+                img.sprite = GameResources.FrameImg[3];
                 break;
             case "5":
-                img.sprite = Resources.Load("Image/frameImage/yin", typeof(Sprite)) as Sprite;
+                img.sprite = GameResources.FrameImg[2];
                 break;
             case "6":
-                img.sprite = Resources.Load("Image/frameImage/jin", typeof(Sprite)) as Sprite;
+                img.sprite = GameResources.FrameImg[1];
                 break;
             default:
                 img.enabled = false;
@@ -1944,7 +1944,7 @@ public class UIManager : MonoBehaviour
         }
         listCard.GetChild(4).GetComponent<Image>().enabled = true;
         //设置星级展示
-        listCard.GetChild(4).GetComponent<Image>().sprite = Resources.Load("Image/gradeImage/" + selectCardData.level, typeof(Sprite)) as Sprite;
+        listCard.GetChild(4).GetComponent<Image>().sprite = GameResources.GradeImg[selectCardData.level];
         listCard.GetChild(8).gameObject.SetActive(false);
         listCard.GetComponent<Button>().onClick.Invoke();
     }
@@ -2055,10 +2055,10 @@ public class UIManager : MonoBehaviour
             switch (rewardsCard.cardType)
             {
                 case 0:
-                    cardTran.GetComponent<Image>().sprite = Resources.Load("Image/Cards/Hero/" + LoadJsonFile.heroTableDatas[rewardsCard.cardId][16], typeof(Sprite)) as Sprite;
+                    cardTran.GetComponent<Image>().sprite = GameResources.HeroImg[int.Parse(LoadJsonFile.heroTableDatas[rewardsCard.cardId][16])];
                     ShowNameTextRules(cardTran.GetChild(0).GetComponent<Text>(), LoadJsonFile.heroTableDatas[rewardsCard.cardId][1]);
                     cardTran.GetChild(0).GetComponent<Text>().color = NameColorChoose(LoadJsonFile.heroTableDatas[rewardsCard.cardId][3]);
-                    cardTran.GetChild(1).GetComponent<Image>().sprite = Resources.Load("Image/classImage/" + 0, typeof(Sprite)) as Sprite;
+                    cardTran.GetChild(1).GetComponent<Image>().sprite = GameResources.ClassImg[0];
                     cardTran.GetChild(1).GetChild(0).GetComponentInChildren<Text>().text = LoadJsonFile.classTableDatas[int.Parse(LoadJsonFile.heroTableDatas[rewardsCard.cardId][5])][3];
                     FrameChoose(LoadJsonFile.heroTableDatas[rewardsCard.cardId][3], cardTran.GetChild(2).GetComponent<Image>());
                     break;
@@ -2066,18 +2066,18 @@ public class UIManager : MonoBehaviour
                     //cardTran.GetChild(0).GetComponent<Text>().text = LoadJsonFile.soldierTableDatas[rewardsCard.cardId][1];
                     break;
                 case 2:
-                    cardTran.GetComponent<Image>().sprite = Resources.Load("Image/Cards/FuZhu/" + LoadJsonFile.towerTableDatas[rewardsCard.cardId][10], typeof(Sprite)) as Sprite;
+                    cardTran.GetComponent<Image>().sprite = GameResources.FuZhuImg[int.Parse(LoadJsonFile.towerTableDatas[rewardsCard.cardId][10])];
                     ShowNameTextRules(cardTran.GetChild(0).GetComponent<Text>(), LoadJsonFile.towerTableDatas[rewardsCard.cardId][1]);
                     cardTran.GetChild(0).GetComponent<Text>().color = NameColorChoose(LoadJsonFile.towerTableDatas[rewardsCard.cardId][3]);
-                    cardTran.GetChild(1).GetComponent<Image>().sprite = Resources.Load("Image/classImage/" + 1, typeof(Sprite)) as Sprite;
+                    cardTran.GetChild(1).GetComponent<Image>().sprite = GameResources.ClassImg[1];
                     cardTran.GetChild(1).GetChild(0).GetComponentInChildren<Text>().text = LoadJsonFile.towerTableDatas[rewardsCard.cardId][5];
                     FrameChoose(LoadJsonFile.towerTableDatas[rewardsCard.cardId][3], cardTran.GetChild(2).GetComponent<Image>());
                     break;
                 case 3:
-                    cardTran.GetComponent<Image>().sprite = Resources.Load("Image/Cards/FuZhu/" + LoadJsonFile.trapTableDatas[rewardsCard.cardId][8], typeof(Sprite)) as Sprite;
+                    cardTran.GetComponent<Image>().sprite = GameResources.FuZhuImg[int.Parse(LoadJsonFile.trapTableDatas[rewardsCard.cardId][8])];
                     ShowNameTextRules(cardTran.GetChild(0).GetComponent<Text>(), LoadJsonFile.trapTableDatas[rewardsCard.cardId][1]);
                     cardTran.GetChild(0).GetComponent<Text>().color = NameColorChoose(LoadJsonFile.trapTableDatas[rewardsCard.cardId][3]);
-                    cardTran.GetChild(1).GetComponent<Image>().sprite = Resources.Load("Image/classImage/" + 1, typeof(Sprite)) as Sprite;
+                    cardTran.GetChild(1).GetComponent<Image>().sprite = GameResources.ClassImg[1];
                     cardTran.GetChild(1).GetChild(0).GetComponentInChildren<Text>().text = LoadJsonFile.trapTableDatas[rewardsCard.cardId][5];
                     FrameChoose(LoadJsonFile.trapTableDatas[rewardsCard.cardId][3], cardTran.GetChild(2).GetComponent<Image>());
                     break;

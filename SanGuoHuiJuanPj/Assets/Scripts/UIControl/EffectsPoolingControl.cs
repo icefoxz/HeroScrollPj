@@ -21,6 +21,8 @@ public class EffectsPoolingControl : MonoBehaviour
 
     List<List<GameObject>> iconPoolingList = new List<List<GameObject>>();   //状态特效池
 
+    private GameResources GameResources => PlayerDataForGame.instance.gameResources;
+
     private void Awake()
     {
         if (instance == null)
@@ -42,7 +44,7 @@ public class EffectsPoolingControl : MonoBehaviour
             List<GameObject> effectList = new List<GameObject>();
             for (int j = 0; j < maxCount; j++)
             {
-                GameObject effectObj = Instantiate(Resources.Load("Prefabs/Effects/" + effectsNameStr[i], typeof(GameObject)) as GameObject, effectContentTran);
+                GameObject effectObj = Instantiate(GameResources.Effects[effectsNameStr[i]], effectContentTran);
                 effectObj.SetActive(false);
                 effectList.Add(effectObj);
             }
@@ -58,7 +60,7 @@ public class EffectsPoolingControl : MonoBehaviour
             List<GameObject> iconList = new List<GameObject>();
             for (int j = 0; j < maxCount; j++)
             {
-                GameObject iconObj = Instantiate(Resources.Load("Prefabs/stateDin/" + iconNameStr[i], typeof(GameObject)) as GameObject, effectContentTran);
+                GameObject iconObj = Instantiate(GameResources.StateDin[iconNameStr[i]], effectContentTran);
                 iconObj.SetActive(false);
                 iconList.Add(iconObj);
             }
@@ -101,7 +103,8 @@ public class EffectsPoolingControl : MonoBehaviour
                     return go;
                 }
             }
-            GameObject effectObj = Instantiate(Resources.Load("Prefabs/Effects/" + effectName, typeof(GameObject)) as GameObject, usedTran);
+
+            GameObject effectObj = Instantiate(GameResources.Effects[effectName], usedTran);
             effectObj.transform.position = usedTran.position;
             effectObj.SetActive(true);
             effectsPoolingList[index].Add(effectObj);
@@ -151,7 +154,8 @@ public class EffectsPoolingControl : MonoBehaviour
                     return go;
                 }
             }
-            GameObject effectObj = Instantiate(Resources.Load("Prefabs/Effects/" + effectName, typeof(GameObject)) as GameObject, effectContentTran);
+
+            GameObject effectObj = Instantiate(GameResources.Effects[effectName], effectContentTran);
             effectObj.transform.position = usedTran.position;
             effectObj.SetActive(true);
             effectsPoolingList[index].Add(effectObj);
@@ -194,7 +198,8 @@ public class EffectsPoolingControl : MonoBehaviour
                     return go;
                 }
             }
-            GameObject iconObj = Instantiate(Resources.Load("Prefabs/stateDin/" + iconName, typeof(GameObject)) as GameObject, usedTran);
+
+            GameObject iconObj = Instantiate(GameResources.StateDin[iconName], usedTran);
             iconObj.transform.position = usedTran.position;
             iconObj.SetActive(true);
             iconPoolingList[index].Add(iconObj);

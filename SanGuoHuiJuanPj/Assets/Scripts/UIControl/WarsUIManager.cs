@@ -102,6 +102,8 @@ public class WarsUIManager : MonoBehaviour
     bool isEnteredLevel;    //记录是否进入了关卡
     List<int> baYeBattleList; //记录霸业的战斗关卡
 
+    private GameResources GameResources => PlayerDataForGame.instance.gameResources;
+
     private void Awake()
     {
         if (instance == null)
@@ -203,20 +205,20 @@ public class WarsUIManager : MonoBehaviour
                 int eventId = int.Parse(LoadJsonFile.pointTableDatas[guanQiaId][4]);
                 GameObject obj = Instantiate(guanQiaPreObj, point0Tran);
                 obj.transform.localScale = new Vector3(0.8f, 0.8f, 1);
-                string eventType = LoadJsonFile.pointTableDatas[guanQiaId][3];
-                if (DetermineIsFightGuanQia(int.Parse(eventType)))
+                var eventType = int.Parse(LoadJsonFile.pointTableDatas[guanQiaId][3]);
+                if (DetermineIsFightGuanQia(eventType))
                 {
                     obj.transform.GetChild(1).GetChild(0).GetComponent<Text>().text = LoadJsonFile.pointTableDatas[guanQiaId][2];
                     obj.transform.GetChild(1).GetChild(0).gameObject.SetActive(true);
-                    if (eventType != "7")
+                    if (eventType != 7)
                     {
-                        obj.transform.GetChild(1).GetChild(1).GetComponent<Image>().sprite = Resources.Load("Image/guanQiaEvents/" + (eventType == "1" ? "flag0" : "flag1"), typeof(Sprite)) as Sprite;
+                        obj.transform.GetChild(1).GetChild(1).GetComponent<Image>().sprite = GameResources.GuanQiaEventImg[(eventType == 1 ? 0 : 1)];
                         obj.transform.GetChild(1).GetChild(1).GetChild(0).GetComponent<Text>().text = LoadJsonFile.pointTableDatas[guanQiaId][9];
                         obj.transform.GetChild(1).GetChild(1).GetChild(0).GetComponent<Text>().fontSize = (LoadJsonFile.pointTableDatas[guanQiaId][9].Length > 2 ? 45 : 50);
                         obj.transform.GetChild(1).GetChild(1).gameObject.SetActive(true);
                     }
                 }
-                obj.transform.GetChild(1).GetComponent<Image>().sprite = Resources.Load("Image/guanQiaEvents/" + LoadJsonFile.pointTableDatas[guanQiaId][6], typeof(Sprite)) as Sprite;
+                obj.transform.GetChild(1).GetComponent<Image>().sprite = GameResources.GuanQiaEventImg[int.Parse(LoadJsonFile.pointTableDatas[guanQiaId][6])];
 
                 childsTranform.Add(obj.transform);
                 //暂时不能选择后面的子关卡
@@ -236,7 +238,7 @@ public class WarsUIManager : MonoBehaviour
             //关卡艺术图
             levelIntroText.transform.parent.GetComponent<Image>().DOFade(0, 0.5f).OnComplete(delegate ()
             {
-                levelIntroText.transform.parent.GetComponent<Image>().sprite = Resources.Load("Image/ArtWindow/" + randImg, typeof(Sprite)) as Sprite;
+                levelIntroText.transform.parent.GetComponent<Image>().sprite = GameResources.ArtWindow[randImg];
                 levelIntroText.transform.parent.GetComponent<Image>().DOFade(1, 1f);
             });
 
@@ -351,14 +353,16 @@ public class WarsUIManager : MonoBehaviour
                     int guanQiaType = int.Parse(LoadJsonFile.pointTableDatas[guanQiaId][3]);
                     int eventId = int.Parse(LoadJsonFile.pointTableDatas[guanQiaId][4]);
                     GameObject obj = Instantiate(guanQiaPreObj, point1Tran);
-                    obj.transform.GetChild(1).GetComponent<Image>().sprite = Resources.Load("Image/guanQiaEvents/" + LoadJsonFile.pointTableDatas[guanQiaId][6], typeof(Sprite)) as Sprite;
+                    obj.transform.GetChild(1).GetComponent<Image>().sprite =
+                        GameResources.GuanQiaEventImg[
+                            int.Parse(LoadJsonFile.pointTableDatas[guanQiaId][6])];
                     if (DetermineIsFightGuanQia(guanQiaType))  //战斗关卡城池名
                     {
                         obj.transform.GetChild(1).GetChild(0).GetComponent<Text>().text = LoadJsonFile.pointTableDatas[guanQiaId][2];
                         obj.transform.GetChild(1).GetChild(0).gameObject.SetActive(true);
                         if (guanQiaType != 7)
                         {
-                            obj.transform.GetChild(1).GetChild(1).GetComponent<Image>().sprite = Resources.Load("Image/guanQiaEvents/" + (guanQiaType == 1 ? "flag0" : "flag1"), typeof(Sprite)) as Sprite;
+                            obj.transform.GetChild(1).GetChild(1).GetComponent<Image>().sprite = GameResources.GuanQiaEventImg[(guanQiaType == 1 ? 0 : 1)];
                             obj.transform.GetChild(1).GetChild(1).GetChild(0).GetComponent<Text>().text = LoadJsonFile.pointTableDatas[guanQiaId][9];
                             obj.transform.GetChild(1).GetChild(1).GetChild(0).GetComponent<Text>().fontSize = (LoadJsonFile.pointTableDatas[guanQiaId][9].Length > 2 ? 45 : 50);
                             obj.transform.GetChild(1).GetChild(1).gameObject.SetActive(true);
@@ -494,7 +498,7 @@ public class WarsUIManager : MonoBehaviour
         lastEvent = EventTypes.Battle;
         PlayAudioClip(21);
 
-        fightBackImage.sprite = Resources.Load("Image/battleBG/" + LoadJsonFile.pointTableDatas[guanQiaId][7], typeof(Sprite)) as Sprite;
+        fightBackImage.sprite = GameResources.BattleBG[int.Parse(LoadJsonFile.pointTableDatas[guanQiaId][7])];
         int bgmIndex = int.Parse(LoadJsonFile.pointTableDatas[guanQiaId][8]);
         AudioController1.instance.isNeedPlayLongMusic = true;
         AudioController1.instance.ChangeAudioClip(audioClipsFightBack[bgmIndex], audioVolumeFightBack[bgmIndex]);
@@ -775,7 +779,7 @@ public class WarsUIManager : MonoBehaviour
     /// <param name="updateMoney">刷新所需金币</param>
     [Skip] private bool UpdateShoppingList(int updateMoney)
     {
-        var re = PlayerDataForGame.instance.gameResources;
+        var re = GameResources;
         if (updateMoney != 0)
         {
             PlayAudioClip(13);
@@ -821,7 +825,7 @@ public class WarsUIManager : MonoBehaviour
                         woodsList.GetChild(i).GetChild(5).GetComponentInChildren<Text>().text = LoadJsonFile.classTableDatas[int.Parse(LoadJsonFile.heroTableDatas[cardId][5])][3];
                         //兵种框
                         woodsList.GetChild(i).GetChild(5).GetComponent<Image>().sprite = re.ClassImg[0];
-                        FrameChoose(LoadJsonFile.heroTableDatas[cardId][3], woodsList.GetChild(i).GetChild(6).GetComponent<Image>());
+                        FrameChoose(int.Parse(LoadJsonFile.heroTableDatas[cardId][3]), woodsList.GetChild(i).GetChild(6).GetComponent<Image>());
 
                         woodsList.GetChild(i).GetComponent<Button>().onClick.RemoveAllListeners();
                         woodsList.GetChild(i).GetComponent<Button>().onClick.AddListener(delegate ()
@@ -838,7 +842,8 @@ public class WarsUIManager : MonoBehaviour
                         woodsList.GetChild(i).GetChild(5).GetComponentInChildren<Text>().text = LoadJsonFile.classTableDatas[int.Parse(LoadJsonFile.soldierTableDatas[cardId][5])][3];
                         //兵种框
                         woodsList.GetChild(i).GetChild(5).GetComponent<Image>().sprite = re.ClassImg[1];
-                        FrameChoose(LoadJsonFile.soldierTableDatas[cardId][3], woodsList.GetChild(i).GetChild(6).GetComponent<Image>());
+                        FrameChoose(int.Parse(LoadJsonFile.soldierTableDatas[cardId][3]),
+                            woodsList.GetChild(i).GetChild(6).GetComponent<Image>());
                         woodsList.GetChild(i).GetComponent<Button>().onClick.RemoveAllListeners();
                         woodsList.GetChild(i).GetComponent<Button>().onClick.AddListener(delegate ()
                         {
@@ -854,7 +859,7 @@ public class WarsUIManager : MonoBehaviour
                         woodsList.GetChild(i).GetChild(5).GetComponentInChildren<Text>().text = LoadJsonFile.towerTableDatas[cardId][5];
                         //兵种框
                         woodsList.GetChild(i).GetChild(5).GetComponent<Image>().sprite = re.ClassImg[1];
-                        FrameChoose(LoadJsonFile.towerTableDatas[cardId][3], woodsList.GetChild(i).GetChild(6).GetComponent<Image>());
+                        FrameChoose(int.Parse(LoadJsonFile.towerTableDatas[cardId][3]), woodsList.GetChild(i).GetChild(6).GetComponent<Image>());
                         woodsList.GetChild(i).GetComponent<Button>().onClick.RemoveAllListeners();
                         woodsList.GetChild(i).GetComponent<Button>().onClick.AddListener(delegate ()
                         {
@@ -870,7 +875,7 @@ public class WarsUIManager : MonoBehaviour
                         woodsList.GetChild(i).GetChild(5).GetComponentInChildren<Text>().text = LoadJsonFile.trapTableDatas[cardId][5];
                         //兵种框
                         woodsList.GetChild(i).GetChild(5).GetComponent<Image>().sprite = re.ClassImg[1];
-                        FrameChoose(LoadJsonFile.trapTableDatas[cardId][3], woodsList.GetChild(i).GetChild(6).GetComponent<Image>());
+                        FrameChoose(int.Parse(LoadJsonFile.trapTableDatas[cardId][3]), woodsList.GetChild(i).GetChild(6).GetComponent<Image>());
                         woodsList.GetChild(i).GetComponent<Button>().onClick.RemoveAllListeners();
                         woodsList.GetChild(i).GetComponent<Button>().onClick.AddListener(delegate ()
                         {
@@ -1029,7 +1034,7 @@ public class WarsUIManager : MonoBehaviour
     //刷新奇遇商品
     private void UpdateQiYvWoods()
     {
-        var resources = PlayerDataForGame.instance.gameResources;
+        var resources = GameResources;
         int indexId = BackCardIdByWeightValue(LoadJsonFile.encounterTableDatas, 1);
         int cardType = int.Parse(LoadJsonFile.encounterTableDatas[indexId][2]);
         string cardRarity = LoadJsonFile.encounterTableDatas[indexId][3];
@@ -1049,7 +1054,8 @@ public class WarsUIManager : MonoBehaviour
                     woodsList.GetChild(i).GetChild(5).GetComponentInChildren<Text>().text = LoadJsonFile.classTableDatas[int.Parse(LoadJsonFile.heroTableDatas[cardId][5])][3];
                     //兵种框
                     woodsList.GetChild(i).GetChild(5).GetComponent<Image>().sprite = resources.ClassImg[0];
-                    FrameChoose(LoadJsonFile.heroTableDatas[cardId][3], woodsList.GetChild(i).GetChild(6).GetComponent<Image>());
+                    FrameChoose(int.Parse(LoadJsonFile.heroTableDatas[cardId][3]),
+                        woodsList.GetChild(i).GetChild(6).GetComponent<Image>());
                     Transform getBtnTran = woodsList.GetChild(i).GetChild(9);
                     getBtnTran.GetChild(0).gameObject.SetActive(true);
                     getBtnTran.GetChild(1).gameObject.SetActive(false);
@@ -1081,7 +1087,7 @@ public class WarsUIManager : MonoBehaviour
                     woodsList.GetChild(i).GetChild(5).GetComponentInChildren<Text>().text = LoadJsonFile.classTableDatas[int.Parse(LoadJsonFile.soldierTableDatas[cardId][5])][3];
                     //兵种框
                     woodsList.GetChild(i).GetChild(5).GetComponent<Image>().sprite = resources.ClassImg[1];
-                    FrameChoose(LoadJsonFile.soldierTableDatas[cardId][3], woodsList.GetChild(i).GetChild(6).GetComponent<Image>());
+                    FrameChoose(int.Parse(LoadJsonFile.soldierTableDatas[cardId][3]), woodsList.GetChild(i).GetChild(6).GetComponent<Image>());
                     Transform getBtnTran = woodsList.GetChild(i).GetChild(9);
                     getBtnTran.GetChild(0).gameObject.SetActive(true);
                     getBtnTran.GetChild(1).gameObject.SetActive(false);
@@ -1112,7 +1118,7 @@ public class WarsUIManager : MonoBehaviour
                     woodsList.GetChild(i).GetChild(3).GetComponent<Text>().color = NameColorChoose(LoadJsonFile.towerTableDatas[cardId][3]);
                     woodsList.GetChild(i).GetChild(4).GetComponent<Image>().sprite = resources.GradeImg[cardLevel];
                     woodsList.GetChild(i).GetChild(5).GetComponentInChildren<Text>().text = LoadJsonFile.towerTableDatas[cardId][5];
-                    FrameChoose(LoadJsonFile.towerTableDatas[cardId][3], woodsList.GetChild(i).GetChild(6).GetComponent<Image>());
+                    FrameChoose(int.Parse(LoadJsonFile.towerTableDatas[cardId][3]), woodsList.GetChild(i).GetChild(6).GetComponent<Image>());
                     //兵种框
                     woodsList.GetChild(i).GetChild(5).GetComponent<Image>().sprite = resources.ClassImg[1];
                     Transform getBtnTran = woodsList.GetChild(i).GetChild(9);
@@ -1146,7 +1152,7 @@ public class WarsUIManager : MonoBehaviour
                     woodsList.GetChild(i).GetChild(5).GetComponentInChildren<Text>().text = LoadJsonFile.trapTableDatas[cardId][5];
                     //兵种框
                     woodsList.GetChild(i).GetChild(5).GetComponent<Image>().sprite = resources.ClassImg[1];
-                    FrameChoose(LoadJsonFile.trapTableDatas[cardId][3], woodsList.GetChild(i).GetChild(6).GetComponent<Image>());
+                    FrameChoose(int.Parse(LoadJsonFile.trapTableDatas[cardId][3]), woodsList.GetChild(i).GetChild(6).GetComponent<Image>());
                     Transform getBtnTran = woodsList.GetChild(i).GetChild(9);
                     getBtnTran.GetChild(0).gameObject.SetActive(true);
                     getBtnTran.GetChild(1).gameObject.SetActive(false);
@@ -1183,7 +1189,7 @@ public class WarsUIManager : MonoBehaviour
             updateShopNeedGold = 2;
             tran.GetChild(3).GetChild(1).GetComponent<Text>().text = updateShopNeedGold.ToString();
             //标题
-            tran.GetChild(0).GetComponent<Image>().sprite = Resources.Load("Image/guanQiaEvents/6", typeof(Sprite)) as Sprite;
+            tran.GetChild(0).GetComponent<Image>().sprite = GameResources.GuanQiaEventImg[6];
             //刷新按钮
             tran.GetChild(3).gameObject.SetActive(true);
             //奇遇刷新按钮
@@ -1195,7 +1201,7 @@ public class WarsUIManager : MonoBehaviour
             //奇遇刷新按钮
             tran.GetChild(5).GetComponent<Button>().enabled = true;
 
-            tran.GetChild(0).GetComponent<Image>().sprite = Resources.Load("Image/guanQiaEvents/5", typeof(Sprite)) as Sprite;
+            tran.GetChild(0).GetComponent<Image>().sprite = GameResources.GuanQiaEventImg[5];
             tran.GetChild(3).gameObject.SetActive(false);
             tran.GetChild(5).gameObject.SetActive(true);
             UpdateQiYvWoods();
@@ -1468,7 +1474,7 @@ public class WarsUIManager : MonoBehaviour
     //创建玩家武将卡牌
     private void CreateHeroCardToFightList(NowLevelAndHadChip cardData)
     {
-        var re = PlayerDataForGame.instance.gameResources;
+        var re = GameResources;
         GameObject obj = Instantiate(cardForWarListPres, heroCardListObj.transform);
         obj.GetComponent<CardForDrag>().posIndex = -1;
         obj.transform.GetChild(1).GetComponent<Image>().sprite = re.HeroImg[cardData.id];
@@ -1479,7 +1485,7 @@ public class WarsUIManager : MonoBehaviour
         obj.transform.GetChild(5).GetComponentInChildren<Text>().text = LoadJsonFile.classTableDatas[int.Parse(LoadJsonFile.heroTableDatas[cardData.id][5])][3];
         //兵种框
         obj.transform.GetChild(5).GetComponent<Image>().sprite = re.ClassImg[0];
-        FrameChoose(LoadJsonFile.heroTableDatas[cardData.id][3], obj.transform.GetChild(6).GetComponent<Image>());
+        FrameChoose(int.Parse(LoadJsonFile.heroTableDatas[cardData.id][3]), obj.transform.GetChild(6).GetComponent<Image>());
         //添加按住抬起方法
         FightForManager.instance.GiveGameObjEventForHoldOn(obj, LoadJsonFile.classTableDatas[int.Parse(LoadJsonFile.heroTableDatas[cardData.id][5])][4]);
         FightCardData data = new FightCardData();
@@ -1502,7 +1508,7 @@ public class WarsUIManager : MonoBehaviour
     //创建玩家士兵卡牌
     private void CreateSoldierCardToFightList(NowLevelAndHadChip cardData)
     {
-        var re = PlayerDataForGame.instance.gameResources;
+        var re = GameResources;
         GameObject obj = Instantiate(cardForWarListPres, heroCardListObj.transform);
         obj.GetComponent<CardForDrag>().posIndex = -1;
         obj.transform.GetChild(1).GetComponent<Image>().sprite = re.FuZhuImg[int.Parse(LoadJsonFile.soldierTableDatas[cardData.id][13])];
@@ -1513,7 +1519,7 @@ public class WarsUIManager : MonoBehaviour
         obj.transform.GetChild(5).GetComponentInChildren<Text>().text = LoadJsonFile.classTableDatas[int.Parse(LoadJsonFile.soldierTableDatas[cardData.id][5])][3];
         //兵种框
         obj.transform.GetChild(5).GetComponent<Image>().sprite = re.ClassImg[1];
-        FrameChoose(LoadJsonFile.soldierTableDatas[cardData.id][3], obj.transform.GetChild(6).GetComponent<Image>());
+        FrameChoose(int.Parse(LoadJsonFile.soldierTableDatas[cardData.id][3]), obj.transform.GetChild(6).GetComponent<Image>());
         //添加按住抬起方法
         FightForManager.instance.GiveGameObjEventForHoldOn(obj, LoadJsonFile.classTableDatas[int.Parse(LoadJsonFile.soldierTableDatas[cardData.id][5])][4]);
         FightCardData data = new FightCardData();
@@ -1534,7 +1540,7 @@ public class WarsUIManager : MonoBehaviour
     //创建玩家塔卡牌
     private void CreateTowerCardToFightList(NowLevelAndHadChip cardData)
     {
-        var re = PlayerDataForGame.instance.gameResources;
+        var re = GameResources;
         GameObject obj = Instantiate(cardForWarListPres, heroCardListObj.transform);
         obj.GetComponent<CardForDrag>().posIndex = -1;
         obj.transform.GetChild(1).GetComponent<Image>().sprite = re.FuZhuImg[int.Parse(LoadJsonFile.towerTableDatas[cardData.id][10])];
@@ -1545,7 +1551,7 @@ public class WarsUIManager : MonoBehaviour
         obj.transform.GetChild(5).GetComponentInChildren<Text>().text = LoadJsonFile.towerTableDatas[cardData.id][5];
         //兵种框
         obj.transform.GetChild(5).GetComponent<Image>().sprite = re.ClassImg[1];
-        FrameChoose(LoadJsonFile.towerTableDatas[cardData.id][3], obj.transform.GetChild(6).GetComponent<Image>());
+        FrameChoose(int.Parse(LoadJsonFile.towerTableDatas[cardData.id][3]), obj.transform.GetChild(6).GetComponent<Image>());
         //添加按住抬起方法
         FightForManager.instance.GiveGameObjEventForHoldOn(obj, LoadJsonFile.towerTableDatas[cardData.id][12]);
         FightCardData data = new FightCardData();
@@ -1568,7 +1574,7 @@ public class WarsUIManager : MonoBehaviour
     //创建玩家陷阱卡牌
     private void CreateTrapCardToFightList(NowLevelAndHadChip cardData)
     {
-        var re = PlayerDataForGame.instance.gameResources;
+        var re = GameResources;
         GameObject obj = Instantiate(cardForWarListPres, heroCardListObj.transform);
         obj.GetComponent<CardForDrag>().posIndex = -1;
         obj.transform.GetChild(1).GetComponent<Image>().sprite = re.FuZhuImg[int.Parse(LoadJsonFile.trapTableDatas[cardData.id][8])];
@@ -1579,7 +1585,7 @@ public class WarsUIManager : MonoBehaviour
         obj.transform.GetChild(5).GetComponentInChildren<Text>().text = LoadJsonFile.trapTableDatas[cardData.id][5];
         //兵种框
         obj.transform.GetChild(5).GetComponent<Image>().sprite = re.ClassImg[1];
-        FrameChoose(LoadJsonFile.trapTableDatas[cardData.id][3], obj.transform.GetChild(6).GetComponent<Image>());
+        FrameChoose(int.Parse(LoadJsonFile.trapTableDatas[cardData.id][3]), obj.transform.GetChild(6).GetComponent<Image>());
         //添加按住抬起方法
         FightForManager.instance.GiveGameObjEventForHoldOn(obj, LoadJsonFile.trapTableDatas[cardData.id][11]);
         FightCardData data = new FightCardData();
@@ -1601,19 +1607,19 @@ public class WarsUIManager : MonoBehaviour
     }
 
     //匹配稀有度边框
-    public void FrameChoose(string rarity, Image img)
+    public void FrameChoose(int rarity, Image img)
     {
         img.enabled = true;
         switch (rarity)
         {
-            case "4":
-                img.sprite = Resources.Load("Image/frameImage/tong", typeof(Sprite)) as Sprite;
+            case 4:
+                img.sprite = GameResources.FrameImg[3];
                 break;
-            case "5":
-                img.sprite = Resources.Load("Image/frameImage/yin", typeof(Sprite)) as Sprite;
+            case 5:
+                img.sprite = GameResources.FrameImg[2];
                 break;
-            case "6":
-                img.sprite = Resources.Load("Image/frameImage/jin", typeof(Sprite)) as Sprite;
+            case 6:
+                img.sprite = GameResources.FrameImg[1];
                 break;
             default:
                 img.enabled = false;

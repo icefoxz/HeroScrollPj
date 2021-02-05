@@ -315,9 +315,6 @@
     <Reference Include="Newtonsoft.Json">
       <HintPath>H:/HeroScroll/HeroScrollPj/SanGuoHuiJuanPj/Assets/Plugins/JsonNet-Lite/Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="LitJson">
-      <HintPath>H:/HeroScroll/HeroScrollPj/SanGuoHuiJuanPj/Assets/Plugins/LitJson/LitJson.dll</HintPath>
-    </Reference>
     <Reference Include="Google.IOSResolver_v1.2.163">
       <HintPath>H:/HeroScroll/HeroScrollPj/SanGuoHuiJuanPj/Library/PackageCache/com.google.external-dependency-manager@1.2.163/ExternalDependencyManager/Editor/Google.IOSResolver_v1.2.163.dll</HintPath>
     </Reference>
