@@ -163,6 +163,7 @@ public class WarTableItem
     public string YuanBaoR { get; set; }
     public string YuQueR { get; set; }
     public string TiLiR { get; set; }
+    public string ShiLi { get; set; }
 }
 public class CityLevelTableItem
 {

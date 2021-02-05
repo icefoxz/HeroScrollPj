@@ -500,6 +500,8 @@ public class LoadJsonFile : MonoBehaviour
                 warTableDatas[i].Add(root.WarTable[i].YuanBaoR);
                 warTableDatas[i].Add(root.WarTable[i].YuQueR);
                 warTableDatas[i].Add(root.WarTable[i].TiLiR);
+                warTableDatas[i].Add(root.WarTable[i].ShiLi);
+
             }
             //Debug.Log("Json文件加载成功---" + tableNames[indexTable] + ".Json");
             indexTable++;
