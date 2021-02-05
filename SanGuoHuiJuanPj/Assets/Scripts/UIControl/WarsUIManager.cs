@@ -50,7 +50,7 @@ public class WarsUIManager : MonoBehaviour
     /// </summary>
     private EventTypes lastEvent = EventTypes.Generic;
     
-    public MiniWindowUI gameOverWindow;//战役结束ui
+    public WarMiniWindowUI gameOverWindow;//战役结束ui
     [SerializeField]
     float percentReturnHp;    //回春回血百分比
 
@@ -1609,6 +1609,8 @@ public class WarsUIManager : MonoBehaviour
     //匹配稀有度边框
     public void FrameChoose(int rarity, Image img)
     {
+        img.enabled = false;
+        return;//暂时不提供边框
         img.enabled = true;
         switch (rarity)
         {

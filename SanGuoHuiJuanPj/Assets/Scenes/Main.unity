@@ -2377,7 +2377,6 @@ MonoBehaviour:
   - {fileID: 8582694424189830778}
   - {fileID: 8582694425421930322}
   - {fileID: 8582694424458564201}
-  adBtnForFreeBox: {fileID: 1864751834}
   chickenEntObj: {fileID: 54344889}
   chickenShopWindowObj: {fileID: 275810117}
   chickenShopBtns:

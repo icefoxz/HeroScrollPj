@@ -7,7 +7,6 @@ public class MiniWindowUI : MonoBehaviour
     public Sprite[] rewardImages;
     public Transform listView;
     private List<MiniWindowElementUI> items = new List<MiniWindowElementUI>();
-
     public virtual void Init()
     {
         foreach (var ui in listView.GetComponentsInChildren<MiniWindowElementUI>(true))
@@ -15,7 +14,7 @@ public class MiniWindowUI : MonoBehaviour
         gameObject.SetActive(false);
     }
 
-    public void Show(Dictionary<int, int> rewardMap)
+    public virtual void Show(Dictionary<int, int> rewardMap)
     {
         if (items.Count > 0) items.ForEach(element => element.gameObject.SetActive(false));
         var index = 0;

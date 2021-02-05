@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -7,6 +8,12 @@ public class BaYeWindowUI : MiniWindowUI
     public Transform questionView;
     public Text question;
     public Button[] answer;
+
+    public override void Show(Dictionary<int, int> rewardMap)
+    {
+        base.Show(rewardMap);
+        questionView.gameObject.SetActive(false);
+    }
 
     public void Show(string quest, string[] answerStrings, int answerIndex, Action onCorrectAction, Action onFaultyAction)
     {

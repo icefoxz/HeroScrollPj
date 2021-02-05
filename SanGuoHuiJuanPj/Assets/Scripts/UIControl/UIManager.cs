@@ -542,7 +542,8 @@ public class UIManager : MonoBehaviour
                     //名字颜色根据稀有度
                     obj.transform.GetChild(2).GetComponent<Text>().color = NameColorChoose(LoadJsonFile.heroTableDatas[heroId][3]);
                     //卡牌
-                    obj.transform.GetChild(1).GetComponent<Image>().sprite = GameResources.HeroImg[int.Parse(LoadJsonFile.heroTableDatas[heroId][16])];
+                    obj.transform.GetChild(1).GetComponent<Image>().sprite =
+                        GameResources.HeroImg[heroId];
                     //兵种名
                     obj.transform.GetChild(4).GetComponentInChildren<Text>().text = LoadJsonFile.classTableDatas[int.Parse(LoadJsonFile.heroTableDatas[heroId][5])][3];
                     //兵种框
@@ -1422,13 +1423,17 @@ public class UIManager : MonoBehaviour
     /// <param name="heroData"></param>
     private void ShowOneHeroRules(NowLevelAndHadChip heroData)
     {
+        if (heroData.id == 59)
+        {
+
+        }
         GameObject obj = GetHeroCardToShow();
         //名字
         ShowNameTextRules(obj.transform.GetChild(3).GetComponent<Text>(), LoadJsonFile.heroTableDatas[heroData.id][1]);
         //名字颜色根据稀有度
         obj.transform.GetChild(3).GetComponent<Text>().color = NameColorChoose(LoadJsonFile.heroTableDatas[heroData.id][3]);
         //卡牌
-        obj.transform.GetChild(1).GetComponent<Image>().sprite = GameResources.HeroImg[int.Parse(LoadJsonFile.heroTableDatas[heroData.id][16])];
+        obj.transform.GetChild(1).GetComponent<Image>().sprite = GameResources.HeroImg[heroData.id];
         //兵种名
         obj.transform.GetChild(5).GetComponentInChildren<Text>().text = LoadJsonFile.classTableDatas[int.Parse(LoadJsonFile.heroTableDatas[heroData.id][5])][3];
         //兵种框
@@ -1501,7 +1506,7 @@ public class UIManager : MonoBehaviour
         //名字颜色
         showCardObj.transform.GetChild(3).GetComponent<Text>().color = NameColorChoose(LoadJsonFile.heroTableDatas[heroData.id][3]);
         //卡牌
-        showCardObj.transform.GetChild(1).GetComponent<Image>().sprite = GameResources.HeroImg[int.Parse(LoadJsonFile.heroTableDatas[heroData.id][16])];
+        showCardObj.transform.GetChild(1).GetComponent<Image>().sprite = GameResources.HeroImg[heroData.id];
         //兵种名
         showCardObj.transform.GetChild(5).GetComponentInChildren<Text>().text = LoadJsonFile.classTableDatas[int.Parse(LoadJsonFile.heroTableDatas[heroData.id][5])][3];
         //兵种框
@@ -1722,6 +1727,8 @@ public class UIManager : MonoBehaviour
     /// </summary>
     public void FrameChoose(string rarity, Image img)
     {
+        img.enabled = false;//暂时不提供边框
+        return;
         img.enabled = true;
         switch (rarity)
         {
@@ -2055,7 +2062,7 @@ public class UIManager : MonoBehaviour
             switch (rewardsCard.cardType)
             {
                 case 0:
-                    cardTran.GetComponent<Image>().sprite = GameResources.HeroImg[int.Parse(LoadJsonFile.heroTableDatas[rewardsCard.cardId][16])];
+                    cardTran.GetComponent<Image>().sprite = GameResources.HeroImg[rewardsCard.cardId];
                     ShowNameTextRules(cardTran.GetChild(0).GetComponent<Text>(), LoadJsonFile.heroTableDatas[rewardsCard.cardId][1]);
                     cardTran.GetChild(0).GetComponent<Text>().color = NameColorChoose(LoadJsonFile.heroTableDatas[rewardsCard.cardId][3]);
                     cardTran.GetChild(1).GetComponent<Image>().sprite = GameResources.ClassImg[0];
