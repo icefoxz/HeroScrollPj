@@ -56,6 +56,7 @@ public class JinNangUI: MonoBehaviour
             DisplayReward(yuanBaoValue, staminaValue);
             doubleAdBtn.gameObject.SetActive(true);
             continueBtn.onClick.RemoveAllListeners();
+            doubleAdBtn.onClick.RemoveAllListeners();
             //点击背景领取并退出锦囊
             continueBtn.onClick.AddListener(() =>
             {
@@ -92,7 +93,6 @@ public class JinNangUI: MonoBehaviour
                     PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(6));
                     continueBtn.enabled = true;
                     doubleAdBtn.enabled = true;
-                    doubleAdBtn.onClick.RemoveAllListeners();
                 });
             });
         });

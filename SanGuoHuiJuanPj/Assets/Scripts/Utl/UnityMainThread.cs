@@ -10,15 +10,15 @@ namespace Assets.Scripts.Utl
 {
     internal class UnityMainThread : MonoBehaviour
     {
-        internal static UnityMainThread run;
+        internal static UnityMainThread thread;
         private Queue<UnityAction> jobs = new Queue<UnityAction>();
-        void Awake() => run = this;
+        void Awake() => thread = this;
 
         void Update()
         {
             while (jobs.Count > 0) jobs.Dequeue().Invoke();
         }
 
-        internal void AddJob(UnityAction newJob) => jobs.Enqueue(newJob);
+        internal void RunNextFrame(UnityAction newJob) => jobs.Enqueue(newJob);
     }
 }

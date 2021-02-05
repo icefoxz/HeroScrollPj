@@ -103,8 +103,6 @@ public class UIManager : MonoBehaviour
     [SerializeField]
     GameObject[] guideObjs; // 指引objs 0:桃园宝箱 1:战役宝箱 2:合成 3:开始战役
 
-    public Button adBtnForFreeBox; //免费开启酒坛广告按钮
-
     [SerializeField]
     GameObject chickenEntObj;   //体力入口
     [SerializeField]

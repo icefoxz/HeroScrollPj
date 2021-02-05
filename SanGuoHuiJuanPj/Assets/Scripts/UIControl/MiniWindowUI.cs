@@ -23,7 +23,7 @@ public class MiniWindowUI : MonoBehaviour
         {
             if (items.Count == index)
             {
-                var item = Instantiate<MiniWindowElementUI>(prefab, listView);
+                var item = Instantiate(prefab, listView);
                 items.Add(item);
             }
             items[index].image.sprite = rewardImages[set.Key];
