@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
@@ -8,6 +9,6 @@ public class BaYeCityField : MonoBehaviour
 {
     public int id = -1;
     public int boundForce = -1;
-    public int boundWar = -1;
+    public List<int> boundWars = new List<int>();
     public Button button;
 }

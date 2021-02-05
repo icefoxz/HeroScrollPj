@@ -26,6 +26,7 @@ public class AdmobAgent : AdAgent
         controller = adController as AdManager;
         instance = this;
         Instance = this;
+        gameObject.SetActive(false);
         loadButton.gameObject.SetActive(false);
         showButton.gameObject.SetActive(false);
         loadButton.onClick.AddListener(OnLoad);

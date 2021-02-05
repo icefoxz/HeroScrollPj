@@ -49,8 +49,8 @@ public class WarsUIManager : MonoBehaviour
     /// 上一个关卡类型
     /// </summary>
     private EventTypes lastEvent = EventTypes.Generic;
-    [SerializeField]
-    GameObject gameOverObj;  //战役结束ui
+    
+    public MiniWindowUI gameOverWindow;//战役结束ui
     [SerializeField]
     float percentReturnHp;    //回春回血百分比
 
@@ -149,6 +149,7 @@ public class WarsUIManager : MonoBehaviour
         if (PlayerDataForGame.instance.WarType == PlayerDataForGame.WarTypes.Baye)
             baYeBattleList = new List<int>();
         adRefreshBtn.onClick.AddListener(WatchAdForUpdateQiYv);
+        gameOverWindow.Init();
         InitMainUIShow();
 
         InitCardListShow();
@@ -277,10 +278,38 @@ public class WarsUIManager : MonoBehaviour
             //通关不返还体力
             PlayerDataForGame.instance.getBackTiLiNums = 0;
         }
+        var rewardMap = new Dictionary<int, int>();
+        //如果是霸业
+        if(PlayerDataForGame.instance.WarType == PlayerDataForGame.WarTypes.Baye)
+        {
+            /**
+             * -判断.上一个场景是不是战斗。
+             * -判断.第几个霸业战斗
+             * -判断.霸业经验奖励是否已被领取
+             * 1.加经验
+             */
+            if (isWin)
+            {
+                var baYe = PlayerDataForGame.instance.warsData.baYe;
+                var cityEvent = baYe.data.Single(f => f.CityId == PlayerDataForGame.instance.selectedCity);
+                var warIndex = cityEvent.WarIds.IndexOf(PlayerDataForGame.instance.selectedWarId);
+                if(!cityEvent.PassedStages[warIndex])//如果过关未被记录
+                {
+                    var exp = cityEvent.ExpList[warIndex];//获取相应经验值
+                    cityEvent.PassedStages[warIndex] = true;
+                    PlayerDataForGame.instance.baYeManager.AddExp(cityEvent.CityId, exp);//给玩家加经验值
+                    PlayerDataForGame.instance.mainSceneTips = $"获得经验值：{exp}";
+                    rewardMap.Add(1, exp);
+                }
+            }
+            //霸业的战斗金币传到主城
+            PlayerDataForGame.instance.warsData.baYe.gold = GoldForCity;
+        }
 
         int guanQiaSum = int.Parse(LoadJsonFile.warTableDatas[PlayerDataForGame.instance.selectedWarId][4]);
 
-        gameOverObj.transform.GetChild(1).GetChild(1).GetChild(0).GetComponent<Text>().text = "×" + treasureChestNums;
+        rewardMap.Add(2, treasureChestNums);//index2是宝箱图
+        gameOverWindow.Show(rewardMap);
 
         if (passedGuanQiaNums > PlayerDataForGame.instance.warsData.warUnlockSaveData[PlayerDataForGame.instance.selectedWarId].unLockCount)
         {
@@ -289,13 +318,8 @@ public class WarsUIManager : MonoBehaviour
         
         PlayerDataForGame.instance.isNeedSaveData = true;
         LoadSaveData.instance.SaveGameData(3);
-        gameOverObj.SetActive(true);
+        //gameOverObj.SetActive(true);
 
-        //霸业的战斗金币传到主城
-        if (PlayerDataForGame.instance.WarType == PlayerDataForGame.WarTypes.Baye)
-        {
-            PlayerDataForGame.instance.warsData.baYe.gold = GoldForCity;
-        }
     }
 
     //初始化父级关卡
@@ -1624,28 +1648,6 @@ public class WarsUIManager : MonoBehaviour
     //刷新战役进度显示
     private void UpdateBattleSchedule()
     {
-        //如果是霸业
-        if(PlayerDataForGame.instance.WarType == PlayerDataForGame.WarTypes.Baye)
-        {
-            /**
-             * -判断.上一个场景是不是战斗。
-             * -判断.第几个霸业战斗
-             * -判断.霸业经验奖励是否已被领取
-             * 1.加经验
-             */
-            if (lastEvent == EventTypes.Battle)
-            {
-                var baYe = PlayerDataForGame.instance.warsData.baYe;
-                var field = baYe.data.Single(f => f.CityId == PlayerDataForGame.instance.selectedCity);
-                if(!field.PassedStages[baYeBattleList.Count-1])//如果过关未被记录
-                {
-                    var exp = field.ExpList[baYeBattleList.Count - 1];//获取相应经验值
-                    field.PassedStages[baYeBattleList.Count -1] = true;
-                    PlayerDataForGame.instance.baYeManager.SetExp(field.CityId, exp);//给玩家加经验值
-                    PlayerDataForGame.instance.mainSceneTips = $"获得经验值：{exp}";
-                }
-            }
-        }
         nowGuanQiaIndex++;
         if (nowGuanQiaIndex >= int.Parse(LoadJsonFile.warTableDatas[PlayerDataForGame.instance.selectedWarId][4]))
         {

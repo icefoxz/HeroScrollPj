@@ -1014,7 +1014,7 @@ public class LoadSaveData : MonoBehaviour
         return jsonStr;
     }
 
-    public void BindBaYeForceAndStage(int eventId, int cityId, int forceId, int warId)
+    public void BindBaYeForceAndStage(int eventId, int cityId, int forceId, List<int> warIds)
     {
         var baYe = PlayerDataForGame.instance.warsData.baYe;
         if (baYe.data.Any(d => d.CityId == cityId)) return;
@@ -1024,7 +1024,7 @@ public class LoadSaveData : MonoBehaviour
             CityId = cityId,
             EventId = eventId,
             ForceId = forceId,
-            WarId = warId,
+            WarIds = warIds,
             ExpList = expList,
             PassedStages = new bool[expList.Count]
         });

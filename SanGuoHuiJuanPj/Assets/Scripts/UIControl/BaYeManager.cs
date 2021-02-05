@@ -64,12 +64,12 @@ public class BaYeManager : MonoBehaviour
                     new BaYeEventWeightElement(id, int.Parse(LoadJsonFile.baYeShiJianTableDatas[id][1]))).Pick().Id;
                  //根据地图获取对应的事件id列表，并根据权重随机获取一个事件id
                 var baYeEvent = GetBaYeEvent(baYeEventId, cityId);
-                return (cityId, baYeEventId, baYeEvent.ExpList, baYeEvent.WarId);
+                return (cityId, baYeEventId, baYeEvent.ExpList, WarIds: baYeEvent.WarIds);
             })
             .OrderBy(e => e.cityId)
             .ToList(); //根据权重随机战役id
         map = events.Select(e => new BaYeCityEvent
-                {CityId = e.cityId, EventId = e.baYeEventId, WarId = e.WarId, ExpList = e.ExpList})
+                {CityId = e.cityId, EventId = e.baYeEventId, WarIds = e.WarIds, ExpList = e.ExpList})
             .ToList();
 
         var baYe = PlayerDataForGame.instance.warsData.baYe;
@@ -168,10 +168,9 @@ public class BaYeManager : MonoBehaviour
         var baYeBattleId = int.Parse(baYeEvent[3]);//霸业事件[3]列读取BaYeBattle表Id
         var battleTable = LoadJsonFile.baYeBattleTableDatas[baYeBattleId];
         var playerLevelAlign = PlayerDataForGame.instance.pyData.Level - 1;
-        var levelTableId = LoadJsonFile.playerLevelTableDatas[playerLevelAlign][9];
-        var warId = int.Parse(battleTable[int.Parse(levelTableId) + 1]);
-
-        return new BaYeCityEvent {EventId = eventId, CityId = cityId, WarId = warId, ExpList = baYeExp, PassedStages = new bool[baYeExp.Count]};
+        var levelTableId = int.Parse(LoadJsonFile.playerLevelTableDatas[playerLevelAlign][9]);
+        var warIds = battleTable[levelTableId + 1].Split(',').Where(s=>!string.IsNullOrWhiteSpace(s)).Select(int.Parse).ToList();
+        return new BaYeCityEvent {EventId = eventId, CityId = cityId, WarIds = warIds, ExpList = baYeExp, PassedStages = new bool[baYeExp.Count]};
     }
     /// <summary>
     /// 获取宝箱数据 item1 = id，item2 = 经验，item3 = 奖励id
@@ -300,7 +299,7 @@ public class BaYeManager : MonoBehaviour
                 var pick = Random.Range(0, count);
                 var row = LoadJsonFile.testTableDatas[pick];
                 var answerIndex = int.Parse(row[2]) - 1;//-1答案从1开始，索引从0开始。
-                UIManager.instance.baYeMiniWindowUi.Show(row[1], new[] {row[3], row[4], row[5]}, answerIndex, () =>
+                UIManager.instance.baYeWindowUi.Show(row[1], new[] {row[3], row[4], row[5]}, answerIndex, () =>
                     {
                         OnReward(sEvent);
                         PlayerDataForGame.instance.ShowStringTips("三日不见，当刮目相看！");
@@ -324,7 +323,7 @@ public class BaYeManager : MonoBehaviour
                 rewardMap.Add(0, storyEvent.GoldReward);
             if (sEvent.ExpReward > 0)
                 rewardMap.Add(1, storyEvent.ExpReward);
-            UIManager.instance.baYeMiniWindowUi.Show(rewardMap);
+            UIManager.instance.baYeWindowUi.Show(rewardMap);
             AddGoldAndExp(-1, storyEvent.ExpReward, storyEvent.GoldReward);
             UIManager.instance.ResetBaYeProgressAndGold(PlayerDataForGame.instance.warsData.baYe);
         }
