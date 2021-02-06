@@ -3,9 +3,10 @@ using System.Collections;
 using Assets.Scripts.Utl;
 using DG.Tweening;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
-public class AdmobAgent : BlankAgent
+public class AdmobAgent : AdAgent
 {
     public Button loadButton;
     public Button showButton;
@@ -15,24 +16,55 @@ public class AdmobAgent : BlankAgent
     public Text proceedMessage;
     public Image countdownWindow;
     public bool isAutoRequest;
-    public int cancelSecs = 10;
+    public int cancelSecs = 15;
     private bool isBusy { get; set; }
+    private UnityAction<bool, string> callBackAction;
+    private AdControllerBase controller;
 
     public override void Init(AdControllerBase adController)
     {
-        base.Init(adController);
+        controller = adController;
         instance = this;
         loadButton.gameObject.SetActive(false);
         showButton.gameObject.SetActive(false);
         loadButton.onClick.AddListener(OnLoad);
         showButton.onClick.AddListener(OnShow);
+        instance = this;
         cancelButton.onClick.AddListener(() =>
         {
             callBackAction(false, "cancel");
             OnReset();
         });
+        gameObject.SetActive(false);
     }
 
+    public override void BusyRetry(UnityAction<string> requestAction, UnityAction cancelAction)
+    {
+        CallAd((success,msg) =>
+        {
+            if (success) requestAction(msg);
+            else cancelAction();
+        });
+
+    }
+
+    public override void BusyRetry(UnityAction requestAction, UnityAction cancelAction)
+    {
+        CallAd((success,_) =>
+        {
+            if (success) requestAction();
+            else cancelAction();
+        });
+    }
+
+    public override void CallAd(UnityAction<bool,string> callBack)
+    {
+        gameObject.SetActive(true);
+        callBackAction = callBack;
+        if(controller.Status != States.Loaded)
+            OnLoad();
+        else OnShow();
+    }
     protected new void OnLoad()
     {
         isBusy = true;

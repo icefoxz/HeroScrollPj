@@ -8,7 +8,7 @@ using Beebyte.Obfuscator;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class TaoYuan : MonoBehaviour
+[Skip]public class TaoYuan : MonoBehaviour
 {
     public int openJiuTanYBNums;   //开酒坛所需元宝
     public Button freeJiuTanAdButton;//开酒坛的免费按键
@@ -87,7 +87,6 @@ public class TaoYuan : MonoBehaviour
     /// <summary>
     /// 观看视频免费开启酒坛
     /// </summary>
-    [Skip]
     public void OnWatchAdGetJiuTan()
     {
         if (isWatchingJiuTanAd) return;
@@ -121,7 +120,7 @@ public class TaoYuan : MonoBehaviour
     /// 打开桃园宝箱
     /// </summary>
     /// <param name="chest"></param>
-    [Skip]public void OpenChest(TaoYuanChestUI chest)
+    public void OpenChest(TaoYuanChestUI chest)
     {
         var isSuccessSpend = false;
         var chestId = -1; //宝箱在表里的Id

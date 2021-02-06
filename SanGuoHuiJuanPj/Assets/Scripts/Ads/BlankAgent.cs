@@ -3,12 +3,12 @@ using UnityEngine.Events;
 
 public class BlankAgent : AdAgent
 {
-    protected AdManager controller;
+    protected AdControllerBase controller;
     protected UnityAction<bool,string> callBackAction;
 
     public override void Init(AdControllerBase adController)
     {
-        controller = adController as AdManager;
+        controller = adController;
         instance = this;
         gameObject.SetActive(false);
     }

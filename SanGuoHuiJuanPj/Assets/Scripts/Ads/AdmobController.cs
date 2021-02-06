@@ -5,13 +5,16 @@ using UnityEngine.Events;
 public class AdmobController : AdControllerBase
 {
     public AdModes Mode => AdModes.Preload;
-    public AdAgent.States Status { get; private set; }
+
+    public override AdAgent.States Status => status;
+
     public const string AdUnitId = "ca-app-pub-6126766415984891/1283385219";
     public const string TestId = "ca-app-pub-3940256099942544/5224354917";
     public string LastMessage { get; private set; }
     private ResponseEvent onLoad = new ResponseEvent();
     private ResponseEvent onClose = new ResponseEvent();
     private RewardedAd rewardedAd;
+    private AdAgent.States status;
 
     public override void RequestLoad(UnityAction<bool,string> loadingAction)
     {
@@ -32,7 +35,7 @@ public class AdmobController : AdControllerBase
     #region 封装内部执行代码
     private void OnStateChangeSubscriptionAction(AdAgent.States status, string message = null)
     {
-        Status = status;
+        this.status = status;
         switch (Status)
         {
             case AdAgent.States.Loading:

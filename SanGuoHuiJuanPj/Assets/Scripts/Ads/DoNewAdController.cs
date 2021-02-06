@@ -11,15 +11,9 @@ using UnityEngine.UI;
 public class DoNewAdController : AdControllerBase
 {
     private static DoNewAdController instance;
-    public enum AdStates
-    {
-        None,
-        RequestingCache,
-        Cached
-    }
 
-    public AdStates Status => status;
-    public AdStates status;
+    public override AdAgent.States Status => status;
+    public AdAgent.States status;
 
     public AdModes Mode => mode;
     public AdModes mode;
@@ -38,7 +32,7 @@ public class DoNewAdController : AdControllerBase
     void Awake()
     {
         SDK.apiType = SDK.ApiType.Release;
-        status = AdStates.None;
+        status = AdAgent.States.None;
     }
 
 #if UNITY_EDITOR
@@ -47,7 +41,7 @@ public class DoNewAdController : AdControllerBase
     void Update()//这个仅仅用在编辑器
     {
         if(!isWaitingStateChange)return;
-        if (status == AdStates.Cached)
+        if (status == AdAgent.States.Loaded)
         {
             isWaitingStateChange = false;
             OnCached.Invoke();

@@ -11,11 +11,11 @@ public class AdManager : AdControllerBase
     public DoNewAdController DoNewAdController { get; private set; }
     public AdmobController AdmobController { get; private set; }
     public const string MainCanvas = "MainCanvas";
-    public AdAgent.States Status => AdmobController.Status;
+    public override AdAgent.States Status => AdmobController.Status;
 
     void Start()
     {
-        if (isInit) throw XDebug.Throw<DoNewAdController>("Duplicate init!");
+        if (isInit) throw XDebug.Throw<AdManager>("Duplicate init!");
         isInit = true;
         DontDestroyOnLoad(gameObject);
         var mainCanvas = GameObject.FindGameObjectWithTag(MainCanvas);
