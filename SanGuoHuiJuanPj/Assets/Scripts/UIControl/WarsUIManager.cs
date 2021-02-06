@@ -309,8 +309,11 @@ public class WarsUIManager : MonoBehaviour
         }
 
         int guanQiaSum = int.Parse(LoadJsonFile.warTableDatas[PlayerDataForGame.instance.selectedWarId][4]);
+        if (treasureChestNums > 0)
+        {
+            rewardMap.Add(2, treasureChestNums); //index2是宝箱图
+        }
 
-        rewardMap.Add(2, treasureChestNums);//index2是宝箱图
         gameOverWindow.Show(rewardMap);
 
         if (passedGuanQiaNums > PlayerDataForGame.instance.warsData.warUnlockSaveData[PlayerDataForGame.instance.selectedWarId].unLockCount)

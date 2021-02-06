@@ -297,7 +297,10 @@ public class UIManager : MonoBehaviour
         var city = BaYeManager.instance.Map.SingleOrDefault(e => e.CityId == PlayerDataForGame.instance.selectedCity);
         if (city != null && selectedBaYeForceId != -1)
         {
-            var passes = city.PassedStages.Count(pass => pass);
+            var savedEvent = PlayerDataForGame.instance.warsData.baYe.data.SingleOrDefault(e => e.CityId == city.CityId);
+            var passes = 0;
+            if (savedEvent != null)
+                passes = savedEvent.PassedStages.Count(pass => pass);
             if (passes == city.WarIds.Count)
             {
                 PlayerDataForGame.instance.ShowStringTips("该地区已经平定了噢。");
