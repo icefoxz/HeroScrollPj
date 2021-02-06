@@ -325,6 +325,21 @@ public class BaYeManager : MonoBehaviour
                 rewardMap.Add(1, storyEvent.ExpReward);
             UIManager.instance.baYeWindowUi.Show(rewardMap);
             AddGoldAndExp(-1, storyEvent.ExpReward, storyEvent.GoldReward);
+            UIManager.instance.baYeWindowUi.ShowAdButton(() =>
+            {
+                AdAgent.instance.CallAd((success, msg) =>
+                {
+                    if (success)
+                    {
+                        AddGoldAndExp(-1, storyEvent.ExpReward, storyEvent.GoldReward);
+                        rewardMap.Add(0,storyEvent.GoldReward);
+                        rewardMap.Add(1,storyEvent.ExpReward);
+                        UIManager.instance.baYeWindowUi.Show(rewardMap);
+                        return;
+                    }
+                    PlayerDataForGame.instance.ShowStringTips($"获取失败！\n{msg}");
+                });
+            });
             UIManager.instance.ResetBaYeProgressAndGold(PlayerDataForGame.instance.warsData.baYe);
         }
     }

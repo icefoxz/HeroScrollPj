@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 public class BaYeWindowUI : MiniWindowUI
@@ -8,6 +9,13 @@ public class BaYeWindowUI : MiniWindowUI
     public Transform questionView;
     public Text question;
     public Button[] answer;
+    public Button adBtn;
+
+    public override void Init()
+    {
+        base.Init();
+        adBtn.gameObject.SetActive(false);
+    }
 
     public override void Show(Dictionary<int, int> rewardMap)
     {
@@ -36,6 +44,15 @@ public class BaYeWindowUI : MiniWindowUI
     public override void Close()
     {
         questionView.gameObject.SetActive(false);
+        adBtn.onClick.RemoveAllListeners();
+        adBtn.gameObject.SetActive(false);
         base.Close();
+    }
+
+    public void ShowAdButton(UnityAction onClickAction)
+    {
+        adBtn.onClick.RemoveAllListeners();
+        adBtn.onClick.AddListener(onClickAction);
+        adBtn.gameObject.SetActive(true);
     }
 }

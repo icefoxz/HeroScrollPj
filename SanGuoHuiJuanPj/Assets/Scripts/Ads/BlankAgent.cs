@@ -3,7 +3,6 @@ using UnityEngine.Events;
 
 public class BlankAgent : AdAgent
 {
-    public BlankAgent Instance { get; private set; }
     protected AdManager controller;
     protected UnityAction<bool,string> callBackAction;
 
@@ -11,7 +10,6 @@ public class BlankAgent : AdAgent
     {
         controller = adController as AdManager;
         instance = this;
-        Instance = this;
         gameObject.SetActive(false);
     }
 

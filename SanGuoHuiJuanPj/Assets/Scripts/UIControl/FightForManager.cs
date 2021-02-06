@@ -98,6 +98,12 @@ public class FightForManager : MonoBehaviour
         UpdateFightNumTextShow();
     }
 
+    void OnApplicationPause(bool pause)
+    {
+        if (!pause)
+            Time.timeScale = PlayerDataForGame.instance.pyData.WarTimeScale;
+    }
+
     private void CreatePlayerHomeCard()
     {
         FightCardData playerHomeData = new FightCardData();
@@ -192,9 +198,10 @@ public class FightForManager : MonoBehaviour
 
         FightController.instance.InitStartFight();
 
+        var py = PlayerDataForGame.instance.pyData;
         //调整游戏速度
-        Time.timeScale = tScale;
-        speedBtnText.text = "×" + tScale;
+        Time.timeScale = py.WarTimeScale;
+        speedBtnText.text = Multiply + py.WarTimeScale;
     }
 
     //主动塔行动
@@ -1459,80 +1466,6 @@ public class FightForManager : MonoBehaviour
         return color;
     }
 
-    //初始化战斗卡牌位置
-    private void InitFightCardPos()
-    {
-        //oneDisX = WarsUIManager.instance.groupCellSizeX / 5;
-        //oneDisY = WarsUIManager.instance.groupCellSizeY / 9;
-
-        //敌方
-        //GameObject obj = Instantiate(enemyCardPosPre, enemyChechBoard);
-        //obj.transform.position = new Vector3(enemyChechBoard.localPosition.x - oneDisX, enemyChechBoard.localPosition.y - oneDisY * 3.5f, enemyChechBoard.localPosition.z);
-        //obj.GetComponentInChildren<Text>().text = "0";
-        //enemyCardsPos.Add(obj);
-
-        //Vector3 firstPos = new Vector3(obj.transform.position.x, obj.transform.position.y, obj.transform.position.z);
-
-        //CreateCardsToPlane(firstPos, 1, 2, 0, enemyChechBoard, enemyCardsPos, enemyCardPosPre);
-        //CreateCardsToPlane(firstPos, 2, 1, 1, enemyChechBoard, enemyCardsPos, enemyCardPosPre);
-        //CreateCardsToPlane(firstPos, 3, -1, 1, enemyChechBoard, enemyCardsPos, enemyCardPosPre);
-        //CreateCardsToPlane(firstPos, 4, 3, 1, enemyChechBoard, enemyCardsPos, enemyCardPosPre);
-        //CreateCardsToPlane(firstPos, 5, 0, 2, enemyChechBoard, enemyCardsPos, enemyCardPosPre);
-        //CreateCardsToPlane(firstPos, 6, 2, 2, enemyChechBoard, enemyCardsPos, enemyCardPosPre);
-        //CreateCardsToPlane(firstPos, 7, 1, 3, enemyChechBoard, enemyCardsPos, enemyCardPosPre);
-        //CreateCardsToPlane(firstPos, 8, -1, 3, enemyChechBoard, enemyCardsPos, enemyCardPosPre);
-        //CreateCardsToPlane(firstPos, 9, 3, 3, enemyChechBoard, enemyCardsPos, enemyCardPosPre);
-        //CreateCardsToPlane(firstPos, 10, 0, 4, enemyChechBoard, enemyCardsPos, enemyCardPosPre);
-        //CreateCardsToPlane(firstPos, 11, 2, 4, enemyChechBoard, enemyCardsPos, enemyCardPosPre);
-        //CreateCardsToPlane(firstPos, 12, 1, 5, enemyChechBoard, enemyCardsPos, enemyCardPosPre);
-        //CreateCardsToPlane(firstPos, 13, -1, 5, enemyChechBoard, enemyCardsPos, enemyCardPosPre);
-        //CreateCardsToPlane(firstPos, 14, 3, 5, enemyChechBoard, enemyCardsPos, enemyCardPosPre);
-        //CreateCardsToPlane(firstPos, 15, 0, 6, enemyChechBoard, enemyCardsPos, enemyCardPosPre);
-        //CreateCardsToPlane(firstPos, 16, 2, 6, enemyChechBoard, enemyCardsPos, enemyCardPosPre);
-        //CreateCardsToPlane(firstPos, 17, 1, 7, enemyChechBoard, enemyCardsPos, enemyCardPosPre);
-        //CreateCardsToPlane(firstPos, 18, -1, 7, enemyChechBoard, enemyCardsPos, enemyCardPosPre);
-        //CreateCardsToPlane(firstPos, 19, 3, 7, enemyChechBoard, enemyCardsPos, enemyCardPosPre);
-
-        //玩家
-        //GameObject obj1 = Instantiate(playerCardPosPre, playerChechBoard);
-        //obj1.transform.position = new Vector3(playerChechBoard.position.x - oneDisX, playerChechBoard.position.y + oneDisY * 3.5f, playerChechBoard.position.z);
-        //obj1.GetComponentInChildren<Text>().text = "0";
-        //playerCardsPos.Add(obj1);
-
-        //Vector3 firstPos1 = new Vector3(obj1.transform.position.x, obj1.transform.position.y, obj1.transform.position.z);
-
-        //CreateCardsToPlane(firstPos1, 1, 2, 0, playerChechBoard, playerCardsPos, playerCardPosPre);
-        //CreateCardsToPlane(firstPos1, 2, 1, -1, playerChechBoard, playerCardsPos, playerCardPosPre);
-        //CreateCardsToPlane(firstPos1, 3, -1, -1, playerChechBoard, playerCardsPos, playerCardPosPre);
-        //CreateCardsToPlane(firstPos1, 4, 3, -1, playerChechBoard, playerCardsPos, playerCardPosPre);
-        //CreateCardsToPlane(firstPos1, 5, 0, -2, playerChechBoard, playerCardsPos, playerCardPosPre);
-        //CreateCardsToPlane(firstPos1, 6, 2, -2, playerChechBoard, playerCardsPos, playerCardPosPre);
-        //CreateCardsToPlane(firstPos1, 7, 1, -3, playerChechBoard, playerCardsPos, playerCardPosPre);
-        //CreateCardsToPlane(firstPos1, 8, -1, -3, playerChechBoard, playerCardsPos, playerCardPosPre);
-        //CreateCardsToPlane(firstPos1, 9, 3, -3, playerChechBoard, playerCardsPos, playerCardPosPre);
-        //CreateCardsToPlane(firstPos1, 10, 0, -4, playerChechBoard, playerCardsPos, playerCardPosPre);
-        //CreateCardsToPlane(firstPos1, 11, 2, -4, playerChechBoard, playerCardsPos, playerCardPosPre);
-        //CreateCardsToPlane(firstPos1, 12, 1, -5, playerChechBoard, playerCardsPos, playerCardPosPre);
-        //CreateCardsToPlane(firstPos1, 13, -1, -5, playerChechBoard, playerCardsPos, playerCardPosPre);
-        //CreateCardsToPlane(firstPos1, 14, 3, -5, playerChechBoard, playerCardsPos, playerCardPosPre);
-        //CreateCardsToPlane(firstPos1, 15, 0, -6, playerChechBoard, playerCardsPos, playerCardPosPre);
-        //CreateCardsToPlane(firstPos1, 16, 2, -6, playerChechBoard, playerCardsPos, playerCardPosPre);
-        //CreateCardsToPlane(firstPos1, 17, 1, -7, playerChechBoard, playerCardsPos, playerCardPosPre);
-        //CreateCardsToPlane(firstPos1, 18, -1, -7, playerChechBoard, playerCardsPos, playerCardPosPre);
-        //CreateCardsToPlane(firstPos1, 19, 3, -7, playerChechBoard, playerCardsPos, playerCardPosPre);
-
-    }
-
-    //创建卡牌单个位置
-    private void CreateCardsToPlane(Vector3 vec, int index, int xProp, int yProp, Transform parentObj, List<GameObject> parentList, GameObject posPreObj)
-    {
-        //GameObject obj = Instantiate(posPreObj, parentObj);
-        //obj.transform.position = new Vector3(vec.x + oneDisX * xProp, vec.y + oneDisY * yProp, vec.z);
-        //obj.GetComponentInChildren<Text>().text = index.ToString();
-        //parentList.Add(obj);
-    }
-
-
     /// <summary>
     /// 更新上阵数量显示
     /// </summary>
@@ -1573,29 +1506,19 @@ public class FightForManager : MonoBehaviour
         }
     }
 
-    float tScale = 1;
     [SerializeField]
     Text speedBtnText;
+
+    private const string Multiply = "×";
     //改变游戏速度
     public void ChangeTimeScale()
     {
-        if (tScale == 1f)
-        {
-            tScale = 2f;
-        }
-        else
-        {
-            if (tScale == 2f)
-            {
-                tScale = 0.5f;
-            }
-            else
-            {
-                tScale = 1f;
-            }
-        }
-        Time.timeScale = tScale;
-        speedBtnText.text = "×" + tScale;
+        var py = PlayerDataForGame.instance.pyData;
+        py.WarTimeScale *= 2;
+        if (py.WarTimeScale > 2)
+            py.WarTimeScale = 0.5f;
+        Time.timeScale = py.WarTimeScale;
+        speedBtnText.text = Multiply + py.WarTimeScale;
     }
 
     [SerializeField]

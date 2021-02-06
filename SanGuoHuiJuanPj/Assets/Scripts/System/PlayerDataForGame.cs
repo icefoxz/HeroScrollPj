@@ -15,6 +15,13 @@ public class PlayerDataForGame : MonoBehaviour
     public int Bug1_9YvQueCheck = 5000;
     //玉阙修正数量 
     public int Bug1_9YvQueSet = 4999;
+    public enum GameScene
+    {
+        StartScene,
+        MainScene,
+        WarScene
+    }
+    public GameScene CurrentScene { get; private set; }
     [Serializable]
     public enum WarTypes
     {
@@ -113,7 +120,11 @@ public class PlayerDataForGame : MonoBehaviour
         StartCoroutine(FadeTransitionEffect(0));
         gameResources = new GameResources();
         gameResources.Init();
+
+        SceneManager.sceneLoaded += SceneManagerOnsceneLoaded;
     }
+
+    private void SceneManagerOnsceneLoaded(Scene scene, LoadSceneMode mode) => CurrentScene = (GameScene) scene.buildIndex;
 
     private void Update()
     {
@@ -193,25 +204,25 @@ public class PlayerDataForGame : MonoBehaviour
         //#if UNITY_ANDROID 
         if (scaleWidth == 0 && scaleHeight == 0)
         {
-            int width = Screen.currentResolution.width;
-            int height = Screen.currentResolution.height;
-            int designWidth = 1080;
-            int designHeight = 1920;
-            float s1 = (float)designWidth / (float)designHeight;
-            float s2 = (float)width / (float)height;
+            var width = Screen.currentResolution.width * 1f;
+            var height = Screen.currentResolution.height * 1f;
+            float designWidth = 1080;
+            float designHeight = 1920;
+            float s1 = designWidth / designHeight;
+            float s2 = width / height;
             if (s1 < s2)
             {
-                designWidth = (int)Mathf.FloorToInt(designHeight * s2);
+                designWidth = Mathf.FloorToInt(designHeight * s2);
             }
             else if (s1 > s2)
             {
-                designHeight = (int)Mathf.FloorToInt(designWidth / s2);
+                designHeight = Mathf.FloorToInt(designWidth / s2);
             }
-            float contentScale = (float)designWidth / (float)width;
+            float contentScale = designWidth / width;
             if (contentScale < 1.0f)
             {
-                scaleWidth = designWidth;
-                scaleHeight = designHeight;
+                scaleWidth = (int)designWidth;
+                scaleHeight = (int)designHeight;
             }
         }
         if (scaleWidth > 0 && scaleHeight > 0)

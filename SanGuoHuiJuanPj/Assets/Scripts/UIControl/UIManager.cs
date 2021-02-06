@@ -21,6 +21,8 @@ public class UIManager : MonoBehaviour
         袁 = 3,
         吕 = 4
     }
+
+    public Image waitWhileImpress;//敬请期待
     //注意：势力旗帜和名字必须对应枚举【ForceFlags】并列数相同
     public Sprite[] forceFlags;//势力旗帜 
     public Sprite[] forceName;//势力名字
@@ -120,6 +122,7 @@ public class UIManager : MonoBehaviour
     public StoryEventUIController storyEventUiController;//霸业的故事事件控制器
     public BaYeWindowUI baYeWindowUi;//霸业地图小弹窗
     public Button baYeWarButton;//霸业开始战斗按键
+    public Image bayeBelowLevelPanel;//霸业等级不足挡板
 
     private int lastAvailableStageIndex;//最远可战的战役索引
     private int selectedBaYeForceId; //当前为霸业选择的势力ID
@@ -2108,10 +2111,7 @@ public class UIManager : MonoBehaviour
     /// <param name="index"></param>
     public void MainPageSwitching(int index)
     {
-        if (isJumping)
-        {
-            return;
-        }
+        if (isJumping) return;
 
         PlayOnClickMusic();
 
@@ -2122,6 +2122,13 @@ public class UIManager : MonoBehaviour
         }
         zhuChengInterFaces[index].SetActive(true);
         particlesForInterface[index].SetActive(true);
+        //暂时未开启的页面
+        waitWhileImpress.gameObject.SetActive(
+            index == 3 //对决
+#if !UNITY_EDITOR
+            || index == 4 //霸业
+#endif
+        );
         switch (index)
         {
             case 0://桃园
@@ -2130,13 +2137,12 @@ public class UIManager : MonoBehaviour
                 break;
             case 2://战役
                 ShowOrHideGuideObj(3, true);
-                //重新选择战役关卡
-                //OnClickChangeWarsFun(PlayerDataForGame.instance.warsData.warUnlockSaveData[index > endId ? endId : index].warId, lastObj);
                 delForChooseYZWar?.Invoke();
                 warsChooseListObj.transform.parent.parent.GetComponent<ScrollRect>().DOVerticalNormalizedPos(0f, 0.3f);
                 InitWarsListInfo(lastAvailableStageIndex);
                 break;
             case 4://霸业
+                bayeBelowLevelPanel.gameObject.SetActive(PlayerDataForGame.instance.pyData.Level < 5);
                 if (!SystemTimer.IsToday(PlayerDataForGame.instance.warsData.baYe.lastBaYeActivityTime))
                 {
                     BaYeManager.instance.Init();

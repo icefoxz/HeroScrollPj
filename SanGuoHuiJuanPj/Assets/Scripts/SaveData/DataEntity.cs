@@ -146,7 +146,8 @@ public class PlayerData : IPlayerData
     public int DailyJiuTanRedemptionCount { get; set; }
     //游戏版本号
     public float LastGameVersion { get; set; }
-
+    //战斗的时间倍率
+    public float WarTimeScale { get; set; } = 1;
 }
 
 //战斗卡牌信息类

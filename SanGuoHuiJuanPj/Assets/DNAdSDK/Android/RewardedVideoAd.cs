@@ -162,7 +162,7 @@ namespace Donews.mediation
 
             public void onAdClick() {}
 
-            public void onAdClose() => OnDone(isSuccess, "Close");
+            public void onAdClose() {}
 
             public void onVideoComplete() {}
 

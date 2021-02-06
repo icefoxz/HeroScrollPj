@@ -105,8 +105,6 @@ public class TimeSystemControl : MonoBehaviour
         StartGameToInitOpenTime();
     }
 
-    void OnApplicationFocus(bool isFocus) => Time.timeScale = isFocus ? 1 : 0;
-
     //初次存档对时间相关数据进行初始化
     public void InitTimeRelatedData()
     {

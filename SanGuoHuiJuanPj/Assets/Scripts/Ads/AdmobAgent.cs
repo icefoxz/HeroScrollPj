@@ -7,7 +7,6 @@ using UnityEngine.UI;
 
 public class AdmobAgent : BlankAgent
 {
-    public static AdmobAgent Instance { get; private set; }
     public Button loadButton;
     public Button showButton;
     public Button cancelButton;
@@ -16,13 +15,13 @@ public class AdmobAgent : BlankAgent
     public Text proceedMessage;
     public Image countdownWindow;
     public bool isAutoRequest;
+    public int cancelSecs = 10;
     private bool isBusy { get; set; }
 
     public override void Init(AdControllerBase adController)
     {
         base.Init(adController);
         instance = this;
-        Instance = this;
         loadButton.gameObject.SetActive(false);
         showButton.gameObject.SetActive(false);
         loadButton.onClick.AddListener(OnLoad);
@@ -60,6 +59,11 @@ public class AdmobAgent : BlankAgent
         while (isBusy)
         {
             timer.text = secs.ToString();
+            if (secs >= cancelSecs)
+            {
+                OnShowResponse(false,"time out");
+                yield return null;
+            }
             yield return new WaitForSeconds(1);
             secs++;
         }
