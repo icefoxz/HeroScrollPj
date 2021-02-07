@@ -54,6 +54,9 @@ public class PlayerLevelTableItem
     public string BaYeCombat { get; set; }
     public string BaYeNonCombat { get; set; }
     public string BaYeBattle { get; set; }
+    public string BaYeJunTuan { get; set; }
+    public string BaYeBattleLevel { get; set; }
+
 }
 public class SoldierTableItem
 {
@@ -423,6 +426,8 @@ public class ShiLiTableItem
     public string ShiLi { get; set; }
     public string Zi { get; set; }
     public string Qi { get; set; }
+    public string UnlockLevel { get; set; }
+    public string JunTuanInfo { get; set; }
 }
 public class BaYeDiTuTableItem
 {
@@ -437,6 +442,8 @@ public class BaYeShiJianTableItem
     public string QuanZhong { get; set; }
     public string BaYeJingYan { get; set; }
     public string BaYeBattle { get; set; }
+    public string Flag { get; set; }
+    public string FlagWord { get; set; }
 }
 public class BaYeBattleTableItem
 {
@@ -470,6 +477,10 @@ public class StoryIdTableItem
     public string storyType { get; set; }
     public string jinBiR { get; set; }
     public string jingYanR { get; set; }
+    public string YuQueR { get; set; }
+    public string YuanBaoR { get; set; }
+    public string JunTuanR { get; set; }
+    public string Time { get; set; }
 }
 public class BaYeTVTableItem 
 {

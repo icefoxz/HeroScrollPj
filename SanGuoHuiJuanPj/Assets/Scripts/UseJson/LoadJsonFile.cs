@@ -319,6 +319,8 @@ public class LoadJsonFile : MonoBehaviour
                 playerLevelTableDatas[i].Add(root.PlayerLevelTable[i].BaYeCombat);
                 playerLevelTableDatas[i].Add(root.PlayerLevelTable[i].BaYeNonCombat);
                 playerLevelTableDatas[i].Add(root.PlayerLevelTable[i].BaYeBattle);
+                playerLevelTableDatas[i].Add(root.PlayerLevelTable[i].BaYeJunTuan);
+                playerLevelTableDatas[i].Add(root.PlayerLevelTable[i].BaYeBattleLevel);
             }
             //Debug.Log("Json文件加载成功---" + tableNames[indexTable] + ".Json");
             indexTable++;
@@ -950,6 +952,8 @@ public class LoadJsonFile : MonoBehaviour
                 shiLiTableDatas[i].Add(root.ShiLiTable[i].ShiLi);
                 shiLiTableDatas[i].Add(root.ShiLiTable[i].Zi);
                 shiLiTableDatas[i].Add(root.ShiLiTable[i].Qi);
+                shiLiTableDatas[i].Add(root.ShiLiTable[i].UnlockLevel);
+                shiLiTableDatas[i].Add(root.ShiLiTable[i].JunTuanInfo);
             }
             //Debug.Log("Json文件加载成功---" + tableNames[indexTable] + ".Json");
             indexTable++;
@@ -982,6 +986,8 @@ public class LoadJsonFile : MonoBehaviour
                 baYeShiJianTableDatas[i].Add(root.BaYeShiJianTable[i].QuanZhong);
                 baYeShiJianTableDatas[i].Add(root.BaYeShiJianTable[i].BaYeJingYan);
                 baYeShiJianTableDatas[i].Add(root.BaYeShiJianTable[i].BaYeBattle);
+                baYeShiJianTableDatas[i].Add(root.BaYeShiJianTable[i].Flag);
+                baYeShiJianTableDatas[i].Add(root.BaYeShiJianTable[i].FlagWord);
             }
             //Debug.Log("Json文件加载成功---" + tableNames[indexTable] + ".Json");
             indexTable++;
@@ -1051,6 +1057,10 @@ public class LoadJsonFile : MonoBehaviour
                 storyIdTableDatas[i].Add(root.StoryIdTable[i].storyType);
                 storyIdTableDatas[i].Add(root.StoryIdTable[i].jinBiR);
                 storyIdTableDatas[i].Add(root.StoryIdTable[i].jingYanR);
+                storyIdTableDatas[i].Add(root.StoryIdTable[i].YuQueR);
+                storyIdTableDatas[i].Add(root.StoryIdTable[i].YuanBaoR);
+                storyIdTableDatas[i].Add(root.StoryIdTable[i].JunTuanR);
+                storyIdTableDatas[i].Add(root.StoryIdTable[i].Time);
             }
             //Debug.Log("Json文件加载成功---" + tableNames[indexTable] + ".Json");
             indexTable++;
