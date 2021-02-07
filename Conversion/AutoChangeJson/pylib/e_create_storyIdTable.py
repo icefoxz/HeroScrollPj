@@ -17,7 +17,11 @@ def export_json(xls, fn):
                 ss += "\t\t\t\"weight\": \"" + conv_int(c[ri.Next()]) + "\",\n"
                 ss += "\t\t\t\"storyType\": \"" + conv_int(c[ri.Next()]) + "\",\n"
                 ss += "\t\t\t\"jinBiR\": \"" + conv_str_bin(c[ri.Next()]) + "\",\n"
-                ss += "\t\t\t\"jingYanR\": \"" + conv_str_bin(c[ri.Next()]) + "\"\n"
+                ss += "\t\t\t\"jingYanR\": \"" + conv_str_bin(c[ri.Next()]) + "\",\n"
+                ss += "\t\t\t\"YuQueR\": \"" + conv_str_bin(c[ri.Next()]) + "\",\n"
+                ss += "\t\t\t\"YuanBaoR\": \"" + conv_str_bin(c[ri.Next()]) + "\",\n"
+                ss += "\t\t\t\"JunTuanR\": \"" + conv_str_bin(c[ri.Next()]) + "\",\n"
+                ss += "\t\t\t\"Time\": \"" + conv_str_bin(c[ri.Next()]) + "\"\n"
                 ss += "\t\t},\n"
                 s += ss
             s = s[:-2]
