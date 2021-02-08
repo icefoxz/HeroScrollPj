@@ -114,7 +114,7 @@ public class StartSceneUIManager : MonoBehaviour
         if (isJumping)
             return;
         isJumping = true;
-        AudioController0.instance.ChangeAudioClip(AudioController0.instance.audioClips[12], AudioController0.instance.audioVolumes[12]);
+        AudioController0.instance.ChangeAudioClip(12);
         AudioController0.instance.PlayAudioSource(0);
         TimeSystemControl.instance.InitIsTodayFirstLoadingGame();
         PlayerDataForGame.instance.JumpSceneFun(sceneBuildIndex, isNeedLoadSave);

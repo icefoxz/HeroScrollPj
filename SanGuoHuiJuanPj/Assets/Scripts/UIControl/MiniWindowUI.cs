@@ -11,6 +11,7 @@ public class MiniWindowUI : MonoBehaviour
     {
         foreach (var ui in listView.GetComponentsInChildren<MiniWindowElementUI>(true))
             ui.gameObject.SetActive(false);
+        listView.gameObject.SetActive(false);
         gameObject.SetActive(false);
     }
 

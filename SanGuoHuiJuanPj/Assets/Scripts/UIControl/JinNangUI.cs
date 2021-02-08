@@ -20,8 +20,7 @@ public class JinNangUI: MonoBehaviour
 
     public void OnReward(string content, Color contentColor, string character, int staminaValue, int yuanBaoValue)
     {
-        AudioController0.instance.ChangeAudioClip(AudioController0.instance.audioClips[11],
-            AudioController0.instance.audioVolumes[11]);
+        AudioController0.instance.ChangeAudioClip(11);
         AudioController0.instance.PlayAudioSource(0);
 
         continueText.gameObject.SetActive(false);

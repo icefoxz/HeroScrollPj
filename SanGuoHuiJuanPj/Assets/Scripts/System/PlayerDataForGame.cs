@@ -2,6 +2,7 @@
 using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -35,6 +36,16 @@ public class PlayerDataForGame : MonoBehaviour
         JiuTan = 1  //酒坛 
     }
     public WarTypes WarType;//标记当前战斗类型 
+
+    public Dictionary<WarTypes, int> WarForceMap { get; } = new Dictionary<WarTypes, int>
+    {
+        {WarTypes.Expedition, 0},
+        {WarTypes.Baye, 0}
+    };
+    /// <summary>
+    /// 当前战役选择的势力
+    /// </summary>
+    public int CurrentWarForceId => WarForceMap[WarType];
 
     [HideInInspector]
     public bool isNeedSaveData; //记录是否需要存档 
@@ -531,4 +542,28 @@ public class PlayerDataForGame : MonoBehaviour
         isNeedSaveData = true;
         LoadSaveData.instance.SaveGameData(1);
     }
+
+    public void SaveBaYeWarEvent()
+    {
+        var force = WarForceMap[WarTypes.Baye];
+        if (!BaYeManager.instance.TradeZhanLing(force, -1))
+        {
+            ShowStringTips("战令不足以消费！");
+            return;
+        }
+        var baYe = warsData.baYe;
+        if (baYe.data.Any(d => d.CityId == selectedCity)) return;
+        var city = BaYeManager.instance.Map.Single(e => e.CityId == selectedCity);
+        baYe.data.Add(new BaYeCityEvent
+        {
+            CityId = selectedCity,
+            EventId = selectedBaYeEventId,
+            WarIds = city.WarIds,
+            ExpList = city.ExpList,
+            PassedStages = new bool[city.ExpList.Count]
+        });
+        isNeedSaveData = true;
+        LoadSaveData.instance.SaveGameData(3);
+    }
+
 }

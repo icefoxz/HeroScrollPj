@@ -13,7 +13,7 @@ public class WarDataMocker : MonoBehaviour
     [Tooltip("初始金币")]public int gold;//初始金币
     [Header("是否客制化卡牌，不点就用当前存档")]
     [Tooltip("是否选择客制化卡牌组合")]public bool isCustomCard;//是否客制化卡牌
-    [Tooltip("只有选存档才会有效")]public UIManager.ForceFlags force;
+    [Tooltip("只有选存档才会有效")]public ForceFlags force;
     public PlayerDataForGame playerDataPrefab;
     public AudioController0 audioController0Prefab;
     public AudioController1 audioController1Prefab;

@@ -43,13 +43,14 @@ public class WarsUIManager : MonoBehaviour
         Story,//故事
         Quest,//答题
         Adventure,//奇遇
-        Trade//交易
+        Trade,//交易
+        Recover//回春
     }
     /// <summary>
     /// 上一个关卡类型
     /// </summary>
-    private EventTypes lastEvent = EventTypes.Generic;
-    
+    private EventTypes currentEvent = EventTypes.Generic;
+
     public WarMiniWindowUI gameOverWindow;//战役结束ui
     [SerializeField]
     float percentReturnHp;    //回春回血百分比
@@ -100,7 +101,6 @@ public class WarsUIManager : MonoBehaviour
     int nowGuanQiaIndex;    //记录当前关卡进度
 
     bool isEnteredLevel;    //记录是否进入了关卡
-    List<int> baYeBattleList; //记录霸业的战斗关卡
 
     private GameResources GameResources => PlayerDataForGame.instance.gameResources;
 
@@ -147,9 +147,6 @@ public class WarsUIManager : MonoBehaviour
         isEnteredLevel = false;
         //------------Awake----------------//
         PlayerDataForGame.instance.lastSenceIndex = 2;
-        //如果战斗是霸业，初始化霸业战斗id记录器，非霸业不使用
-        if (PlayerDataForGame.instance.WarType == PlayerDataForGame.WarTypes.Baye)
-            baYeBattleList = new List<int>();
         adRefreshBtn.onClick.AddListener(WatchAdForUpdateQiYv);
         gameOverWindow.Init();
         InitMainUIShow();
@@ -159,10 +156,16 @@ public class WarsUIManager : MonoBehaviour
         InitGuanQiaShow();
     }
 
+    void OnApplicationPause(bool pause)
+    {
+        if (pause)return;
+        Time.timeScale = currentEvent == EventTypes.Battle ? PlayerDataForGame.instance.pyData.WarTimeScale : 1f;
+    }
+
     //初始化关卡
     private void InitGuanQiaShow()
     {
-        lastEvent = EventTypes.Generic;
+        currentEvent = EventTypes.Generic;
         //尝试展示指引
         ShowOrHideGuideObj(0, true);
         InitShowParentGuanQia(LoadJsonFile.warTableDatas[PlayerDataForGame.instance.selectedWarId][3]);
@@ -206,7 +209,7 @@ public class WarsUIManager : MonoBehaviour
                 GameObject obj = Instantiate(guanQiaPreObj, point0Tran);
                 obj.transform.localScale = new Vector3(0.8f, 0.8f, 1);
                 var eventType = int.Parse(LoadJsonFile.pointTableDatas[guanQiaId][3]);
-                if (DetermineIsFightGuanQia(eventType))
+                if (IsBattle(eventType))
                 {
                     obj.transform.GetChild(1).GetChild(0).GetComponent<Text>().text = LoadJsonFile.pointTableDatas[guanQiaId][2];
                     obj.transform.GetChild(1).GetChild(0).gameObject.SetActive(true);
@@ -353,19 +356,19 @@ public class WarsUIManager : MonoBehaviour
                 if (arrs[i] != "")
                 {
                     int guanQiaId = int.Parse(arrs[i]);
-                    int guanQiaType = int.Parse(LoadJsonFile.pointTableDatas[guanQiaId][3]);
+                    int eventType = int.Parse(LoadJsonFile.pointTableDatas[guanQiaId][3]);
                     int eventId = int.Parse(LoadJsonFile.pointTableDatas[guanQiaId][4]);
                     GameObject obj = Instantiate(guanQiaPreObj, point1Tran);
                     obj.transform.GetChild(1).GetComponent<Image>().sprite =
                         GameResources.GuanQiaEventImg[
                             int.Parse(LoadJsonFile.pointTableDatas[guanQiaId][6])];
-                    if (DetermineIsFightGuanQia(guanQiaType))  //战斗关卡城池名
+                    if (IsBattle(eventType))  //战斗关卡城池名
                     {
                         obj.transform.GetChild(1).GetChild(0).GetComponent<Text>().text = LoadJsonFile.pointTableDatas[guanQiaId][2];
                         obj.transform.GetChild(1).GetChild(0).gameObject.SetActive(true);
-                        if (guanQiaType != 7)
+                        if (eventType != 7)
                         {
-                            obj.transform.GetChild(1).GetChild(1).GetComponent<Image>().sprite = GameResources.GuanQiaEventImg[(guanQiaType == 1 ? 0 : 1)];
+                            obj.transform.GetChild(1).GetChild(1).GetComponent<Image>().sprite = GameResources.GuanQiaEventImg[(eventType == 1 ? 0 : 1)];
                             obj.transform.GetChild(1).GetChild(1).GetChild(0).GetComponent<Text>().text = LoadJsonFile.pointTableDatas[guanQiaId][9];
                             obj.transform.GetChild(1).GetChild(1).GetChild(0).GetComponent<Text>().fontSize = (LoadJsonFile.pointTableDatas[guanQiaId][9].Length > 2 ? 45 : 50);
                             obj.transform.GetChild(1).GetChild(1).gameObject.SetActive(true);
@@ -374,11 +377,11 @@ public class WarsUIManager : MonoBehaviour
                     int randArtImg = Random.Range(0, 25);   //随机艺术图
                     obj.transform.GetChild(1).GetComponent<Button>().onClick.AddListener(delegate ()
                     {
-                        startBtn.GetComponentInChildren<Text>().text = DetermineIsFightGuanQia(guanQiaType) ? LoadJsonFile.GetStringText(53) : LoadJsonFile.GetStringText(54);
+                        startBtn.GetComponentInChildren<Text>().text = IsBattle(eventType) ? LoadJsonFile.GetStringText(53) : LoadJsonFile.GetStringText(54);
                         startBtn.SetActive(true);
                         SelectOneGuanQia(obj);
                         ChooseParentGuanQia(guanQiaId, randArtImg, obj.transform);
-                        InterToDiffGuanQia(DetermineIsFightGuanQia(guanQiaType) ? 1 : guanQiaType, eventId, guanQiaId);
+                        InterToDiffGuanQia(IsBattle(eventType) ? 1 : eventType, eventId, guanQiaId);
                     });
                 }
             }
@@ -387,7 +390,7 @@ public class WarsUIManager : MonoBehaviour
     }
 
     //判断是否是战斗关卡
-    private bool DetermineIsFightGuanQia(int guanQiaType)
+    private bool IsBattle(int guanQiaType)
     {
         if (guanQiaType == 1 || guanQiaType == 7 || guanQiaType == 8 || guanQiaType == 9 || guanQiaType == 10 || guanQiaType == 11 || guanQiaType == 12)
         {
@@ -496,9 +499,7 @@ public class WarsUIManager : MonoBehaviour
     /// <param name="fightId"></param>
     private void GoToTheFight(int fightId, int guanQiaId)
     {
-        //如果是霸业，添加临时的战斗关卡记录
-        if (PlayerDataForGame.instance.WarType == PlayerDataForGame.WarTypes.Baye) baYeBattleList.Add(guanQiaId);
-        lastEvent = EventTypes.Battle;
+        currentEvent = EventTypes.Battle;
         PlayAudioClip(21);
 
         fightBackImage.sprite = GameResources.BattleBG[int.Parse(LoadJsonFile.pointTableDatas[guanQiaId][7])];
@@ -518,7 +519,7 @@ public class WarsUIManager : MonoBehaviour
     /// <param name="storyId"></param>
     private void GoToTheStory()
     {
-        lastEvent = EventTypes.Story;
+        currentEvent = EventTypes.Story;
         PlayAudioClip(19);
 
         InitializeDianGu();
@@ -532,7 +533,7 @@ public class WarsUIManager : MonoBehaviour
     /// <param name="testId"></param>
     private void GoToTheTest()
     {
-        lastEvent = EventTypes.Quest;
+        currentEvent = EventTypes.Quest;
         PlayAudioClip(19);
 
         InitializeDaTi();
@@ -546,7 +547,7 @@ public class WarsUIManager : MonoBehaviour
     /// <param name="qiyuId"></param>
     private void GoToTheQiYu(bool isBuy)
     {
-        lastEvent = isBuy ? EventTypes.Trade : EventTypes.Adventure;
+        currentEvent = isBuy ? EventTypes.Trade : EventTypes.Adventure;
         //尝试关闭指引
         ShowOrHideGuideObj(0, false);
 
@@ -564,6 +565,7 @@ public class WarsUIManager : MonoBehaviour
     /// </summary>
     private void GoToTheHuiXue()
     {
+        currentEvent = EventTypes.Recover;
         PlayAudioClip(19);
 
         ReturnToBloodForFightCards();
@@ -698,7 +700,7 @@ public class WarsUIManager : MonoBehaviour
         UpdateBattleSchedule();
         InitShowParentGuanQia(LoadJsonFile.pointTableDatas[indexLastGuanQiaId][1]);
         TongGuanCityPointShow();
-
+        //关闭所有战斗事件的物件
         for (int i = 0; i < eventsWindows.Length; i++)
         {
             if (eventsWindows[i].activeSelf)
@@ -1447,32 +1449,22 @@ public class WarsUIManager : MonoBehaviour
     //初始化卡牌列表
     private void InitCardListShow()
     {
-        NowLevelAndHadChip cardData = new NowLevelAndHadChip();
-        for (int i = 0; i < PlayerDataForGame.instance.fightHeroId.Count; i++)
-        {
-            cardData = PlayerDataForGame.instance.hstData.heroSaveData[
-                FindIndexFromData(PlayerDataForGame.instance.hstData.heroSaveData, PlayerDataForGame.instance.fightHeroId[i])];
-            CreateHeroCardToFightList(cardData);
-        }
+        var forceId = PlayerDataForGame.instance.CurrentWarForceId;
 
-        for (int i = 0; i < PlayerDataForGame.instance.fightSoLdierId.Count; i++)
-        {
-            cardData = PlayerDataForGame.instance.hstData.soldierSaveData[
-                FindIndexFromData(PlayerDataForGame.instance.hstData.soldierSaveData, PlayerDataForGame.instance.fightSoLdierId[i])];
-            CreateSoldierCardToFightList(cardData);
-        }
-        for (int i = 0; i < PlayerDataForGame.instance.fightTowerId.Count; i++)
-        {
-            cardData = PlayerDataForGame.instance.hstData.towerSaveData[
-                FindIndexFromData(PlayerDataForGame.instance.hstData.towerSaveData, PlayerDataForGame.instance.fightTowerId[i])];
-            CreateTowerCardToFightList(cardData);
-        }
-        for (int i = 0; i < PlayerDataForGame.instance.fightTrapId.Count; i++)
-        {
-            cardData = PlayerDataForGame.instance.hstData.trapSaveData[
-                FindIndexFromData(PlayerDataForGame.instance.hstData.trapSaveData, PlayerDataForGame.instance.fightTrapId[i])];
-            CreateTrapCardToFightList(cardData);
-        }
+            PlayerDataForGame.instance.fightHeroId.Clear();
+            PlayerDataForGame.instance.fightTowerId.Clear();
+            PlayerDataForGame.instance.fightTrapId.Clear();
+
+            var hstData = PlayerDataForGame.instance.hstData;
+            //临时记录武将存档信息
+            hstData.heroSaveData.Enlist(forceId).ToList()
+                .ForEach(CreateHeroCardToFightList);
+            hstData.soldierSaveData.Enlist(forceId).ToList()
+                .ForEach(CreateSoldierCardToFightList);
+            hstData.towerSaveData.Enlist(forceId).ToList()
+                .ForEach(CreateTowerCardToFightList);
+            hstData.trapSaveData.Enlist(forceId).ToList()
+                .ForEach(CreateTrapCardToFightList);
     }
     //创建玩家武将卡牌
     private void CreateHeroCardToFightList(NowLevelAndHadChip cardData)
@@ -1779,7 +1771,7 @@ public class WarsUIManager : MonoBehaviour
 
     public void PlayAudioClip(int indexClips)
     {
-        AudioController0.instance.ChangeAudioClip(AudioController0.instance.audioClips[indexClips], AudioController0.instance.audioVolumes[indexClips]);
+        AudioController0.instance.ChangeAudioClip(indexClips);
         AudioController0.instance.PlayAudioSource(0);
     }
 

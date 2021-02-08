@@ -1013,22 +1013,4 @@ public class LoadSaveData : MonoBehaviour
         //Debug.Log(jsonStr); 
         return jsonStr;
     }
-
-    public void BindBaYeForceAndStage(int eventId, int cityId, int forceId, List<int> warIds)
-    {
-        var baYe = PlayerDataForGame.instance.warsData.baYe;
-        if (baYe.data.Any(d => d.CityId == cityId)) return;
-        var expList = BaYeManager.instance.GetBaYeEventExp(eventId);
-        baYe.data.Add(new BaYeCityEvent
-        {
-            CityId = cityId,
-            EventId = eventId,
-            ForceId = forceId,
-            WarIds = warIds,
-            ExpList = expList,
-            PassedStages = new bool[expList.Count]
-        });
-        PlayerDataForGame.instance.isNeedSaveData = true;
-        SaveGameData(3);
-    }
 }

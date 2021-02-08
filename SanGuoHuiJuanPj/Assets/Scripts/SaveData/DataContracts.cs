@@ -163,6 +163,10 @@ public class BaYeDataClass
     /// 故事剧情映像表，key = eventPoint地点, value = storyEvent故事事件
     /// </summary>
     public Dictionary<int, BaYeStoryEvent> storyMap = new Dictionary<int, BaYeStoryEvent>();
+    /// <summary>
+    /// 战令，key = 势力Id, value = 战令数量
+    /// </summary>
+    public Dictionary<int, int> zhanLingMap = new Dictionary<int, int>();
 
     private bool[] openedChest1 = new bool[5];
 
@@ -188,7 +192,6 @@ public class BaYeCityEvent
     public bool[] PassedStages { get; set; } = new bool[0];
     public int CityId { get; set; } = -1;
     public int EventId { get; set; } = -1;
-    public int ForceId { get; set; } = -1;
 }
 [Skip]
 public class BaYeStoryEvent
@@ -197,6 +200,9 @@ public class BaYeStoryEvent
     public int Type { get; set; }
     public int GoldReward { get; set; }
     public int ExpReward { get; set; }
+    public int YvQueReward { get; set; }
+    public int YuanBaoReward { get; set; }
+    public Dictionary<int,int> ZhanLing { get; set; }
 }
 [Skip]
 public class WarsDataClass

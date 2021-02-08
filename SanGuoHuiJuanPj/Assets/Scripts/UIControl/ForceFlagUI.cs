@@ -12,34 +12,36 @@ public class ForceFlagUI : MonoBehaviour
     public Image forceFlag;
     public Image forceName;
     public Image selected;
+    public Image panel;
+    public Text lingText;
+    public GameObject lingObj;
+    public Text nameText;
+    public Text panelText;
 
-    void Awake()
+    public void Set(ForceFlags flag, bool display = true, string nameInText = null)
     {
-        selected?.gameObject.SetActive(false);
-    }
-
-    public void Set(UIManager.ForceFlags flag, bool display = true)
-    {
-        var index = -1;
-        switch (flag)
-        {
-            case UIManager.ForceFlags.蜀:
-            case UIManager.ForceFlags.魏:
-            case UIManager.ForceFlags.吴:
-            case UIManager.ForceFlags.袁:
-            case UIManager.ForceFlags.吕:
-                index = (int) flag;
-                break;
-            default:
-                throw new ArgumentOutOfRangeException(nameof(flag), flag, null);
-        }
-
-        forceFlag.sprite = UIManager.instance.forceFlags[index];
-        forceName.sprite = UIManager.instance.forceName[index];
+        var resources = PlayerDataForGame.instance.gameResources;
+        forceFlag.sprite = resources.ForceFlag[flag];
+        nameText.gameObject.SetActive(nameInText != null);
+        forceName.gameObject.SetActive(nameInText == null);
+        if (nameInText == null) forceName.sprite = resources.ForceName[flag];
+        else nameText.text = nameInText;
         gameObject.SetActive(display);
     }
 
     public void Hide() => gameObject.SetActive(false);
 
     public void Select(bool isSelected) => selected.gameObject.SetActive(isSelected);
+
+    public void Interaction(bool enable, string text = null)
+    {
+        panel.gameObject.SetActive(!enable);
+        panelText.text = text;
+    }
+
+    public void SetLing(int amount, bool display = true)
+    {
+        lingText.text = amount.ToString();
+        lingObj.gameObject.SetActive(display);
+    }
 }

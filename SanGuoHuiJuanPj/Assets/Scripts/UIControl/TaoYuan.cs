@@ -125,8 +125,7 @@ using UnityEngine.UI;
         var isSuccessSpend = false;
         var chestId = -1; //宝箱在表里的Id
 
-        AudioController0.instance.ChangeAudioClip(AudioController0.instance.audioClips[13],
-            AudioController0.instance.audioVolumes[13]);
+        AudioController0.instance.ChangeAudioClip(13);
 
         if (chest == jiuTan) //酒坛
         {
@@ -199,8 +198,7 @@ using UnityEngine.UI;
             StartCoroutine(SavePlayerData());
             UIManager.instance.ShowRewardsThings(yuanBao, yvQue, exp, 0, rewards, 1.5f); //显示奖励窗口
             chest.SetChest(true); //UI，打开箱子
-            AudioController0.instance.ChangeAudioClip(AudioController0.instance.audioClips[0],
-                AudioController0.instance.audioVolumes[0]);
+            AudioController0.instance.ChangeAudioClip(0);
         }
 
         AudioController0.instance.PlayAudioSource(0);

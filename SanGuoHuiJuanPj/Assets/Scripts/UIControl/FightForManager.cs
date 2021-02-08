@@ -98,12 +98,6 @@ public class FightForManager : MonoBehaviour
         UpdateFightNumTextShow();
     }
 
-    void OnApplicationPause(bool pause)
-    {
-        if (!pause)
-            Time.timeScale = PlayerDataForGame.instance.pyData.WarTimeScale;
-    }
-
     private void CreatePlayerHomeCard()
     {
         FightCardData playerHomeData = new FightCardData();

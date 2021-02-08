@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -33,33 +34,35 @@ public class StoryEventUIController : MonoBehaviour
         }
     }
 
-    public void OnStoryEventClick(int id)
+    public void OnStoryEventClick(int eventPoint)
     {
-        var sEvent = PlayerDataForGame.instance.warsData.baYe.storyMap[id];
+        var sEvent = PlayerDataForGame.instance.warsData.baYe.storyMap[eventPoint];
         OnClickAudioPlay(sEvent.Type);
-        var isSuccess = BaYeManager.instance.OnStoryEventTrigger(id);
-        var point = points[id];
+        var isSuccess = BaYeManager.instance.OnStoryEventTrigger(eventPoint);
+        var point = points[eventPoint];
         Destroy(point.content);
         point.gameObject.SetActive(false);
         if(isSuccess)return;
 #if UNITY_EDITOR
         var resultText = isSuccess ? "成功" : "失败";
-        XDebug.Log<StoryEventUIController>($"霸业故事事件[{id}]获取{resultText}！");
+        XDebug.Log<StoryEventUIController>($"霸业故事事件[{eventPoint}]获取{resultText}！");
 #endif
     }
-    private void OnClickAudioPlay(int type) 
+
+    private void OnClickAudioPlay(int type)
     {
+        int audioClipId = -1;
         switch (type) 
         {
-            case 0:
-                break;                
             case 1://宝箱
-                AudioController0.instance.ChangeAudioClip(AudioController0.instance.audioClips[17], AudioController0.instance.audioVolumes[17]);
+                audioClipId = 17;
                 break;
             case 2://答题
-                AudioController0.instance.ChangeAudioClip(AudioController0.instance.audioClips[19], AudioController0.instance.audioVolumes[19]);
-                break;       
+                audioClipId = 19;
+                break;
+            default: return;
         }
+        AudioController0.instance.ChangeAudioClip(audioClipId);
         AudioController0.instance.PlayAudioSource(0);
     }
 }

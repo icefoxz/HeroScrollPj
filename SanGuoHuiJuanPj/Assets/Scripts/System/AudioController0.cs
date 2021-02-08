@@ -38,17 +38,20 @@ public class AudioController0 : MonoBehaviour
     /// <summary>
     /// 改变音乐播放器clip
     /// </summary>
-    /// <param name="audioClip">音乐片段</param>
-    /// <param name="audioVolume">音量</param>
-    public bool ChangeAudioClip(AudioClip audioClip, float audioVolume)
+    public bool ChangeAudioClip(int audioClipId)
     {
-        if (!isPlaying)
-        {
-            audioSource.clip = audioClip;
-            audioSource.volume = audioVolume;
-            return true;
-        }
-        return false;
+        if (isPlaying) return false;
+        audioSource.clip = audioClips[audioClipId];
+        audioSource.volume = audioVolumes[audioClipId];
+        return true;
+    }
+
+    public bool ChangeAudioClip(AudioClip audioClip, float volume)
+    {
+        if (isPlaying) return false;
+        audioSource.clip = audioClip;
+        audioSource.volume = volume;
+        return true;
     }
 
     //改变记录状态
@@ -89,7 +92,8 @@ public class AudioController0 : MonoBehaviour
     public void RandomPlayGuZhengAudio()
     {
         int rand = Random.Range(1, 8);
-        ChangeAudioClip(audioClips[rand], audioVolumes[rand]);
+        ChangeAudioClip(rand);
         PlayAudioSource(0);
     }
+
 }

@@ -10,7 +10,16 @@ using Random = UnityEngine.Random;
 /// </summary>
 public class BaYeManager : MonoBehaviour
 {
-    public int SelectedForceId { get; set; }
+    public enum StoryEventTypes
+    {
+        无事件,
+        开箱子,
+        答题,
+        活动,
+        战令
+    }
+
+    //public int SelectedForceId { get; set; } = -1;
     public int BaYeGoldDefault = 30; //霸业初始金币
     public int BaYeMaxGold = 75; //霸业金币上限
     private List<BaYeCityEvent> map;
@@ -32,14 +41,20 @@ public class BaYeManager : MonoBehaviour
     public void Init()
     {
         var baYe = PlayerDataForGame.instance.warsData.baYe;
+        var zhanLing = LoadJsonFile.playerLevelTableDatas[PlayerDataForGame.instance.pyData.Level - 1][10]
+            .Split(',').Where(s => !string.IsNullOrWhiteSpace(s))
+            .Select(int.Parse).ToArray();
+        var zhanLingMap = new Dictionary<int, int>();
+        for (int i = 0; i < zhanLing.Length; i++) zhanLingMap.Add(i, zhanLing[i]);
         //如果没有霸业记录或是记录已经过期(不是今天)将初始化新的霸业记录
         if (baYe == null || !SystemTimer.IsToday(baYe.lastBaYeActivityTime))
         {
-            PlayerDataForGame.instance.warsData.baYe = baYe = new BaYeDataClass
+            PlayerDataForGame.instance.warsData.baYe = new BaYeDataClass
             {
                 lastBaYeActivityTime = SystemTimer.instance.NowUnixTicks,
                 gold = BaYeGoldDefault,
-                openedChest = new bool[UIManager.instance.baYeChestButtons.Length]
+                openedChest = new bool[UIManager.instance.baYeChestButtons.Length],
+                zhanLingMap = zhanLingMap
             };
             PlayerDataForGame.instance.isNeedSaveData = true;
             LoadSaveData.instance.SaveGameData(3);
@@ -78,13 +93,20 @@ public class BaYeManager : MonoBehaviour
 
         //初始化故事事件
         //事件点初始化
+        var now = DateTime.Now;
         storyEventSet = LoadJsonFile.storyPoolTableDatas.Select(column => new
                 {column, point = int.Parse(column[0])})
             .Select(table =>
             {
-                var storyIds = table.column[1].Split(',')
-                    .Where(s => !string.IsNullOrWhiteSpace(s))
-                    .Select(int.Parse).ToArray();
+                var storyIds = table.column[1].TableStringToInts()
+                    .Where(id=> 
+#if UNITY_EDITOR
+                        true //测试允许所有活动
+#else
+                        LoadJsonFile.storyIdTableDatas[id][8]
+                        .IsTableTimeInRange(now)
+#endif
+                        ).ToArray();
                 return new {table.point, storyIds};
             }).ToDictionary(obj => obj.point, obj => obj.storyIds); //读取数据表转化城key=事件点,value=事件列
 
@@ -111,8 +133,8 @@ public class BaYeManager : MonoBehaviour
         //根据权重随机故事事件(story)id
         //再每个事件点上的故事id随机行上的奖励范围
         //储存在霸业存档里
-        var eventPoints = LoadJsonFile.playerLevelTableDatas[PlayerDataForGame.instance.pyData.Level - 1][8].Split(',')
-            .Where(s => !string.IsNullOrWhiteSpace(s)).Select(int.Parse).ToList();
+        var eventPoints = LoadJsonFile.playerLevelTableDatas[PlayerDataForGame.instance.pyData.Level - 1][8]
+            .TableStringToInts().ToList();
         //事件点和故事信息
         var eventPointStoryMap = eventPoints
             .Join(storyEventSet, pId => pId, se => se.Key, (point, s) => new {point, storyIds = s.Value})
@@ -124,17 +146,22 @@ public class BaYeManager : MonoBehaviour
                     {
                         var weight = int.Parse(LoadJsonFile.storyIdTableDatas[id][1]);
                         var type = int.Parse(LoadJsonFile.storyIdTableDatas[id][2]);
-                        var goldRange = LoadJsonFile.storyIdTableDatas[id][3].Split(',')
-                            .Where(t => !string.IsNullOrWhiteSpace(t)).Select(int.Parse).ToList();
-                        var expRange = LoadJsonFile.storyIdTableDatas[id][4].Split(',')
-                            .Where(t => !string.IsNullOrWhiteSpace(t)).Select(int.Parse).ToList();
-                        return new StoryEvent(id, weight, type, (goldRange[0], goldRange[1]),
-                            (expRange[0], expRange[1]));
+                        var goldRange = LoadJsonFile.storyIdTableDatas[id][3].TableStringToInts().ToList();
+                        var expRange = LoadJsonFile.storyIdTableDatas[id][4].TableStringToInts().ToList();
+                        var yuQueRange = LoadJsonFile.storyIdTableDatas[id][5].TableStringToInts().ToList();
+                        var yuanBaoRange = LoadJsonFile.storyIdTableDatas[id][6].TableStringToInts().ToList();
+                        var zhanLing = LoadJsonFile.storyIdTableDatas[id][7].TableStringToInts().ToList();
+                        return new StoryEvent(id, weight, type,
+                            (goldRange[0], goldRange[1]),
+                            (expRange[0], expRange[1]),
+                            (yuQueRange[0], yuQueRange[1]),
+                            (yuanBaoRange[0], yuanBaoRange[1]),
+                            (zhanLing[0], zhanLing[1]));
                     })
                 };
             })
             .ToDictionary(e => e.point, e => e.storyEvents.Pick());
-
+        var forceIds = LoadJsonFile.shiLiTableDatas.Select(row => int.Parse(row[0])).ToArray();
         PlayerDataForGame.instance.warsData.baYe.storyMap = eventPointStoryMap.ToDictionary(m => m.Key, m =>
         {
             var story = m.Value;
@@ -143,15 +170,33 @@ public class BaYeManager : MonoBehaviour
                 StoryId = story.Id,
                 Type = story.Type,
                 GoldReward = Random.Range(story.GoldRange.Item1, story.GoldRange.Item2),
-                ExpReward = Random.Range(story.ExpRange.Item1, story.ExpRange.Item2)
+                ExpReward = Random.Range(story.ExpRange.Item1, story.ExpRange.Item2),
+                YvQueReward = Random.Range(story.YuQueRange.Item1, story.YuQueRange.Item2),
+                YuanBaoReward = Random.Range(story.YuanBaoRange.Item1, story.YuanBaoRange.Item2),
+                ZhanLing = GetZhanLing(story.ZhanLingRange.Item1, story.ZhanLingRange.Item2,forceIds)
             };
-        }).Where(kv=>kv.Value.StoryId!=0).ToDictionary(kv=>kv.Key,kv=>kv.Value);
+        }).Where(kv => kv.Value.StoryId != 0).ToDictionary(kv => kv.Key, kv => kv.Value);
         PlayerDataForGame.instance.warsData.baYe.lastStoryEventsRefreshHour =
             SystemTimer.instance.Now.Date.AddHours(SystemTimer.instance.Now.Hour);
         PlayerDataForGame.instance.isNeedSaveData = true;
         LoadSaveData.instance.SaveGameData(3);
         UIManager.instance.storyEventUiController.ResetUi();
+
+        Dictionary<int, int> GetZhanLing(int min, int max, int[] ids)
+        {
+            var forceList = ids.ToList();
+            var zhanLingSelection = new Dictionary<int, int>();
+            for (int i = 0; i < 2; i++)
+            {
+                var index = Random.Range(0, forceList.Count);
+                var pick = forceList[index];
+                zhanLingSelection.Add(pick,Random.Range(min, max + 1));
+                forceList.Remove(pick);
+            }
+            return zhanLingSelection;
+        }
     }
+
 
     public List<int> GetBaYeEventExp(int eventId)
     {
@@ -172,13 +217,6 @@ public class BaYeManager : MonoBehaviour
         var warIds = battleTable[levelTableId + 1].Split(',').Where(s=>!string.IsNullOrWhiteSpace(s)).Select(int.Parse).ToList();
         return new BaYeCityEvent {EventId = eventId, CityId = cityId, WarIds = warIds, ExpList = baYeExp, PassedStages = new bool[baYeExp.Count]};
     }
-    /// <summary>
-    /// 获取宝箱数据 item1 = id，item2 = 经验，item3 = 奖励id
-    /// </summary>
-    /// <returns></returns>
-    public List<(int, int, int)> GetRewardChests() =>
-        LoadJsonFile.baYeRenWuTableDatas.Select(item => (int.Parse(item[0]), int.Parse(item[1]), int.Parse(item[2])))
-            .ToList();
 
     public void AddExp(int expIndex,int exp)
     {
@@ -205,6 +243,16 @@ public class BaYeManager : MonoBehaviour
         LoadSaveData.instance.SaveGameData(3);
     }
 
+    public bool TradeZhanLing(int forceId, int amount)
+    {
+        if (amount < 0 && PlayerDataForGame.instance.warsData.baYe.zhanLingMap[forceId] < -amount)
+            return false; //如果数目是负数，并玩家数量小于数量返回交易失败
+        PlayerDataForGame.instance.warsData.baYe.zhanLingMap[forceId] += amount;
+        PlayerDataForGame.instance.isNeedSaveData = true;
+        LoadSaveData.instance.SaveGameData(3);
+        return true;
+    }
+
     public void AddGoldAndExp(int expIndex, int exp, int gold)
     {
         if (PlayerDataForGame.instance.warsData.baYe.ExpData.ContainsKey(expIndex))
@@ -226,86 +274,47 @@ public class BaYeManager : MonoBehaviour
         LoadSaveData.instance.SaveGameData(3);
     }
 
-    //刷新霸业的势力武将选择（派去战斗）
-    public void SelectBaYeForceCards(int forceId)
-    {
-        SelectedForceId = forceId;
-        PlayerDataForGame.instance.fightHeroId.Clear();
-        PlayerDataForGame.instance.fightTowerId.Clear();
-        PlayerDataForGame.instance.fightTrapId.Clear();
-
-        NowLevelAndHadChip heroDataIndex = new NowLevelAndHadChip(); //临时记录武将存档信息
-        for (int i = 0; i < PlayerDataForGame.instance.hstData.heroSaveData.Count; i++)
-        {
-            heroDataIndex = PlayerDataForGame.instance.hstData.heroSaveData[i];
-            if (forceId == int.Parse(LoadJsonFile.heroTableDatas[heroDataIndex.id][6]))
-            {
-                if (heroDataIndex.level > 0 || heroDataIndex.chips > 0)
-                {
-                    if (heroDataIndex.isFight > 0)
-                    {
-                        PlayerDataForGame.instance.fightHeroId.Add(heroDataIndex.id);
-                    }
-                }
-            }
-        }
-
-        NowLevelAndHadChip fuzhuDataIndex = new NowLevelAndHadChip();
-        for (int i = 0; i < PlayerDataForGame.instance.hstData.towerSaveData.Count; i++)
-        {
-            fuzhuDataIndex = PlayerDataForGame.instance.hstData.towerSaveData[i];
-            if (forceId == int.Parse(LoadJsonFile.towerTableDatas[fuzhuDataIndex.id][15]))
-            {
-                if (fuzhuDataIndex.level > 0 || fuzhuDataIndex.chips > 0)
-                {
-                    if (fuzhuDataIndex.isFight > 0)
-                    {
-                        PlayerDataForGame.instance.fightTowerId.Add(fuzhuDataIndex.id);
-                    }
-                }
-            }
-        }
-
-        for (int i = 0; i < PlayerDataForGame.instance.hstData.trapSaveData.Count; i++)
-        {
-            fuzhuDataIndex = PlayerDataForGame.instance.hstData.trapSaveData[i];
-            if (forceId == int.Parse(LoadJsonFile.trapTableDatas[fuzhuDataIndex.id][14]))
-            {
-                if (fuzhuDataIndex.level > 0 || fuzhuDataIndex.chips > 0)
-                {
-                    if (fuzhuDataIndex.isFight > 0)
-                    {
-                        PlayerDataForGame.instance.fightTrapId.Add(fuzhuDataIndex.id);
-                    }
-                }
-            }
-        }
-    }
-
     //当霸业故事事件被触发
     public bool OnStoryEventTrigger(int eventPoint)
     {
         var storyMap = PlayerDataForGame.instance.warsData.baYe.storyMap;
         if (!storyMap.ContainsKey(eventPoint)) return false;
         var sEvent = storyMap[eventPoint];
-        switch (sEvent.Type)
+        switch ((StoryEventTypes)sEvent.Type)
         {
-            case 0: break;
-            case 1:
+            case StoryEventTypes.无事件: break;
+            case StoryEventTypes.开箱子:
                 OnReward(sEvent);
                 break;
-            case 2:
+            case StoryEventTypes.答题:
+            {
                 var count = LoadJsonFile.testTableDatas.Count;
                 var pick = Random.Range(0, count);
                 var row = LoadJsonFile.testTableDatas[pick];
-                var answerIndex = int.Parse(row[2]) - 1;//-1答案从1开始，索引从0开始。
-                UIManager.instance.baYeWindowUi.Show(row[1], new[] {row[3], row[4], row[5]}, answerIndex, () =>
+                var answerIndex = int.Parse(row[2]) - 1; //-1答案从1开始，索引从0开始。
+                UIManager.instance.baYeWindowUi.ShowQuest(row[1], new[] {row[3], row[4], row[5]}, answerIndex, () =>
                     {
                         OnReward(sEvent);
                         PlayerDataForGame.instance.ShowStringTips("三日不见，当刮目相看！");
                     },
                     () => PlayerDataForGame.instance.ShowStringTips("糊涂啊~"));
                 break;
+            }
+            case StoryEventTypes.活动:
+                throw XDebug.Throw<BaYeManager>("年兽活动未完成！");
+            case StoryEventTypes.战令:
+            {
+                var forceNames = LoadJsonFile.shiLiTableDatas.Select(row => row[1]).ToList();
+                UIManager.instance.baYeWindowUi.ShowSelection(sEvent.ZhanLing, selectedId =>
+                {
+                    var message = TradeZhanLing(selectedId, sEvent.ZhanLing[selectedId])
+                        ? $"获得[{forceNames[selectedId]}]战令"
+                        : "战令获取异常！";
+                    UIManager.instance.baYeForceSelectorUi.UpdateZhanLing();
+                    PlayerDataForGame.instance.ShowStringTips(message);
+                });
+                break;
+            }
             default:
                 XDebug.LogError<BaYeManager>($"未知故事事件类型={sEvent.Type}!");
                 throw new ArgumentOutOfRangeException();
@@ -344,6 +353,7 @@ public class BaYeManager : MonoBehaviour
         }
     }
 
+
     private class StoryEvent : IWeightElement
     {
         public int Id { get; }
@@ -351,14 +361,20 @@ public class BaYeManager : MonoBehaviour
         public int Type { get; }
         public (int,int) GoldRange { get; }
         public (int,int) ExpRange { get; }
+        public (int,int) YuQueRange { get; }
+        public (int,int) YuanBaoRange { get; }
+        public (int,int) ZhanLingRange { get; }
 
-        public StoryEvent(int id, int weight, int type, (int, int) goldRange, (int, int) expRange)
+        public StoryEvent(int id, int weight, int type, (int, int) goldRange, (int, int) expRange,(int,int) yuQueRange,(int,int) yuanBaoRange,(int,int) zhanLingRange)
         {
             Id = id;
             Weight = weight;
             Type = type;
             GoldRange = goldRange;
             ExpRange = expRange;
+            YuQueRange = yuQueRange;
+            YuanBaoRange = yuanBaoRange;
+            ZhanLingRange = zhanLingRange;
         }
     }
 

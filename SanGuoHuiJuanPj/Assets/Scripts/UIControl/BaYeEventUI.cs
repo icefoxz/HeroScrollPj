@@ -33,7 +33,6 @@ public class BaYeEventUI : MonoBehaviour
         text.color = cityNameColor;
         contentLayout.gameObject.SetActive(true);
         contentLayout.sizeDelta = new Vector2(list.Count * space, contentLayout.sizeDelta.y);
-        forceFlag.Hide();
     }
     public void InactiveCityColor()
     {

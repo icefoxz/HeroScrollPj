@@ -3412,19 +3412,20 @@ public class FightController : MonoBehaviour
     //播放特殊音效
     public void PlayAudioForSecondClip(int clipIndex, float delayedTime)
     {
-        if (AudioController0.instance.ChangeAudioClip(WarsUIManager.instance.audioClipsFightEffect[clipIndex], WarsUIManager.instance.audioVolumeFightEffect[clipIndex]))
+        var clip = WarsUIManager.instance.audioClipsFightEffect[clipIndex];
+        var volume = WarsUIManager.instance.audioVolumeFightEffect[clipIndex];
+        if (AudioController0.instance.ChangeAudioClip(clip, volume))
         {
             AudioController0.instance.PlayAudioSource(0);
+            return;
         }
-        else
-        {
-            AudioController0.instance.audioSource.volume = AudioController0.instance.audioSource.volume * 0.75f;
-            audioSource.clip = WarsUIManager.instance.audioClipsFightEffect[clipIndex];
-            audioSource.volume = WarsUIManager.instance.audioVolumeFightEffect[clipIndex];
-            if (AudioController0.instance.isPlayMusic != 1)
-                return;
-            audioSource.PlayDelayed(delayedTime);
-        }
+
+        AudioController0.instance.audioSource.volume *= 0.75f;
+        audioSource.clip = WarsUIManager.instance.audioClipsFightEffect[clipIndex];
+        audioSource.volume = WarsUIManager.instance.audioVolumeFightEffect[clipIndex];
+        if (AudioController0.instance.isPlayMusic != 1)
+            return;
+        audioSource.PlayDelayed(delayedTime);
     }
 
 
