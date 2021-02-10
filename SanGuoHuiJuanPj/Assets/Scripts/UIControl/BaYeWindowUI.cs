@@ -101,10 +101,10 @@ public class BaYeWindowUI : MiniWindowUI
         base.Close();
     }
 
-    public void ShowAdButton(UnityAction onClickAction)
+    public void ShowAdButton(UnityAction<Button> onClickAction)
     {
         adBtn.onClick.RemoveAllListeners();
-        adBtn.onClick.AddListener(onClickAction);
+        adBtn.onClick.AddListener(()=>onClickAction(adBtn));
         adBtn.gameObject.SetActive(true);
     }
 }

@@ -189,7 +189,7 @@ public class BaYeManager : MonoBehaviour
         PlayerDataForGame.instance.isNeedSaveData = true;
         LoadSaveData.instance.SaveGameData(3);
         UIManager.instance.storyEventUiController.ResetUi();
-
+        SelectorUIMove(false, null);
         Dictionary<int, int> GetZhanLing(int min, int max, int[] ids)
         {
             var forceList = ids.ToList();
@@ -216,8 +216,8 @@ public class BaYeManager : MonoBehaviour
                 var cEvent = map.Single(e => e.CityId == eventPoint);
                 PlayerDataForGame.instance.selectedCity = cEvent.CityId;
                 PlayerDataForGame.instance.selectedBaYeEventId = cEvent.EventId;
-                SelectorUIMove(UIManager.instance.baYeBattleEventController.eventList[cEvent.CityId].transform,
-                    cEvent.EventId == PlayerDataForGame.instance.selectedBaYeEventId);
+                SelectorUIMove(cEvent.EventId == PlayerDataForGame.instance.selectedBaYeEventId,
+                    UIManager.instance.baYeBattleEventController.eventList[cEvent.CityId].transform);
                 print(string.Join(",", cEvent.WarIds));
             }
                 break;
@@ -236,10 +236,15 @@ public class BaYeManager : MonoBehaviour
     }
 
     //选择器UI
-    private void SelectorUIMove(Transform targetTransform,bool display = true)
+    private void SelectorUIMove(bool display,Transform targetTransform)
     {
         var selector = UIManager.instance.chooseBaYeEventImg;
-        selector.SetActive(display);
+        if (!display)
+        {
+            selector.transform.position = Vector3.zero;
+            return;
+        }
+        selector.SetActive(true);
         selector.transform.position = targetTransform.position;
     }
 
@@ -359,7 +364,7 @@ public class BaYeManager : MonoBehaviour
             case StoryEventTypes.讨伐:
             {
                 //标记霸业的战斗点。等待开启战斗
-                SelectorUIMove(UIManager.instance.storyEventUiController.storyEventPoints[eventPoint].transform);
+                SelectorUIMove(true, UIManager.instance.storyEventUiController.storyEventPoints[eventPoint].transform);
                 print($"故事type[{sEvent.Type}]-讨伐事件 storyId[{sEvent.StoryId}] warId[{sEvent.WarId}]");
                 return;//征战活动不删除记录。等到触发了才删除
             }
@@ -386,31 +391,32 @@ public class BaYeManager : MonoBehaviour
 
         void OnReward(BaYeStoryEvent se)
         {
-            var rewardMap = new Dictionary<int, int>
-            {
-                {0, se.GoldReward},
-                {1, se.ExpReward},
-                {2, se.YuanBaoReward},
-                {3, se.YvQueReward}
-            };
+            var rewardMap = InstanceReward(se);
             UIManager.instance.baYeWindowUi.Show(rewardMap);
-            OnBayeStoryEventReward( se);
-            UIManager.instance.baYeWindowUi.ShowAdButton(() =>
+            OnBayeStoryEventReward(se);
+            UIManager.instance.baYeWindowUi.ShowAdButton(adBtn =>
             {
                 AdAgent.instance.CallAd((success, msg) =>
                 {
                     if (success)
                     {
-                        OnBayeStoryEventReward(se);
-                        rewardMap.Add(0,se.GoldReward);
-                        rewardMap.Add(1,se.ExpReward);
-                        UIManager.instance.baYeWindowUi.Show(rewardMap);
+                        UIManager.instance.baYeWindowUi.Show(InstanceReward(se, 2));
+                        adBtn.gameObject.SetActive(false);
                         return;
                     }
                     PlayerDataForGame.instance.ShowStringTips($"获取失败！\n{msg}");
                 });
             });
             UIManager.instance.ResetBaYeProgressAndGold(PlayerDataForGame.instance.warsData.baYe);
+
+            Dictionary<int, int> InstanceReward(BaYeStoryEvent baYeStoryEvent, int rate = 1) =>
+                new Dictionary<int, int>()
+                {
+                    {0, baYeStoryEvent.GoldReward * rate},
+                    {1, baYeStoryEvent.ExpReward * rate},
+                    {2, baYeStoryEvent.YuanBaoReward * rate},
+                    {3, baYeStoryEvent.YvQueReward * rate}
+                };
         }
     }
 
