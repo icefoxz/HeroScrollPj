@@ -198,6 +198,7 @@ public class BaYeStoryEvent
 {
     public int StoryId { get; set; }
     public int Type { get; set; }
+    public int WarId { get; set; }
     public int GoldReward { get; set; }
     public int ExpReward { get; set; }
     public int YvQueReward { get; set; }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using Beebyte.Obfuscator;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -34,19 +35,16 @@ public class StoryEventUIController : MonoBehaviour
         }
     }
 
-    public void OnStoryEventClick(int eventPoint)
+    [SkipRename]public void OnStoryEventClick(int eventPoint)
     {
         var sEvent = PlayerDataForGame.instance.warsData.baYe.storyMap[eventPoint];
         OnClickAudioPlay(sEvent.Type);
-        var isSuccess = BaYeManager.instance.OnStoryEventTrigger(eventPoint);
+        BaYeManager.instance.OnBaYeMapSelection(BaYeManager.EventTypes.Story, eventPoint);
+        if((BaYeManager.StoryEventTypes)sEvent.Type == BaYeManager.StoryEventTypes.讨伐)
+            return;//讨伐事件ui还会存在。
         var point = points[eventPoint];
         Destroy(point.content);
         point.gameObject.SetActive(false);
-        if(isSuccess)return;
-#if UNITY_EDITOR
-        var resultText = isSuccess ? "成功" : "失败";
-        XDebug.Log<StoryEventUIController>($"霸业故事事件[{eventPoint}]获取{resultText}！");
-#endif
     }
 
     private void OnClickAudioPlay(int type)

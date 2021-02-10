@@ -543,14 +543,16 @@ public class PlayerDataForGame : MonoBehaviour
         LoadSaveData.instance.SaveGameData(1);
     }
 
-    public void SaveBaYeWarEvent()
+    public bool ConsumeZhanLing(int amt = 1)
     {
         var force = WarForceMap[WarTypes.Baye];
-        if (!BaYeManager.instance.TradeZhanLing(force, -1))
-        {
-            ShowStringTips("战令不足以消费！");
-            return;
-        }
+        if (BaYeManager.instance.TradeZhanLing(force, amt * -1)) return true;
+        ShowStringTips("战令不足以消费！");
+        return false;
+    }
+
+    public void SaveBaYeWarEvent()
+    {
         var baYe = warsData.baYe;
         if (baYe.data.Any(d => d.CityId == selectedCity)) return;
         var city = BaYeManager.instance.Map.Single(e => e.CityId == selectedCity);

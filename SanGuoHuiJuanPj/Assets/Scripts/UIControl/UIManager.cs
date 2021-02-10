@@ -214,9 +214,9 @@ public class UIManager : MonoBehaviour
     Button jiBanWinCloseBtn;    //羁绊界面关闭按钮
 
     [SerializeField]
-    BaYeEventUIController baYeBattleEventController;   //霸业事件点父级
+    public BaYeEventUIController baYeBattleEventController;   //霸业事件点父级
     [SerializeField]
-    GameObject chooseBaYeEventImg;  //选择霸业地点的Img
+    public GameObject chooseBaYeEventImg;  //选择霸业地点的Img
     [SerializeField]
     Text baYeGoldNumText;   //霸业金币数量
 
@@ -294,40 +294,61 @@ public class UIManager : MonoBehaviour
     //开始霸业战斗
     public void StartBaYeFight()
     {
-        var city = BaYeManager.instance.Map.SingleOrDefault(e => e.CityId == PlayerDataForGame.instance.selectedCity);
         var selectedForce = PlayerDataForGame.instance.WarForceMap[PlayerDataForGame.WarTypes.Baye];
-        if (city != null &&  selectedForce>= 0)
+        switch (BaYeManager.instance.CurrentEventType)
         {
-            var savedEvent = PlayerDataForGame.instance.warsData.baYe.data.SingleOrDefault(e => e.CityId == city.CityId);
-            var passes = 0;
-            if (savedEvent != null)
-                passes = savedEvent.PassedStages.Count(pass => pass);
-            if (passes == city.WarIds.Count)
+            case BaYeManager.EventTypes.Story:
             {
-                PlayerDataForGame.instance.ShowStringTips("该地区已经平定了噢。");
+                var map = PlayerDataForGame.instance.warsData.baYe.storyMap;
+                var storyEvent = map[BaYeManager.instance.CurrentEventPoint];
+                if (selectedForce < 0) break;
+                if (PlayerDataForGame.instance.ConsumeZhanLing()) return;//消费战令
+                PlayerDataForGame.instance.warsData.baYe.storyMap.Remove(BaYeManager.instance.CurrentEventPoint);
+                PlayerDataForGame.instance.isNeedSaveData = true;
+                LoadSaveData.instance.SaveGameData(3);
+                StartBattle(storyEvent.WarId);
                 return;
             }
-            if (!isJumping)
+            case BaYeManager.EventTypes.City:
             {
-                var warId = city.WarIds[passes];
-                isJumping = true;
-                AudioController0.instance.ChangeAudioClip(12);
-                AudioController0.instance.PlayAudioSource(0);
-                PlayerDataForGame.instance.FlagWarTypeBeforeBattle(2);
-                PlayerDataForGame.instance.selectedWarId = warId;
+                var city = BaYeManager.instance.Map.SingleOrDefault(e =>
+                    e.CityId == PlayerDataForGame.instance.selectedCity);
+                if (city == null || selectedForce < 0) break;
+                var savedEvent =
+                    PlayerDataForGame.instance.warsData.baYe.data.SingleOrDefault(e => e.CityId == city.CityId);
+                var passes = 0;
+                if (savedEvent != null)
+                    passes = savedEvent.PassedStages.Count(pass => pass);
+                if (passes == city.WarIds.Count)
+                {
+                    PlayerDataForGame.instance.ShowStringTips("该地区已经平定了噢。");
+                    return;
+                }
+                if (PlayerDataForGame.instance.ConsumeZhanLing()) return;//消费战令
                 PlayerDataForGame.instance.SaveBaYeWarEvent();
-                print($"开始战斗 WarId[{warId}]");
-                StartCoroutine(LateGoToFightScene());
+                StartBattle(city.WarIds[passes]);
                 return;
             }
-
-            PlayOnClickMusic();
-            return;
+            default:
+                throw new ArgumentOutOfRangeException();
         }
 
         print("请选择");
         //提示选择势力后进行战斗
         PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(65));
+
+        void StartBattle(int warId)
+        {
+            if (isJumping) return;
+            isJumping = true;
+            PlayOnClickMusic();
+            AudioController0.instance.ChangeAudioClip(12);
+            AudioController0.instance.PlayAudioSource(0);
+            PlayerDataForGame.instance.FlagWarTypeBeforeBattle(2);
+            PlayerDataForGame.instance.selectedWarId = warId;
+            print($"开始战斗 WarId[{warId}]");
+            StartCoroutine(LateGoToFightScene());
+        }
     }
 
     //初始化霸业界面内容
@@ -383,7 +404,8 @@ public class UIManager : MonoBehaviour
                 ui.Init(city.WarIds.Count);
                 ui.button.onClick.RemoveAllListeners();
                 ui.button.onClick
-                .AddListener(() => ChooseBaYeEventOnClick(indexId, baYeEvent.EventId, baYeEvent.WarIds));
+                    .AddListener(
+                        () => BaYeManager.instance.OnBaYeMapSelection(BaYeManager.EventTypes.City, baYeEvent.CityId));
                 ui.text.text = LoadJsonFile.baYeDiTuTableDatas[i][3]; //城市名
             }
             else
@@ -399,57 +421,6 @@ public class UIManager : MonoBehaviour
             if (baYeRecord.PassedStages.Length == passCount)//如果玩家已经过关
                 ui.forceFlag.Hide();
         }
-
-        //势力选择
-        //int totalUnlockForce = int.Parse(LoadJsonFile.playerLevelTableDatas[PlayerDataForGame.instance.pyData.Level - 1][6]);
-        //var prefab = baYeForceObj.GetComponentInChildren<BaYeForceSelectorUi>(true);
-
-        //if (forceFields != null && forceFields.Count > 0) forceFields.ForEach(f => Destroy(f.gameObject));
-        //forceFields = new List<BaYeForceField>();
-        //foreach (var map in baYeForceSelectorUi.Data)
-        //{
-        //    var forceId = map.Key;
-        //    var ui = map.Value;
-        //    var forceField = ui.gameObject.AddComponent<BaYeForceField>();
-        //    ui.
-        //    forceField.forceUi = ui;
-        //    forceField.forceUi.button.interactable = false;
-        //    forceFields.Add(forceField);
-        //    forceField.id = forceIndex;
-        //    var baYeEventRecord = baYe.data.SingleOrDefault(f => f.ForceId == forceIndex);
-        //    if (baYeEventRecord != null)
-        //    {
-        //        forceField.boundCity = baYeEventRecord.CityId;
-        //        forceField.boundWars = baYeEventRecord.WarIds;
-        //    }
-
-        //    obj.forceFlag.Set((ForceFlags) i);
-
-        //    forceField.forceUi.button.onClick.AddListener( () => ChooseBaYeForceOnClick(forceIndex));
-        //    obj.gameObject.SetActive(baYe.data.All(e => e.ForceId != forceIndex));
-
-        //}
-        //for (int i = 0; i < baYeForceSelectorUi.Data.Count; i++)
-        //{
-        //    int forceIndex = i;
-        //    var obj = Instantiate(prefab, baYeForceObj.transform);
-        //    var forceField = obj.gameObject.AddComponent<BaYeForceField>();
-        //    forceField.forceUi = obj;
-        //    forceField.forceUi.button.interactable = false;
-        //    forceFields.Add(forceField);
-        //    forceField.id = forceIndex;
-        //    var baYeEventRecord = baYe.data.SingleOrDefault(f => f.ForceId == forceIndex);
-        //    if (baYeEventRecord != null)
-        //    {
-        //        forceField.boundCity = baYeEventRecord.CityId;
-        //        forceField.boundWars = baYeEventRecord.WarIds;
-        //    }
-
-        //    obj.forceFlag.Set((ForceFlags) i);
-
-        //    forceField.forceUi.button.onClick.AddListener( () => ChooseBaYeForceOnClick(forceIndex));
-        //    obj.gameObject.SetActive(baYe.data.All(e => e.ForceId != forceIndex));
-        //}
     }
 
     public void ResetBaYeProgressAndGold(BaYeDataClass baYe)
@@ -475,59 +446,6 @@ public class UIManager : MonoBehaviour
             else baYeChestButtons[i].Opened();
         }
     }
-
-    //标记选择霸业城池id
-    //int baYeEventChooseIndex; 
-
-    //选择霸业的势力方法
-    //public void ChooseBaYeForceOnClick(int forceId)
-    //{
-    //    if (PlayerDataForGame.instance.selectedBaYeEventId == -1) return;
-    //    baYeForceSelectorUi.OnSelected();
-    //    //var force = forceFields.Single(f => f.id == forceId);
-    //    //forceFields.ForEach(f=>f.forceUi.forceFlag.Select(false));
-    //    //force.forceUi.forceFlag.Select(true);
-    //}
-
-    //选择某个霸业城池点的方法
-    private void ChooseBaYeEventOnClick(int cityId,int eventId, List<int> warIds)
-    {
-        if (eventId == PlayerDataForGame.instance.selectedBaYeEventId)
-        {
-            PlayerDataForGame.instance.selectedBaYeEventId = -1;
-            chooseBaYeEventImg.SetActive(false);
-            return;
-        }
-        PlayerDataForGame.instance.selectedCity = cityId;
-        PlayerDataForGame.instance.selectedBaYeEventId = eventId;
-        chooseBaYeEventImg.transform.position = baYeBattleEventController.eventList[cityId].transform.position;
-        chooseBaYeEventImg.SetActive(true);
-        //var isBound = false;
-        //foreach (var field in forceFields)
-        //{
-        //    if (field.boundCity == cityId)
-        //    {
-        //        ChooseBaYeForceOnClick(field.id);
-        //        field.forceUi.button.interactable = false;
-        //        field.forceUi.DisplayLing(true);
-        //        forceFields.Where(f => f != field).ToList().ForEach(f =>
-        //        {
-        //            f.forceUi.DisplayLing(false);
-        //            f.forceUi.button.interactable = false;
-        //        });
-        //        isBound = true;
-        //        break;
-        //    }
-        //    field.forceUi.forceFlag.Select(false);
-        //    field.forceUi.button.interactable = field.boundWars==null || field.boundWars.Count == 0;
-        //    field.forceUi.DisplayLing(field.boundWars?.Count > 0);
-        //}
-
-        //if (!isBound) BaYeManager.instance.SelectedForceId = -1;
-        print(string.Join(",", warIds));
-    }
-
-
 
     //main场景羁绊内容的初始化
     private void InitJiBanForMainFun()
@@ -1352,17 +1270,6 @@ public class UIManager : MonoBehaviour
         }
 
         NowLevelAndHadChip fuzhuDataIndex = new NowLevelAndHadChip();
-        //排序
-        //SortHSTData(PlayerDataForGame.instance.hstData.soldierSaveData);
-        //for (int i = 0; i < PlayerDataForGame.instance.hstData.soldierSaveData.Count; i++)
-        //{
-        //    fuzhuDataIndex = PlayerDataForGame.instance.hstData.soldierSaveData[i];
-        //    if (fuzhuDataIndex.Level > 0 || fuzhuDataIndex.chips > 0)
-        //    {
-        //        cardNums++;
-        //        ShowOneFuZhuRules(LoadJsonFile.soldierTableDatas, fuzhuDataIndex, 13);
-        //    }
-        //}
         SortHSTData(PlayerDataForGame.instance.hstData.towerSaveData);
         for (int i = 0; i < PlayerDataForGame.instance.hstData.towerSaveData.Count; i++)
         {
@@ -1397,16 +1304,6 @@ public class UIManager : MonoBehaviour
                 }
             }
         }
-        //SortHSTData(PlayerDataForGame.instance.hstData.spellSaveData);
-        //for (int i = 0; i < PlayerDataForGame.instance.hstData.spellSaveData.Count; i++)
-        //{
-        //    fuzhuDataIndex = PlayerDataForGame.instance.hstData.spellSaveData[i];
-        //    if (fuzhuDataIndex.Level > 0 || fuzhuDataIndex.chips > 0)
-        //    {
-        //        cardNums++;
-        //        ShowOneFuZhuRules(LoadJsonFile.spellTableDatas, fuzhuDataIndex, 6);
-        //    }
-        //}
         if (cardNums > 0)
         {
             StartCoroutine(LiteUpdateListChooseFirst(0));

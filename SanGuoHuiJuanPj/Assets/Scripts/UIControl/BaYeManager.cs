@@ -10,16 +10,20 @@ using Random = UnityEngine.Random;
 /// </summary>
 public class BaYeManager : MonoBehaviour
 {
+    public enum EventTypes
+    {
+        City,
+        Story
+    }
     public enum StoryEventTypes
     {
         无事件,
         开箱子,
         答题,
-        活动,
+        讨伐,
         战令
     }
 
-    //public int SelectedForceId { get; set; } = -1;
     public int BaYeGoldDefault = 30; //霸业初始金币
     public int BaYeMaxGold = 75; //霸业金币上限
     private List<BaYeCityEvent> map;
@@ -30,6 +34,9 @@ public class BaYeManager : MonoBehaviour
     public IReadOnlyList<BaYeCityEvent> Map => map;
     public static BaYeManager instance;
     private bool isHourlyEventRegistered;
+    public EventTypes CurrentEventType { get; private set; }//当前事件类型
+    public int CurrentEventPoint { get; private set; }//当前事件点
+
     void Awake()
     {
         if (instance == null)
@@ -173,6 +180,7 @@ public class BaYeManager : MonoBehaviour
                 ExpReward = Random.Range(story.ExpRange.Item1, story.ExpRange.Item2),
                 YvQueReward = Random.Range(story.YuQueRange.Item1, story.YuQueRange.Item2),
                 YuanBaoReward = Random.Range(story.YuanBaoRange.Item1, story.YuanBaoRange.Item2),
+                WarId = int.TryParse(LoadJsonFile.storyIdTableDatas[story.Id][9], out var warId) ? warId : -1,
                 ZhanLing = GetZhanLing(story.ZhanLingRange.Item1, story.ZhanLingRange.Item2,forceIds)
             };
         }).Where(kv => kv.Value.StoryId != 0).ToDictionary(kv => kv.Key, kv => kv.Value);
@@ -195,6 +203,44 @@ public class BaYeManager : MonoBehaviour
             }
             return zhanLingSelection;
         }
+    }
+
+    public void OnBaYeMapSelection(EventTypes type,int eventPoint)
+    {
+        CurrentEventType = type;
+        CurrentEventPoint = eventPoint;
+        switch (type)
+        {
+            case EventTypes.City:
+            {
+                var cEvent = map.Single(e => e.CityId == eventPoint);
+                PlayerDataForGame.instance.selectedCity = cEvent.CityId;
+                PlayerDataForGame.instance.selectedBaYeEventId = cEvent.EventId;
+                SelectorUIMove(UIManager.instance.baYeBattleEventController.eventList[cEvent.CityId].transform,
+                    cEvent.EventId == PlayerDataForGame.instance.selectedBaYeEventId);
+                print(string.Join(",", cEvent.WarIds));
+            }
+                break;
+            case EventTypes.Story:
+            {
+                var storyMap = PlayerDataForGame.instance.warsData.baYe.storyMap;
+                if (!storyMap.ContainsKey(eventPoint))
+                    throw XDebug.Throw<BaYeManager>("霸业故事点不存在!");
+                var sEvent = storyMap[eventPoint];
+                OnStoryEventTrigger(eventPoint,sEvent);
+            }
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(type), type, null);
+        }
+    }
+
+    //选择器UI
+    private void SelectorUIMove(Transform targetTransform,bool display = true)
+    {
+        var selector = UIManager.instance.chooseBaYeEventImg;
+        selector.SetActive(display);
+        selector.transform.position = targetTransform.position;
     }
 
 
@@ -288,11 +334,8 @@ public class BaYeManager : MonoBehaviour
     }
 
     //当霸业故事事件被触发
-    public bool OnStoryEventTrigger(int eventPoint)
+    private void OnStoryEventTrigger(int eventPoint,BaYeStoryEvent sEvent)
     {
-        var storyMap = PlayerDataForGame.instance.warsData.baYe.storyMap;
-        if (!storyMap.ContainsKey(eventPoint)) return false;
-        var sEvent = storyMap[eventPoint];
         switch ((StoryEventTypes)sEvent.Type)
         {
             case StoryEventTypes.无事件: break;
@@ -313,8 +356,13 @@ public class BaYeManager : MonoBehaviour
                     () => PlayerDataForGame.instance.ShowStringTips("糊涂啊~"));
                 break;
             }
-            case StoryEventTypes.活动:
-                throw XDebug.Throw<BaYeManager>("年兽活动未完成！");
+            case StoryEventTypes.讨伐:
+            {
+                //标记霸业的战斗点。等待开启战斗
+                SelectorUIMove(UIManager.instance.storyEventUiController.storyEventPoints[eventPoint].transform);
+                print($"故事type[{sEvent.Type}]-讨伐事件 storyId[{sEvent.StoryId}] warId[{sEvent.WarId}]");
+                return;//征战活动不删除记录。等到触发了才删除
+            }
             case StoryEventTypes.战令:
             {
                 var forceNames = LoadJsonFile.shiLiTableDatas.Select(row => row[1]).ToList();
@@ -332,11 +380,9 @@ public class BaYeManager : MonoBehaviour
                 XDebug.LogError<BaYeManager>($"未知故事事件类型={sEvent.Type}!");
                 throw new ArgumentOutOfRangeException();
         }
-
         PlayerDataForGame.instance.warsData.baYe.storyMap.Remove(eventPoint);
         PlayerDataForGame.instance.isNeedSaveData = true;
         LoadSaveData.instance.SaveGameData(3);
-        return true;
 
         void OnReward(BaYeStoryEvent se)
         {
