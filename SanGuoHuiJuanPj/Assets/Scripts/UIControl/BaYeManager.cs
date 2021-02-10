@@ -239,12 +239,12 @@ public class BaYeManager : MonoBehaviour
     private void SelectorUIMove(bool display,Transform targetTransform)
     {
         var selector = UIManager.instance.chooseBaYeEventImg;
+        selector.SetActive(display);
         if (!display)
         {
             selector.transform.position = Vector3.zero;
             return;
         }
-        selector.SetActive(true);
         selector.transform.position = targetTransform.position;
     }
 

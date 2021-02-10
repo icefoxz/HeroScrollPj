@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.UI;
 using Debug = UnityEngine.Debug;
 
 /// <summary>
@@ -54,7 +55,11 @@ public class SystemTimer : MonoBehaviour
     //public int Sec;
 
     private int connectionFailureCount;
+    private string currentClock;
 
+    public string CurrentClock => clockMap[TimeSystemControl.instance.NowHour];
+
+    private Dictionary<int, string> clockMap;
     /// <summary>
     /// Unix时间戳(毫秒ms)
     /// </summary>
@@ -83,6 +88,28 @@ public class SystemTimer : MonoBehaviour
         //UpdateDateTime(startTime.Ticks);
         StartCoroutine(SynchronizeDateTime());
     }
+
+    private void Start()
+    {
+        InitClockMap();
+    }
+
+    private void InitClockMap()
+    {
+        var row = 70; //时辰文本
+        clockMap = new Dictionary<int, string>();
+        var clock = 23;
+        for (int i = 0; i < 12; i++)
+        {
+            for (int j = 0; j < 2; j++)
+            {
+                clockMap.Add(clock, LoadJsonFile.GetStringText(row + i));
+                clock++;
+                if (clock > 23) clock = 0;
+            }
+        }
+    }
+
 
     private void UpdateSystemTime(DateTime systemTime)
     {

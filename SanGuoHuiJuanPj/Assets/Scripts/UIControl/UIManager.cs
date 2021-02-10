@@ -433,6 +433,7 @@ public class UIManager : MonoBehaviour
         baYeProgressUi.Set(baYe.CurrentExp,baYeReward[baYeReward.Count - 1].exp);
         for (int i = 0; i < baYeReward.Count; i++)
         {
+            baYeChestButtons[i].Text.text = baYeReward[i].exp.ToString();
             //如果玩家霸业的经验值大于宝箱经验值并宝箱未被开过
             if (baYe.CurrentExp < baYeReward[i].exp)
             {

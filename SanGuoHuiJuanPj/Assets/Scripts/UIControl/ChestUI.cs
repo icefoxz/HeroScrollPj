@@ -12,6 +12,7 @@ public class ChestUI : MonoBehaviour
     public Animator animator;
 
     public Button button;
+    public Text Text;
 
     public void Opened()
     {

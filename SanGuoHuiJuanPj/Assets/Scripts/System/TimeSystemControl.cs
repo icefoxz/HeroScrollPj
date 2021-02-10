@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Net;
 using System.Text;
 using UnityEngine;
@@ -25,6 +26,7 @@ public class TimeSystemControl : MonoBehaviour
 
     public event Action OnHourly;
     private DateTimeOffset hour;//现在时间(小时制，只会跨小时不会跨分钟)
+    public int NowHour => hour.Hour;
 
     public static string NetworkTimestampStr = "NetworkTimestamp";
 
@@ -179,9 +181,11 @@ public class TimeSystemControl : MonoBehaviour
     /// </summary>
     private void UpdateTimeTrigger()
     {
-        if (SystemTimer.Now - hour <= TimeSpan.FromHours(1)) return;
-        hour = SystemTimer.Now.Date.AddHours(SystemTimer.Now.Hour);
-        OnHourly?.Invoke();
+        if (SystemTimer.Now - hour > TimeSpan.FromHours(1))
+        {
+            hour = SystemTimer.Now.Date.AddHours(SystemTimer.Now.Hour);
+            OnHourly?.Invoke();
+        }
     }
 
     /// <summary>
