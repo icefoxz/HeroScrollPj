@@ -7949,8 +7949,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e96df91d8871ba9479ffbfe23771aad0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isSkipLogin: 1
-  isSkipInitBattle: 1
+  isSkipLogin: 0
+  isSkipInitBattle: 0
   closeBtn: {fileID: 116243771}
   loginBtn: {fileID: 1477689249}
   beginningWarBtn: {fileID: 301380373}

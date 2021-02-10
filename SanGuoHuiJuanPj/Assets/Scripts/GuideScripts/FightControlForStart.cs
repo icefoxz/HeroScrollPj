@@ -3203,15 +3203,15 @@ public class FightControlForStart : MonoBehaviour
     //播放特殊音效
     public void PlayAudioForSecondClip(int clipIndex, float delayedTime)
     {
-        if (AudioController0.instance.ChangeAudioClip(clipIndex))
+        audioSource.clip = FightForManagerForStart.instance.audioClipsFightEffect[clipIndex];
+        audioSource.volume = FightForManagerForStart.instance.audioVolumeFightEffect[clipIndex];
+        if (AudioController0.instance.ChangeAudioClip(audioSource.clip,audioSource.volume))
         {
             AudioController0.instance.PlayAudioSource(0);
         }
         else
         {
             AudioController0.instance.audioSource.volume = AudioController0.instance.audioSource.volume * 0.75f;
-            audioSource.clip = FightForManagerForStart.instance.audioClipsFightEffect[clipIndex];
-            audioSource.volume = FightForManagerForStart.instance.audioVolumeFightEffect[clipIndex];
             if (AudioController0.instance.isPlayMusic != 1)
                 return;
             audioSource.PlayDelayed(delayedTime);

@@ -770,6 +770,8 @@ public class FightForManagerForStart : MonoBehaviour
     //匹配稀有度边框
     private void FrameChoose(string rarity, Image img)
     {
+        img.enabled = false;
+        return;
         img.enabled = true;
         switch (rarity)
         {
