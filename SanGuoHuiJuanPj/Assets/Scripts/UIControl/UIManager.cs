@@ -302,7 +302,7 @@ public class UIManager : MonoBehaviour
                 var map = PlayerDataForGame.instance.warsData.baYe.storyMap;
                 var storyEvent = map[BaYeManager.instance.CurrentEventPoint];
                 if (selectedForce < 0) break;
-                if (PlayerDataForGame.instance.ConsumeZhanLing()) return;//消费战令
+                if (!PlayerDataForGame.instance.ConsumeZhanLing()) return;//消费战令
                 PlayerDataForGame.instance.warsData.baYe.storyMap.Remove(BaYeManager.instance.CurrentEventPoint);
                 PlayerDataForGame.instance.isNeedSaveData = true;
                 LoadSaveData.instance.SaveGameData(3);
@@ -324,7 +324,7 @@ public class UIManager : MonoBehaviour
                     PlayerDataForGame.instance.ShowStringTips("该地区已经平定了噢。");
                     return;
                 }
-                if (PlayerDataForGame.instance.ConsumeZhanLing()) return;//消费战令
+                if (!PlayerDataForGame.instance.ConsumeZhanLing()) return;//消费战令
                 PlayerDataForGame.instance.SaveBaYeWarEvent();
                 StartBattle(city.WarIds[passes]);
                 return;

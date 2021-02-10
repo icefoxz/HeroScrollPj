@@ -37,7 +37,7 @@ public class BaYeForceSelectorUi : ForceSelectorUi
             var forceId = pair.Key;
             var flagUi = pair.Value;
             var amount = baYe.zhanLingMap[forceId];
-            flagUi.SetLing(amount, amount > 0);
+            flagUi.SetLing(amount);
         }
     }
 }
