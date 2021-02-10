@@ -14,7 +14,7 @@ public class LoadJsonFile : MonoBehaviour
     private static readonly string tableNameStrs = "PlayerInitialTable;AssetTable;HeroTable;PlayerLevelTable;SoldierTable;" +
         "TowerTable;ClassTable;UpGradeTable;TrapTable;SpellTable;WarChestTable;WarTable;CityLevelTable;PointTable;" +
         "BattleEventTable;EnemyTable;EnemyUnitTable;StoryTable;StoryRTable;TestTable;TestRTable;EncounterTable;" +
-        "ShoppingTable;ChoseWarTable;GuideTable;KnowledgeTable;RCodeTable;TiLiStoreTable;EnemyBOSSTable;StringTextTable;" +        "NumParametersTable;JiBanTable;ShiLiTable;BaYeDiTuTable;BaYeShiJianTable;BaYeBattleTable;BaYeRenWuTable;StoryPoolTable;StoryIdTable;BaYeTVTable";
+        "ShoppingTable;ChoseWarTable;GuideTable;KnowledgeTable;RCodeTable;TiLiStoreTable;EnemyBOSSTable;StringTextTable;" + "NumParametersTable;JiBanTable;ShiLiTable;BaYeDiTuTable;BaYeShiJianTable;BaYeBattleTable;BaYeRenWuTable;StoryPoolTable;StoryIdTable;BaYeTVTable;BaYeNameTable";
 
 
     /// <summary>
@@ -216,7 +216,10 @@ public class LoadJsonFile : MonoBehaviour
     /// 霸业TV表
     /// </summary>
     public static List<List<string>> baYeTVTableDatas;
-
+    /// <summary>
+    /// 霸业TV人名表
+    /// </summary>
+    public static List<List<string>> baYeNameTableDatas;
     /// <summary>
     /// 加载json文件获取数据至链表中
     /// </summary>
@@ -1061,6 +1064,7 @@ public class LoadJsonFile : MonoBehaviour
                 storyIdTableDatas[i].Add(root.StoryIdTable[i].YuanBaoR);
                 storyIdTableDatas[i].Add(root.StoryIdTable[i].JunTuanR);
                 storyIdTableDatas[i].Add(root.StoryIdTable[i].Time);
+                storyIdTableDatas[i].Add(root.StoryIdTable[i].WarId);
             }
             //Debug.Log("Json文件加载成功---" + tableNames[indexTable] + ".Json");
             indexTable++;
@@ -1077,11 +1081,26 @@ public class LoadJsonFile : MonoBehaviour
                 baYeTVTableDatas[i].Add(root.BaYeTVTable[i].weight);
                 baYeTVTableDatas[i].Add(root.BaYeTVTable[i].text);
                 baYeTVTableDatas[i].Add(root.BaYeTVTable[i].time);
+                baYeTVTableDatas[i].Add(root.BaYeTVTable[i].type);
             }
             //Debug.Log("Json文件加载成功---" + tableNames[indexTable] + ".Json");
             indexTable++;
         }
-
+        //加载霸业TV人名表数据：BaYeNameTable
+        {
+            jsonData = LoadJsonByName(tableNames[indexTable]);
+            root = JsonConvert.DeserializeObject<Roots>(jsonData);
+            baYeNameTableDatas = new List<List<string>>(root.BaYeNameTable.Count);
+            for (int i = 0; i < root.BaYeNameTable.Count; i++)
+            {
+                baYeNameTableDatas.Add(new List<string>());
+                baYeNameTableDatas[i].Add(root.BaYeNameTable[i].id);
+                baYeNameTableDatas[i].Add(root.BaYeNameTable[i].weight);
+                baYeNameTableDatas[i].Add(root.BaYeNameTable[i].name);
+            }
+            //Debug.Log("Json文件加载成功---" + tableNames[indexTable] + ".Json");
+            indexTable++;
+        }
 
         if (indexTable >= tableNames.Length)
         {

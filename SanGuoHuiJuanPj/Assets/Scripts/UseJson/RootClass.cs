@@ -165,4 +165,8 @@ public class Roots
     /// 霸业TV表
     /// </summary>
     public List<BaYeTVTableItem> BaYeTVTable { get; set; }
+    /// <summary>
+    /// 霸业TV人名表
+    /// </summary>
+    public List<BaYeNameTableItem> BaYeNameTable { get; set; }
 }
