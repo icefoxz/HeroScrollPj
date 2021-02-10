@@ -905,7 +905,7 @@ public class LoadSaveData : MonoBehaviour
     /// <summary> 
     /// 存储游戏 
     /// </summary> 
-    /// <param name="indexFun">默认0：全部存储，1：存储pyData，2：存储hstData，3：存储warsData，4：存储gbocData</param> 
+    /// <param name="indexFun">默认0：全部存储，1：存储pyData，2：存储hstData，3：存储warsData，4：存储gbocData，5:py + war(霸业)</param> 
     public void SaveGameData(int indexFun = 0)
     {
         if (PlayerDataForGame.instance.warsData.warUnlockSaveData == null)
@@ -932,6 +932,10 @@ public class LoadSaveData : MonoBehaviour
                     break;
                 case 4:
                     SaveByJson(PlayerDataForGame.instance.gbocData);
+                    break;
+                case 5:
+                    SaveByJson(PlayerDataForGame.instance.pyData);
+                    SaveByJson(PlayerDataForGame.instance.warsData);
                     break;
                 default:
                     break;

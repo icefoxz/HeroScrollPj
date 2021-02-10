@@ -63,9 +63,10 @@ public static class GameSystemExtension
         char separator = Dash)
     {
         var isNoTimeLimit = string.IsNullOrWhiteSpace(dateText);
+        if (isNoTimeLimit) return true;
         var dates = dateText.TableStringToDates(separator).ToArray();
         var isTimeInRange = checkDate >= dates[0] && checkDate <= dates[1];
-        return isNoTimeLimit || isTimeInRange;
+        return isTimeInRange;
     }
 
     public static IEnumerable<NowLevelAndHadChip> Enlist(this IEnumerable<NowLevelAndHadChip> cards,int forceId)=> cards.Where(card =>

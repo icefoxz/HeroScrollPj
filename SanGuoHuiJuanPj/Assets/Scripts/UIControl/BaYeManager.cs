@@ -253,16 +253,29 @@ public class BaYeManager : MonoBehaviour
         return true;
     }
 
-    public void AddGoldAndExp(int expIndex, int exp, int gold)
+    public void OnBayeStoryEventReward(BaYeStoryEvent storyEvent)
     {
-        if (PlayerDataForGame.instance.warsData.baYe.ExpData.ContainsKey(expIndex))
-            PlayerDataForGame.instance.warsData.baYe.ExpData[expIndex] += exp;
-        else PlayerDataForGame.instance.warsData.baYe.ExpData.Add(expIndex, exp);
-        PlayerDataForGame.instance.warsData.baYe.gold += gold;
-        if (PlayerDataForGame.instance.warsData.baYe.gold > BaYeMaxGold)
-            PlayerDataForGame.instance.warsData.baYe.gold = BaYeMaxGold;
+        var expIndex = -1; //霸业故事事件送的expId一律 -1
+        var baYe = PlayerDataForGame.instance.warsData.baYe;
+        if (baYe.ExpData.ContainsKey(expIndex))
+            baYe.ExpData[expIndex] += storyEvent.ExpReward;
+        else baYe.ExpData.Add(expIndex, storyEvent.ExpReward);
+        baYe.gold += storyEvent.GoldReward;
+        if (baYe.gold > BaYeMaxGold) //不超过上限
+            baYe.gold = BaYeMaxGold;
+        var py = PlayerDataForGame.instance.pyData;
+        if (storyEvent.YvQueReward > 0)
+        {
+            py.YvQue += storyEvent.YvQueReward;
+            UIManager.instance.yvQueNumText.text = py.YvQue.ToString();
+        }
+        if (storyEvent.YuanBaoReward > 0)
+        {
+            py.YuanBao += storyEvent.YuanBaoReward;
+            UIManager.instance.yuanBaoNumText.text = py.YvQue.ToString();
+        }
         PlayerDataForGame.instance.isNeedSaveData = true;
-        LoadSaveData.instance.SaveGameData(3);
+        LoadSaveData.instance.SaveGameData(5);
     }
 
     public void SetExp(int expIndex,int exp)
@@ -325,24 +338,26 @@ public class BaYeManager : MonoBehaviour
         LoadSaveData.instance.SaveGameData(3);
         return true;
 
-        void OnReward(BaYeStoryEvent storyEvent)
+        void OnReward(BaYeStoryEvent se)
         {
-            var rewardMap = new Dictionary<int, int>();
-            if (storyEvent.GoldReward > 0)
-                rewardMap.Add(0, storyEvent.GoldReward);
-            if (sEvent.ExpReward > 0)
-                rewardMap.Add(1, storyEvent.ExpReward);
+            var rewardMap = new Dictionary<int, int>
+            {
+                {0, se.GoldReward},
+                {1, se.ExpReward},
+                {2, se.YuanBaoReward},
+                {3, se.YvQueReward}
+            };
             UIManager.instance.baYeWindowUi.Show(rewardMap);
-            AddGoldAndExp(-1, storyEvent.ExpReward, storyEvent.GoldReward);
+            OnBayeStoryEventReward( se);
             UIManager.instance.baYeWindowUi.ShowAdButton(() =>
             {
                 AdAgent.instance.CallAd((success, msg) =>
                 {
                     if (success)
                     {
-                        AddGoldAndExp(-1, storyEvent.ExpReward, storyEvent.GoldReward);
-                        rewardMap.Add(0,storyEvent.GoldReward);
-                        rewardMap.Add(1,storyEvent.ExpReward);
+                        OnBayeStoryEventReward(se);
+                        rewardMap.Add(0,se.GoldReward);
+                        rewardMap.Add(1,se.ExpReward);
                         UIManager.instance.baYeWindowUi.Show(rewardMap);
                         return;
                     }

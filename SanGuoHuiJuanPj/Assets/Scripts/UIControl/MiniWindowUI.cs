@@ -21,6 +21,7 @@ public class MiniWindowUI : MonoBehaviour
         var index = 0;
         foreach (var set in rewardMap)
         {
+            if (set.Value <= 0) continue;
             if (items.Count == index)
             {
                 var item = Instantiate(prefab, listView);
