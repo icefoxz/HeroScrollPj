@@ -481,6 +481,7 @@ public class StoryIdTableItem
     public string YuanBaoR { get; set; }
     public string JunTuanR { get; set; }
     public string Time { get; set; }
+    public string WarId { get; set; }
 }
 public class BaYeTVTableItem 
 {
@@ -488,4 +489,11 @@ public class BaYeTVTableItem
     public string weight { get; set; }
     public string text { get; set; }
     public string time { get; set; }
+    public string type { get; set; }
+}
+public class BaYeNameTableItem
+{
+    public string id { get; set; }
+    public string weight { get; set; }
+    public string name { get; set; }
 }

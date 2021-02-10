@@ -54,6 +54,7 @@ import e_create_baYeRenWuTable
 import e_create_storyPoolTable
 import e_create_storyIdTable
 import e_create_baYeTVTable
+import e_create_baYeNameTable
 
 
 taskList = (
@@ -99,6 +100,7 @@ taskList = (
 	('/Hero.xlsx', e_create_storyPoolTable, '/StoryPoolTable.json'),
 	('/Hero.xlsx', e_create_storyIdTable, '/StoryIdTable.json'),
 	('/Hero.xlsx', e_create_baYeTVTable, '/BaYeTVTable.json'),
+	('/Hero.xlsx', e_create_baYeNameTable, '/BaYeNameTable.json'),
 )
 
 
