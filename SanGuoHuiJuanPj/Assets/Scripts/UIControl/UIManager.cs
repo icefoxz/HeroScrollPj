@@ -2046,9 +2046,6 @@ public class UIManager : MonoBehaviour
         //暂时未开启的页面
         waitWhileImpress.gameObject.SetActive(
             index == 3 //对决
-#if !UNITY_EDITOR
-            || index == 4 //霸业
-#endif
         );
         switch (index)
         {
@@ -2063,9 +2060,7 @@ public class UIManager : MonoBehaviour
                 InitWarsListInfo(lastAvailableStageIndex);
                 break;
             case 4://霸业
-#if !UNITY_EDITOR //编辑器允许6级一下测试
                 bayeBelowLevelPanel.gameObject.SetActive(PlayerDataForGame.instance.pyData.Level < 5);
-#endif
                 if (!SystemTimer.IsToday(PlayerDataForGame.instance.warsData.baYe.lastBaYeActivityTime))
                 {
                     BaYeManager.instance.Init();
