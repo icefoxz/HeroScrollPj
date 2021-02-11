@@ -284,6 +284,7 @@ public class WarsUIManager : MonoBehaviour
             PlayerDataForGame.instance.getBackTiLiNums = 0;
         }
         var rewardMap = new Dictionary<int, int>();
+        var zhanLing = new Dictionary<int, int>();
         //如果是霸业
         if(PlayerDataForGame.instance.WarType == PlayerDataForGame.WarTypes.Baye)
         {
@@ -317,6 +318,8 @@ public class WarsUIManager : MonoBehaviour
                     rewardMap.Trade(1, sEvent.ExpReward);//1
                     rewardMap.Trade(3, sEvent.YuanBaoReward);//3
                     rewardMap.Trade(4, sEvent.YvQueReward);//4
+                    var ling = sEvent.ZhanLing.First();
+                    zhanLing.Trade(ling.Key, ling.Value);
                     baYeMgr.OnBayeStoryEventReward(baYeMgr.CachedStoryEvent);
                 }
             }
@@ -330,7 +333,8 @@ public class WarsUIManager : MonoBehaviour
             rewardMap.Trade(2, treasureChestNums); //index2是宝箱图
         }
 
-        gameOverWindow.Show(rewardMap);
+        //gameOverWindow.Show(rewardMap);
+        gameOverWindow.ShowWithZhanLing(rewardMap, zhanLing);
 
         if (passedGuanQiaNums > PlayerDataForGame.instance.warsData.warUnlockSaveData[PlayerDataForGame.instance.selectedWarId].unLockCount)
         {

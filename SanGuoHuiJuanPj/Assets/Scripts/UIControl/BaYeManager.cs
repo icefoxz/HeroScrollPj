@@ -78,8 +78,7 @@ public class BaYeManager : MonoBehaviour
         var maps = LoadJsonFile.baYeDiTuTableDatas
             .Select(s => new
             {
-                Point = int.Parse(s[0]), Events = s[2].Split(',')
-                    .Where(text => !string.IsNullOrWhiteSpace(text)).Select(int.Parse).ToList()
+                Point = int.Parse(s[0]), Events = s[2].TableStringToInts().ToList()
             }).Where(a => a.Events.Count > 0).ToList(); //获取表里的地图数据
         var events = maps.Select(city =>
             {
@@ -211,14 +210,14 @@ public class BaYeManager : MonoBehaviour
         }
     }
 
-    public void OnBaYeMapSelection(EventTypes type,int eventPoint)
+    public void OnBaYeWarEventPointSelected(EventTypes type,int eventPoint)
     {
-        CurrentEventType = type;
-        CurrentEventPoint = eventPoint;
+        var isWarEvent = false;
         switch (type)
         {
             case EventTypes.City:
             {
+                isWarEvent = true;
                 var cEvent = map.Single(e => e.CityId == eventPoint);
                 PlayerDataForGame.instance.selectedCity = cEvent.CityId;
                 PlayerDataForGame.instance.selectedBaYeEventId = cEvent.EventId;
@@ -234,11 +233,17 @@ public class BaYeManager : MonoBehaviour
                     throw XDebug.Throw<BaYeManager>("霸业故事点不存在!");
                 var sEvent = storyMap[eventPoint];
                 OnStoryEventTrigger(eventPoint,sEvent);
+                isWarEvent = (StoryEventTypes) sEvent.Type == StoryEventTypes.讨伐;
             }
                 break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(type), type, null);
         }
+
+        if (!isWarEvent) return;
+        //讨伐事件将记录讨伐类型和讨伐点
+        CurrentEventType = type;
+        CurrentEventPoint = eventPoint;
     }
 
     //选择器UI
@@ -320,6 +325,11 @@ public class BaYeManager : MonoBehaviour
         baYe.gold += storyEvent.GoldReward;
         if (baYe.gold > BaYeMaxGold) //不超过上限
             baYe.gold = BaYeMaxGold;
+        //战令
+        foreach (var ling in storyEvent.ZhanLing)
+        {
+            baYe.zhanLingMap.Trade(ling.Key, ling.Value);
+        }
         var py = PlayerDataForGame.instance.pyData;
         if (storyEvent.YvQueReward > 0) py.YvQue += storyEvent.YvQueReward;
         if (storyEvent.YuanBaoReward > 0) py.YuanBao += storyEvent.YuanBaoReward;

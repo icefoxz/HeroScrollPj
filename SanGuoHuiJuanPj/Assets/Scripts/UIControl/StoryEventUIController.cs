@@ -39,9 +39,9 @@ public class StoryEventUIController : MonoBehaviour
     {
         var sEvent = PlayerDataForGame.instance.warsData.baYe.storyMap[eventPoint];
         OnClickAudioPlay(sEvent.Type);
-        BaYeManager.instance.OnBaYeMapSelection(BaYeManager.EventTypes.Story, eventPoint);
-        if((BaYeManager.StoryEventTypes)sEvent.Type == BaYeManager.StoryEventTypes.讨伐)
-            return;//讨伐事件ui还会存在。
+        BaYeManager.instance.OnBaYeWarEventPointSelected(BaYeManager.EventTypes.Story, eventPoint);
+        if ((BaYeManager.StoryEventTypes) sEvent.Type == BaYeManager.StoryEventTypes.讨伐)
+            return; //讨伐事件ui在第一次点击是不会销毁的。
         var point = points[eventPoint];
         Destroy(point.content);
         point.gameObject.SetActive(false);
