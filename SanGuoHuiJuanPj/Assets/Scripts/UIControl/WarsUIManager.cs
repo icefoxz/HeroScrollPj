@@ -295,16 +295,29 @@ public class WarsUIManager : MonoBehaviour
              */
             if (isWin)
             {
+                var baYeMgr = BaYeManager.instance;
                 var baYe = PlayerDataForGame.instance.warsData.baYe;
-                var cityEvent = baYe.data.Single(f => f.CityId == PlayerDataForGame.instance.selectedCity);
-                var warIndex = cityEvent.WarIds.IndexOf(PlayerDataForGame.instance.selectedWarId);
-                if(!cityEvent.PassedStages[warIndex])//如果过关未被记录
+                if(baYeMgr.CurrentEventType == BaYeManager.EventTypes.City)
                 {
-                    var exp = cityEvent.ExpList[warIndex];//获取相应经验值
-                    cityEvent.PassedStages[warIndex] = true;
-                    PlayerDataForGame.instance.baYeManager.AddExp(cityEvent.CityId, exp);//给玩家加经验值
-                    PlayerDataForGame.instance.mainSceneTips = $"获得经验值：{exp}";
-                    rewardMap.Add(1, exp);
+                    var cityEvent = baYe.data.Single(f => f.CityId == PlayerDataForGame.instance.selectedCity);
+                    var warIndex = cityEvent.WarIds.IndexOf(PlayerDataForGame.instance.selectedWarId);
+                    if (!cityEvent.PassedStages[warIndex]) //如果过关未被记录
+                    {
+                        var exp = cityEvent.ExpList[warIndex]; //获取相应经验值
+                        cityEvent.PassedStages[warIndex] = true;
+                        PlayerDataForGame.instance.baYeManager.AddExp(cityEvent.CityId, exp); //给玩家加经验值
+                        PlayerDataForGame.instance.mainSceneTips = $"获得经验值：{exp}";
+                        rewardMap.Trade(1, exp);
+                    }
+                }
+                else
+                {
+                    var sEvent = baYeMgr.CachedStoryEvent;
+                    rewardMap.Trade(0, sEvent.GoldReward);//0
+                    rewardMap.Trade(1, sEvent.ExpReward);//1
+                    rewardMap.Trade(3, sEvent.YuanBaoReward);//3
+                    rewardMap.Trade(4, sEvent.YvQueReward);//4
+                    baYeMgr.OnBayeStoryEventReward(baYeMgr.CachedStoryEvent);
                 }
             }
             //霸业的战斗金币传到主城
@@ -314,7 +327,7 @@ public class WarsUIManager : MonoBehaviour
         int guanQiaSum = int.Parse(LoadJsonFile.warTableDatas[PlayerDataForGame.instance.selectedWarId][4]);
         if (treasureChestNums > 0)
         {
-            rewardMap.Add(2, treasureChestNums); //index2是宝箱图
+            rewardMap.Trade(2, treasureChestNums); //index2是宝箱图
         }
 
         gameOverWindow.Show(rewardMap);
@@ -327,7 +340,6 @@ public class WarsUIManager : MonoBehaviour
         PlayerDataForGame.instance.isNeedSaveData = true;
         LoadSaveData.instance.SaveGameData(3);
         //gameOverObj.SetActive(true);
-
     }
 
     //初始化父级关卡

@@ -32,12 +32,23 @@ public class ForceSelectorUi : MonoBehaviour
         for (int i = 0; i < totalDisplayForce; i++)
         {
             int forceIndex = i;
-            var btn = Instantiate(buttonPrefab,content.transform); //复制按钮
-            btn.transform.localScale = Vector3.one;
-            btn.gameObject.name = forceIndex.ToString();
-            var forceFlag = btn.GetComponentInChildren<ForceFlagUI>(true);
-            forceFlag.Set((ForceFlags)forceIndex);
-            data.Add(forceIndex, forceFlag);
+            Button btn;
+            ForceFlagUI forceFlag;
+            if (!data.ContainsKey(forceIndex))
+            {
+                btn = Instantiate(buttonPrefab, content.transform);//复制按钮
+                btn.transform.localScale = Vector3.one;
+                btn.gameObject.name = forceIndex.ToString();
+                forceFlag = btn.GetComponentInChildren<ForceFlagUI>(true);
+                forceFlag.Set((ForceFlags) forceIndex);
+                data.Add(forceIndex, forceFlag);
+            }
+            else
+            {
+                forceFlag = data[forceIndex];
+                btn = forceFlag.GetComponentInParent<Button>();
+            }
+
             switch (mode)
             {
                 case Modes.全显值暗:

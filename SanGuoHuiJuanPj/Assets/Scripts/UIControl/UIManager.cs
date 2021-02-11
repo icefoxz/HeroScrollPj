@@ -303,6 +303,7 @@ public class UIManager : MonoBehaviour
                 var storyEvent = map[BaYeManager.instance.CurrentEventPoint];
                 if (selectedForce < 0) break;
                 if (!PlayerDataForGame.instance.ConsumeZhanLing()) return;//消费战令
+                BaYeManager.instance.CacheCurrentStoryEvent();
                 PlayerDataForGame.instance.warsData.baYe.storyMap.Remove(BaYeManager.instance.CurrentEventPoint);
                 PlayerDataForGame.instance.isNeedSaveData = true;
                 LoadSaveData.instance.SaveGameData(3);
@@ -363,7 +364,7 @@ public class UIManager : MonoBehaviour
         PlayerDataForGame.instance.selectedBaYeEventId = -1;
         PlayerDataForGame.instance.selectedCity = -1;
         //霸业经验条和宝箱初始化
-        ResetBaYeProgressAndGold(baYe);
+        ResetBaYeProgressAndGold();
         //城市点初始化
         var cityLvlUnlock = new Dictionary<int, int>();
         LoadJsonFile.playerLevelTableDatas.Select(row =>
@@ -423,8 +424,9 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    public void ResetBaYeProgressAndGold(BaYeDataClass baYe)
+    public void ResetBaYeProgressAndGold()
     {
+        var baYe = PlayerDataForGame.instance.warsData.baYe;
         var baYeReward = LoadJsonFile.baYeRenWuTableDatas
             .Select(item =>
                 new {id = int.Parse(item[0]), exp = int.Parse(item[1]), rewardId = int.Parse(item[2])})

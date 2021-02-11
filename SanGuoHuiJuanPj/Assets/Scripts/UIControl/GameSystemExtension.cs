@@ -87,4 +87,17 @@ public static class GameSystemExtension
         var force = int.Parse(LoadJsonFile.heroTableDatas[card.id][6]);
         return force == forceId && (card.level > 0 || card.chips > 0) && card.isFight > 0;
     });
+
+    public static IDictionary<TKey, int> Trade<TKey>(this IDictionary<TKey, int> map,TKey key,int value,bool keepValueBelowZero = false)
+    {
+        if (map.ContainsKey(key))
+            map[key] += value;
+        else map.Add(key, value);
+        if(!keepValueBelowZero)
+        {
+            if (map[key] <= 0)
+                map.Remove(key);
+        }
+        return map;
+    }
 }

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Random = UnityEngine.Random;
 
 /// <summary>
@@ -36,6 +37,7 @@ public class BaYeManager : MonoBehaviour
     private bool isHourlyEventRegistered;
     public EventTypes CurrentEventType { get; private set; }//当前事件类型
     public int CurrentEventPoint { get; private set; }//当前事件点
+    public BaYeStoryEvent CachedStoryEvent { get; private set; }//当前缓存的故事事件
 
     void Awake()
     {
@@ -189,7 +191,11 @@ public class BaYeManager : MonoBehaviour
         PlayerDataForGame.instance.isNeedSaveData = true;
         LoadSaveData.instance.SaveGameData(3);
         UIManager.instance.storyEventUiController.ResetUi();
-        SelectorUIMove(false, null);
+        if(PlayerDataForGame.instance.CurrentScene == PlayerDataForGame.GameScene.MainScene)
+        {
+            SelectorUIMove(false, null);
+        }
+
         Dictionary<int, int> GetZhanLing(int min, int max, int[] ids)
         {
             var forceList = ids.ToList();
@@ -315,15 +321,12 @@ public class BaYeManager : MonoBehaviour
         if (baYe.gold > BaYeMaxGold) //不超过上限
             baYe.gold = BaYeMaxGold;
         var py = PlayerDataForGame.instance.pyData;
-        if (storyEvent.YvQueReward > 0)
+        if (storyEvent.YvQueReward > 0) py.YvQue += storyEvent.YvQueReward;
+        if (storyEvent.YuanBaoReward > 0) py.YuanBao += storyEvent.YuanBaoReward;
+        if(PlayerDataForGame.instance.CurrentScene == PlayerDataForGame.GameScene.MainScene)
         {
-            py.YvQue += storyEvent.YvQueReward;
-            UIManager.instance.yvQueNumText.text = py.YvQue.ToString();
-        }
-        if (storyEvent.YuanBaoReward > 0)
-        {
-            py.YuanBao += storyEvent.YuanBaoReward;
             UIManager.instance.yuanBaoNumText.text = py.YvQue.ToString();
+            UIManager.instance.yvQueNumText.text = py.YvQue.ToString();
         }
         PlayerDataForGame.instance.isNeedSaveData = true;
         LoadSaveData.instance.SaveGameData(5);
@@ -402,12 +405,13 @@ public class BaYeManager : MonoBehaviour
                     {
                         UIManager.instance.baYeWindowUi.Show(InstanceReward(se, 2));
                         adBtn.gameObject.SetActive(false);
+                        UIManager.instance.ResetBaYeProgressAndGold();
                         return;
                     }
                     PlayerDataForGame.instance.ShowStringTips($"获取失败！\n{msg}");
                 });
             });
-            UIManager.instance.ResetBaYeProgressAndGold(PlayerDataForGame.instance.warsData.baYe);
+            UIManager.instance.ResetBaYeProgressAndGold();
 
             Dictionary<int, int> InstanceReward(BaYeStoryEvent baYeStoryEvent, int rate = 1) =>
                 new Dictionary<int, int>()
@@ -456,4 +460,6 @@ public class BaYeManager : MonoBehaviour
             Weight = weight;
         }
     }
+
+    public void CacheCurrentStoryEvent() => CachedStoryEvent = PlayerDataForGame.instance.warsData.baYe.storyMap[CurrentEventPoint];
 }
