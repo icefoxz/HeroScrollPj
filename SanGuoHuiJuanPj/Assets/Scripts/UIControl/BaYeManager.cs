@@ -328,7 +328,7 @@ public class BaYeManager : MonoBehaviour
         //战令
         foreach (var ling in storyEvent.ZhanLing)
         {
-            baYe.zhanLingMap.Trade(ling.Key, ling.Value);
+            baYe.zhanLingMap.Trade(ling.Key, ling.Value, true);
         }
         var py = PlayerDataForGame.instance.pyData;
         if (storyEvent.YvQueReward > 0) py.YvQue += storyEvent.YvQueReward;
@@ -415,6 +415,7 @@ public class BaYeManager : MonoBehaviour
                     {
                         UIManager.instance.baYeWindowUi.Show(InstanceReward(se, 2));
                         adBtn.gameObject.SetActive(false);
+                        OnBayeStoryEventReward(se);
                         UIManager.instance.ResetBaYeProgressAndGold();
                         return;
                     }

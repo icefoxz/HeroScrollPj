@@ -160,13 +160,13 @@ public class UIManager : MonoBehaviour
     {
         //版本修正
         BugHotFix.OnFixYvQueV1_90();
-
         //第一次进入主场景的时候初始化霸业管理器
         if (PlayerDataForGame.instance.baYeManager == null)
         {
             PlayerDataForGame.instance.baYeManager = PlayerDataForGame.instance.gameObject.AddComponent<BaYeManager>();
             PlayerDataForGame.instance.baYeManager.Init();
         }
+
         InitHeroCardPooling();
 
         InitializationPlayerInfo();

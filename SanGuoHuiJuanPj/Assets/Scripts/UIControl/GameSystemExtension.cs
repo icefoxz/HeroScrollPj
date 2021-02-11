@@ -84,7 +84,20 @@ public static class GameSystemExtension
 
     public static IEnumerable<NowLevelAndHadChip> Enlist(this IEnumerable<NowLevelAndHadChip> cards,int forceId)=> cards.Where(card =>
     {
-        var force = int.Parse(LoadJsonFile.heroTableDatas[card.id][6]);
+        //单位类型0武将 1士兵 2塔 3陷阱 4技能
+        int force = -1;
+        switch (card.typeIndex)
+        {
+            case 0 : 
+                force = int.Parse(LoadJsonFile.heroTableDatas[card.id][6]);
+                break;
+            case 2 :
+                force = int.Parse(LoadJsonFile.towerTableDatas[card.id][15]);
+                break;
+            case 3 :
+                force = int.Parse(LoadJsonFile.trapTableDatas[card.id][14]);
+                break;
+        }
         return force == forceId && (card.level > 0 || card.chips > 0) && card.isFight > 0;
     });
 

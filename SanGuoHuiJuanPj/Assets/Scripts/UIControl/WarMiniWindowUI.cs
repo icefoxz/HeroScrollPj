@@ -24,5 +24,8 @@ public class WarMiniWindowUI : MiniWindowUI
             flag.Set((ForceFlags)ling.Key);
             flag.SetLing(ling.Value);
         }
+        reward.TryGetValue(2, out int chestAmt);//宝箱
+        expeditionText.gameObject.SetActive(PlayerDataForGame.instance.WarType ==
+            PlayerDataForGame.WarTypes.Expedition && chestAmt > 0);//宝箱大于0才会显示去桃园打开宝箱的提示。并且是战役才有
     }
 }
