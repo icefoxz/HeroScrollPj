@@ -364,3 +364,13 @@ Conversion/AutoChangeJson/pylib/__pycache__/
 SanGuoHuiJuanPj/Assets/Resources/Jsons/BaYeNameTable.json
 
 SanGuoHuiJuanPj/Assets/Resources/Jsons/
+
+SanGuoHuiJuanPj/Assets/ExternalDependencyManager/Editor/Google.JarResolver_v1.2.161.dll.meta
+
+SanGuoHuiJuanPj/Assets/ExternalDependencyManager/Editor/Google.PackageManagerResolver_v1.2.161.dll.meta
+
+SanGuoHuiJuanPj/Assets/ExternalDependencyManager/Editor/Google.VersionHandlerImpl_v1.2.161.dll.meta
+
+SanGuoHuiJuanPj/Packages/packages-lock.json
+
+SanGuoHuiJuanPj/ProjectSettings/PackageManagerSettings.asset
