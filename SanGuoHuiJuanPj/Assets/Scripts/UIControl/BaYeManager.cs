@@ -325,6 +325,11 @@ public class BaYeManager : MonoBehaviour
         baYe.gold += storyEvent.GoldReward;
         if (baYe.gold > BaYeMaxGold) //不超过上限
             baYe.gold = BaYeMaxGold;
+        //战令
+        foreach (var ling in storyEvent.ZhanLing)
+        {
+            baYe.zhanLingMap.Trade(ling.Key, ling.Value);
+        }
         var py = PlayerDataForGame.instance.pyData;
         if (storyEvent.YvQueReward > 0) py.YvQue += storyEvent.YvQueReward;
         if (storyEvent.YuanBaoReward > 0) py.YuanBao += storyEvent.YuanBaoReward;
