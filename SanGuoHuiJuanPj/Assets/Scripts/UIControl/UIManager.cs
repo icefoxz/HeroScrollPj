@@ -406,7 +406,7 @@ public class UIManager : MonoBehaviour
                 ui.button.onClick.RemoveAllListeners();
                 ui.button.onClick
                     .AddListener(
-                        () => BaYeManager.instance.OnBaYeMapSelection(BaYeManager.EventTypes.City, baYeEvent.CityId));
+                        () => BaYeManager.instance.OnBaYeWarEventPointSelected(BaYeManager.EventTypes.City, baYeEvent.CityId));
                 ui.text.text = LoadJsonFile.baYeDiTuTableDatas[i][3]; //城市名
             }
             else
