@@ -108,13 +108,9 @@ public class BaYeManager : MonoBehaviour
             {
                 var storyIds = table.column[1].TableStringToInts()
                     .Where(id=> 
-#if UNITY_EDITOR
-                        true //测试允许所有活动
-#else
                         LoadJsonFile.storyIdTableDatas[id][8]
                         .IsTableTimeInRange(now)
-#endif
-                        ).ToArray();
+                    ).ToArray();
                 return new {table.point, storyIds};
             }).ToDictionary(obj => obj.point, obj => obj.storyIds); //读取数据表转化城key=事件点,value=事件列
 

@@ -70,7 +70,7 @@ public static class GameSystemExtension
 
     public static IEnumerable<DateTime> TableStringToDates(this string text, char separator = Dash) => text.Split(separator)
         .Where(t => !string.IsNullOrWhiteSpace(t))
-        .Select(s => DateTime.ParseExact(s, "yyyymmdd", CultureInfo.InvariantCulture));
+        .Select(s => DateTime.ParseExact(s, "yyyyMMdd", CultureInfo.InvariantCulture));
 
     public static bool IsTableTimeInRange(this string dateText, DateTime checkDate,
         char separator = Dash)
