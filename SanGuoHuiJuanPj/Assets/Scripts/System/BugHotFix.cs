@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -11,12 +12,12 @@ public static class BugHotFix
     /// 标记上一个修复的版本
     /// </summary>
     /// <param name="version"></param>
-    private static void SavePlayerDataWithFixVersion(float version)
+    private static void SavePlayerDataWithFixVersion(float version,int saveIndex)
     {
         if (PlayerDataForGame.instance.pyData.LastGameVersion >= version) return;
         PlayerDataForGame.instance.pyData.LastGameVersion = version;
         PlayerDataForGame.instance.isNeedSaveData = true;
-        LoadSaveData.instance.SaveGameData(1);
+        LoadSaveData.instance.SaveGameData(saveIndex);
     }
 
     public static void OnFixYvQueV1_90()
@@ -28,7 +29,7 @@ public static class BugHotFix
         if (PlayerDataForGame.instance.pyData.YvQue >= PlayerDataForGame.instance.Bug1_9YvQueCheck)
             PlayerDataForGame.instance.pyData.YvQue = PlayerDataForGame.instance.Bug1_9YvQueSet;
         PlayerPrefs.SetInt(V1_90YvQueSet, 1);
-        SavePlayerDataWithFixVersion(fixVersion);
+        SavePlayerDataWithFixVersion(fixVersion,1);
     }
 
     //todo 当服务器完成重要数据交互的时候，这里才会把自动上传改成第一次创建账号时。
@@ -90,8 +91,18 @@ public static class BugHotFix
         ac.Username = userInfo.Username;
         ac.LastUpdate = userInfo.LastUpdate;
         PlayerPrefs.SetInt(V1_95MigrateServer, 1);
-        SavePlayerDataWithFixVersion(float.Parse(Application.version));
+        SavePlayerDataWithFixVersion(float.Parse(Application.version),1);
         return true;
     }
 
+    public static void OnFixZhanLingV1_99(BaYeDataClass baYe, Dictionary<int, int> zhanLingMap)
+    {
+        const float fixVersion = 1.99f;
+        if (baYe.zhanLingMap.Count == 0 && PlayerDataForGame.instance.pyData.LastGameVersion < fixVersion)
+        {
+            baYe.zhanLingMap = zhanLingMap;
+            PlayerDataForGame.instance.isNeedSaveData = true;
+            SavePlayerDataWithFixVersion(fixVersion, 5);
+        }
+    }
 }
