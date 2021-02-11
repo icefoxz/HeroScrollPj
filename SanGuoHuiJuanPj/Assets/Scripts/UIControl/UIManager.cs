@@ -726,8 +726,24 @@ public class UIManager : MonoBehaviour
     }
     public void GetBaYeProgressReward(int index)
     {
+        var baYe = PlayerDataForGame.instance.warsData.baYe;
+        var rewardTable = LoadJsonFile.baYeRenWuTableDatas
+            .Select(item =>
+                new {id = int.Parse(item[0]), exp = int.Parse(item[1]), rewardId = int.Parse(item[2])})
+            .ToList();
+        if (baYe.CurrentExp < rewardTable[index].exp)
+        {
+            PlayerDataForGame.instance.ShowStringTips("当前经验不足以领取！");
+            return;
+        }
         baYeChestButtons[index].Opened();
         var data = LoadJsonFile.baYeRenWuTableDatas[index].Select(int.Parse).ToList();
+        var isOpen =baYe.openedChest[index];
+        if (isOpen)
+        {
+            PlayerDataForGame.instance.ShowStringTips("该奖励已经领取了噢！");
+            return;
+        }
         var rewardId = data[2];
         var chestData = LoadJsonFile.warChestTableDatas[rewardId];
         var exp = int.Parse(chestData[3]);
