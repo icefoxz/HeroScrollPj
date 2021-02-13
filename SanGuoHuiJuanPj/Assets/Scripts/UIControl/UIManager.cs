@@ -300,7 +300,11 @@ public class UIManager : MonoBehaviour
             case BaYeManager.EventTypes.Story:
             {
                 var map = PlayerDataForGame.instance.warsData.baYe.storyMap;
-                var storyEvent = map[BaYeManager.instance.CurrentEventPoint];
+                if (!map.TryGetValue(BaYeManager.instance.CurrentEventPoint, out var storyEvent))
+                {
+                    PlayerDataForGame.instance.ShowStringTips("请选择有效的战斗点。");
+                    return;
+                }
                 if (selectedForce < 0) break;
                 if (!PlayerDataForGame.instance.ConsumeZhanLing()) return;//消费战令
                 BaYeManager.instance.CacheCurrentStoryEvent();
