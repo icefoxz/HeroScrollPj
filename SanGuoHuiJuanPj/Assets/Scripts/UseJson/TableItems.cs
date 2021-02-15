@@ -166,7 +166,7 @@ public class WarTableItem
     public string YuanBaoR { get; set; }
     public string YuQueR { get; set; }
     public string TiLiR { get; set; }
-    public string ShiLi { get; set; }
+    public string JunTuan { get; set; }
 }
 public class CityLevelTableItem
 {

@@ -24,7 +24,7 @@ def export_json(xls, fn):
                 ss += "\t\t\t\"YuanBaoR\": \"" + conv_int(c[ri.Next()]) + "\",\n"
                 ss += "\t\t\t\"YuQueR\": \"" + conv_int(c[ri.Next()]) + "\",\n"
                 ss += "\t\t\t\"TiLiR\": \"" + conv_int(c[ri.Next()]) + "\",\n"
-                ss += "\t\t\t\"ShiLi\": \"" + conv_str_bin(c[ri.Next()]) + "\"\n"
+                ss += "\t\t\t\"JunTuan\": \"" + conv_str_bin(c[ri.Next()]) + "\"\n"
                 ss += "\t\t},\n"
                 s += ss
             s = s[:-2]
