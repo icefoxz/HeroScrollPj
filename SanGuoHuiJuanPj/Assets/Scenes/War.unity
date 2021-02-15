@@ -1061,9 +1061,9 @@ RectTransform:
   m_Father: {fileID: 7684096226013710343}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 380, y: -120}
   m_SizeDelta: {x: 144, y: 240}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &96289157
@@ -4292,9 +4292,9 @@ RectTransform:
   m_Father: {fileID: 7684096226013710343}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 688, y: -120}
   m_SizeDelta: {x: 144, y: 240}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &381069820
@@ -6241,9 +6241,9 @@ RectTransform:
   m_Father: {fileID: 7684096226013710343}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 534, y: -120}
   m_SizeDelta: {x: 144, y: 240}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &556182696
@@ -13745,9 +13745,9 @@ RectTransform:
   m_Father: {fileID: 7684096226013710343}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 226, y: -120}
   m_SizeDelta: {x: 144, y: 240}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1120499555
@@ -31242,9 +31242,9 @@ RectTransform:
   m_Father: {fileID: 7684096226013710343}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 72, y: -120}
   m_SizeDelta: {x: 144, y: 240}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &7684096225186879838
@@ -31563,11 +31563,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   prefab: {fileID: 7684096225186879836}
   rewardImages:
-  - {fileID: 21300000, guid: 0be3849020ede5449916b0ef97c4c617, type: 3}
-  - {fileID: 21300000, guid: 293947fbf1cbddf468856d10a57234c0, type: 3}
-  - {fileID: 21300000, guid: 5d5cc3cfca6f11f4e93545be99cc25bb, type: 3}
-  - {fileID: 21300000, guid: bf993c2ab212f3845bf5920e9ef92902, type: 3}
-  - {fileID: 21300000, guid: 2f13dae30cf463b458d080b23c47cb89, type: 3}
+  - {fileID: 21300000, guid: eeeeef5558e5e0d4db724b164058250a, type: 3}
+  - {fileID: 21300000, guid: e32cffac059e80d46a79e221941ff996, type: 3}
+  - {fileID: 21300000, guid: ba511bef16d0da9489e0b2d0c3f50c7d, type: 3}
+  - {fileID: 21300000, guid: e2700d2ceda0fda458dde048797eeae7, type: 3}
+  - {fileID: 21300000, guid: ba511bef16d0da9489e0b2d0c3f50c7d, type: 3}
   listView: {fileID: 7684096226013710343}
   expeditionText: {fileID: 1538330532}
   flagPrefab: {fileID: 2029971171}
@@ -31612,7 +31612,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!222 &7684096227126794969
 CanvasRenderer:
   m_ObjectHideFlags: 0
