@@ -474,190 +474,25 @@ public class LoadSaveData : MonoBehaviour
     //武将塔等数据存档修正 
     private HSTDataClass ArchiveCorrection(HSTDataClass save)
     {
-        bool isNeedSaveDate = true;
-
-        //武将卡牌数据 
-        int nowDataCount = save.heroSaveData.Count;
-        int jsonDataCount = LoadJsonFile.heroTableDatas.Count;
-        List<NowLevelAndHadChip> heroSaveData = new List<NowLevelAndHadChip>();
-        for (int i = 0; i < jsonDataCount; i++)
-        {
-            if (LoadJsonFile.heroTableDatas[i][21] != "0")
-            {
-                NowLevelAndHadChip nlahc = new NowLevelAndHadChip();
-                nlahc.id = i;
-                nlahc.level = 0;
-                nlahc.chips = 0;
-                nlahc.isFight = 0;
-                nlahc.typeIndex = 0;
-                nlahc.isHad = false;
-                nlahc.maxLevel = 0;
-                heroSaveData.Add(nlahc);
-            }
-        }
-        for (int i = 0; i < save.heroSaveData.Count; i++)
-        {
-            //判断是否投放 
-            if (LoadJsonFile.heroTableDatas[save.heroSaveData[i].id][21] != "0")
-            {
-                for (int j = 0; j < heroSaveData.Count; j++)
-                {
-                    if (heroSaveData[j].id == save.heroSaveData[i].id)
-                    {
-                        heroSaveData[j] = save.heroSaveData[i];
-                    }
-                }
-            }
-        }
-        save.heroSaveData = heroSaveData;
-
-        ////添加新投放卡牌 
-        //if (nowDataCount < jsonDataCount) 
-        //{ 
-        //    isNeedSaveDate = true; 
-        //    for (int i = nowDataCount; i < jsonDataCount; i++) 
-        //    { 
-        //        NowLevelAndHadChip nlahc = new NowLevelAndHadChip(); 
-        //        nlahc.id = i; 
-        //        nlahc.Level = 0; 
-        //        nlahc.chips = 0; 
-        //        nlahc.isFight = 0; 
-        //        nlahc.typeIndex = 0; 
-        //        nlahc.isHad = false; 
-        //        nlahc.maxLevel = 0; 
-        //        save.heroSaveData.Add(nlahc); 
-        //    } 
-        //} 
-
-        //塔卡牌数据 
-        nowDataCount = save.towerSaveData.Count;
-        jsonDataCount = LoadJsonFile.towerTableDatas.Count;
-
-        List<NowLevelAndHadChip> towerSaveData = new List<NowLevelAndHadChip>();
-        for (int i = 0; i < jsonDataCount; i++)
-        {
-            if (LoadJsonFile.towerTableDatas[i][14] != "0")
-            {
-                NowLevelAndHadChip nlahc = new NowLevelAndHadChip();
-                nlahc.id = i;
-                nlahc.level = 0;
-                nlahc.chips = 0;
-                nlahc.isFight = 0;
-                nlahc.typeIndex = 2;
-                nlahc.isHad = false;
-                nlahc.maxLevel = 0;
-                towerSaveData.Add(nlahc);
-            }
-        }
-        for (int i = 0; i < save.towerSaveData.Count; i++)
-        {
-            //判断是否投放 
-            if (LoadJsonFile.towerTableDatas[save.towerSaveData[i].id][14] != "0")
-            {
-                for (int j = 0; j < towerSaveData.Count; j++)
-                {
-                    if (towerSaveData[j].id == save.towerSaveData[i].id)
-                    {
-                        towerSaveData[j] = save.towerSaveData[i];
-                    }
-                }
-            }
-        }
-        save.towerSaveData = towerSaveData;
-
-        //if (nowDataCount < jsonDataCount) 
-        //{ 
-        //    isNeedSaveDate = true; 
-        //    for (int i = nowDataCount; i < jsonDataCount; i++) 
-        //    { 
-        //        NowLevelAndHadChip nlahc = new NowLevelAndHadChip(); 
-        //        nlahc.id = i; 
-        //        nlahc.Level = 0; 
-        //        nlahc.chips = 0; 
-        //        nlahc.isFight = 0; 
-        //        nlahc.typeIndex = 2; 
-        //        nlahc.isHad = false; 
-        //        nlahc.maxLevel = 0; 
-        //        save.towerSaveData.Add(nlahc); 
-        //    } 
-        //} 
-
-        //陷阱卡牌数据 
-        nowDataCount = save.trapSaveData.Count;
-        jsonDataCount = LoadJsonFile.trapTableDatas.Count;
-
-        List<NowLevelAndHadChip> trapSaveData = new List<NowLevelAndHadChip>();
-        for (int i = 0; i < jsonDataCount; i++)
-        {
-            if (LoadJsonFile.trapTableDatas[i][13] != "0")
-            {
-                NowLevelAndHadChip nlahc = new NowLevelAndHadChip();
-                nlahc.id = i;
-                nlahc.level = 0;
-                nlahc.chips = 0;
-                nlahc.isFight = 0;
-                nlahc.typeIndex = 2;
-                nlahc.isHad = false;
-                nlahc.maxLevel = 0;
-                trapSaveData.Add(nlahc);
-            }
-        }
-        for (int i = 0; i < save.trapSaveData.Count; i++)
-        {
-            //判断是否投放 
-            if (LoadJsonFile.trapTableDatas[save.trapSaveData[i].id][13] != "0")
-            {
-                for (int j = 0; j < trapSaveData.Count; j++)
-                {
-                    if (trapSaveData[j].id == save.trapSaveData[i].id)
-                    {
-                        trapSaveData[j] = save.trapSaveData[i];
-                    }
-                }
-            }
-        }
-        save.trapSaveData = trapSaveData;
-
-        //if (nowDataCount < jsonDataCount) 
-        //{ 
-        //    isNeedSaveDate = true; 
-        //    for (int i = nowDataCount; i < jsonDataCount; i++) 
-        //    { 
-        //        NowLevelAndHadChip nlahc = new NowLevelAndHadChip(); 
-        //        nlahc.id = i; 
-        //        nlahc.Level = 0; 
-        //        nlahc.chips = 0; 
-        //        nlahc.isFight = 0; 
-        //        nlahc.typeIndex = 3; 
-        //        nlahc.isHad = false; 
-        //        nlahc.maxLevel = 0; 
-        //        save.trapSaveData.Add(nlahc); 
-        //    } 
-        //} 
-        //技能卡牌数据 
-        //nowDataCount = save.spellSaveData.Count; 
-        //jsonDataCount = LoadJsonFile.spellTableDatas.Count; 
-        //if (nowDataCount < jsonDataCount) 
-        //{ 
-        //    isNeedSaveDate = true; 
-        //    for (int i = nowDataCount; i < jsonDataCount; i++) 
-        //    { 
-        //        NowLevelAndHadChip nlahc = new NowLevelAndHadChip(); 
-        //        nlahc.id = i; 
-        //        nlahc.Level = 0; 
-        //        nlahc.chips = 0; 
-        //        nlahc.isFight = 0; 
-        //        nlahc.typeIndex = 4; 
-        //        nlahc.isHad = false; 
-        //        nlahc.maxLevel = 0; 
-        //        save.spellSaveData.Add(nlahc); 
-        //    } 
-        //} 
+        var isNeedSaveDate = true;
+        save.heroSaveData = ResolveData(save.heroSaveData, 21, LoadJsonFile.heroTableDatas);
+        save.towerSaveData = ResolveData(save.towerSaveData, 14, LoadJsonFile.towerTableDatas);
+        save.trapSaveData = ResolveData(save.trapSaveData, 13, LoadJsonFile.trapTableDatas);
         if (isNeedSaveDate)
         {
             SaveByJson(save);
         }
         return save;
+
+        List<NowLevelAndHadChip> ResolveData(List<NowLevelAndHadChip> data,int isPutOnIndex,List<List<string>> list)
+        {
+            return data.Where(card =>
+            {
+                var row = list.FirstOrDefault(r => r[0] == card.id.ToString());
+                if (row == null) return false;
+                return int.Parse(row[isPutOnIndex]) != 0;//是否投放索引
+            }).ToList();
+        }
     }
     //战役数据存档修正 
     private WarsDataClass ArchiveCorrection(WarsDataClass save)
