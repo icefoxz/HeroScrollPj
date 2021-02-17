@@ -3805,7 +3805,7 @@ public class FightController : MonoBehaviour
                 fullScreenEffectObjs[5].SetActive(false);
                 fullScreenEffectObjs[5].transform.position = jBEffectShowPos[isPlayer ? 1 : 0].position;
                 fullScreenEffectObjs[5].SetActive(true);
-                //30 % 概率分别为羁绊武将增加1层【神助】
+                //30 % 概率分别为羁绊武将增加1层【护盾】
                 for (int i = 0; i < jiBanActivedClass.cardTypeLists.Count; i++)
                 {
                     for (int j = 0; j < jiBanActivedClass.cardTypeLists[i].cardLists.Count; j++)
@@ -3816,11 +3816,11 @@ public class FightController : MonoBehaviour
                             AttackToEffectShow(fightCardData, false, "JB" + jiBanActivedClass.jiBanIndex);
                             if (TakeSpecialAttack(LoadJsonFile.GetGameValue(138)))
                             {
-                                if (fightCardData.fightState.shenzhuNums <= 0)
+                                if (fightCardData.fightState.withStandNums <= 0)
                                 {
-                                    FightForManager.instance.CreateSateIcon(fightCardData.cardObj.transform.GetChild(7), StringNameStatic.StateIconPath_shenzhu, false);
+                                    FightForManager.instance.CreateSateIcon(fightCardData.cardObj.transform.GetChild(7), StringNameStatic.StateIconPath_withStand, true);
                                 }
-                                fightCardData.fightState.shenzhuNums++;
+                                fightCardData.fightState.withStandNums++;
                             }
                         }
                     }
@@ -3951,6 +3951,10 @@ public class FightController : MonoBehaviour
                 waitTime = 1f;
                 break;
             case JiBanSkillName.HeBeiSiTingZhu:
+                PlayAudioForSecondClip(104, 0);
+                fullScreenEffectObjs[6].SetActive(false);
+                fullScreenEffectObjs[6].transform.position = jBEffectShowPos[isPlayer ? 1 : 0].position;
+                fullScreenEffectObjs[6].SetActive(true);
                 //30%概率分别为羁绊武将增加1层【神助】
                 for (int i = 0; i < jiBanActivedClass.cardTypeLists.Count; i++)
                 {
