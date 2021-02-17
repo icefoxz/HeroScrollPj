@@ -63,13 +63,15 @@ public class GameResources
     {
         if (isInit && !forceReload) return;
         var heroTable =
-            LoadJsonFile.heroTableDatas.Select(
+            LoadJsonFile.heroTableDatas
+                .Where(row=>row.Count>16 && !string.IsNullOrWhiteSpace(row[1]))
+                .Select(
                 row => new {heroId = int.Parse(row[0]), imageId = int.Parse(row[16])});
-        heroImgMap = Resources.LoadAll<Sprite>(HeroImagesPath)
-            .Select(o => new {imageId = int.Parse(o.name), sprite = o})
+         var list = Resources.LoadAll<Sprite>(HeroImagesPath)
+             .Select(o => new {imageId = int.Parse(o.name), sprite = o})
             .Join(heroTable, c => c.imageId, t => t.imageId,
-                (c, t) => new {t.heroId, c.sprite})
-            .ToDictionary(map => map.heroId, map => map.sprite);
+                (c, t) => new {t.heroId, c.sprite}).ToList();
+        heroImgMap  =  list.ToDictionary(map => map.heroId, map => map.sprite);
         classImgMap = Resources.LoadAll<Sprite>(ClassImagesPath).ToDictionary(s => int.Parse(s.name), s => s);
         fuZhuImgMap = Resources.LoadAll<Sprite>(FuZhuImagesPath).ToDictionary(s => int.Parse(s.name), s => s);
         gradeImgMap = Resources.LoadAll<Sprite>(GradeImagesPath).ToDictionary(s => int.Parse(s.name), s => s);
