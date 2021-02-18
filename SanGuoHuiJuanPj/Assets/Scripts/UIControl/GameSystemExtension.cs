@@ -5,6 +5,15 @@ using System.Globalization;
 using System.Linq;
 using Random = UnityEngine.Random;
 
+public enum GameCardType
+{
+    Hero = 0,
+    Soldier = 1,
+    Tower = 2,
+    Trap = 3,
+    Spell = 4
+}
+
 /// <summary>
 /// 权重元素接口，一旦声明这个接口，便可以在列表中根据权重随机选择一个元素
 /// </summary>
@@ -100,6 +109,25 @@ public static class GameSystemExtension
         }
         return force == forceId && (card.level > 0 || card.chips > 0) && card.isFight > 0;
     });
+
+    public static NowLevelAndHadChip GetOrInstance(this List<NowLevelAndHadChip> cards, int cardId)
+    {
+        var card = cards.SingleOrDefault(c => c.id == cardId);
+        if (card == null)
+        {
+            card = new NowLevelAndHadChip
+            {
+                id = cardId,
+                level = 1,
+                maxLevel = 1,
+                typeIndex = cards.First().typeIndex,
+                isHad = true
+            };
+            cards.Add(card);
+            cards.Sort((o1, o2) => o1.id.CompareTo(o2.id));
+        }
+        return card;
+    }
 
     public static IDictionary<TKey, int> Trade<TKey>(this IDictionary<TKey, int> map,TKey key,int value,bool keepValueBelowZero = false)
     {
