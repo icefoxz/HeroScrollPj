@@ -65,7 +65,7 @@ public class RewardManager : MonoBehaviour
                         cardId = GetRewardCardId(typeId, cardArrs[0], isZyBox);
                         chips = UnityEngine.Random.Range(int.Parse(cardArrs[2]), int.Parse(cardArrs[3]) + 1);
 
-                        GetAndSaveCardChips(typeId, cardId, chips);
+                        RewardCard(int.Parse(typeId), cardId, chips);
 
                         RewardsCardClass rewardCard = new RewardsCardClass
                         {
@@ -161,28 +161,28 @@ public class RewardManager : MonoBehaviour
     /// <param name="cardId">具体id</param>
     /// <param name="chips">碎片数量</param>
     /// <returns></returns>
-    public void GetAndSaveCardChips(string cardType, int cardId, int chips)
+    public void RewardCard(int cardType, int cardId, int chips)
     {
         //Debug.Log("cardId:" + cardId);
         switch (cardType)
         {
-            case "0":
-                PlayerDataForGame.instance.hstData.heroSaveData[UIManager.instance.FindIndexFromData(PlayerDataForGame.instance.hstData.heroSaveData, cardId)].chips += chips;
+            case 0:
+                PlayerDataForGame.instance.hstData.heroSaveData.GetOrInstance(cardId).chips += chips;
                 break;
-            case "1":
-                PlayerDataForGame.instance.hstData.soldierSaveData[UIManager.instance.FindIndexFromData(PlayerDataForGame.instance.hstData.soldierSaveData, cardId)].chips += chips;
+            case 1:
+                PlayerDataForGame.instance.hstData.soldierSaveData.GetOrInstance(cardId).chips += chips;
                 break;
-            case "2":
-                PlayerDataForGame.instance.hstData.towerSaveData[UIManager.instance.FindIndexFromData(PlayerDataForGame.instance.hstData.towerSaveData, cardId)].chips += chips;
+            case 2:
+                PlayerDataForGame.instance.hstData.towerSaveData.GetOrInstance(cardId).chips+=chips;
                 break;
-            case "3":
-                PlayerDataForGame.instance.hstData.trapSaveData[UIManager.instance.FindIndexFromData(PlayerDataForGame.instance.hstData.trapSaveData, cardId)].chips += chips;
+            case 3:
+                PlayerDataForGame.instance.hstData.trapSaveData.GetOrInstance(cardId).chips += chips;
                 break;
-            case "4":
-                PlayerDataForGame.instance.hstData.spellSaveData[UIManager.instance.FindIndexFromData(PlayerDataForGame.instance.hstData.spellSaveData, cardId)].chips += chips;
+            case 4:
+                PlayerDataForGame.instance.hstData.spellSaveData.GetOrInstance(cardId).chips += chips;
                 break;
             default:
-                break;
+                throw new ArgumentOutOfRangeException();
         }
     }
 
