@@ -179,13 +179,13 @@ public class StartSceneToServerCS : MonoBehaviour
             return;
         }
 #endif
-        busyPanel?.SetActive(true);
+        if (busyPanel) busyPanel.SetActive(true);
         //尝试登录并获取登录信息 
         var response =
             await Http.PostAsync(Server.USER_LOGIN_API,
                 Json.Serialize(PlayerDataForGame.instance.acData));
         //如果服务器获取信息 
-        busyPanel?.SetActive(false);
+        if(busyPanel) busyPanel.SetActive(false);
         if (!response.IsSuccess())
         {
             var code = (ServerBackCode)response.StatusCode;

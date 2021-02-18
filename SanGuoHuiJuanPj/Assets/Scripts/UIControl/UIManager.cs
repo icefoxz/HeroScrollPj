@@ -796,21 +796,7 @@ public class UIManager : MonoBehaviour
             int cardType = int.Parse(arrs[0]);
             int cardId = int.Parse(arrs[1]);
             int cardChips = int.Parse(arrs[2]);
-
-            switch (cardType)
-            {
-                case 0:
-                    PlayerDataForGame.instance.hstData.heroSaveData[FindIndexFromData(PlayerDataForGame.instance.hstData.heroSaveData, cardId)].chips += cardChips;
-                    break;
-                case 2:
-                    PlayerDataForGame.instance.hstData.towerSaveData[FindIndexFromData(PlayerDataForGame.instance.hstData.towerSaveData, cardId)].chips += cardChips;
-                    break;
-                case 3:
-                    PlayerDataForGame.instance.hstData.trapSaveData[FindIndexFromData(PlayerDataForGame.instance.hstData.trapSaveData, cardId)].chips += cardChips;
-                    break;
-                default:
-                    break;
-            }
+            rewardManager.RewardCard(cardType, cardId, cardChips);
             RewardsCardClass rewardCard = new RewardsCardClass();
             rewardCard.cardType = cardType;
             rewardCard.cardId = cardId;
@@ -1703,23 +1689,19 @@ public class UIManager : MonoBehaviour
     private void SortHSTData(List<NowLevelAndHadChip> dataList)
     {
         //dataList.Sort((NowLevelAndHadChip n1, NowLevelAndHadChip n2) => n2.Level.CompareTo(n1.Level));
-        dataList.Sort((NowLevelAndHadChip n1, NowLevelAndHadChip n2) =>
+        dataList.Sort((c1, c2) =>
         {
-            if (n2.isFight.CompareTo(n1.isFight) != 0)
+            if (c2.isFight.CompareTo(c1.isFight) != 0)
             {
-                return n2.isFight.CompareTo(n1.isFight);
+                return c2.isFight.CompareTo(c1.isFight);
             }
-            else
+
+            if (c2.level.CompareTo(c1.level) != 0)
             {
-                if (n2.level.CompareTo(n1.level) != 0)
-                {
-                    return n2.level.CompareTo(n1.level);
-                }
-                else
-                {
-                    return GetIdBackCardRarity(n2.typeIndex, n2.id).CompareTo(GetIdBackCardRarity(n1.typeIndex, n1.id));
-                }
+                return c2.level.CompareTo(c1.level);
             }
+
+            return GetIdBackCardRarity(c2.typeIndex, c2.id).CompareTo(GetIdBackCardRarity(c1.typeIndex, c1.id));
         });
     }
 
@@ -2243,20 +2225,6 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    //定位到存档中cardId对应的索引号
-    public int FindIndexFromData(List<NowLevelAndHadChip> saveData, int cardId)
-    {
-        int index = 0;
-        for (; index < saveData.Count; index++)
-        {
-            if (saveData[index].id == cardId)
-            {
-                break;
-            }
-        }
-        return index;
-    }
-
     //添加体力
     public void AddTiLiNums(int addNums)
     {
@@ -2384,8 +2352,7 @@ public class UIManager : MonoBehaviour
                                 cardType = int.Parse(arrs[0]);
                                 cardId = int.Parse(arrs[1]);
                                 chips = int.Parse(arrs[2]);
-                                GetAndSaveCardChips(cardType, cardId, chips);
-
+                                rewardManager.RewardCard(cardType, cardId, chips);
                                 RewardsCardClass rewardCard = new RewardsCardClass();
                                 rewardCard.cardType = cardType;
                                 rewardCard.cardId = cardId;
@@ -2421,31 +2388,6 @@ public class UIManager : MonoBehaviour
                 PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(49));
                 PlayOnClickMusic();
             }
-        }
-    }
-
-    //获取并存储奖励碎片
-    private void GetAndSaveCardChips(int cardType, int cardId, int chips)
-    {
-        switch (cardType)
-        {
-            case 0:
-                PlayerDataForGame.instance.hstData.heroSaveData[FindIndexFromData(PlayerDataForGame.instance.hstData.heroSaveData, cardId)].chips += chips;
-                break;
-            case 1:
-                PlayerDataForGame.instance.hstData.soldierSaveData[FindIndexFromData(PlayerDataForGame.instance.hstData.soldierSaveData, cardId)].chips += chips;
-                break;
-            case 2:
-                PlayerDataForGame.instance.hstData.towerSaveData[FindIndexFromData(PlayerDataForGame.instance.hstData.towerSaveData, cardId)].chips += chips;
-                break;
-            case 3:
-                PlayerDataForGame.instance.hstData.trapSaveData[FindIndexFromData(PlayerDataForGame.instance.hstData.trapSaveData, cardId)].chips += chips;
-                break;
-            case 4:
-                PlayerDataForGame.instance.hstData.spellSaveData[FindIndexFromData(PlayerDataForGame.instance.hstData.spellSaveData, cardId)].chips += chips;
-                break;
-            default:
-                break;
         }
     }
 
