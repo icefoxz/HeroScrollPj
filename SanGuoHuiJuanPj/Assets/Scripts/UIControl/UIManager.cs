@@ -801,7 +801,7 @@ public class UIManager : MonoBehaviour
             int cardType = int.Parse(arrs[0]);
             int cardId = int.Parse(arrs[1]);
             int cardChips = int.Parse(arrs[2]);
-            rewardManager.RewardCard(cardType, cardId, cardChips);
+            rewardManager.RewardCard((GameCardType)cardType, cardId, cardChips);
             RewardsCardClass rewardCard = new RewardsCardClass();
             rewardCard.cardType = cardType;
             rewardCard.cardId = cardId;
@@ -2357,7 +2357,7 @@ public class UIManager : MonoBehaviour
                                 cardType = int.Parse(arrs[0]);
                                 cardId = int.Parse(arrs[1]);
                                 chips = int.Parse(arrs[2]);
-                                rewardManager.RewardCard(cardType, cardId, chips);
+                                rewardManager.RewardCard((GameCardType)cardType, cardId, chips);
                                 RewardsCardClass rewardCard = new RewardsCardClass();
                                 rewardCard.cardType = cardType;
                                 rewardCard.cardId = cardId;
