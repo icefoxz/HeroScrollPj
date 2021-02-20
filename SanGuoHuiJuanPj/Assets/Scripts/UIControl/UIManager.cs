@@ -573,11 +573,15 @@ public class UIManager : MonoBehaviour
             chonseWarDifTran.GetChild(i).gameObject.SetActive(true);
             chonseWarDifTran.GetChild(i).GetComponentInChildren<Text>().text = LoadJsonFile.choseWarTableDatas[i][1];
             int unlockWarId = int.Parse(LoadJsonFile.choseWarTableDatas[i][3]);
-            if (unlockWarId == 0 || PlayerDataForGame.instance.warsData.warUnlockSaveData[unlockWarId].unLockCount >= int.Parse(LoadJsonFile.warTableDatas[unlockWarId][4]))
+            var warList = LoadJsonFile.choseWarTableDatas[i][2];
+            var unlockRequirement = int.Parse(LoadJsonFile.warTableDatas[unlockWarId][4]);//解锁条件
+            if (!string.IsNullOrWhiteSpace(warList) && //必须有war表
+                (unlockWarId == 0 || //不需要通过任何关卡
+                 PlayerDataForGame.instance.warsData.warUnlockSaveData[unlockWarId].unLockCount >= unlockRequirement)) //玩家已通过的关卡大于当前解锁条件
             {
                 lastAvailableStageIndex = index;
                 chonseWarDifTran.GetChild(i).GetComponentInChildren<Text>().color = Color.white;
-                chonseWarDifTran.GetChild(i).GetComponent<Button>().onClick.AddListener(delegate ()
+                chonseWarDifTran.GetChild(i).GetComponent<Button>().onClick.AddListener(delegate()
                 {
                     InitWarsListInfo(index);
                     PlayOnClickMusic();

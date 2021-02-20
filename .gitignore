@@ -70,6 +70,7 @@ crashlytics-build.properties
 # Temporary auto-generated Android Assets
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
+/[Aa]ssets/[Ss]treamingAssets/
 
 ServerPj/yx_server/_yx_db_/00000000.jdb
 ServerPj/yx_server/_yx_db_/je.info.0
@@ -335,7 +336,7 @@ SanGuoHuiJuanPj/Packages/manifest.json
 
 Conversion/AutoChangeJson/gamedb/Jsons/
 SanGuoHuiJuanPj/Library/
-SanGuoHuiJuanPj/Assets/StreamingAssets/
+
 SanGuoHuiJuanPj/obj/
 SanGuoHuiJuanPj/Temp/
 
