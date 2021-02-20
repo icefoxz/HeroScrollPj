@@ -796,7 +796,7 @@ public class UIManager : MonoBehaviour
             int cardType = int.Parse(arrs[0]);
             int cardId = int.Parse(arrs[1]);
             int cardChips = int.Parse(arrs[2]);
-            rewardManager.RewardCard(cardType, cardId, cardChips);
+            rewardManager.RewardCard((GameCardType)cardType, cardId, cardChips);
             RewardsCardClass rewardCard = new RewardsCardClass();
             rewardCard.cardType = cardType;
             rewardCard.cardId = cardId;
@@ -963,12 +963,14 @@ public class UIManager : MonoBehaviour
         {
             tiLiRecordTimer.text = recordStr;
         }
-        int nowStaminaNums = PlayerPrefs.GetInt(TimeSystemControl.staminaStr);
-        if (showTiLiNums != nowStaminaNums)
-        {
-            showTiLiNums = nowStaminaNums;
-            tiLiNumText.text = nowStaminaNums + "/90";
-        }
+        UpdateStaminaUi();
+    }
+
+    private void UpdateStaminaUi()
+    {
+        showTiLiNums = PlayerPrefs.GetInt(TimeSystemControl.staminaStr);
+        tiLiNumText.text = showTiLiNums+ "/90";
+        tiLiNumText.color = showTiLiNums == PlayerDataForGame.instance.StaminaMax ? Color.red : Color.black;
     }
 
     /// <summary>
@@ -995,8 +997,7 @@ public class UIManager : MonoBehaviour
                 AudioController0.instance.PlayAudioSource(0);
                 TimeSystemControl.instance.LetTiLiTimerTake(cutStaminaNums);
                 PlayerPrefs.SetInt(TimeSystemControl.staminaStr, (PlayerPrefs.GetInt(TimeSystemControl.staminaStr) - cutStaminaNums));
-                showTiLiNums = PlayerPrefs.GetInt(TimeSystemControl.staminaStr);
-                tiLiNumText.text = showTiLiNums + "/90";
+                UpdateStaminaUi();
                 cutTiLiTextObj.SetActive(false);
                 cutTiLiTextObj.GetComponent<Text>().color = ColorDataStatic.name_red;
                 cutTiLiTextObj.GetComponent<Text>().text = "-"+ cutStaminaNums;
@@ -1729,9 +1730,7 @@ public class UIManager : MonoBehaviour
         //货币
         yuanBaoNumText.text = PlayerDataForGame.instance.pyData.YuanBao.ToString();
         yvQueNumText.text = PlayerDataForGame.instance.pyData.YvQue.ToString();
-        showTiLiNums = PlayerPrefs.GetInt(TimeSystemControl.staminaStr);
-        tiLiNumText.text = showTiLiNums + "/90";
-
+        UpdateStaminaUi();
         CreateHeroAndTowerContent();
         UpdateCardNumsShow();
 
@@ -2352,7 +2351,7 @@ public class UIManager : MonoBehaviour
                                 cardType = int.Parse(arrs[0]);
                                 cardId = int.Parse(arrs[1]);
                                 chips = int.Parse(arrs[2]);
-                                rewardManager.RewardCard(cardType, cardId, chips);
+                                rewardManager.RewardCard((GameCardType)cardType, cardId, chips);
                                 RewardsCardClass rewardCard = new RewardsCardClass();
                                 rewardCard.cardType = cardType;
                                 rewardCard.cardId = cardId;
