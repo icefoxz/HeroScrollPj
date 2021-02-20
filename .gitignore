@@ -355,3 +355,9 @@ SanGuoHuiJuanPj/Assets/ExternalDependencyManager/Editor/Google.VersionHandlerImp
 SanGuoHuiJuanPj/Packages/packages-lock.json
 
 SanGuoHuiJuanPj/ProjectSettings/PackageManagerSettings.asset
+
+SanGuoHuiJuanPj/Assets/StreamingAssets/DebugFileV1.89.txt
+
+SanGuoHuiJuanPj/Assets/StreamingAssets/WarUnlockDataSave_old
+
+SanGuoHuiJuanPj/Assets/StreamingAssets/WarUnlockDataSave.json
