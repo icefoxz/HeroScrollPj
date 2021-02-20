@@ -9,6 +9,8 @@ public class StoryEventUIController : MonoBehaviour
 {
     public List<StoryEventPoint> storyEventPoints;
     public List<GameObject> eventTypePrefabs;
+    [Header("对应上面事件的音效，-1为为随机古筝，其余负数为无音效。")]
+    public List<int> eventTypeAudioIds;
     private Dictionary<int, StoryEventPoint> points;
 
     public void ResetUi()
@@ -49,18 +51,14 @@ public class StoryEventUIController : MonoBehaviour
 
     private void OnClickAudioPlay(int type)
     {
-        int audioClipId = -1;
-        switch (type) 
+        if (type > eventTypeAudioIds.Count) return;
+        var audioId = eventTypeAudioIds[type - 1];
+        if (audioId < -1) return;
+        if (audioId == -1)
         {
-            case 1://宝箱
-                audioClipId = 17;
-                break;
-            case 2://答题
-                audioClipId = 19;
-                break;
-            default: return;
+            AudioController0.instance.RandomPlayGuZhengAudio();
+            return;
         }
-        AudioController0.instance.ChangeAudioClip(audioClipId);
-        AudioController0.instance.PlayAudioSource(0);
+        AudioController0.instance.ForcePlayAudio(audioId);
     }
 }

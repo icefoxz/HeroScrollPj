@@ -346,7 +346,7 @@ public class UIManager : MonoBehaviour
         {
             if (isJumping) return;
             isJumping = true;
-            PlayOnClickMusic();
+            AudioController0.instance.ForcePlayAudio(12);
             AudioController0.instance.ChangeAudioClip(12);
             AudioController0.instance.PlayAudioSource(0);
             PlayerDataForGame.instance.FlagWarTypeBeforeBattle(2);
@@ -760,6 +760,7 @@ public class UIManager : MonoBehaviour
         PlayerDataForGame.instance.isNeedSaveData = true;
         LoadSaveData.instance.SaveGameData(3);
         ShowRewardsThings(yuanBao, yvQue, exp, 0, cards, 0.5f);
+        AudioController0.instance.ForcePlayAudio(0);
     }
 
     /// <summary>
@@ -796,7 +797,7 @@ public class UIManager : MonoBehaviour
             int cardType = int.Parse(arrs[0]);
             int cardId = int.Parse(arrs[1]);
             int cardChips = int.Parse(arrs[2]);
-            rewardManager.RewardCard((GameCardType)cardType, cardId, cardChips);
+            rewardManager.RewardCard(cardType, cardId, cardChips);
             RewardsCardClass rewardCard = new RewardsCardClass();
             rewardCard.cardType = cardType;
             rewardCard.cardId = cardId;
@@ -963,14 +964,12 @@ public class UIManager : MonoBehaviour
         {
             tiLiRecordTimer.text = recordStr;
         }
-        UpdateStaminaUi();
-    }
-
-    private void UpdateStaminaUi()
-    {
-        showTiLiNums = PlayerPrefs.GetInt(TimeSystemControl.staminaStr);
-        tiLiNumText.text = showTiLiNums+ "/90";
-        tiLiNumText.color = showTiLiNums == PlayerDataForGame.instance.StaminaMax ? Color.red : Color.black;
+        int nowStaminaNums = PlayerPrefs.GetInt(TimeSystemControl.staminaStr);
+        if (showTiLiNums != nowStaminaNums)
+        {
+            showTiLiNums = nowStaminaNums;
+            tiLiNumText.text = nowStaminaNums + "/90";
+        }
     }
 
     /// <summary>
@@ -997,7 +996,8 @@ public class UIManager : MonoBehaviour
                 AudioController0.instance.PlayAudioSource(0);
                 TimeSystemControl.instance.LetTiLiTimerTake(cutStaminaNums);
                 PlayerPrefs.SetInt(TimeSystemControl.staminaStr, (PlayerPrefs.GetInt(TimeSystemControl.staminaStr) - cutStaminaNums));
-                UpdateStaminaUi();
+                showTiLiNums = PlayerPrefs.GetInt(TimeSystemControl.staminaStr);
+                tiLiNumText.text = showTiLiNums + "/90";
                 cutTiLiTextObj.SetActive(false);
                 cutTiLiTextObj.GetComponent<Text>().color = ColorDataStatic.name_red;
                 cutTiLiTextObj.GetComponent<Text>().text = "-"+ cutStaminaNums;
@@ -1730,7 +1730,9 @@ public class UIManager : MonoBehaviour
         //货币
         yuanBaoNumText.text = PlayerDataForGame.instance.pyData.YuanBao.ToString();
         yvQueNumText.text = PlayerDataForGame.instance.pyData.YvQue.ToString();
-        UpdateStaminaUi();
+        showTiLiNums = PlayerPrefs.GetInt(TimeSystemControl.staminaStr);
+        tiLiNumText.text = showTiLiNums + "/90";
+
         CreateHeroAndTowerContent();
         UpdateCardNumsShow();
 
@@ -2351,7 +2353,7 @@ public class UIManager : MonoBehaviour
                                 cardType = int.Parse(arrs[0]);
                                 cardId = int.Parse(arrs[1]);
                                 chips = int.Parse(arrs[2]);
-                                rewardManager.RewardCard((GameCardType)cardType, cardId, chips);
+                                rewardManager.RewardCard(cardType, cardId, chips);
                                 RewardsCardClass rewardCard = new RewardsCardClass();
                                 rewardCard.cardType = cardType;
                                 rewardCard.cardId = cardId;

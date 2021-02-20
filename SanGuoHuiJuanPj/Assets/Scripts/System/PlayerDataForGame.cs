@@ -11,8 +11,6 @@ using Random = UnityEngine.Random;
 public class PlayerDataForGame : MonoBehaviour
 {
     public static PlayerDataForGame instance;
-
-    public int StaminaMax = 500;
     //修复v1.89无限刷霸业宝箱3的Bug 
     //玉阙检查值 
     public int Bug1_9YvQueCheck = 5000;

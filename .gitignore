@@ -335,11 +335,9 @@ SanGuoHuiJuanPj/Packages/manifest.json
 
 Conversion/AutoChangeJson/gamedb/Jsons/
 SanGuoHuiJuanPj/Library/
-
+SanGuoHuiJuanPj/Assets/StreamingAssets/
 SanGuoHuiJuanPj/obj/
-
 SanGuoHuiJuanPj/Temp/
-
 
 Conversion/AutoChangeJson/pylib/__pycache__/
 

@@ -16,6 +16,8 @@ public class ForceSelectorUi : MonoBehaviour
     public Button buttonPrefab;
     public HorizontalLayoutGroup content;
     public Modes mode;
+    [Header("-1为没音效")]
+    public int onSelectedAudioId = -1;
 
     private Dictionary<int, ForceFlagUI> data = new Dictionary<int, ForceFlagUI>();
     /// <summary>
@@ -75,6 +77,10 @@ public class ForceSelectorUi : MonoBehaviour
 
     protected virtual void OnSelected(PlayerDataForGame.WarTypes warType,int forceId)
     {
+        if (onSelectedAudioId > -1)
+        {
+            AudioController0.instance.ForcePlayAudio(onSelectedAudioId);
+        }
         foreach (var obj in data)
         {
             var ui = obj.Value;

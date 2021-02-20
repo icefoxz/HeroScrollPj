@@ -11,9 +11,6 @@ public class TimeSystemControl : MonoBehaviour
 {
     public static TimeSystemControl instance;
 
-    /// <summary>
-    /// todo 需要重写把体力也加入玩家存档里
-    /// </summary>
     public static string staminaStr = "staminaNum";
 
     private string timeWebPath = "http://www.hko.gov.hk/cgi-bin/gts/time5a.pr?a=1";
@@ -289,10 +286,7 @@ public class TimeSystemControl : MonoBehaviour
         else
         {
             int nowStamina = PlayerPrefs.GetInt(staminaStr);
-            var staminaSet = nowStamina + addNums;
-            var staminaMax = PlayerDataForGame.instance.StaminaMax;//极限值
-            staminaSet = staminaSet > staminaMax ? staminaMax : staminaSet;//体力永远不大于极限值
-            PlayerPrefs.SetInt(staminaStr, staminaSet);   //存入增加后得体力值
+            PlayerPrefs.SetInt(staminaStr, nowStamina + addNums);   //存入增加后得体力值
 
             if (isNeedHuiFuTiLi)
             {

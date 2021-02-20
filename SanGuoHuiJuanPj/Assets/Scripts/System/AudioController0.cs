@@ -46,6 +46,15 @@ public class AudioController0 : MonoBehaviour
         return true;
     }
 
+    public void ForcePlayAudio(int audioClipId)
+    {
+        StopAllCoroutines();
+        if(audioSource.isPlaying) audioSource.Stop();
+        audioSource.clip = audioClips[audioClipId];
+        audioSource.volume = audioVolumes[audioClipId];
+        StartCoroutine(StartPlaying(0));
+    }
+
     public bool ChangeAudioClip(AudioClip audioClip, float volume)
     {
         if (isPlaying) return false;
@@ -55,9 +64,11 @@ public class AudioController0 : MonoBehaviour
     }
 
     //改变记录状态
-    IEnumerator ChangePlayState(float waitTime)
+    IEnumerator StartPlaying(float waitTime)
     {
-        yield return new WaitForSeconds(waitTime);
+        isPlaying = true;
+        audioSource.PlayDelayed(waitTime);
+        yield return new WaitForSeconds(audioSource.clip.length);
         isPlaying = false;
     }
 
@@ -70,12 +81,7 @@ public class AudioController0 : MonoBehaviour
         if (isPlayMusic != 1)
             return;
 
-        if (!isPlaying)
-        {
-            isPlaying = true;
-            audioSource.PlayDelayed(delayedTime);
-            StartCoroutine(ChangePlayState(audioSource.clip.length));
-        }
+        if (!isPlaying) StartCoroutine(StartPlaying(delayedTime));
 
         //if (audioSource.isPlaying)
         //{
@@ -95,5 +101,4 @@ public class AudioController0 : MonoBehaviour
         ChangeAudioClip(rand);
         PlayAudioSource(0);
     }
-
 }
