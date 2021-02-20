@@ -11,6 +11,9 @@ public class TimeSystemControl : MonoBehaviour
 {
     public static TimeSystemControl instance;
 
+    /// <summary>
+    /// todo 需要重写把体力也加入玩家存档里
+    /// </summary>
     public static string staminaStr = "staminaNum";
 
     private string timeWebPath = "http://www.hko.gov.hk/cgi-bin/gts/time5a.pr?a=1";
@@ -91,7 +94,7 @@ public class TimeSystemControl : MonoBehaviour
     public bool isFInGame;  //记录当天首次进入游戏
     private static string dayOfyearStr = "dayOfyearStr";        //存放上次进入游戏是哪一天
     private static string yearStr = "yearStr";                  //存放上次进入游戏是哪一年
-    
+
     private void Awake()
     {
         if (instance != null)
@@ -160,7 +163,7 @@ public class TimeSystemControl : MonoBehaviour
 
         maxStaminaNum = int.Parse(LoadJsonFile.assetTableDatas[2].startValue);
         isNeedHuiFuTiLi = (PlayerPrefs.GetInt(staminaStr) < maxStaminaNum);
-        long.TryParse(PlayerPrefs.GetString(tiLiHuiFuTime),out tiLiHfTimeLong);
+        long.TryParse(PlayerPrefs.GetString(tiLiHuiFuTime), out tiLiHfTimeLong);
     }
 
     private void Update()
@@ -286,7 +289,10 @@ public class TimeSystemControl : MonoBehaviour
         else
         {
             int nowStamina = PlayerPrefs.GetInt(staminaStr);
-            PlayerPrefs.SetInt(staminaStr, nowStamina + addNums);   //存入增加后得体力值
+            var staminaSet = nowStamina + addNums;
+            var staminaMax = PlayerDataForGame.instance.staminaMax;//极限值
+            staminaSet = staminaSet > staminaMax ? staminaMax : staminaSet;//体力永远不大于极限值
+            PlayerPrefs.SetInt(staminaStr, staminaSet);   //存入增加后得体力值
 
             if (isNeedHuiFuTiLi)
             {
@@ -320,7 +326,7 @@ public class TimeSystemControl : MonoBehaviour
                 PlayerPrefs.SetString(tiLiHuiFuTime, tiLiHfTimeLong.ToString());
             }
 
-            int secondsCha = (int) ((tiLiHfTimeLong - SystemTimer.NowUnixTicks) / 1000);
+            int secondsCha = (int)((tiLiHfTimeLong - SystemTimer.NowUnixTicks) / 1000);
             if (secondsNetTime_TiLiHf > secondsCha || (secondsNetTime_TiLiHf <= 0 && secondsCha != 0))
             {
                 secondsNetTime_TiLiHf = secondsCha;
@@ -418,13 +424,13 @@ public class TimeSystemControl : MonoBehaviour
         //如果当前时间大于下次开启时间
         isJiuTanReady = nextOpenJiuTanTimeTicks <= SystemTimer.NowUnixTicks;
         if (!isOpenMainScene) return;
-        var jiuTanCount = $"{JiuTanRedeemCountPerDay-redeemCount}";
+        var jiuTanCount = $"{JiuTanRedeemCountPerDay - redeemCount}";
         if (!isJiuTanReady)
         {
             var displayText = string.Empty;
             if (countAvailable)
-                displayText = $"{TimeDisplayText((int) (nextOpenJiuTanTimeTicks - SystemTimer.NowUnixTicks) / 1000)}";
-            UIManager.instance.taoYuan.UpdateJiuTan(isJiuTanReady,$"{JiuTanRedeemCountPerDay - redeemCount}", displayText);
+                displayText = $"{TimeDisplayText((int)(nextOpenJiuTanTimeTicks - SystemTimer.NowUnixTicks) / 1000)}";
+            UIManager.instance.taoYuan.UpdateJiuTan(isJiuTanReady, $"{JiuTanRedeemCountPerDay - redeemCount}", displayText);
             return;
         }
 
@@ -446,7 +452,7 @@ public class TimeSystemControl : MonoBehaviour
             PlayerPrefs.SetString(freeBoxOpenTime1, openFreeBoxTimeLong1.ToString());
         }
 
-        int secondCha = (int) ((openFreeBoxTimeLong1 - SystemTimer.NowUnixTicks) / 1000);
+        int secondCha = (int)((openFreeBoxTimeLong1 - SystemTimer.NowUnixTicks) / 1000);
         if (secondsNetTime_FreeBox1 <= secondCha && (secondsNetTime_FreeBox1 > 0 || secondCha == 0)) return;
         secondsNetTime_FreeBox1 = secondCha;
         int totalTimes = PlayerPrefs.GetInt(fBoxOpenNeedTimes1);
@@ -470,7 +476,7 @@ public class TimeSystemControl : MonoBehaviour
             PlayerPrefs.SetString(freeBoxOpenTime2, openFreeBoxTimeLong2.ToString());
         }
 
-        int secondCha = (int) ((openFreeBoxTimeLong2 - SystemTimer.NowUnixTicks) / 1000);
+        int secondCha = (int)((openFreeBoxTimeLong2 - SystemTimer.NowUnixTicks) / 1000);
         if (secondsNetTime_FreeBox2 <= secondCha && (secondsNetTime_FreeBox2 > 0 || secondCha == 0)) return;
         secondsNetTime_FreeBox2 = secondCha;
         int totalTimes = PlayerPrefs.GetInt(fBoxOpenNeedTimes2);
@@ -515,7 +521,7 @@ public class TimeSystemControl : MonoBehaviour
         {
             countDownNums = 0;
             isCanGetBox2 = true;
-                UIManager.instance.taoYuan.goldChest.UpdateChest(string.Empty, true);
+            UIManager.instance.taoYuan.goldChest.UpdateChest(string.Empty, true);
         }
         else
         {
@@ -606,12 +612,12 @@ public class TimeSystemControl : MonoBehaviour
         }
 
         Debug.Log(
-            $"{nameof(TimeSystemControl)}:{nameof(OnClickToGetJinNang)} 锦囊获取次数[{player.DailyJinNangRedemptionCount+1}/{JinNangRedeemCountPerDay}]");
+            $"{nameof(TimeSystemControl)}:{nameof(OnClickToGetJinNang)} 锦囊获取次数[{player.DailyJinNangRedemptionCount + 1}/{JinNangRedeemCountPerDay}]");
         if (jNRedeemCount >= JinNangRedeemCountPerDay) return false;
         //Debug.Log("打开锦囊");
         isJNTimeValid = false;
         if (UIManager.instance.JinNangQuota != null)
-            UIManager.instance.JinNangQuota.text = $"今日次数：{player.DailyJinNangRedemptionCount+1}/{JinNangRedeemCountPerDay}";
+            UIManager.instance.JinNangQuota.text = $"今日次数：{player.DailyJinNangRedemptionCount + 1}/{JinNangRedeemCountPerDay}";
         return true;
 
         //Debug.Log("宝箱免费开启时间未到");

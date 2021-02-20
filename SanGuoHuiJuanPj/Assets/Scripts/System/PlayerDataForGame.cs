@@ -11,6 +11,8 @@ using Random = UnityEngine.Random;
 public class PlayerDataForGame : MonoBehaviour
 {
     public static PlayerDataForGame instance;
+
+    public int staminaMax = 500;
     //修复v1.89无限刷霸业宝箱3的Bug 
     //玉阙检查值 
     public int Bug1_9YvQueCheck = 5000;
@@ -135,7 +137,7 @@ public class PlayerDataForGame : MonoBehaviour
         SceneManager.sceneLoaded += SceneManagerOnsceneLoaded;
     }
 
-    private void SceneManagerOnsceneLoaded(Scene scene, LoadSceneMode mode) => CurrentScene = (GameScene) scene.buildIndex;
+    private void SceneManagerOnsceneLoaded(Scene scene, LoadSceneMode mode) => CurrentScene = (GameScene)scene.buildIndex;
 
     private void Update()
     {
