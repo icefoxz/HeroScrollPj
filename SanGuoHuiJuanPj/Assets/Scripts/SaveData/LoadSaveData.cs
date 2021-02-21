@@ -103,7 +103,7 @@ public class LoadSaveData : MonoBehaviour
         throw new Exception("删除完成，请重启游戏！");
 #endif
         SceneManager.LoadScene(0);
-        Destroy(LoadJsonFile.instance.gameObject);
+        Destroy(DataTable.instance.gameObject);
         Destroy(PlayerDataForGame.instance.gameObject);
         Destroy(LoadSaveData.instance.gameObject);
     }
@@ -475,20 +475,20 @@ public class LoadSaveData : MonoBehaviour
     private HSTDataClass ArchiveCorrection(HSTDataClass save)
     {
         var isNeedSaveDate = true;
-        save.heroSaveData = ResolveData(save.heroSaveData, 21, LoadJsonFile.heroTableDatas);
-        save.towerSaveData = ResolveData(save.towerSaveData, 14, LoadJsonFile.towerTableDatas);
-        save.trapSaveData = ResolveData(save.trapSaveData, 13, LoadJsonFile.trapTableDatas);
+        save.heroSaveData = ResolveData(save.heroSaveData, 21, DataTable.Hero);
+        save.towerSaveData = ResolveData(save.towerSaveData, 14, DataTable.Tower);
+        save.trapSaveData = ResolveData(save.trapSaveData, 13, DataTable.Trap);
         if (isNeedSaveDate)
         {
             SaveByJson(save);
         }
         return save;
 
-        List<NowLevelAndHadChip> ResolveData(List<NowLevelAndHadChip> data,int isPutOnIndex,List<List<string>> list)
+        List<NowLevelAndHadChip> ResolveData(List<NowLevelAndHadChip> data,int isPutOnIndex,IReadOnlyDictionary<int,IReadOnlyList<string>> map)
         {
             return data.Where(card =>
             {
-                var row = list.FirstOrDefault(r => r[0] == card.id.ToString());
+                var row = map[card.id];
                 if (row == null) return false;
                 return int.Parse(row[isPutOnIndex]) != 0;//是否投放索引
             }).ToList();
@@ -500,7 +500,7 @@ public class LoadSaveData : MonoBehaviour
         bool isNeedSaveDate = false;
         //战役存档修正 
         int nowDataCount = save.warUnlockSaveData.Count;
-        int jsonDataCount = LoadJsonFile.warTableDatas.Count;
+        int jsonDataCount = DataTable.WarData.Count;
         if (nowDataCount < jsonDataCount)
         {
             isNeedSaveDate = true;
@@ -526,7 +526,7 @@ public class LoadSaveData : MonoBehaviour
         bool isNeedSaveDate = false;
         //兑换码存档 
         int nowDataCount = save.redemptionCodeGotList.Count;
-        int jsonDataCount = LoadJsonFile.rCodeTableDatas.Count;
+        int jsonDataCount = DataTable.RCodeData.Count;
         if (nowDataCount < jsonDataCount)
         {
             isNeedSaveDate = true;
@@ -556,8 +556,8 @@ public class LoadSaveData : MonoBehaviour
         PlayerData pySaveData = new PlayerData();
         pySaveData.Level = 1;
         pySaveData.Exp = 0;
-        pySaveData.YvQue = int.Parse(LoadJsonFile.assetTableDatas[0].startValue);
-        pySaveData.YuanBao = int.Parse(LoadJsonFile.assetTableDatas[1].startValue);
+        pySaveData.YvQue = int.Parse(DataTable.AssetData[0][2]);//startValue
+        pySaveData.YuanBao = int.Parse(DataTable.AssetData[1][2]);//startValue
         pySaveData.ForceId = firstForceId;   //暂给初始势力
         pySaveData.LastGameVersion = float.Parse(Application.version);
         SaveByJson(pySaveData);
@@ -565,7 +565,7 @@ public class LoadSaveData : MonoBehaviour
         GetBoxOrCodeData gbocSaveData = new GetBoxOrCodeData();
         gbocSaveData.fightBoxs = new List<int>();
         gbocSaveData.redemptionCodeGotList = new List<RedemptionCodeGot>();
-        for (int i = 0; i < LoadJsonFile.rCodeTableDatas.Count; i++)
+        for (int i = 0; i < DataTable.RCodeData.Count; i++)
         {
             RedemptionCodeGot redemptionCodeGot = new RedemptionCodeGot();
             redemptionCodeGot.id = i;
@@ -576,7 +576,7 @@ public class LoadSaveData : MonoBehaviour
         //////////////////////////////////////////////////////////////////////////////////////// 
         HSTDataClass hstSaveData = new HSTDataClass();
         hstSaveData.heroSaveData = new List<NowLevelAndHadChip>();
-        for (int i = 0; i < LoadJsonFile.heroTableDatas.Count; i++)
+        for (int i = 0; i < DataTable.HeroData.Count; i++)
         {
             NowLevelAndHadChip nlahc = new NowLevelAndHadChip();
             nlahc.id = i;
@@ -588,7 +588,7 @@ public class LoadSaveData : MonoBehaviour
             nlahc.maxLevel = 0;
             hstSaveData.heroSaveData.Add(nlahc);
         }
-        string[] strs0 = LoadJsonFile.playerInitialTableDatas[pySaveData.ForceId][2].Split(',');
+        string[] strs0 = DataTable.PlayerInitialData[pySaveData.ForceId][2].Split(',');
         for (int i = 0; i < strs0.Length; i++)
         {
             if (strs0[i] != "")
@@ -601,7 +601,7 @@ public class LoadSaveData : MonoBehaviour
             }
         }
         hstSaveData.soldierSaveData = new List<NowLevelAndHadChip>();
-        for (int i = 0; i < LoadJsonFile.soldierTableDatas.Count; i++)
+        for (int i = 0; i < DataTable.SoldierData.Count; i++)
         {
             NowLevelAndHadChip nlahc = new NowLevelAndHadChip();
             nlahc.id = i;
@@ -614,7 +614,7 @@ public class LoadSaveData : MonoBehaviour
             hstSaveData.soldierSaveData.Add(nlahc);
         }
         hstSaveData.towerSaveData = new List<NowLevelAndHadChip>();
-        for (int i = 0; i < LoadJsonFile.towerTableDatas.Count; i++)
+        for (int i = 0; i < DataTable.TowerData.Count; i++)
         {
             NowLevelAndHadChip nlahc = new NowLevelAndHadChip();
             nlahc.id = i;
@@ -626,7 +626,7 @@ public class LoadSaveData : MonoBehaviour
             nlahc.maxLevel = 0;
             hstSaveData.towerSaveData.Add(nlahc);
         }
-        string[] strs2 = LoadJsonFile.playerInitialTableDatas[pySaveData.ForceId][4].Split(',');
+        string[] strs2 = DataTable.PlayerInitialData[pySaveData.ForceId][4].Split(',');
         for (int i = 0; i < strs2.Length; i++)
         {
             if (strs2[i] != "")
@@ -639,7 +639,7 @@ public class LoadSaveData : MonoBehaviour
             }
         }
         hstSaveData.trapSaveData = new List<NowLevelAndHadChip>();
-        for (int i = 0; i < LoadJsonFile.trapTableDatas.Count; i++)
+        for (int i = 0; i < DataTable.TrapData.Count; i++)
         {
             NowLevelAndHadChip nlahc = new NowLevelAndHadChip();
             nlahc.id = i;
@@ -652,7 +652,7 @@ public class LoadSaveData : MonoBehaviour
             hstSaveData.trapSaveData.Add(nlahc);
         }
         hstSaveData.spellSaveData = new List<NowLevelAndHadChip>();
-        for (int i = 0; i < LoadJsonFile.spellTableDatas.Count; i++)
+        for (int i = 0; i < DataTable.SpellData.Count; i++)
         {
             NowLevelAndHadChip nlahc = new NowLevelAndHadChip();
             nlahc.id = i;
@@ -668,7 +668,7 @@ public class LoadSaveData : MonoBehaviour
         /////////////////////////////////////////////////////////////////////////////////////////// 
         WarsDataClass warsSaveData = new WarsDataClass();
         warsSaveData.warUnlockSaveData = new List<UnlockWarCount>();
-        for (int i = 0; i < LoadJsonFile.warTableDatas.Count; i++)
+        for (int i = 0; i < DataTable.WarData.Count; i++)
         {
             UnlockWarCount unlock = new UnlockWarCount();
             unlock.warId = i;

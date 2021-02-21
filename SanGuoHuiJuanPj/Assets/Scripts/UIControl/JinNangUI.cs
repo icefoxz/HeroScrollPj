@@ -65,7 +65,7 @@ public class JinNangUI: MonoBehaviour
                 if (staminaValue > 0)
                     TimeSystemControl.instance.AddTiLiNums(staminaValue);
                 PlayerDataForGame.instance.Redemption(PlayerDataForGame.RedeemTypes.JinNang);
-                PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(43));
+                PlayerDataForGame.instance.ShowStringTips(DataTable.GetStringText(43));
                 continueBtn.onClick.RemoveAllListeners();
                 gameObject.SetActive(false);
             });
@@ -89,7 +89,7 @@ public class JinNangUI: MonoBehaviour
                     doubleAdBtn.onClick.RemoveAllListeners();
                 }, () =>
                 {
-                    PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(6));
+                    PlayerDataForGame.instance.ShowStringTips(DataTable.GetStringText(6));
                     continueBtn.enabled = true;
                     doubleAdBtn.enabled = true;
                 });

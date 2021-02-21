@@ -72,6 +72,9 @@ crashlytics-build.properties
 /[Aa]ssets/[Ss]treamingAssets/aa/*
 /[Aa]ssets/[Ss]treamingAssets/
 
+[Dd]ebug/
+[Rr]elease/
+
 ServerPj/yx_server/_yx_db_/00000000.jdb
 ServerPj/yx_server/_yx_db_/je.info.0
 ServerPj/yx_server/_yx_db_/je.info.0.lck

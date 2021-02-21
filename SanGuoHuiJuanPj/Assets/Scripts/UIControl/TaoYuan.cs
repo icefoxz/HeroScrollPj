@@ -28,10 +28,10 @@ using UnityEngine.UI;
     {
         chestCostMap = new Dictionary<TaoYuanChestUI, int>
         {
-            {jiuTan, LoadJsonFile.GetGameValue(3)},
+            {jiuTan, DataTable.GetGameValue(3)},
             {zhanYiChest, 0},//战役宝箱不花费
-            {copperChest, LoadJsonFile.GetGameValue(4)},
-            {goldChest, LoadJsonFile.GetGameValue(5)}
+            {copperChest, DataTable.GetGameValue(4)},
+            {goldChest, DataTable.GetGameValue(5)}
         };
         freeJiuTanAdButton.onClick.AddListener(OnWatchAdGetJiuTan);
         foreach (var map in chestCostMap)
@@ -57,18 +57,18 @@ using UnityEngine.UI;
     {
         if (TimeSystemControl.instance.OnClickToGetJinNang())
         {
-            var randId = UnityEngine.Random.Range(0, LoadJsonFile.knowledgeTableDatas.Count);
-            var arrs = LoadJsonFile.knowledgeTableDatas[randId][4].Split(',');
+            var randId = UnityEngine.Random.Range(0, DataTable.KnowledgeData.Count);
+            var arrs = DataTable.KnowledgeData[randId][4].Split(',');
             var yuanBao = UnityEngine.Random.Range(int.Parse(arrs[0]), int.Parse(arrs[1]));
-            var text = LoadJsonFile.knowledgeTableDatas[randId][2];
-            var textColor = LoadJsonFile.knowledgeTableDatas[randId][1] == "1" ? ColorDataStatic.name_deepRed : ColorDataStatic.name_brown;
-            var characterName = LoadJsonFile.knowledgeTableDatas[randId][5];
-            var stamina = int.Parse(LoadJsonFile.knowledgeTableDatas[randId][3]);
+            var text = DataTable.KnowledgeData[randId][2];
+            var textColor = DataTable.KnowledgeData[randId][1] == "1" ? ColorDataStatic.name_deepRed : ColorDataStatic.name_brown;
+            var characterName = DataTable.KnowledgeData[randId][5];
+            var stamina = int.Parse(DataTable.KnowledgeData[randId][3]);
             jinNangUi.OnReward(text, textColor, characterName, stamina, yuanBao);
             return;
         }
         UIManager.instance.PlayOnClickMusic();
-        PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(44));
+        PlayerDataForGame.instance.ShowStringTips(DataTable.GetStringText(44));
     }
 
     public void UpdateJiuTan(bool isReady,string jiuTanCount, string countDown)
@@ -102,13 +102,13 @@ using UnityEngine.UI;
             isConsumeAd = true; //已成功消费广告
             OpenJiuTan();
             openJiuTanYBNums = index;
-            PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(5));
+            PlayerDataForGame.instance.ShowStringTips(DataTable.GetStringText(5));
             freeJiuTanAdButton.enabled = true;
             jiuTan.chestButton.enabled = true;
             isWatchingJiuTanAd = false;
         }, () =>
         {
-            PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(6));
+            PlayerDataForGame.instance.ShowStringTips(DataTable.GetStringText(6));
             freeJiuTanAdButton.enabled = true;
             jiuTan.chestButton.enabled = true;
             isConsumeAd = false;
@@ -134,7 +134,7 @@ using UnityEngine.UI;
             if (PlayerDataForGame.instance.pyData.YuanBao < openJiuTanYBNums ||
                 !TimeSystemControl.instance.OnClickToGetJiuTan())
             {
-                PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(0));
+                PlayerDataForGame.instance.ShowStringTips(DataTable.GetStringText(0));
                 AudioController0.instance.PlayAudioSource(0);
                 return;
             }
@@ -169,7 +169,7 @@ using UnityEngine.UI;
         {
             if (PlayerDataForGame.instance.gbocData.fightBoxs.Count <= 0) //如果没有宝箱记录
             {
-                PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(7));
+                PlayerDataForGame.instance.ShowStringTips(DataTable.GetStringText(7));
                 AudioController0.instance.PlayAudioSource(0);
                 chest.chestButton.enabled = false;
                 return;
@@ -187,7 +187,7 @@ using UnityEngine.UI;
 
         if (isSuccessSpend)
         {
-            var exp = int.Parse(LoadJsonFile.warChestTableDatas[chestId][3]); //获取经验
+            var exp = int.Parse(DataTable.WarChestData[chestId][3]); //获取经验
             UIManager.instance.GetPlayerExp(exp); //增加经验
             var yuanBao = RewardManager.instance.GetYuanBao(chestId); //获取元宝
             var yvQue = RewardManager.instance.GetYvQue(chestId); //获取玉阙
@@ -195,20 +195,14 @@ using UnityEngine.UI;
             ConsumeManager.instance.AddYuanBao(yuanBao); //增加元宝
             var isZhanYiChest = chest == zhanYiChest;
             var rewards = RewardManager.instance.GetCards(chestId, isZhanYiChest); //获取卡牌
-            StartCoroutine(SavePlayerData());
+            PlayerDataForGame.instance.isNeedSaveData = true;
+            LoadSaveData.instance.SaveGameData();
             UIManager.instance.ShowRewardsThings(yuanBao, yvQue, exp, 0, rewards, 1.5f); //显示奖励窗口
             chest.SetChest(true); //UI，打开箱子
             AudioController0.instance.ChangeAudioClip(0);
         }
 
         AudioController0.instance.PlayAudioSource(0);
-    }
-
-    private IEnumerator SavePlayerData()
-    {
-        PlayerDataForGame.instance.isNeedSaveData = true;
-        LoadSaveData.instance.SaveGameData();
-        yield return null;
     }
 
     public void OpenJiuTan() => OpenChest(jiuTan);

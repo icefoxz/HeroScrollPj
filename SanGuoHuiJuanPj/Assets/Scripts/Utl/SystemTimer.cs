@@ -103,7 +103,7 @@ public class SystemTimer : MonoBehaviour
         {
             for (int j = 0; j < 2; j++)
             {
-                clockMap.Add(clock, LoadJsonFile.GetStringText(row + i));
+                clockMap.Add(clock, DataTable.GetStringText(row + i));
                 clock++;
                 if (clock > 23) clock = 0;
             }

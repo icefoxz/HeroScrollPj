@@ -131,13 +131,17 @@ public class PlayerDataForGame : MonoBehaviour
 
         garbageStationObjs = new List<GameObject>();
         StartCoroutine(FadeTransitionEffect(0));
-        gameResources = new GameResources();
-        gameResources.Init();
 
         SceneManager.sceneLoaded += SceneManagerOnsceneLoaded;
     }
 
-    private void SceneManagerOnsceneLoaded(Scene scene, LoadSceneMode mode) => CurrentScene = (GameScene)scene.buildIndex;
+    private void Start()
+    {
+        gameResources = new GameResources();
+        gameResources.Init();
+    }
+
+    private void SceneManagerOnsceneLoaded(Scene scene, LoadSceneMode mode) => CurrentScene = (GameScene) scene.buildIndex;
 
     private void Update()
     {
@@ -148,7 +152,7 @@ public class PlayerDataForGame : MonoBehaviour
             {
                 loadPro = 1;
             }
-            loadingText.text = string.Format(LoadJsonFile.GetStringText(63), (int)(loadPro * 100));
+            loadingText.text = string.Format(DataTable.GetStringText(63), (int)(loadPro * 100));
 
             if (loadPro >= 1 && !LoadSaveData.instance.isLoadingSaveData)
             {
@@ -183,9 +187,9 @@ public class PlayerDataForGame : MonoBehaviour
 
         asyncOp = SceneManager.LoadSceneAsync(sceneIndex, LoadSceneMode.Single);//异步加载场景，Single:不保留现有场景 
 
-        int index = Random.Range(0, LoadJsonFile.knowledgeTableDatas.Count);
-        infoText.text = LoadJsonFile.knowledgeTableDatas[index][2];
-        infoText.transform.GetChild(0).GetComponent<Text>().text = LoadJsonFile.knowledgeTableDatas[index][5];
+        int index = Random.Range(0, DataTable.KnowledgeData.Count);
+        infoText.text = DataTable.KnowledgeData[index][2];
+        infoText.transform.GetChild(0).GetComponent<Text>().text = DataTable.KnowledgeData[index][5];
 
         loadingText.gameObject.SetActive(true);
         infoText.gameObject.SetActive(true);
@@ -283,7 +287,7 @@ public class PlayerDataForGame : MonoBehaviour
             case 0:
                 if (isAdd)
                 {
-                    if (CalculationFightCount() < int.Parse(LoadJsonFile.playerLevelTableDatas[pyData.Level - 1][2]))
+                    if (CalculationFightCount() < int.Parse(DataTable.PlayerLevelData[pyData.Level - 1][2]))
                     {
                         if (!fightHeroId.Contains(cardId))
                         {
@@ -315,7 +319,7 @@ public class PlayerDataForGame : MonoBehaviour
             case 1:
                 if (isAdd)
                 {
-                    if (CalculationFightCount() < int.Parse(LoadJsonFile.playerLevelTableDatas[pyData.Level - 1][2]))
+                    if (CalculationFightCount() < int.Parse(DataTable.PlayerLevelData[pyData.Level - 1][2]))
                     {
                         if (!fightSoLdierId.Contains(cardId))
                         {
@@ -348,7 +352,7 @@ public class PlayerDataForGame : MonoBehaviour
             case 2:
                 if (isAdd)
                 {
-                    if (CalculationFightCount() < int.Parse(LoadJsonFile.playerLevelTableDatas[pyData.Level - 1][2]))
+                    if (CalculationFightCount() < int.Parse(DataTable.PlayerLevelData[pyData.Level - 1][2]))
                     {
                         if (!fightTowerId.Contains(cardId))
                         {
@@ -381,7 +385,7 @@ public class PlayerDataForGame : MonoBehaviour
             case 3:
                 if (isAdd)
                 {
-                    if (CalculationFightCount() < int.Parse(LoadJsonFile.playerLevelTableDatas[pyData.Level - 1][2]))
+                    if (CalculationFightCount() < int.Parse(DataTable.PlayerLevelData[pyData.Level - 1][2]))
                     {
                         if (!fightTrapId.Contains(cardId))
                         {
@@ -414,7 +418,7 @@ public class PlayerDataForGame : MonoBehaviour
             case 4:
                 if (isAdd)
                 {
-                    if (CalculationFightCount() < int.Parse(LoadJsonFile.playerLevelTableDatas[pyData.Level - 1][2]))
+                    if (CalculationFightCount() < int.Parse(DataTable.PlayerLevelData[pyData.Level - 1][2]))
                     {
                         if (!fightSpellId.Contains(cardId))
                         {

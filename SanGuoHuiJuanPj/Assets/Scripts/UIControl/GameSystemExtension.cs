@@ -57,8 +57,8 @@ public static class GameSystemExtension
 
     private static List<T> PickMap<T>(this IEnumerable<T> list) where T : IWeightElement
     {
-        var weightElements = list as T[] ?? list.ToArray();
-        if (!weightElements.Any())
+        var weightElements = list.Where(obj => obj.Weight > 0).ToArray();
+        if (weightElements.Length == 0)
             throw new InvalidOperationException($"{nameof(GameSystemExtension)}.{nameof(Pick)}:权重元素为空！");
         //声明票根
         var ticket = 0;
@@ -98,13 +98,13 @@ public static class GameSystemExtension
         switch (card.typeIndex)
         {
             case 0 : 
-                force = int.Parse(LoadJsonFile.heroTableDatas[card.id][6]);
+                force = int.Parse(DataTable.HeroData[card.id][6]);
                 break;
             case 2 :
-                force = int.Parse(LoadJsonFile.towerTableDatas[card.id][15]);
+                force = int.Parse(DataTable.TowerData[card.id][15]);
                 break;
             case 3 :
-                force = int.Parse(LoadJsonFile.trapTableDatas[card.id][14]);
+                force = int.Parse(DataTable.TrapData[card.id][14]);
                 break;
         }
         return force == forceId && (card.level > 0 || card.chips > 0) && card.isFight > 0;

@@ -1,0 +1,86 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &3476264747875985998
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3476264747875985992}
+  - component: {fileID: -3341428051332624726}
+  m_Layer: 0
+  m_Name: DataTable
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3476264747875985992
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3476264747875985998}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &-3341428051332624726
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3476264747875985998}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b24c1c2cf2bc08541969411947a62cc6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerInitialTable: {fileID: 0}
+  assetTable: {fileID: 0}
+  heroTable: {fileID: 0}
+  playerLevelTable: {fileID: 0}
+  soldierTable: {fileID: 0}
+  towerTable: {fileID: 0}
+  classTable: {fileID: 0}
+  upGradeTable: {fileID: 0}
+  trapTable: {fileID: 0}
+  spellTable: {fileID: 0}
+  warChestTable: {fileID: 0}
+  warTable: {fileID: 0}
+  cityLevelTable: {fileID: 0}
+  pointTable: {fileID: 0}
+  battleEventTable: {fileID: 0}
+  enemyTable: {fileID: 0}
+  enemyUnitTable: {fileID: 0}
+  storyTable: {fileID: 0}
+  storyRTable: {fileID: 0}
+  testTable: {fileID: 0}
+  testRTable: {fileID: 0}
+  encounterTable: {fileID: 0}
+  shoppingTable: {fileID: 0}
+  choseWarTable: {fileID: 0}
+  guideTable: {fileID: 0}
+  knowledgeTable: {fileID: 0}
+  rCodeTable: {fileID: 0}
+  tiLiStoreTable: {fileID: 0}
+  enemyBOSSTable: {fileID: 0}
+  stringTextTable: {fileID: 0}
+  numParametersTable: {fileID: 0}
+  jiBanTable: {fileID: 0}
+  shiLiTable: {fileID: 0}
+  baYeDiTuTable: {fileID: 0}
+  baYeShiJianTable: {fileID: 0}
+  baYeBattleTable: {fileID: 0}
+  baYeRenWuTable: {fileID: 0}
+  storyPoolTable: {fileID: 0}
+  storyIdTable: {fileID: 0}
+  baYeTVTable: {fileID: 0}
+  baYeNameTable: {fileID: 0}

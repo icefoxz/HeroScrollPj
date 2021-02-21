@@ -116,7 +116,7 @@ public class TimeSystemControl : MonoBehaviour
         isJiuTanReady = true;
 
         isCanGetBox1 = false;
-        openNeedSeconds1 = LoadJsonFile.GetGameValue(1);
+        openNeedSeconds1 = DataTable.GetGameValue(1);
         PlayerPrefs.SetInt(fBoxOpenNeedTimes1, openNeedSeconds1);
 
         openFreeBoxTimeLong1 = 0;
@@ -130,11 +130,11 @@ public class TimeSystemControl : MonoBehaviour
         PlayerPrefs.SetString(freeBoxOpenTime2, "0");
 
         //isNeedHuiFuTiLi = false;
-        PlayerPrefs.SetInt(staminaStr, int.Parse(LoadJsonFile.assetTableDatas[2].startValue));
+        PlayerPrefs.SetInt(staminaStr, int.Parse(DataTable.AssetData[2][2]));//startValue
         //tiLiHfTimeLong = 0;
         PlayerPrefs.SetInt(tiLiHuiFuNeedTimes, 0);
         PlayerPrefs.SetString(tiLiHuiFuTime, "0");
-        maxStaminaNum = int.Parse(LoadJsonFile.assetTableDatas[2].startValue);
+        maxStaminaNum = int.Parse(DataTable.AssetData[2][2]);//startValue
         isNeedHuiFuTiLi = (PlayerPrefs.GetInt(staminaStr) < maxStaminaNum);
         tiLiHfTimeLong = long.Parse(PlayerPrefs.GetString(tiLiHuiFuTime));
 
@@ -149,9 +149,9 @@ public class TimeSystemControl : MonoBehaviour
     //每次进入游戏对开启时间进行初始化
     private void StartGameToInitOpenTime()
     {
-        JiuTanTimeGapSecs = LoadJsonFile.GetGameValue(0);  //宝箱开启时间
-        openNeedSeconds1 = LoadJsonFile.GetGameValue(1);
-        openNeedSeconds2 = LoadJsonFile.GetGameValue(2);
+        JiuTanTimeGapSecs = DataTable.GetGameValue(0);  //宝箱开启时间
+        openNeedSeconds1 = DataTable.GetGameValue(1);
+        openNeedSeconds2 = DataTable.GetGameValue(2);
 
         isCanGetBox1 = (PlayerPrefs.GetInt(fBoxOpenNeedTimes1) <= 0);
         long.TryParse(PlayerPrefs.GetString(freeBoxOpenTime1), out openFreeBoxTimeLong1);
@@ -161,7 +161,7 @@ public class TimeSystemControl : MonoBehaviour
 
         //openJinNangTimeLong = long.Parse(PlayerPrefs.GetString(jinNangOpenTime));
 
-        maxStaminaNum = int.Parse(LoadJsonFile.assetTableDatas[2].startValue);
+        maxStaminaNum = int.Parse(DataTable.AssetData[2][2]);//startValue
         isNeedHuiFuTiLi = (PlayerPrefs.GetInt(staminaStr) < maxStaminaNum);
         long.TryParse(PlayerPrefs.GetString(tiLiHuiFuTime), out tiLiHfTimeLong);
     }
@@ -363,7 +363,7 @@ public class TimeSystemControl : MonoBehaviour
         else
         {
             secondsRemaining = totalTimesNums % oneTiLiHfSeconds;
-            int nowStaminaNum = (int.Parse(LoadJsonFile.assetTableDatas[2].startValue) * oneTiLiHfSeconds - totalTimesNums) / oneTiLiHfSeconds;
+            int nowStaminaNum = (int.Parse(DataTable.AssetData[2][2]) * oneTiLiHfSeconds - totalTimesNums) / oneTiLiHfSeconds;
             PlayerPrefs.SetInt(staminaStr, nowStaminaNum);
         }
         if (isOpenMainScene)

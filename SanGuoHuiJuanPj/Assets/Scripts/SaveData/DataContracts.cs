@@ -6,6 +6,18 @@ using Newtonsoft.Json;
 
 #region 玩家数据相关类
 
+public enum SignalRDataTypes
+{
+    Message,
+    Generic
+}
+
+public interface ISignalRField
+{
+    SignalRDataTypes DataTypes { get; }
+    string Method { get; }
+    string JData { get; }
+}
 
 /// <summary>
 /// 玩家账户信息存档

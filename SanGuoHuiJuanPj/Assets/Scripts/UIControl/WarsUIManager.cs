@@ -170,7 +170,7 @@ public class WarsUIManager : MonoBehaviour
         currentEvent = EventTypes.Generic;
         //尝试展示指引
         ShowOrHideGuideObj(0, true);
-        InitShowParentGuanQia(LoadJsonFile.warTableDatas[PlayerDataForGame.instance.selectedWarId][3]);
+        InitShowParentGuanQia(DataTable.WarData[PlayerDataForGame.instance.selectedWarId][3]);
     }
 
     int selectParentIndex = -1;
@@ -193,8 +193,8 @@ public class WarsUIManager : MonoBehaviour
         }
 
         //最后一关
-        string str = LoadJsonFile.pointTableDatas[parentGuanQiaId][1];
-        if (nowGuanQiaIndex >= int.Parse(LoadJsonFile.warTableDatas[PlayerDataForGame.instance.selectedWarId][4]))
+        string str = DataTable.PointData[parentGuanQiaId][1];
+        if (nowGuanQiaIndex >= int.Parse(DataTable.WarData[PlayerDataForGame.instance.selectedWarId][4]))
         {
             str = "";
         }
@@ -207,23 +207,23 @@ public class WarsUIManager : MonoBehaviour
             if (arrs[i] != "")
             {
                 int guanQiaId = int.Parse(arrs[i]);
-                int eventId = int.Parse(LoadJsonFile.pointTableDatas[guanQiaId][4]);
+                int eventId = int.Parse(DataTable.PointData[guanQiaId][4]);
                 GameObject obj = Instantiate(guanQiaPreObj, point0Tran);
                 obj.transform.localScale = new Vector3(0.8f, 0.8f, 1);
-                var eventType = int.Parse(LoadJsonFile.pointTableDatas[guanQiaId][3]);
+                var eventType = int.Parse(DataTable.PointData[guanQiaId][3]);
                 if (IsBattle(eventType))
                 {
-                    obj.transform.GetChild(1).GetChild(0).GetComponent<Text>().text = LoadJsonFile.pointTableDatas[guanQiaId][2];
+                    obj.transform.GetChild(1).GetChild(0).GetComponent<Text>().text = DataTable.PointData[guanQiaId][2];
                     obj.transform.GetChild(1).GetChild(0).gameObject.SetActive(true);
                     if (eventType != 7)
                     {
                         obj.transform.GetChild(1).GetChild(1).GetComponent<Image>().sprite = GameResources.GuanQiaEventImg[(eventType == 1 ? 0 : 1)];
-                        obj.transform.GetChild(1).GetChild(1).GetChild(0).GetComponent<Text>().text = LoadJsonFile.pointTableDatas[guanQiaId][9];
-                        obj.transform.GetChild(1).GetChild(1).GetChild(0).GetComponent<Text>().fontSize = (LoadJsonFile.pointTableDatas[guanQiaId][9].Length > 2 ? 45 : 50);
+                        obj.transform.GetChild(1).GetChild(1).GetChild(0).GetComponent<Text>().text = DataTable.PointData[guanQiaId][9];
+                        obj.transform.GetChild(1).GetChild(1).GetChild(0).GetComponent<Text>().fontSize = (DataTable.PointData[guanQiaId][9].Length > 2 ? 45 : 50);
                         obj.transform.GetChild(1).GetChild(1).gameObject.SetActive(true);
                     }
                 }
-                obj.transform.GetChild(1).GetComponent<Image>().sprite = GameResources.GuanQiaEventImg[int.Parse(LoadJsonFile.pointTableDatas[guanQiaId][6])];
+                obj.transform.GetChild(1).GetComponent<Image>().sprite = GameResources.GuanQiaEventImg[int.Parse(DataTable.PointData[guanQiaId][6])];
 
                 childsTranform.Add(obj.transform);
                 //暂时不能选择后面的子关卡
@@ -272,7 +272,7 @@ public class WarsUIManager : MonoBehaviour
         levelIntroText.text = "";
         levelIntroText.color = new Color(levelIntroText.color.r, levelIntroText.color.g, levelIntroText.color.b, 0);
         levelIntroText.DOFade(1, 3f);
-        levelIntroText.DOText(("\u2000\u2000\u2000\u2000" + LoadJsonFile.pointTableDatas[guanQiaId][5]), 3f).SetEase(Ease.Linear).SetAutoKill(false);
+        levelIntroText.DOText(("\u2000\u2000\u2000\u2000" + DataTable.PointData[guanQiaId][5]), 3f).SetEase(Ease.Linear).SetAutoKill(false);
     }
 
     //战役结束
@@ -329,7 +329,7 @@ public class WarsUIManager : MonoBehaviour
             PlayerDataForGame.instance.warsData.baYe.gold = GoldForCity;
         }
 
-        int guanQiaSum = int.Parse(LoadJsonFile.warTableDatas[PlayerDataForGame.instance.selectedWarId][4]);
+        int guanQiaSum = int.Parse(DataTable.WarData[PlayerDataForGame.instance.selectedWarId][4]);
         if (treasureChestNums > 0)
         {
             rewardMap.Trade(2, treasureChestNums); //index2是宝箱图
@@ -352,7 +352,7 @@ public class WarsUIManager : MonoBehaviour
     private void InitShowParentGuanQia(string str)
     {
         passedGuanQiaNums++;
-        if (passedGuanQiaNums >= int.Parse(LoadJsonFile.warTableDatas[PlayerDataForGame.instance.selectedWarId][4]))
+        if (passedGuanQiaNums >= int.Parse(DataTable.WarData[PlayerDataForGame.instance.selectedWarId][4]))
         {//最后一关
             str = "";
         }
@@ -374,28 +374,28 @@ public class WarsUIManager : MonoBehaviour
                 if (arrs[i] != "")
                 {
                     int guanQiaId = int.Parse(arrs[i]);
-                    int eventType = int.Parse(LoadJsonFile.pointTableDatas[guanQiaId][3]);
-                    int eventId = int.Parse(LoadJsonFile.pointTableDatas[guanQiaId][4]);
+                    int eventType = int.Parse(DataTable.PointData[guanQiaId][3]);
+                    int eventId = int.Parse(DataTable.PointData[guanQiaId][4]);
                     GameObject obj = Instantiate(guanQiaPreObj, point1Tran);
                     obj.transform.GetChild(1).GetComponent<Image>().sprite =
                         GameResources.GuanQiaEventImg[
-                            int.Parse(LoadJsonFile.pointTableDatas[guanQiaId][6])];
+                            int.Parse(DataTable.PointData[guanQiaId][6])];
                     if (IsBattle(eventType))  //战斗关卡城池名
                     {
-                        obj.transform.GetChild(1).GetChild(0).GetComponent<Text>().text = LoadJsonFile.pointTableDatas[guanQiaId][2];
+                        obj.transform.GetChild(1).GetChild(0).GetComponent<Text>().text = DataTable.PointData[guanQiaId][2];
                         obj.transform.GetChild(1).GetChild(0).gameObject.SetActive(true);
                         if (eventType != 7)
                         {
                             obj.transform.GetChild(1).GetChild(1).GetComponent<Image>().sprite = GameResources.GuanQiaEventImg[(eventType == 1 ? 0 : 1)];
-                            obj.transform.GetChild(1).GetChild(1).GetChild(0).GetComponent<Text>().text = LoadJsonFile.pointTableDatas[guanQiaId][9];
-                            obj.transform.GetChild(1).GetChild(1).GetChild(0).GetComponent<Text>().fontSize = (LoadJsonFile.pointTableDatas[guanQiaId][9].Length > 2 ? 45 : 50);
+                            obj.transform.GetChild(1).GetChild(1).GetChild(0).GetComponent<Text>().text = DataTable.PointData[guanQiaId][9];
+                            obj.transform.GetChild(1).GetChild(1).GetChild(0).GetComponent<Text>().fontSize = (DataTable.PointData[guanQiaId][9].Length > 2 ? 45 : 50);
                             obj.transform.GetChild(1).GetChild(1).gameObject.SetActive(true);
                         }
                     }
                     int randArtImg = Random.Range(0, 25);   //随机艺术图
                     obj.transform.GetChild(1).GetComponent<Button>().onClick.AddListener(delegate ()
                     {
-                        startBtn.GetComponentInChildren<Text>().text = IsBattle(eventType) ? LoadJsonFile.GetStringText(53) : LoadJsonFile.GetStringText(54);
+                        startBtn.GetComponentInChildren<Text>().text = IsBattle(eventType) ? DataTable.GetStringText(53) : DataTable.GetStringText(54);
                         startBtn.SetActive(true);
                         SelectOneGuanQia(obj);
                         ChooseParentGuanQia(guanQiaId, randArtImg, obj.transform);
@@ -520,8 +520,8 @@ public class WarsUIManager : MonoBehaviour
         currentEvent = EventTypes.Battle;
         PlayAudioClip(21);
 
-        fightBackImage.sprite = GameResources.BattleBG[int.Parse(LoadJsonFile.pointTableDatas[guanQiaId][7])];
-        int bgmIndex = int.Parse(LoadJsonFile.pointTableDatas[guanQiaId][8]);
+        fightBackImage.sprite = GameResources.BattleBG[int.Parse(DataTable.PointData[guanQiaId][7])];
+        int bgmIndex = int.Parse(DataTable.PointData[guanQiaId][8]);
         AudioController1.instance.isNeedPlayLongMusic = true;
         AudioController1.instance.ChangeAudioClip(audioClipsFightBack[bgmIndex], audioVolumeFightBack[bgmIndex]);
         AudioController1.instance.PlayLongBackMusInit();
@@ -685,7 +685,7 @@ public class WarsUIManager : MonoBehaviour
     //展示关卡前进的云朵动画
     private void ShowClouds()
     {
-        if (passedGuanQiaNums + 1 < int.Parse(LoadJsonFile.warTableDatas[PlayerDataForGame.instance.selectedWarId][4]))
+        if (passedGuanQiaNums + 1 < int.Parse(DataTable.WarData[PlayerDataForGame.instance.selectedWarId][4]))
         {
             if (warCityCloudsObj.activeInHierarchy)
             {
@@ -716,7 +716,7 @@ public class WarsUIManager : MonoBehaviour
         PlayAudioClip(13);
 
         UpdateBattleSchedule();
-        InitShowParentGuanQia(LoadJsonFile.pointTableDatas[indexLastGuanQiaId][1]);
+        InitShowParentGuanQia(DataTable.PointData[indexLastGuanQiaId][1]);
         TongGuanCityPointShow();
         //关闭所有战斗事件的物件
         for (int i = 0; i < eventsWindows.Length; i++)
@@ -735,7 +735,7 @@ public class WarsUIManager : MonoBehaviour
     //给上阵卡牌回血
     private void ReturnToBloodForFightCards()
     {
-        eventsWindows[4].transform.GetChild(1).GetChild(2).GetComponent<Text>().text = LoadJsonFile.GetStringText(55);
+        eventsWindows[4].transform.GetChild(1).GetChild(2).GetComponent<Text>().text = DataTable.GetStringText(55);
         eventsWindows[4].transform.GetChild(1).GetChild(1).gameObject.SetActive(false);
         eventsWindows[4].transform.GetChild(1).GetChild(2).gameObject.SetActive(true);
 
@@ -750,22 +750,18 @@ public class WarsUIManager : MonoBehaviour
     }
 
     //根据权重得到随机id
-    private int BackCardIdByWeightValue(List<List<string>> datas, int wvIndex)
+    private int GetRandomBaseOnWeight(IReadOnlyDictionary<int,IReadOnlyList<string>> data, int weightIndex)
     {
-        int weightValueSum = 0;
-        for (int i = 0; i < datas.Count; i++)
+        return data.Select(map => new WeightElement
         {
-            weightValueSum += int.Parse(datas[i][wvIndex]);
-        }
-        int randNum = Random.Range(0, weightValueSum);
-        int indexTest = 0;
-        while (randNum >= 0)
-        {
-            randNum -= int.Parse(datas[indexTest][wvIndex]);
-            indexTest++;
-        }
-        indexTest -= 1;
-        return indexTest;
+            Id = map.Key,
+            Weight = int.Parse(map.Value[weightIndex])
+        }).Pick().Id;
+    }
+    private class WeightElement : IWeightElement
+    {
+        public int Id { get; set; }
+        public int Weight { get; set; }
     }
 
     //关闭三选的附加方法
@@ -810,7 +806,7 @@ public class WarsUIManager : MonoBehaviour
 
         if (updateMoney != 0 && updateMoney > GoldForCity)
         {
-            PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(56));
+            PlayerDataForGame.instance.ShowStringTips(DataTable.GetStringText(56));
             return false;
         }
         else
@@ -832,77 +828,77 @@ public class WarsUIManager : MonoBehaviour
             for (int i = 0; i < 3; i++)
             {
                 int btnIndex = i;
-                int indexId = BackCardIdByWeightValue(LoadJsonFile.encounterTableDatas, 1);
-                int cardType = int.Parse(LoadJsonFile.encounterTableDatas[indexId][2]);
-                string cardRarity = LoadJsonFile.encounterTableDatas[indexId][3];
-                int cardLevel = int.Parse(LoadJsonFile.encounterTableDatas[indexId][4]);
+                int indexId = GetRandomBaseOnWeight(DataTable.Encounter, 1);
+                int cardType = int.Parse(DataTable.EncounterData[indexId][2]);
+                string cardRarity = DataTable.EncounterData[indexId][3];
+                int cardLevel = int.Parse(DataTable.EncounterData[indexId][4]);
                 int cardId = 0;
                 switch (cardType)
                 {
                     case 0:
-                        cardId = BackIdFromTableByRarity(LoadJsonFile.heroTableDatas, cardRarity);
+                        cardId = RandomPickFromRareClass(DataTable.Hero, cardRarity);
                         woodsList.GetChild(i).GetChild(1).GetComponent<Image>().sprite = re.HeroImg[cardId];
-                        ShowNameTextRules(woodsList.GetChild(i).GetChild(3).GetComponent<Text>(), LoadJsonFile.heroTableDatas[cardId][1]);
+                        ShowNameTextRules(woodsList.GetChild(i).GetChild(3).GetComponent<Text>(), DataTable.HeroData[cardId][1]);
                         //名字颜色
-                        woodsList.GetChild(i).GetChild(3).GetComponent<Text>().color = NameColorChoose(LoadJsonFile.heroTableDatas[cardId][3]);
-                        woodsList.GetChild(i).GetChild(5).GetComponentInChildren<Text>().text = LoadJsonFile.classTableDatas[int.Parse(LoadJsonFile.heroTableDatas[cardId][5])][3];
+                        woodsList.GetChild(i).GetChild(3).GetComponent<Text>().color = NameColorChoose(DataTable.HeroData[cardId][3]);
+                        woodsList.GetChild(i).GetChild(5).GetComponentInChildren<Text>().text = DataTable.ClassData[int.Parse(DataTable.HeroData[cardId][5])][3];
                         //兵种框
                         woodsList.GetChild(i).GetChild(5).GetComponent<Image>().sprite = re.ClassImg[0];
-                        FrameChoose(int.Parse(LoadJsonFile.heroTableDatas[cardId][3]), woodsList.GetChild(i).GetChild(6).GetComponent<Image>());
+                        FrameChoose(int.Parse(DataTable.HeroData[cardId][3]), woodsList.GetChild(i).GetChild(6).GetComponent<Image>());
 
                         woodsList.GetChild(i).GetComponent<Button>().onClick.RemoveAllListeners();
                         woodsList.GetChild(i).GetComponent<Button>().onClick.AddListener(delegate ()
                         {
-                            OnClickToShowShopInfo(btnIndex, LoadJsonFile.classTableDatas[int.Parse(LoadJsonFile.heroTableDatas[cardId][5])][4]);
+                            OnClickToShowShopInfo(btnIndex, DataTable.ClassData[int.Parse(DataTable.HeroData[cardId][5])][4]);
                         });
                         break;
                     case 1:
-                        cardId = BackIdFromTableByRarity(LoadJsonFile.soldierTableDatas, cardRarity);
-                        woodsList.GetChild(i).GetChild(1).GetComponent<Image>().sprite = re.FuZhuImg[int.Parse(LoadJsonFile.soldierTableDatas[cardId][13])];
-                        ShowNameTextRules(woodsList.GetChild(i).GetChild(3).GetComponent<Text>(), LoadJsonFile.soldierTableDatas[cardId][1]);
+                        cardId = RandomPickFromRareClass(DataTable.Soldier, cardRarity);
+                        woodsList.GetChild(i).GetChild(1).GetComponent<Image>().sprite = re.FuZhuImg[int.Parse(DataTable.SoldierData[cardId][13])];
+                        ShowNameTextRules(woodsList.GetChild(i).GetChild(3).GetComponent<Text>(), DataTable.SoldierData[cardId][1]);
                         //名字颜色
-                        woodsList.GetChild(i).GetChild(3).GetComponent<Text>().color = NameColorChoose(LoadJsonFile.soldierTableDatas[cardId][3]);
-                        woodsList.GetChild(i).GetChild(5).GetComponentInChildren<Text>().text = LoadJsonFile.classTableDatas[int.Parse(LoadJsonFile.soldierTableDatas[cardId][5])][3];
+                        woodsList.GetChild(i).GetChild(3).GetComponent<Text>().color = NameColorChoose(DataTable.SoldierData[cardId][3]);
+                        woodsList.GetChild(i).GetChild(5).GetComponentInChildren<Text>().text = DataTable.ClassData[int.Parse(DataTable.SoldierData[cardId][5])][3];
                         //兵种框
                         woodsList.GetChild(i).GetChild(5).GetComponent<Image>().sprite = re.ClassImg[1];
-                        FrameChoose(int.Parse(LoadJsonFile.soldierTableDatas[cardId][3]),
+                        FrameChoose(int.Parse(DataTable.SoldierData[cardId][3]),
                             woodsList.GetChild(i).GetChild(6).GetComponent<Image>());
                         woodsList.GetChild(i).GetComponent<Button>().onClick.RemoveAllListeners();
                         woodsList.GetChild(i).GetComponent<Button>().onClick.AddListener(delegate ()
                         {
-                            OnClickToShowShopInfo(btnIndex, LoadJsonFile.classTableDatas[int.Parse(LoadJsonFile.soldierTableDatas[cardId][5])][4]);
+                            OnClickToShowShopInfo(btnIndex, DataTable.ClassData[int.Parse(DataTable.SoldierData[cardId][5])][4]);
                         });
                         break;
                     case 2:
-                        cardId = BackIdFromTableByRarity(LoadJsonFile.towerTableDatas, cardRarity);
-                        woodsList.GetChild(i).GetChild(1).GetComponent<Image>().sprite = re.FuZhuImg[int.Parse(LoadJsonFile.towerTableDatas[cardId][10])];
-                        ShowNameTextRules(woodsList.GetChild(i).GetChild(3).GetComponent<Text>(), LoadJsonFile.towerTableDatas[cardId][1]);
+                        cardId = RandomPickFromRareClass(DataTable.Tower, cardRarity);
+                        woodsList.GetChild(i).GetChild(1).GetComponent<Image>().sprite = re.FuZhuImg[int.Parse(DataTable.TowerData[cardId][10])];
+                        ShowNameTextRules(woodsList.GetChild(i).GetChild(3).GetComponent<Text>(), DataTable.TowerData[cardId][1]);
                         //名字颜色
-                        woodsList.GetChild(i).GetChild(3).GetComponent<Text>().color = NameColorChoose(LoadJsonFile.towerTableDatas[cardId][3]);
-                        woodsList.GetChild(i).GetChild(5).GetComponentInChildren<Text>().text = LoadJsonFile.towerTableDatas[cardId][5];
+                        woodsList.GetChild(i).GetChild(3).GetComponent<Text>().color = NameColorChoose(DataTable.TowerData[cardId][3]);
+                        woodsList.GetChild(i).GetChild(5).GetComponentInChildren<Text>().text = DataTable.TowerData[cardId][5];
                         //兵种框
                         woodsList.GetChild(i).GetChild(5).GetComponent<Image>().sprite = re.ClassImg[1];
-                        FrameChoose(int.Parse(LoadJsonFile.towerTableDatas[cardId][3]), woodsList.GetChild(i).GetChild(6).GetComponent<Image>());
+                        FrameChoose(int.Parse(DataTable.TowerData[cardId][3]), woodsList.GetChild(i).GetChild(6).GetComponent<Image>());
                         woodsList.GetChild(i).GetComponent<Button>().onClick.RemoveAllListeners();
                         woodsList.GetChild(i).GetComponent<Button>().onClick.AddListener(delegate ()
                         {
-                            OnClickToShowShopInfo(btnIndex, LoadJsonFile.towerTableDatas[cardId][12]);
+                            OnClickToShowShopInfo(btnIndex, DataTable.TowerData[cardId][12]);
                         });
                         break;
                     case 3:
-                        cardId = BackIdFromTableByRarity(LoadJsonFile.trapTableDatas, cardRarity);
-                        woodsList.GetChild(i).GetChild(1).GetComponent<Image>().sprite = re.FuZhuImg[int.Parse(LoadJsonFile.trapTableDatas[cardId][8])];
-                        ShowNameTextRules(woodsList.GetChild(i).GetChild(3).GetComponent<Text>(), LoadJsonFile.trapTableDatas[cardId][1]);
+                        cardId = RandomPickFromRareClass(DataTable.Trap, cardRarity);
+                        woodsList.GetChild(i).GetChild(1).GetComponent<Image>().sprite = re.FuZhuImg[int.Parse(DataTable.TrapData[cardId][8])];
+                        ShowNameTextRules(woodsList.GetChild(i).GetChild(3).GetComponent<Text>(), DataTable.TrapData[cardId][1]);
                         //名字颜色
-                        woodsList.GetChild(i).GetChild(3).GetComponent<Text>().color = NameColorChoose(LoadJsonFile.trapTableDatas[cardId][3]);
-                        woodsList.GetChild(i).GetChild(5).GetComponentInChildren<Text>().text = LoadJsonFile.trapTableDatas[cardId][5];
+                        woodsList.GetChild(i).GetChild(3).GetComponent<Text>().color = NameColorChoose(DataTable.TrapData[cardId][3]);
+                        woodsList.GetChild(i).GetChild(5).GetComponentInChildren<Text>().text = DataTable.TrapData[cardId][5];
                         //兵种框
                         woodsList.GetChild(i).GetChild(5).GetComponent<Image>().sprite = re.ClassImg[1];
-                        FrameChoose(int.Parse(LoadJsonFile.trapTableDatas[cardId][3]), woodsList.GetChild(i).GetChild(6).GetComponent<Image>());
+                        FrameChoose(int.Parse(DataTable.TrapData[cardId][3]), woodsList.GetChild(i).GetChild(6).GetComponent<Image>());
                         woodsList.GetChild(i).GetComponent<Button>().onClick.RemoveAllListeners();
                         woodsList.GetChild(i).GetComponent<Button>().onClick.AddListener(delegate ()
                         {
-                            OnClickToShowShopInfo(btnIndex, LoadJsonFile.trapTableDatas[cardId][11]);
+                            OnClickToShowShopInfo(btnIndex, DataTable.TrapData[cardId][11]);
                         });
                         break;
                     case 4:
@@ -934,17 +930,17 @@ public class WarsUIManager : MonoBehaviour
                         //if (!AdController.instance.ShowVideo(
                         GetOrBuyCards(true, needMoney, cardType, cardId, cardLevel, btnIndex);
                         getBtnTran.GetChild(2).gameObject.SetActive(false);
-                        PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(57));
+                        PlayerDataForGame.instance.ShowStringTips(DataTable.GetStringText(57));
                         adBtn.enabled = true;
                     }, () =>
                     {
-                        PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(6));
+                        PlayerDataForGame.instance.ShowStringTips(DataTable.GetStringText(6));
                         adBtn.enabled = true;
                     }));
                 }
                 else
                 {
-                    needMoney = int.Parse(LoadJsonFile.encounterTableDatas[indexId][5]);
+                    needMoney = int.Parse(DataTable.EncounterData[indexId][5]);
                     getBtnTran.GetChild(1).GetComponent<Text>().text = needMoney.ToString();
                     getBtnTran.GetChild(1).gameObject.SetActive(true);
                     getBtnTran.GetChild(2).gameObject.SetActive(false);
@@ -1050,7 +1046,7 @@ public class WarsUIManager : MonoBehaviour
         {
             adBtn.gameObject.SetActive(false);
             UpdateQiYvWoods();
-        }, () => PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(6)));
+        }, () => PlayerDataForGame.instance.ShowStringTips(DataTable.GetStringText(6)));
         adBtn.enabled = true;
     }
 
@@ -1058,26 +1054,26 @@ public class WarsUIManager : MonoBehaviour
     private void UpdateQiYvWoods()
     {
         var resources = GameResources;
-        int indexId = BackCardIdByWeightValue(LoadJsonFile.encounterTableDatas, 1);
-        int cardType = int.Parse(LoadJsonFile.encounterTableDatas[indexId][2]);
-        string cardRarity = LoadJsonFile.encounterTableDatas[indexId][3];
-        int cardLevel = int.Parse(LoadJsonFile.encounterTableDatas[indexId][4]);
+        int indexId = GetRandomBaseOnWeight(DataTable.Encounter, 1);
+        int cardType = int.Parse(DataTable.EncounterData[indexId][2]);
+        string cardRarity = DataTable.EncounterData[indexId][3];
+        int cardLevel = int.Parse(DataTable.EncounterData[indexId][4]);
         Transform woodsList = eventsWindows[3].transform.GetChild(0).GetChild(1);
         switch (cardType)
         {
             case 0:
                 for (int i = 0; i < 3; i++)
                 {
-                    int cardId = BackIdFromTableByRarity(LoadJsonFile.heroTableDatas, cardRarity);
+                    int cardId = RandomPickFromRareClass(DataTable.Hero, cardRarity);
                     woodsList.GetChild(i).GetChild(1).GetComponent<Image>().sprite = resources.HeroImg[cardId];
-                    ShowNameTextRules(woodsList.GetChild(i).GetChild(3).GetComponent<Text>(), LoadJsonFile.heroTableDatas[cardId][1]);
+                    ShowNameTextRules(woodsList.GetChild(i).GetChild(3).GetComponent<Text>(), DataTable.HeroData[cardId][1]);
                     //名字颜色
-                    woodsList.GetChild(i).GetChild(3).GetComponent<Text>().color = NameColorChoose(LoadJsonFile.heroTableDatas[cardId][3]);
+                    woodsList.GetChild(i).GetChild(3).GetComponent<Text>().color = NameColorChoose(DataTable.HeroData[cardId][3]);
                     woodsList.GetChild(i).GetChild(4).GetComponent<Image>().sprite = resources.GradeImg[cardLevel];
-                    woodsList.GetChild(i).GetChild(5).GetComponentInChildren<Text>().text = LoadJsonFile.classTableDatas[int.Parse(LoadJsonFile.heroTableDatas[cardId][5])][3];
+                    woodsList.GetChild(i).GetChild(5).GetComponentInChildren<Text>().text = DataTable.ClassData[int.Parse(DataTable.HeroData[cardId][5])][3];
                     //兵种框
                     woodsList.GetChild(i).GetChild(5).GetComponent<Image>().sprite = resources.ClassImg[0];
-                    FrameChoose(int.Parse(LoadJsonFile.heroTableDatas[cardId][3]),
+                    FrameChoose(int.Parse(DataTable.HeroData[cardId][3]),
                         woodsList.GetChild(i).GetChild(6).GetComponent<Image>());
                     Transform getBtnTran = woodsList.GetChild(i).GetChild(9);
                     getBtnTran.GetChild(0).gameObject.SetActive(true);
@@ -1094,23 +1090,23 @@ public class WarsUIManager : MonoBehaviour
                     woodsList.GetChild(i).GetComponent<Button>().onClick.RemoveAllListeners();
                     woodsList.GetChild(i).GetComponent<Button>().onClick.AddListener(delegate ()
                     {
-                        OnClickToShowShopInfo(btnIndex, LoadJsonFile.classTableDatas[int.Parse(LoadJsonFile.heroTableDatas[cardId][5])][4]);
+                        OnClickToShowShopInfo(btnIndex, DataTable.ClassData[int.Parse(DataTable.HeroData[cardId][5])][4]);
                     });
                 }
                 break;
             case 1:
                 for (int i = 0; i < 3; i++)
                 {
-                    int cardId = BackIdFromTableByRarity(LoadJsonFile.soldierTableDatas, cardRarity);
-                    woodsList.GetChild(i).GetChild(1).GetComponent<Image>().sprite = resources.FuZhuImg[int.Parse(LoadJsonFile.soldierTableDatas[cardId][13])];
-                    ShowNameTextRules(woodsList.GetChild(i).GetChild(3).GetComponent<Text>(), LoadJsonFile.soldierTableDatas[cardId][1]);
+                    int cardId = RandomPickFromRareClass(DataTable.Soldier, cardRarity);
+                    woodsList.GetChild(i).GetChild(1).GetComponent<Image>().sprite = resources.FuZhuImg[int.Parse(DataTable.SoldierData[cardId][13])];
+                    ShowNameTextRules(woodsList.GetChild(i).GetChild(3).GetComponent<Text>(), DataTable.SoldierData[cardId][1]);
                     //名字颜色
-                    woodsList.GetChild(i).GetChild(3).GetComponent<Text>().color = NameColorChoose(LoadJsonFile.soldierTableDatas[cardId][3]);
+                    woodsList.GetChild(i).GetChild(3).GetComponent<Text>().color = NameColorChoose(DataTable.SoldierData[cardId][3]);
                     woodsList.GetChild(i).GetChild(4).GetComponent<Image>().sprite = resources.GradeImg[cardLevel];
-                    woodsList.GetChild(i).GetChild(5).GetComponentInChildren<Text>().text = LoadJsonFile.classTableDatas[int.Parse(LoadJsonFile.soldierTableDatas[cardId][5])][3];
+                    woodsList.GetChild(i).GetChild(5).GetComponentInChildren<Text>().text = DataTable.ClassData[int.Parse(DataTable.SoldierData[cardId][5])][3];
                     //兵种框
                     woodsList.GetChild(i).GetChild(5).GetComponent<Image>().sprite = resources.ClassImg[1];
-                    FrameChoose(int.Parse(LoadJsonFile.soldierTableDatas[cardId][3]), woodsList.GetChild(i).GetChild(6).GetComponent<Image>());
+                    FrameChoose(int.Parse(DataTable.SoldierData[cardId][3]), woodsList.GetChild(i).GetChild(6).GetComponent<Image>());
                     Transform getBtnTran = woodsList.GetChild(i).GetChild(9);
                     getBtnTran.GetChild(0).gameObject.SetActive(true);
                     getBtnTran.GetChild(1).gameObject.SetActive(false);
@@ -1126,22 +1122,22 @@ public class WarsUIManager : MonoBehaviour
                     woodsList.GetChild(i).GetComponent<Button>().onClick.RemoveAllListeners();
                     woodsList.GetChild(i).GetComponent<Button>().onClick.AddListener(delegate ()
                     {
-                        OnClickToShowShopInfo(btnIndex, LoadJsonFile.classTableDatas[int.Parse(LoadJsonFile.soldierTableDatas[cardId][5])][4]);
+                        OnClickToShowShopInfo(btnIndex, DataTable.ClassData[int.Parse(DataTable.SoldierData[cardId][5])][4]);
                     });
                 }
                 break;
             case 2:
                 for (int i = 0; i < 3; i++)
                 {
-                    int cardId = BackIdFromTableByRarity(LoadJsonFile.towerTableDatas, cardRarity);
+                    int cardId = RandomPickFromRareClass(DataTable.Tower, cardRarity);
                     woodsList.GetChild(i).GetChild(1).GetComponent<Image>().sprite =
-                        resources.FuZhuImg[int.Parse(LoadJsonFile.towerTableDatas[cardId][10])];
-                    ShowNameTextRules(woodsList.GetChild(i).GetChild(3).GetComponent<Text>(), LoadJsonFile.towerTableDatas[cardId][1]);
+                        resources.FuZhuImg[int.Parse(DataTable.TowerData[cardId][10])];
+                    ShowNameTextRules(woodsList.GetChild(i).GetChild(3).GetComponent<Text>(), DataTable.TowerData[cardId][1]);
                     //名字颜色
-                    woodsList.GetChild(i).GetChild(3).GetComponent<Text>().color = NameColorChoose(LoadJsonFile.towerTableDatas[cardId][3]);
+                    woodsList.GetChild(i).GetChild(3).GetComponent<Text>().color = NameColorChoose(DataTable.TowerData[cardId][3]);
                     woodsList.GetChild(i).GetChild(4).GetComponent<Image>().sprite = resources.GradeImg[cardLevel];
-                    woodsList.GetChild(i).GetChild(5).GetComponentInChildren<Text>().text = LoadJsonFile.towerTableDatas[cardId][5];
-                    FrameChoose(int.Parse(LoadJsonFile.towerTableDatas[cardId][3]), woodsList.GetChild(i).GetChild(6).GetComponent<Image>());
+                    woodsList.GetChild(i).GetChild(5).GetComponentInChildren<Text>().text = DataTable.TowerData[cardId][5];
+                    FrameChoose(int.Parse(DataTable.TowerData[cardId][3]), woodsList.GetChild(i).GetChild(6).GetComponent<Image>());
                     //兵种框
                     woodsList.GetChild(i).GetChild(5).GetComponent<Image>().sprite = resources.ClassImg[1];
                     Transform getBtnTran = woodsList.GetChild(i).GetChild(9);
@@ -1159,23 +1155,23 @@ public class WarsUIManager : MonoBehaviour
                     woodsList.GetChild(i).GetComponent<Button>().onClick.RemoveAllListeners();
                     woodsList.GetChild(i).GetComponent<Button>().onClick.AddListener(delegate ()
                     {
-                        OnClickToShowShopInfo(btnIndex, LoadJsonFile.towerTableDatas[cardId][12]);
+                        OnClickToShowShopInfo(btnIndex, DataTable.TowerData[cardId][12]);
                     });
                 }
                 break;
             case 3:
                 for (int i = 0; i < 3; i++)
                 {
-                    int cardId = BackIdFromTableByRarity(LoadJsonFile.trapTableDatas, cardRarity);
-                    woodsList.GetChild(i).GetChild(1).GetComponent<Image>().sprite = resources.FuZhuImg[int.Parse(LoadJsonFile.trapTableDatas[cardId][8])];
-                    ShowNameTextRules(woodsList.GetChild(i).GetChild(3).GetComponent<Text>(), LoadJsonFile.trapTableDatas[cardId][1]);
+                    int cardId = RandomPickFromRareClass(DataTable.Trap, cardRarity);
+                    woodsList.GetChild(i).GetChild(1).GetComponent<Image>().sprite = resources.FuZhuImg[int.Parse(DataTable.TrapData[cardId][8])];
+                    ShowNameTextRules(woodsList.GetChild(i).GetChild(3).GetComponent<Text>(), DataTable.TrapData[cardId][1]);
                     //名字颜色
-                    woodsList.GetChild(i).GetChild(3).GetComponent<Text>().color = NameColorChoose(LoadJsonFile.trapTableDatas[cardId][3]);
+                    woodsList.GetChild(i).GetChild(3).GetComponent<Text>().color = NameColorChoose(DataTable.TrapData[cardId][3]);
                     woodsList.GetChild(i).GetChild(4).GetComponent<Image>().sprite = resources.GradeImg[cardLevel];
-                    woodsList.GetChild(i).GetChild(5).GetComponentInChildren<Text>().text = LoadJsonFile.trapTableDatas[cardId][5];
+                    woodsList.GetChild(i).GetChild(5).GetComponentInChildren<Text>().text = DataTable.TrapData[cardId][5];
                     //兵种框
                     woodsList.GetChild(i).GetChild(5).GetComponent<Image>().sprite = resources.ClassImg[1];
-                    FrameChoose(int.Parse(LoadJsonFile.trapTableDatas[cardId][3]), woodsList.GetChild(i).GetChild(6).GetComponent<Image>());
+                    FrameChoose(int.Parse(DataTable.TrapData[cardId][3]), woodsList.GetChild(i).GetChild(6).GetComponent<Image>());
                     Transform getBtnTran = woodsList.GetChild(i).GetChild(9);
                     getBtnTran.GetChild(0).gameObject.SetActive(true);
                     getBtnTran.GetChild(1).gameObject.SetActive(false);
@@ -1191,7 +1187,7 @@ public class WarsUIManager : MonoBehaviour
                     woodsList.GetChild(i).GetComponent<Button>().onClick.RemoveAllListeners();
                     woodsList.GetChild(i).GetComponent<Button>().onClick.AddListener(delegate ()
                     {
-                        OnClickToShowShopInfo(btnIndex, LoadJsonFile.trapTableDatas[cardId][11]);
+                        OnClickToShowShopInfo(btnIndex, DataTable.TrapData[cardId][11]);
                     });
                 }
                 break;
@@ -1239,7 +1235,7 @@ public class WarsUIManager : MonoBehaviour
             PlayAudioClip(13);
             if (money > GoldForCity)
             {
-                PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(56));
+                PlayerDataForGame.instance.ShowStringTips(DataTable.GetStringText(56));
                 return;
             }
             else
@@ -1288,19 +1284,19 @@ public class WarsUIManager : MonoBehaviour
     private void InitializeDianGu()
     {
         //随机数
-        int rand = Random.Range(0, LoadJsonFile.storyTableDatas.Count);
+        int rand = Random.Range(0, DataTable.StoryData.Count);
         //典故名
-        eventsWindows[1].transform.GetChild(0).GetChild(3).GetComponent<Text>().text = LoadJsonFile.storyTableDatas[rand][1];
+        eventsWindows[1].transform.GetChild(0).GetChild(3).GetComponent<Text>().text = DataTable.StoryData[rand][1];
         //故事
-        eventsWindows[1].transform.GetChild(1).GetComponent<Text>().text = "\u2000\u2000\u2000\u2000" + LoadJsonFile.storyTableDatas[rand][2];
+        eventsWindows[1].transform.GetChild(1).GetComponent<Text>().text = "\u2000\u2000\u2000\u2000" + DataTable.StoryData[rand][2];
         //选项
         for (int i = 2; i < 4; i++)
         {
-            eventsWindows[1].transform.GetChild(i).GetChild(0).GetComponent<Text>().text = LoadJsonFile.storyTableDatas[rand][i + 2];
+            eventsWindows[1].transform.GetChild(i).GetChild(0).GetComponent<Text>().text = DataTable.StoryData[rand][i + 2];
             int indexI = i + 4;
             eventsWindows[1].transform.GetChild(i).GetComponent<Button>().onClick.AddListener(delegate ()
             {
-                OnClickChooseAnsForDianGu(int.Parse(LoadJsonFile.storyTableDatas[rand][indexI]));
+                OnClickChooseAnsForDianGu(int.Parse(DataTable.StoryData[rand][indexI]));
             });
             eventsWindows[1].transform.GetChild(i).gameObject.SetActive(true);
         }
@@ -1318,7 +1314,7 @@ public class WarsUIManager : MonoBehaviour
         storyEndText.text = "";
         storyEndText.color = new Color(storyEndText.color.r, storyEndText.color.g, storyEndText.color.b, 0);
 
-        int goldReward = int.Parse(LoadJsonFile.storyRTableDatas[indexAns][6]);
+        int goldReward = int.Parse(DataTable.StoryRData[indexAns][6]);
         if (goldReward < 0)
         {
             goldReward = GoldForCity >= Mathf.Abs(goldReward) ? goldReward : -GoldForCity;
@@ -1328,13 +1324,13 @@ public class WarsUIManager : MonoBehaviour
             GoldForCity += goldReward;
             playerInfoObj.transform.GetChild(1).GetChild(0).GetComponent<Text>().text = GoldForCity.ToString();
         }
-        int unitType = int.Parse(LoadJsonFile.storyRTableDatas[indexAns][2]);
+        int unitType = int.Parse(DataTable.StoryRData[indexAns][2]);
         if (unitType >= 0)
         {
             NowLevelAndHadChip nowLevelAndHadChip = new NowLevelAndHadChip();
-            nowLevelAndHadChip.id = int.Parse(LoadJsonFile.storyRTableDatas[indexAns][3]);
-            nowLevelAndHadChip.level = int.Parse(LoadJsonFile.storyRTableDatas[indexAns][4]);
-            int getNums = int.Parse(LoadJsonFile.storyRTableDatas[indexAns][5]);
+            nowLevelAndHadChip.id = int.Parse(DataTable.StoryRData[indexAns][3]);
+            nowLevelAndHadChip.level = int.Parse(DataTable.StoryRData[indexAns][4]);
+            int getNums = int.Parse(DataTable.StoryRData[indexAns][5]);
             switch (unitType)
             {
                 case 0:
@@ -1367,7 +1363,7 @@ public class WarsUIManager : MonoBehaviour
         }
 
         storyEndText.DOFade(1, 4f);
-        storyEndText.DOText(("\u2000\u2000\u2000\u2000" + LoadJsonFile.storyRTableDatas[indexAns][1]), 4f).OnComplete(delegate ()
+        storyEndText.DOText(("\u2000\u2000\u2000\u2000" + DataTable.StoryRData[indexAns][1]), 4f).OnComplete(delegate ()
         {
             eventsWindows[1].transform.GetChild(4).gameObject.SetActive(true);
         });
@@ -1377,15 +1373,15 @@ public class WarsUIManager : MonoBehaviour
     private void InitializeDaTi()
     {
         eventsWindows[2].transform.GetChild(6).gameObject.SetActive(false);
-        int indexTest = BackCardIdByWeightValue(LoadJsonFile.testTableDatas, 6);
-        int truthNum = int.Parse(LoadJsonFile.testTableDatas[indexTest][2]);
-        eventsWindows[2].transform.GetChild(2).GetComponent<Text>().text = LoadJsonFile.testTableDatas[indexTest][1];
+        int indexTest = GetRandomBaseOnWeight(DataTable.Test, 6);
+        int truthNum = int.Parse(DataTable.TestData[indexTest][2]);
+        eventsWindows[2].transform.GetChild(2).GetComponent<Text>().text = DataTable.TestData[indexTest][1];
         for (int i = 3; i < 6; i++)
         {
             bool isRight = (i - 2) == truthNum;
             int btnIndex = i;
             eventsWindows[2].transform.GetChild(i).GetChild(0).GetComponent<Text>().color = Color.white;
-            eventsWindows[2].transform.GetChild(i).GetChild(0).GetComponent<Text>().text = LoadJsonFile.testTableDatas[indexTest][i];
+            eventsWindows[2].transform.GetChild(i).GetChild(0).GetComponent<Text>().text = DataTable.TestData[indexTest][i];
             eventsWindows[2].transform.GetChild(i).GetComponent<Button>().onClick.AddListener(delegate ()
             {
                 EndDaTiGiveReward(isRight, btnIndex);
@@ -1405,30 +1401,30 @@ public class WarsUIManager : MonoBehaviour
         string rewardStr = "";
         if (isRight)
         {
-            rewardStr = LoadJsonFile.GetStringText(58);
+            rewardStr = DataTable.GetStringText(58);
             eventsWindows[2].transform.GetChild(btnIndex).GetChild(0).GetComponent<Text>().color = Color.green;
-            int indexTest = BackCardIdByWeightValue(LoadJsonFile.testRTableDatas, 1);
-            int unitType = int.Parse(LoadJsonFile.testRTableDatas[indexTest][2]);
+            int indexTest = GetRandomBaseOnWeight(DataTable.TestR, 1);
+            int unitType = int.Parse(DataTable.TestRData[indexTest][2]);
             if (unitType >= 0)
             {
                 NowLevelAndHadChip nowLevelAndHadChip = new NowLevelAndHadChip();
-                nowLevelAndHadChip.level = int.Parse(LoadJsonFile.testRTableDatas[indexTest][4]);
+                nowLevelAndHadChip.level = int.Parse(DataTable.TestRData[indexTest][4]);
                 switch (unitType)
                 {
                     case 0:
-                        nowLevelAndHadChip.id = BackIdFromTableByRarity(LoadJsonFile.heroTableDatas, LoadJsonFile.testRTableDatas[indexTest][3]);
+                        nowLevelAndHadChip.id = RandomPickFromRareClass(DataTable.Hero, DataTable.TestRData[indexTest][3]);
                         CreateHeroCardToFightList(nowLevelAndHadChip);
                         break;
                     case 1:
-                        nowLevelAndHadChip.id = BackIdFromTableByRarity(LoadJsonFile.soldierTableDatas, LoadJsonFile.testRTableDatas[indexTest][3]);
+                        nowLevelAndHadChip.id = RandomPickFromRareClass(DataTable.Soldier, DataTable.TestRData[indexTest][3]);
                         CreateSoldierCardToFightList(nowLevelAndHadChip);
                         break;
                     case 2:
-                        nowLevelAndHadChip.id = BackIdFromTableByRarity(LoadJsonFile.towerTableDatas, LoadJsonFile.testRTableDatas[indexTest][3]);
+                        nowLevelAndHadChip.id = RandomPickFromRareClass(DataTable.Tower, DataTable.TestRData[indexTest][3]);
                         CreateTowerCardToFightList(nowLevelAndHadChip);
                         break;
                     case 3:
-                        nowLevelAndHadChip.id = BackIdFromTableByRarity(LoadJsonFile.trapTableDatas, LoadJsonFile.testRTableDatas[indexTest][3]);
+                        nowLevelAndHadChip.id = RandomPickFromRareClass(DataTable.Trap, DataTable.TestRData[indexTest][3]);
                         CreateTrapCardToFightList(nowLevelAndHadChip);
                         break;
                     default:
@@ -1438,7 +1434,7 @@ public class WarsUIManager : MonoBehaviour
         }
         else
         {
-            rewardStr = LoadJsonFile.GetStringText(59);
+            rewardStr = DataTable.GetStringText(59);
             eventsWindows[2].transform.GetChild(btnIndex).GetChild(0).GetComponent<Text>().color = Color.red;
         }
         PlayerDataForGame.instance.ShowStringTips(rewardStr);
@@ -1446,22 +1442,10 @@ public class WarsUIManager : MonoBehaviour
     }
 
     //根据稀有度返回随机id
-    public int BackIdFromTableByRarity(List<List<string>> datas, string rarity)
+    public int RandomPickFromRareClass(IReadOnlyDictionary<int,IReadOnlyList<string>> data, string rarity)
     {
-        int cardId = 0;
-        List<int> idList = new List<int>();
-        for (int i = 0; i < datas.Count; i++)
-        {
-            if (datas[i][3] == rarity)
-            {
-                idList.Add(i);
-            }
-        }
-        if (idList.Count > 0)
-        {
-            cardId = idList[Random.Range(0, idList.Count)];
-        }
-        return cardId;
+        var list = data.Where(map => map.Value[3] == rarity).ToList();
+        return list[Random.Range(0, list.Count)].Key;
     }
 
     //初始化卡牌列表
@@ -1491,16 +1475,16 @@ public class WarsUIManager : MonoBehaviour
         GameObject obj = Instantiate(cardForWarListPres, heroCardListObj.transform);
         obj.GetComponent<CardForDrag>().posIndex = -1;
         obj.transform.GetChild(1).GetComponent<Image>().sprite = re.HeroImg[cardData.id];
-        ShowNameTextRules(obj.transform.GetChild(3).GetComponent<Text>(), LoadJsonFile.heroTableDatas[cardData.id][1]);
+        ShowNameTextRules(obj.transform.GetChild(3).GetComponent<Text>(), DataTable.HeroData[cardData.id][1]);
         //名字颜色
-        obj.transform.GetChild(3).GetComponent<Text>().color = NameColorChoose(LoadJsonFile.heroTableDatas[cardData.id][3]);
+        obj.transform.GetChild(3).GetComponent<Text>().color = NameColorChoose(DataTable.HeroData[cardData.id][3]);
         obj.transform.GetChild(4).GetComponent<Image>().sprite = re.GradeImg[cardData.level];
-        obj.transform.GetChild(5).GetComponentInChildren<Text>().text = LoadJsonFile.classTableDatas[int.Parse(LoadJsonFile.heroTableDatas[cardData.id][5])][3];
+        obj.transform.GetChild(5).GetComponentInChildren<Text>().text = DataTable.ClassData[int.Parse(DataTable.HeroData[cardData.id][5])][3];
         //兵种框
         obj.transform.GetChild(5).GetComponent<Image>().sprite = re.ClassImg[0];
-        FrameChoose(int.Parse(LoadJsonFile.heroTableDatas[cardData.id][3]), obj.transform.GetChild(6).GetComponent<Image>());
+        FrameChoose(int.Parse(DataTable.HeroData[cardData.id][3]), obj.transform.GetChild(6).GetComponent<Image>());
         //添加按住抬起方法
-        FightForManager.instance.GiveGameObjEventForHoldOn(obj, LoadJsonFile.classTableDatas[int.Parse(LoadJsonFile.heroTableDatas[cardData.id][5])][4]);
+        FightForManager.instance.GiveGameObjEventForHoldOn(obj, DataTable.ClassData[int.Parse(DataTable.HeroData[cardData.id][5])][4]);
         FightCardData data = new FightCardData();
         data.unitId = 1;
         data.cardObj = obj;
@@ -1509,13 +1493,13 @@ public class WarsUIManager : MonoBehaviour
         data.posIndex = -1;
         data.cardGrade = cardData.level;
         data.fightState = new FightState();
-        data.damage = int.Parse(LoadJsonFile.heroTableDatas[data.cardId][7].Split(',')[data.cardGrade - 1]);
-        data.hpr = int.Parse(LoadJsonFile.heroTableDatas[data.cardId][9]);
-        data.fullHp = data.nowHp = int.Parse(LoadJsonFile.heroTableDatas[data.cardId][8].Split(',')[data.cardGrade - 1]);
+        data.damage = int.Parse(DataTable.HeroData[data.cardId][7].Split(',')[data.cardGrade - 1]);
+        data.hpr = int.Parse(DataTable.HeroData[data.cardId][9]);
+        data.fullHp = data.nowHp = int.Parse(DataTable.HeroData[data.cardId][8].Split(',')[data.cardGrade - 1]);
         data.activeUnit = true;
         data.isPlayerCard = true;
-        data.cardMoveType = int.Parse(LoadJsonFile.heroTableDatas[data.cardId][17]);
-        data.cardDamageType = int.Parse(LoadJsonFile.heroTableDatas[data.cardId][18]);
+        data.cardMoveType = int.Parse(DataTable.HeroData[data.cardId][17]);
+        data.cardDamageType = int.Parse(DataTable.HeroData[data.cardId][18]);
         playerCardsDatas.Add(data);
     }
     //创建玩家士兵卡牌
@@ -1524,17 +1508,17 @@ public class WarsUIManager : MonoBehaviour
         var re = GameResources;
         GameObject obj = Instantiate(cardForWarListPres, heroCardListObj.transform);
         obj.GetComponent<CardForDrag>().posIndex = -1;
-        obj.transform.GetChild(1).GetComponent<Image>().sprite = re.FuZhuImg[int.Parse(LoadJsonFile.soldierTableDatas[cardData.id][13])];
-        ShowNameTextRules(obj.transform.GetChild(3).GetComponent<Text>(), LoadJsonFile.soldierTableDatas[cardData.id][1]);
+        obj.transform.GetChild(1).GetComponent<Image>().sprite = re.FuZhuImg[int.Parse(DataTable.SoldierData[cardData.id][13])];
+        ShowNameTextRules(obj.transform.GetChild(3).GetComponent<Text>(), DataTable.SoldierData[cardData.id][1]);
         //名字颜色
-        obj.transform.GetChild(3).GetComponent<Text>().color = NameColorChoose(LoadJsonFile.soldierTableDatas[cardData.id][3]);
+        obj.transform.GetChild(3).GetComponent<Text>().color = NameColorChoose(DataTable.SoldierData[cardData.id][3]);
         obj.transform.GetChild(4).GetComponent<Image>().sprite = re.GradeImg[cardData.level];
-        obj.transform.GetChild(5).GetComponentInChildren<Text>().text = LoadJsonFile.classTableDatas[int.Parse(LoadJsonFile.soldierTableDatas[cardData.id][5])][3];
+        obj.transform.GetChild(5).GetComponentInChildren<Text>().text = DataTable.ClassData[int.Parse(DataTable.SoldierData[cardData.id][5])][3];
         //兵种框
         obj.transform.GetChild(5).GetComponent<Image>().sprite = re.ClassImg[1];
-        FrameChoose(int.Parse(LoadJsonFile.soldierTableDatas[cardData.id][3]), obj.transform.GetChild(6).GetComponent<Image>());
+        FrameChoose(int.Parse(DataTable.SoldierData[cardData.id][3]), obj.transform.GetChild(6).GetComponent<Image>());
         //添加按住抬起方法
-        FightForManager.instance.GiveGameObjEventForHoldOn(obj, LoadJsonFile.classTableDatas[int.Parse(LoadJsonFile.soldierTableDatas[cardData.id][5])][4]);
+        FightForManager.instance.GiveGameObjEventForHoldOn(obj, DataTable.ClassData[int.Parse(DataTable.SoldierData[cardData.id][5])][4]);
         FightCardData data = new FightCardData();
         data.unitId = 1;
         data.cardObj = obj;
@@ -1543,9 +1527,9 @@ public class WarsUIManager : MonoBehaviour
         data.posIndex = -1;
         data.cardGrade = cardData.level;
         data.fightState = new FightState();
-        data.damage = int.Parse(LoadJsonFile.soldierTableDatas[data.cardId][6].Split(',')[data.cardGrade - 1]);
-        data.hpr = int.Parse(LoadJsonFile.soldierTableDatas[data.cardId][8]);
-        data.fullHp = data.nowHp = int.Parse(LoadJsonFile.soldierTableDatas[data.cardId][7].Split(',')[data.cardGrade - 1]);
+        data.damage = int.Parse(DataTable.SoldierData[data.cardId][6].Split(',')[data.cardGrade - 1]);
+        data.hpr = int.Parse(DataTable.SoldierData[data.cardId][8]);
+        data.fullHp = data.nowHp = int.Parse(DataTable.SoldierData[data.cardId][7].Split(',')[data.cardGrade - 1]);
         data.activeUnit = true;
         data.isPlayerCard = true;
         playerCardsDatas.Add(data);
@@ -1556,17 +1540,17 @@ public class WarsUIManager : MonoBehaviour
         var re = GameResources;
         GameObject obj = Instantiate(cardForWarListPres, heroCardListObj.transform);
         obj.GetComponent<CardForDrag>().posIndex = -1;
-        obj.transform.GetChild(1).GetComponent<Image>().sprite = re.FuZhuImg[int.Parse(LoadJsonFile.towerTableDatas[cardData.id][10])];
-        ShowNameTextRules(obj.transform.GetChild(3).GetComponent<Text>(), LoadJsonFile.towerTableDatas[cardData.id][1]);
+        obj.transform.GetChild(1).GetComponent<Image>().sprite = re.FuZhuImg[int.Parse(DataTable.TowerData[cardData.id][10])];
+        ShowNameTextRules(obj.transform.GetChild(3).GetComponent<Text>(), DataTable.TowerData[cardData.id][1]);
         //名字颜色
-        obj.transform.GetChild(3).GetComponent<Text>().color = NameColorChoose(LoadJsonFile.towerTableDatas[cardData.id][3]);
+        obj.transform.GetChild(3).GetComponent<Text>().color = NameColorChoose(DataTable.TowerData[cardData.id][3]);
         obj.transform.GetChild(4).GetComponent<Image>().sprite = re.GradeImg[cardData.level];
-        obj.transform.GetChild(5).GetComponentInChildren<Text>().text = LoadJsonFile.towerTableDatas[cardData.id][5];
+        obj.transform.GetChild(5).GetComponentInChildren<Text>().text = DataTable.TowerData[cardData.id][5];
         //兵种框
         obj.transform.GetChild(5).GetComponent<Image>().sprite = re.ClassImg[1];
-        FrameChoose(int.Parse(LoadJsonFile.towerTableDatas[cardData.id][3]), obj.transform.GetChild(6).GetComponent<Image>());
+        FrameChoose(int.Parse(DataTable.TowerData[cardData.id][3]), obj.transform.GetChild(6).GetComponent<Image>());
         //添加按住抬起方法
-        FightForManager.instance.GiveGameObjEventForHoldOn(obj, LoadJsonFile.towerTableDatas[cardData.id][12]);
+        FightForManager.instance.GiveGameObjEventForHoldOn(obj, DataTable.TowerData[cardData.id][12]);
         FightCardData data = new FightCardData();
         data.unitId = 1;
         data.cardObj = obj;
@@ -1575,9 +1559,9 @@ public class WarsUIManager : MonoBehaviour
         data.posIndex = -1;
         data.cardGrade = cardData.level;
         data.fightState = new FightState();
-        data.damage = int.Parse(LoadJsonFile.towerTableDatas[data.cardId][6].Split(',')[data.cardGrade - 1]);
-        data.hpr = int.Parse(LoadJsonFile.towerTableDatas[data.cardId][8]);
-        data.fullHp = data.nowHp = int.Parse(LoadJsonFile.towerTableDatas[data.cardId][7].Split(',')[data.cardGrade - 1]);
+        data.damage = int.Parse(DataTable.TowerData[data.cardId][6].Split(',')[data.cardGrade - 1]);
+        data.hpr = int.Parse(DataTable.TowerData[data.cardId][8]);
+        data.fullHp = data.nowHp = int.Parse(DataTable.TowerData[data.cardId][7].Split(',')[data.cardGrade - 1]);
         data.activeUnit = (data.cardId == 0 || data.cardId == 1 || data.cardId == 2 || data.cardId == 3 || data.cardId == 6);
         data.isPlayerCard = true;
         data.cardMoveType = 1;
@@ -1590,17 +1574,17 @@ public class WarsUIManager : MonoBehaviour
         var re = GameResources;
         GameObject obj = Instantiate(cardForWarListPres, heroCardListObj.transform);
         obj.GetComponent<CardForDrag>().posIndex = -1;
-        obj.transform.GetChild(1).GetComponent<Image>().sprite = re.FuZhuImg[int.Parse(LoadJsonFile.trapTableDatas[cardData.id][8])];
-        ShowNameTextRules(obj.transform.GetChild(3).GetComponent<Text>(), LoadJsonFile.trapTableDatas[cardData.id][1]);
+        obj.transform.GetChild(1).GetComponent<Image>().sprite = re.FuZhuImg[int.Parse(DataTable.TrapData[cardData.id][8])];
+        ShowNameTextRules(obj.transform.GetChild(3).GetComponent<Text>(), DataTable.TrapData[cardData.id][1]);
         //名字颜色
-        obj.transform.GetChild(3).GetComponent<Text>().color = NameColorChoose(LoadJsonFile.trapTableDatas[cardData.id][3]);
+        obj.transform.GetChild(3).GetComponent<Text>().color = NameColorChoose(DataTable.TrapData[cardData.id][3]);
         obj.transform.GetChild(4).GetComponent<Image>().sprite = re.GradeImg[cardData.level];
-        obj.transform.GetChild(5).GetComponentInChildren<Text>().text = LoadJsonFile.trapTableDatas[cardData.id][5];
+        obj.transform.GetChild(5).GetComponentInChildren<Text>().text = DataTable.TrapData[cardData.id][5];
         //兵种框
         obj.transform.GetChild(5).GetComponent<Image>().sprite = re.ClassImg[1];
-        FrameChoose(int.Parse(LoadJsonFile.trapTableDatas[cardData.id][3]), obj.transform.GetChild(6).GetComponent<Image>());
+        FrameChoose(int.Parse(DataTable.TrapData[cardData.id][3]), obj.transform.GetChild(6).GetComponent<Image>());
         //添加按住抬起方法
-        FightForManager.instance.GiveGameObjEventForHoldOn(obj, LoadJsonFile.trapTableDatas[cardData.id][11]);
+        FightForManager.instance.GiveGameObjEventForHoldOn(obj, DataTable.TrapData[cardData.id][11]);
         FightCardData data = new FightCardData();
         data.unitId = 1;
         data.cardObj = obj;
@@ -1609,9 +1593,9 @@ public class WarsUIManager : MonoBehaviour
         data.posIndex = -1;
         data.cardGrade = cardData.level;
         data.fightState = new FightState();
-        data.damage = int.Parse(LoadJsonFile.trapTableDatas[data.cardId][6].Split(',')[data.cardGrade - 1]);
-        data.hpr = int.Parse(LoadJsonFile.trapTableDatas[data.cardId][10]);
-        data.fullHp = data.nowHp = int.Parse(LoadJsonFile.trapTableDatas[data.cardId][7].Split(',')[data.cardGrade - 1]);
+        data.damage = int.Parse(DataTable.TrapData[data.cardId][6].Split(',')[data.cardGrade - 1]);
+        data.hpr = int.Parse(DataTable.TrapData[data.cardId][10]);
+        data.fullHp = data.nowHp = int.Parse(DataTable.TrapData[data.cardId][7].Split(',')[data.cardGrade - 1]);
         data.activeUnit = false;
         data.isPlayerCard = true;
         data.cardMoveType = 0;
@@ -1659,8 +1643,8 @@ public class WarsUIManager : MonoBehaviour
     //初始化场景内容
     private void InitMainUIShow()
     {
-        battleNameText.text = LoadJsonFile.warTableDatas[PlayerDataForGame.instance.selectedWarId][1];
-        playerInfoObj.transform.GetChild(0).GetComponent<Text>().text = LoadJsonFile.playerInitialTableDatas[PlayerDataForGame.instance.pyData.ForceId][1];
+        battleNameText.text = DataTable.WarData[PlayerDataForGame.instance.selectedWarId][1];
+        playerInfoObj.transform.GetChild(0).GetComponent<Text>().text = DataTable.PlayerInitialData[PlayerDataForGame.instance.pyData.ForceId][1];
         UpdateGoldandBoxNumsShow();
         UpdateLevelInfo();
         UpdateBattleSchedule();
@@ -1670,12 +1654,12 @@ public class WarsUIManager : MonoBehaviour
     private void UpdateBattleSchedule()
     {
         nowGuanQiaIndex++;
-        if (nowGuanQiaIndex >= int.Parse(LoadJsonFile.warTableDatas[PlayerDataForGame.instance.selectedWarId][4]))
+        if (nowGuanQiaIndex >= int.Parse(DataTable.WarData[PlayerDataForGame.instance.selectedWarId][4]))
         {
-            nowGuanQiaIndex = int.Parse(LoadJsonFile.warTableDatas[PlayerDataForGame.instance.selectedWarId][4]);
+            nowGuanQiaIndex = int.Parse(DataTable.WarData[PlayerDataForGame.instance.selectedWarId][4]);
         }
 
-        string str = nowGuanQiaIndex + "/" + LoadJsonFile.warTableDatas[PlayerDataForGame.instance.selectedWarId][4];
+        string str = nowGuanQiaIndex + "/" + DataTable.WarData[PlayerDataForGame.instance.selectedWarId][4];
         battleScheduleText.text = str;
     }
 
@@ -1699,10 +1683,10 @@ public class WarsUIManager : MonoBehaviour
         //等级
         cityLevelObj.transform.GetChild(1).GetChild(0).GetChild(0).GetComponent<Text>().text = cityLevel + "级";
         //武将可上阵
-        maxHeroNums = int.Parse(LoadJsonFile.cityLevelTableDatas[cityLevel - 1][3]);
-        cityLevelObj.transform.GetChild(2).GetChild(0).GetComponent<Text>().text = LoadJsonFile.cityLevelTableDatas[cityLevel - 1][3];
+        maxHeroNums = int.Parse(DataTable.CityLevelData[cityLevel - 1][3]);
+        cityLevelObj.transform.GetChild(2).GetChild(0).GetComponent<Text>().text = DataTable.CityLevelData[cityLevel - 1][3];
         //升级金币
-        upLevelBtn.transform.GetChild(0).GetChild(0).GetComponent<Text>().text = LoadJsonFile.cityLevelTableDatas[cityLevel - 1][1];
+        upLevelBtn.transform.GetChild(0).GetChild(0).GetComponent<Text>().text = DataTable.CityLevelData[cityLevel - 1][1];
     }
 
     /// <summary>
@@ -1712,26 +1696,26 @@ public class WarsUIManager : MonoBehaviour
     {
         ShowOrHideGuideObj(2, false);
 
-        int needGold = int.Parse(LoadJsonFile.cityLevelTableDatas[cityLevel - 1][1]);
+        int needGold = int.Parse(DataTable.CityLevelData[cityLevel - 1][1]);
         if (GoldForCity < needGold)
         {
-            PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(56));
+            PlayerDataForGame.instance.ShowStringTips(DataTable.GetStringText(56));
             PlayAudioClip(20);
         }
         else
         {
             GoldForCity -= needGold;
             cityLevel++;
-            PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(60));
+            PlayerDataForGame.instance.ShowStringTips(DataTable.GetStringText(60));
             playerInfoObj.transform.GetChild(1).GetChild(0).GetComponent<Text>().text = GoldForCity.ToString();
             UpdateLevelInfo();
             //满级
-            if (cityLevel >= LoadJsonFile.cityLevelTableDatas.Count)
+            if (cityLevel >= DataTable.CityLevelData.Count)
             {
                 upLevelBtn.GetComponent<Button>().enabled = false;
                 upLevelBtn.transform.GetChild(0).gameObject.SetActive(false);
-                upLevelBtn.transform.GetChild(1).GetComponent<Text>().text = LoadJsonFile.GetStringText(61);
-                PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(62));
+                upLevelBtn.transform.GetChild(1).GetComponent<Text>().text = DataTable.GetStringText(61);
+                PlayerDataForGame.instance.ShowStringTips(DataTable.GetStringText(62));
             }
             FightForManager.instance.UpdateFightNumTextShow();
             PlayAudioClip(19);
@@ -1835,11 +1819,11 @@ public class WarsUIManager : MonoBehaviour
         PlayAudioClip(13);
         if (AudioController0.instance.isPlayMusic != 1)
         {
-            musicBtnText.text = LoadJsonFile.GetStringText(41);
+            musicBtnText.text = DataTable.GetStringText(41);
         }
         else
         {
-            musicBtnText.text = LoadJsonFile.GetStringText(42);
+            musicBtnText.text = DataTable.GetStringText(42);
         }
     }
 
@@ -1852,7 +1836,7 @@ public class WarsUIManager : MonoBehaviour
             PlayerPrefs.SetInt(LoadSaveData.instance.IsPlayMusicStr, 1);
             AudioController0.instance.isPlayMusic = 1;
             AudioController1.instance.audioSource.Play();
-            musicBtnText.text = LoadJsonFile.GetStringText(42);
+            musicBtnText.text = DataTable.GetStringText(42);
             PlayAudioClip(13);
         }
         else
@@ -1863,7 +1847,7 @@ public class WarsUIManager : MonoBehaviour
             AudioController0.instance.audioSource.Pause();
             AudioController1.instance.audioSource.Pause();
             FightController.instance.audioSource.Pause();
-            musicBtnText.text = LoadJsonFile.GetStringText(41);
+            musicBtnText.text = DataTable.GetStringText(41);
         }
     }
 
@@ -1917,7 +1901,7 @@ public class WarsUIManager : MonoBehaviour
             else
             {
                 isShowQuitTips = true;
-                PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(52));
+                PlayerDataForGame.instance.ShowStringTips(DataTable.GetStringText(52));
                 Invoke("ResetQuitBool", 2f);
             }
         }

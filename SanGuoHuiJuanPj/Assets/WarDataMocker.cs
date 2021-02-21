@@ -26,7 +26,7 @@ public class WarDataMocker : MonoBehaviour
 #if UNITY_EDITOR
     private void Awake()
     {
-        LoadJsonFile.instance = new GameObject("loadJason").AddComponent<LoadJsonFile>();
+        DataTable.instance = new GameObject("loadJason").AddComponent<DataTable>();
         var player = Instantiate(playerDataPrefab);
         Instantiate(audioController0Prefab);
         Instantiate(audioController1Prefab);
@@ -45,10 +45,10 @@ public class WarDataMocker : MonoBehaviour
     {
         var forceId = (int) force;
         var hst = PlayerDataForGame.instance.hstData;
-        var hfMap = LoadJsonFile.heroTableDatas.Select(row =>
+        var hfMap = DataTable.Hero.Select(map =>
         {
-            var id = int.Parse(row[0]);
-            var origin = int.Parse(row[6]);
+            var id = map.Key;
+            var origin = int.Parse(map.Value[6]);
             return new {id, origin};
         }).ToDictionary(c => c.id, c => c.origin);
         Dictionary<int, List<int>> cards;

@@ -17,12 +17,12 @@ public class RewardManager : MonoBehaviour
 
     public int GetYvQue(int chestId)
     {
-        var list = LoadJsonFile.warChestTableDatas[chestId][4].Split(',');
+        var list = DataTable.WarChestData[chestId][4].Split(',');
         return UnityEngine.Random.Range(int.Parse(list[0]), int.Parse(list[1]) + 1);
     }
     public int GetYuanBao(int chestId)
     {
-        var list = LoadJsonFile.warChestTableDatas[chestId][5].Split(',');
+        var list = DataTable.WarChestData[chestId][5].Split(',');
         return UnityEngine.Random.Range(int.Parse(list[0]), int.Parse(list[1]) + 1);
     }
 
@@ -31,7 +31,7 @@ public class RewardManager : MonoBehaviour
         const int trapIndex = 6;
         const int towerIndex = 7;
         const int heroIndex = 8;
-        var row = LoadJsonFile.warChestTableDatas[chestId];
+        var row = DataTable.WarChest[chestId];
         var trapMap = row[trapIndex].Split(';').Where(s => !string.IsNullOrWhiteSpace(s)).ToList();
         var towerMap = row[towerIndex].Split(';').Where(s => !string.IsNullOrWhiteSpace(s)).ToList();
         var heroMap = row[heroIndex].Split(';').Where(s => !string.IsNullOrWhiteSpace(s)).ToList();
@@ -44,7 +44,7 @@ public class RewardManager : MonoBehaviour
         if (heroReward != null && heroReward.Count > 0) rewards.AddRange(heroReward);
         return rewards;
 
-        //private method 
+        //private method
         List<RewardsCardClass> RandomPickBaseOnStrategy(List<string> items, GameCardType gameCardType)
         {
             var list = new List<RewardsCardClass>();
@@ -64,7 +64,7 @@ public class RewardManager : MonoBehaviour
                     list.Add(new RewardsCardClass
                     {
                         cardId = pick.cardId,
-                        cardType = (int)gameCardType,
+                        cardType = (int) gameCardType,
                         cardChips = chips
                     });
                 }
@@ -77,52 +77,52 @@ public class RewardManager : MonoBehaviour
             switch (cardType)
             {
                 case GameCardType.Hero:
-                    return GetWeightList(LoadJsonFile.heroTableDatas, isZy ? 19 : 20, 21, rarity);
+                    return GetWeightList(DataTable.Hero, isZy ? 19 : 20, 21, rarity);
                 case GameCardType.Tower:
-                    return GetWeightList(LoadJsonFile.towerTableDatas, isZy ? 11 : 13, 14, rarity);
+                    return GetWeightList(DataTable.Tower, isZy ? 11 : 13, 14, rarity);
                 case GameCardType.Trap:
-                    return GetWeightList(LoadJsonFile.trapTableDatas, isZy ? 9 : 12, 13, rarity);
+                    return GetWeightList(DataTable.Trap, isZy ? 9 : 12, 13, rarity);
                 default:
                     throw new ArgumentOutOfRangeException($"cardType = {cardType}");
             }
         }
     }
 
-    /// <summary> 
-    /// 返回随机选中卡牌id 
-    /// </summary> 
-    /// <param name="data"></param> 
-    /// <param name="outputStrategyIndex"></param> 
-    /// <param name="outputIndex"></param> 
-    /// <param name="rarity"></param> 
-    /// <returns></returns> 
-    private List<CardIdAndWeights> GetWeightList(List<List<string>> data, int outputStrategyIndex, int outputIndex, int rarity)
+    /// <summary>
+    /// 返回随机选中卡牌id
+    /// </summary>
+    /// <param name="data"></param>
+    /// <param name="outputStrategyIndex"></param>
+    /// <param name="outputIndex"></param>
+    /// <param name="rarity"></param>
+    /// <returns></returns>
+    private List<CardIdAndWeights> GetWeightList(IReadOnlyDictionary<int,IReadOnlyList<string>> data, int outputStrategyIndex, int outputIndex, int rarity)
     {
         const string NoOutput = "0";
         var playerLevel = PlayerDataForGame.instance.pyData.Level;
-        return data.Where(map => map[outputIndex] != NoOutput && int.Parse(map[3]) == rarity)
+        return data.Where(map => map.Value[outputIndex] != NoOutput && int.Parse(map.Value[3]) == rarity)
             .Select(map =>
             {
-                var strategy = map[outputStrategyIndex].TableStringToInts().ToList();
+                var strategy = map.Value[outputStrategyIndex].TableStringToInts().ToList();
                 return new CardIdAndWeights
                 {
-                    cardId = int.Parse(map[0]),
+                    cardId = map.Key,
                     outputLevel = strategy[0],
                     weight = strategy[1]
                 };
             }).Where(c => c.outputLevel != 0 && c.outputLevel <= playerLevel).ToList();
     }
 
-    /// <summary> 
-    /// 获取并存储奖励碎片 
-    /// </summary> 
-    /// <param name="cardType">卡牌种类</param> 
-    /// <param name="cardId">具体id</param> 
-    /// <param name="chips">碎片数量</param> 
-    /// <returns></returns> 
+    /// <summary>
+    /// 获取并存储奖励碎片
+    /// </summary>
+    /// <param name="cardType">卡牌种类</param>
+    /// <param name="cardId">具体id</param>
+    /// <param name="chips">碎片数量</param>
+    /// <returns></returns>
     public void RewardCard(GameCardType cardType, int cardId, int chips)
     {
-        //Debug.Log("cardId:" + cardId); 
+        //Debug.Log("cardId:" + cardId);
         switch (cardType)
         {
             case GameCardType.Hero:
@@ -132,7 +132,7 @@ public class RewardManager : MonoBehaviour
                 PlayerDataForGame.instance.hstData.soldierSaveData.GetOrInstance(cardId).chips += chips;
                 break;
             case GameCardType.Tower:
-                PlayerDataForGame.instance.hstData.towerSaveData.GetOrInstance(cardId).chips += chips;
+                PlayerDataForGame.instance.hstData.towerSaveData.GetOrInstance(cardId).chips+=chips;
                 break;
             case GameCardType.Trap:
                 PlayerDataForGame.instance.hstData.trapSaveData.GetOrInstance(cardId).chips += chips;
@@ -146,7 +146,7 @@ public class RewardManager : MonoBehaviour
     }
 
 
-    //卡牌和权重类 
+    //卡牌和权重类
     private class CardIdAndWeights : IWeightElement
     {
         public int Weight => weight;

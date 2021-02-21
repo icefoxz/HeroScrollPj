@@ -260,8 +260,8 @@ public class UIManager : MonoBehaviour
     //显示霸业玩法说明
     public void ShowInfoBaYe() 
     {
-        string title = LoadJsonFile.GetStringText(68);
-        string text = LoadJsonFile.GetStringText(69);
+        string title = DataTable.GetStringText(68);
+        string text = DataTable.GetStringText(69);
         ShowInfo(title,text);
     }
 
@@ -340,7 +340,7 @@ public class UIManager : MonoBehaviour
 
         print("请选择");
         //提示选择势力后进行战斗
-        PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(65));
+        PlayerDataForGame.instance.ShowStringTips(DataTable.GetStringText(65));
 
         void StartBattle(int warId)
         {
@@ -370,21 +370,12 @@ public class UIManager : MonoBehaviour
         //霸业经验条和宝箱初始化
         ResetBaYeProgressAndGold();
         //城市点初始化
-        var cityLvlUnlock = new Dictionary<int, int>();
-        LoadJsonFile.playerLevelTableDatas.Select(row =>
+        var cityLvlUnlock = DataTable.PlayerLevel.Select(map =>
         {
-            var lvl = int.Parse(row[0]);
-            var maxCity = row[7].Split(',').Where(s => !string.IsNullOrWhiteSpace(s))
-                .Max(int.Parse);
-            return (lvl, maxCity);
-        }).ToList().ForEach(set =>
-        {
-            var (lvl, city) = set;
-            if (cityLvlUnlock.ContainsKey(city)) return;
-            cityLvlUnlock.Add(city, lvl);
-        });
-        var cityList = LoadJsonFile.playerLevelTableDatas[PlayerDataForGame.instance.pyData.Level - 1][7]
-            .Split(',').Where(s => !string.IsNullOrWhiteSpace(s)).Select(int.Parse).ToArray();
+            var maxCity = map.Value[7].TableStringToInts().Max();
+            return (map.Key, maxCity);
+        }).ToDictionary(o => o.Key, o => o.maxCity);
+        var cityList = DataTable.PlayerLevel[PlayerDataForGame.instance.pyData.Level][7].TableStringToInts().ToArray();
         if (cityFields != null && cityFields.Count > 0)
             cityFields.ForEach(Destroy);
         cityFields = new List<BaYeCityField>();
@@ -399,8 +390,8 @@ public class UIManager : MonoBehaviour
             cityFields.Add(cityField);
             var baYeEvent = BaYeManager.instance.Map.Single(e => e.CityId == indexId);
             var baYeRecord = baYe.data.SingleOrDefault(f => f.CityId == indexId);
-            var flag = (ForceFlags)int.Parse(LoadJsonFile.baYeShiJianTableDatas[baYeEvent.EventId][4]);//旗帜id
-            var flagName = LoadJsonFile.baYeShiJianTableDatas[baYeEvent.EventId][5];//旗帜文字
+            var flag = (ForceFlags)int.Parse(DataTable.BaYeShiJian[baYeEvent.EventId][4]);//旗帜id
+            var flagName = DataTable.BaYeShiJian[baYeEvent.EventId][5];//旗帜文字
             ui.button.interactable = cityList.Length > i;
             ui.forceFlag.Set(flag, true, flagName);
             if (cityList.Length > i)
@@ -411,7 +402,7 @@ public class UIManager : MonoBehaviour
                 ui.button.onClick
                     .AddListener(
                         () => BaYeManager.instance.OnBaYeWarEventPointSelected(BaYeManager.EventTypes.City, baYeEvent.CityId));
-                ui.text.text = LoadJsonFile.baYeDiTuTableDatas[i][3]; //城市名
+                ui.text.text = DataTable.BaYeDiTu[indexId][3]; //城市名
             }
             else
             {
@@ -431,9 +422,8 @@ public class UIManager : MonoBehaviour
     public void ResetBaYeProgressAndGold()
     {
         var baYe = PlayerDataForGame.instance.warsData.baYe;
-        var baYeReward = LoadJsonFile.baYeRenWuTableDatas
-            .Select(item =>
-                new {id = int.Parse(item[0]), exp = int.Parse(item[1]), rewardId = int.Parse(item[2])})
+        var baYeReward = DataTable.BaYeRenWu
+            .Select(map => new {id = map.Key, exp = int.Parse(map.Value[1]), rewardId = int.Parse(map.Value[2])})
             .ToList();
         baYeGoldNumText.text = $"{baYe.gold}/{BaYeManager.instance.BaYeMaxGold}";
         baYeProgressUi.Set(baYe.CurrentExp,baYeReward[baYeReward.Count - 1].exp);
@@ -457,9 +447,9 @@ public class UIManager : MonoBehaviour
     //main场景羁绊内容的初始化
     private void InitJiBanForMainFun()
     {
-        for (int i = 0; i < LoadJsonFile.jiBanTableDatas.Count; i++)
+        for (int i = 0; i < DataTable.JiBanData.Count; i++)
         {
-            if (LoadJsonFile.jiBanTableDatas[i][2] == "1")
+            if (DataTable.JiBanData[i][2] == "1")
             {
                 Transform tran = jibanBtnBoxTran.GetChild(i);
                 if (tran != null)
@@ -484,7 +474,7 @@ public class UIManager : MonoBehaviour
             jibanHeroBoxTran.transform.GetChild(i).gameObject.SetActive(false);
         }
 
-        string[] arrs = LoadJsonFile.jiBanTableDatas[indexId][3].Split(';');
+        string[] arrs = DataTable.JiBanData[indexId][3].Split(';');
         for (int i = 0; i < arrs.Length; i++)
         {
             if (arrs[i] != "")
@@ -496,14 +486,14 @@ public class UIManager : MonoBehaviour
                     Transform tran = jibanHeroBoxTran.GetChild(i);
                     GameObject obj = tran.GetChild(0).gameObject;
                     //名字
-                    ShowNameTextRules(obj.transform.GetChild(2).GetComponent<Text>(), LoadJsonFile.heroTableDatas[heroId][1]);
+                    ShowNameTextRules(obj.transform.GetChild(2).GetComponent<Text>(), DataTable.HeroData[heroId][1]);
                     //名字颜色根据稀有度
-                    obj.transform.GetChild(2).GetComponent<Text>().color = NameColorChoose(LoadJsonFile.heroTableDatas[heroId][3]);
+                    obj.transform.GetChild(2).GetComponent<Text>().color = NameColorChoose(DataTable.HeroData[heroId][3]);
                     //卡牌
                     obj.transform.GetChild(1).GetComponent<Image>().sprite =
                         GameResources.HeroImg[heroId];
                     //兵种名
-                    obj.transform.GetChild(4).GetComponentInChildren<Text>().text = LoadJsonFile.classTableDatas[int.Parse(LoadJsonFile.heroTableDatas[heroId][5])][3];
+                    obj.transform.GetChild(4).GetComponentInChildren<Text>().text = DataTable.ClassData[int.Parse(DataTable.HeroData[heroId][5])][3];
                     //兵种框
                     obj.transform.GetChild(4).GetComponent<Image>().sprite = GameResources.ClassImg[0];
                     tran.gameObject.SetActive(true);
@@ -511,7 +501,7 @@ public class UIManager : MonoBehaviour
             }
         }
         jiBanInfoConObj.transform.GetChild(0).GetComponent<Image>().sprite = Resources.Load("Image/JiBan/art/" + indexId, typeof(Sprite)) as Sprite;
-        jiBanInfoConObj.transform.GetChild(0).GetChild(0).GetComponent<Text>().text = LoadJsonFile.jiBanTableDatas[indexId][4];
+        jiBanInfoConObj.transform.GetChild(0).GetChild(0).GetComponent<Text>().text = DataTable.JiBanData[indexId][4];
         jiBanInfoConObj.transform.GetChild(0).GetChild(1).GetChild(0).GetComponent<Image>().sprite = Resources.Load("Image/JiBan/name_h/" + indexId, typeof(Sprite)) as Sprite;
 
 
@@ -555,7 +545,7 @@ public class UIManager : MonoBehaviour
             cutTiLiTextObj.GetComponent<Text>().text = "+" + PlayerDataForGame.instance.getBackTiLiNums;
             cutTiLiTextObj.SetActive(true);
             AddTiLiNums(PlayerDataForGame.instance.getBackTiLiNums);
-            PlayerDataForGame.instance.ShowStringTips(string.Format(LoadJsonFile.GetStringText(25), PlayerDataForGame.instance.getBackTiLiNums));
+            PlayerDataForGame.instance.ShowStringTips(string.Format(DataTable.GetStringText(25), PlayerDataForGame.instance.getBackTiLiNums));
         }
         PlayerDataForGame.instance.lastSenceIndex = 1;
         PlayerDataForGame.instance.getBackTiLiNums = 0;
@@ -571,10 +561,10 @@ public class UIManager : MonoBehaviour
         {
             int index = i;
             chonseWarDifTran.GetChild(i).gameObject.SetActive(true);
-            chonseWarDifTran.GetChild(i).GetComponentInChildren<Text>().text = LoadJsonFile.choseWarTableDatas[i][1];
-            int unlockWarId = int.Parse(LoadJsonFile.choseWarTableDatas[i][3]);
-            var warList = LoadJsonFile.choseWarTableDatas[i][2];
-            var unlockRequirement = int.Parse(LoadJsonFile.warTableDatas[unlockWarId][4]);//解锁条件
+            chonseWarDifTran.GetChild(i).GetComponentInChildren<Text>().text = DataTable.ChoseWarData[i][1];
+            int unlockWarId = int.Parse(DataTable.ChoseWarData[i][3]);
+            var warList = DataTable.ChoseWarData[i][2];
+            var unlockRequirement = int.Parse(DataTable.WarData[unlockWarId][4]);//解锁条件
             if (!string.IsNullOrWhiteSpace(warList) && //必须有war表
                 (unlockWarId == 0 || //不需要通过任何关卡
                  PlayerDataForGame.instance.warsData.warUnlockSaveData[unlockWarId].unLockCount >= unlockRequirement)) //玩家已通过的关卡大于当前解锁条件
@@ -592,7 +582,7 @@ public class UIManager : MonoBehaviour
                 chonseWarDifTran.GetChild(i).GetComponentInChildren<Text>().color = Color.gray;
                 chonseWarDifTran.GetChild(i).GetComponent<Button>().onClick.AddListener(delegate ()
                 {
-                    PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.choseWarTableDatas[index][5]);
+                    PlayerDataForGame.instance.ShowStringTips(DataTable.ChoseWarData[index][5]);
                     PlayOnClickMusic();
                 });
                 break;
@@ -601,11 +591,11 @@ public class UIManager : MonoBehaviour
         InitWarsListInfo(lastAvailableStageIndex);
 
         //远征关卡
-        int unlockWarId_Yz = int.Parse(LoadJsonFile.choseWarTableDatas[6][3]);
-        if (unlockWarId_Yz == 0 || PlayerDataForGame.instance.warsData.warUnlockSaveData[unlockWarId_Yz].unLockCount >= int.Parse(LoadJsonFile.warTableDatas[unlockWarId_Yz][4]))
+        int unlockWarId_Yz = int.Parse(DataTable.ChoseWarData[6][3]);
+        if (unlockWarId_Yz == 0 || PlayerDataForGame.instance.warsData.warUnlockSaveData[unlockWarId_Yz].unLockCount >= int.Parse(DataTable.WarData[unlockWarId_Yz][4]))
         {
             chonseWarDifTran.GetChild(6).gameObject.SetActive(true);
-            chonseWarDifTran.GetChild(6).GetComponentInChildren<Text>().text = LoadJsonFile.choseWarTableDatas[6][1];
+            chonseWarDifTran.GetChild(6).GetComponentInChildren<Text>().text = DataTable.ChoseWarData[6][1];
             chonseWarDifTran.GetChild(6).GetComponentInChildren<Text>().color = Color.white;
             chonseWarDifTran.GetChild(6).GetComponent<Button>().onClick.AddListener(delegate ()
             {
@@ -664,14 +654,14 @@ public class UIManager : MonoBehaviour
         PlayerDataForGame.garbageStationObjs.Add(lastObj);
 
         //展示炼狱战役列表
-        for (int i = 5; i < LoadJsonFile.choseWarTableDatas.Count; i++)
+        for (int i = 5; i < DataTable.ChoseWarData.Count; i++)
         {
-            int unlockWarId_Ly = int.Parse(LoadJsonFile.choseWarTableDatas[i][3]);
-            if (PlayerDataForGame.instance.warsData.warUnlockSaveData[unlockWarId_Ly].unLockCount >= int.Parse(LoadJsonFile.warTableDatas[unlockWarId_Ly][4]))
+            int unlockWarId_Ly = int.Parse(DataTable.ChoseWarData[i][3]);
+            if (PlayerDataForGame.instance.warsData.warUnlockSaveData[unlockWarId_Ly].unLockCount >= int.Parse(DataTable.WarData[unlockWarId_Ly][4]))
             {
                 //具体炼狱关的始末关卡
                 int startId, endId;
-                string[] arr = LoadJsonFile.choseWarTableDatas[i][2].Split(',');
+                string[] arr = DataTable.ChoseWarData[i][2].Split(',');
                 if (arr.Length != 2)
                 {
                     continue;
@@ -689,12 +679,12 @@ public class UIManager : MonoBehaviour
                         //战役的起始关卡id
                         int warIdIndex = PlayerDataForGame.instance.warsData.warUnlockSaveData[specificId].warId;
                         //战役总关卡数
-                        int warTotalNums = int.Parse(LoadJsonFile.warTableDatas[warIdIndex][4]);
+                        int warTotalNums = int.Parse(DataTable.WarData[warIdIndex][4]);
                         //创建具体战役选择obj
                         GameObject obj = Instantiate(warsChooseBtnPreObj, warsChooseListObj.transform);
                         Transform box = obj.transform.GetChild(2);
 
-                        obj.GetComponentInChildren<Text>().text = LoadJsonFile.warTableDatas[warIdIndex][1] + "\u2000\u2000\u2000\u2000" + Mathf.Min(PlayerDataForGame.instance.warsData.warUnlockSaveData[specificId].unLockCount, warTotalNums) + "/" + warTotalNums;
+                        obj.GetComponentInChildren<Text>().text = DataTable.WarData[warIdIndex][1] + "\u2000\u2000\u2000\u2000" + Mathf.Min(PlayerDataForGame.instance.warsData.warUnlockSaveData[specificId].unLockCount, warTotalNums) + "/" + warTotalNums;
 
                         if (PlayerDataForGame.instance.warsData.warUnlockSaveData[specificId].unLockCount < warTotalNums)
                         {
@@ -735,9 +725,9 @@ public class UIManager : MonoBehaviour
     public void GetBaYeProgressReward(int index)
     {
         var baYe = PlayerDataForGame.instance.warsData.baYe;
-        var rewardTable = LoadJsonFile.baYeRenWuTableDatas
-            .Select(item =>
-                new {id = int.Parse(item[0]), exp = int.Parse(item[1]), rewardId = int.Parse(item[2])})
+        var rewardTable = DataTable.BaYeRenWu
+            .Select(map =>
+                new {id = map.Key, exp = int.Parse(map.Value[1]), rewardId = int.Parse(map.Value[2])})
             .ToList();
         if (baYe.CurrentExp < rewardTable[index].exp)
         {
@@ -745,7 +735,7 @@ public class UIManager : MonoBehaviour
             return;
         }
         baYeChestButtons[index].Opened();
-        var data = LoadJsonFile.baYeRenWuTableDatas[index].Select(int.Parse).ToList();
+        var data = DataTable.BaYeRenWuData[index].Select(int.Parse).ToList();
         var isOpen =baYe.openedChest[index];
         if (isOpen)
         {
@@ -753,7 +743,7 @@ public class UIManager : MonoBehaviour
             return;
         }
         var rewardId = data[2];
-        var chestData = LoadJsonFile.warChestTableDatas[rewardId];
+        var chestData = DataTable.WarChestData[rewardId];
         var exp = int.Parse(chestData[3]);
         var yvQue = RewardManager.instance.GetYvQue(rewardId);
         var yuanBao = RewardManager.instance.GetYuanBao(rewardId);
@@ -775,9 +765,9 @@ public class UIManager : MonoBehaviour
     {
         int warId = PlayerDataForGame.instance.warsData.warUnlockSaveData[jb].warId;
 
-        int yuanBaoNums = int.Parse(LoadJsonFile.warTableDatas[warId][8]);
-        int yuQueNums = int.Parse(LoadJsonFile.warTableDatas[warId][9]);
-        int tiLiNums = int.Parse(LoadJsonFile.warTableDatas[warId][10]);
+        int yuanBaoNums = int.Parse(DataTable.WarData[warId][8]);
+        int yuQueNums = int.Parse(DataTable.WarData[warId][9]);
+        int tiLiNums = int.Parse(DataTable.WarData[warId][10]);
         if (yuanBaoNums > 0)
         {
             ConsumeManager.instance.AddYuanBao(yuanBaoNums);
@@ -791,7 +781,7 @@ public class UIManager : MonoBehaviour
             AddTiLiNums(tiLiNums);
         }
         
-        string rewardsStr = LoadJsonFile.warTableDatas[warId][PlayerDataForGame.instance.pyData.ForceId + 5];
+        string rewardsStr = DataTable.WarData[warId][PlayerDataForGame.instance.pyData.ForceId + 5];
 
         List<RewardsCardClass> rewards = new List<RewardsCardClass>();
 
@@ -854,14 +844,14 @@ public class UIManager : MonoBehaviour
         {
             //远征特殊
             case 6:
-                startId = endId = int.Parse(LoadJsonFile.playerLevelTableDatas[PlayerDataForGame.instance.pyData.Level - 1][5]);
+                startId = endId = int.Parse(DataTable.PlayerLevelData[PlayerDataForGame.instance.pyData.Level - 1][5]);
                 break;
             //炼狱特殊
             //case 5:
 
             //    break;
             default:
-                string[] arr = LoadJsonFile.choseWarTableDatas[indexBtn][2].Split(',');
+                string[] arr = DataTable.ChoseWarData[indexBtn][2].Split(',');
                 if (arr.Length != 2)
                 {
                     return;
@@ -881,7 +871,7 @@ public class UIManager : MonoBehaviour
             int warIdIndex = PlayerDataForGame.instance.warsData.warUnlockSaveData[jb].warId;
             GameObject obj = Instantiate(warsChooseBtnPreObj, warsChooseListObj.transform);
             Transform box = obj.transform.GetChild(2);
-            int warTotalNums = int.Parse(LoadJsonFile.warTableDatas[warIdIndex][4]);
+            int warTotalNums = int.Parse(DataTable.WarData[warIdIndex][4]);
             if (PlayerDataForGame.instance.warsData.warUnlockSaveData[jb].isTakeReward)
             {
                 box.gameObject.SetActive(false);
@@ -902,12 +892,12 @@ public class UIManager : MonoBehaviour
                 {
                     box.GetChild(0).GetComponent<Button>().onClick.AddListener(delegate ()
                     {
-                        PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(26));
+                        PlayerDataForGame.instance.ShowStringTips(DataTable.GetStringText(26));
                     });
                 }
             }
             //战役列拼接
-            obj.GetComponentInChildren<Text>().text = LoadJsonFile.warTableDatas[warIdIndex][1] + "\u2000\u2000\u2000\u2000"
+            obj.GetComponentInChildren<Text>().text = DataTable.WarData[warIdIndex][1] + "\u2000\u2000\u2000\u2000"
                 + Mathf.Min(PlayerDataForGame.instance.warsData.warUnlockSaveData[jb].unLockCount, warTotalNums) + "/" + warTotalNums;
             obj.GetComponent<Button>().onClick.AddListener(delegate ()
             {
@@ -918,7 +908,7 @@ public class UIManager : MonoBehaviour
             });
             lastObj = obj;
             if (PlayerDataForGame.instance.warsData.warUnlockSaveData[jb].unLockCount >=
-                int.Parse(LoadJsonFile.warTableDatas[warIdIndex][4]))
+                int.Parse(DataTable.WarData[warIdIndex][4]))
             { }
             else
             {
@@ -956,7 +946,7 @@ public class UIManager : MonoBehaviour
         warIntroText.text = "";
         warIntroText.color = new Color(warIntroText.color.r, warIntroText.color.g, warIntroText.color.b, 0);
         warIntroText.DOFade(1, 3f);
-        warIntroText.DOText(("\u2000\u2000\u2000\u2000" + LoadJsonFile.warTableDatas[warsId][2]), 3f).SetEase(Ease.Linear).SetAutoKill(false);
+        warIntroText.DOText(("\u2000\u2000\u2000\u2000" + DataTable.WarData[warsId][2]), 3f).SetEase(Ease.Linear).SetAutoKill(false);
     }
 
     int showTiLiNums = 0;
@@ -990,7 +980,7 @@ public class UIManager : MonoBehaviour
         PlayerDataForGame.instance.FlagWarTypeBeforeBattle(warType);
         if (!isJumping)
         {
-            string[] tiLiCostArr = LoadJsonFile.choseWarTableDatas[tiLiCostIndex][4].Split(',');
+            string[] tiLiCostArr = DataTable.ChoseWarData[tiLiCostIndex][4].Split(',');
             int cutStaminaNums = int.Parse(tiLiCostArr[0]);
             if (PlayerPrefs.GetInt(TimeSystemControl.staminaStr) >= cutStaminaNums)
             {
@@ -1015,7 +1005,7 @@ public class UIManager : MonoBehaviour
             else
             {
                 PlayOnClickMusic();
-                PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(27));
+                PlayerDataForGame.instance.ShowStringTips(DataTable.GetStringText(27));
                 //Debug.Log("体力不足，无法战斗");
             }
         }
@@ -1038,7 +1028,7 @@ public class UIManager : MonoBehaviour
     private void UpdateCardNumsShow()
     {
         cardsListTitle.text = "出战";
-        cardsNumsTitle.text = PlayerDataForGame.instance.CalculationFightCount() + "/" + LoadJsonFile.playerLevelTableDatas[PlayerDataForGame.instance.pyData.Level - 1][2];
+        cardsNumsTitle.text = PlayerDataForGame.instance.CalculationFightCount() + "/" + DataTable.PlayerLevelData[PlayerDataForGame.instance.pyData.Level - 1][2];
     }
 
     //是否展示卡牌详情显示
@@ -1061,7 +1051,7 @@ public class UIManager : MonoBehaviour
         AudioController0.instance.RandomPlayGuZhengAudio();//播放随机音效
 
         indexChooseListForceId++;
-        if (indexChooseListForceId > int.Parse(LoadJsonFile.playerLevelTableDatas[PlayerDataForGame.instance.pyData.Level - 1][6]))
+        if (indexChooseListForceId > int.Parse(DataTable.PlayerLevelData[PlayerDataForGame.instance.pyData.Level - 1][6]))
         {
             indexChooseListForceId = 0;
         }
@@ -1108,42 +1098,46 @@ public class UIManager : MonoBehaviour
     /// <summary>
     /// 显示单个辅助
     /// </summary>
-    private void ShowOneFuZhuRules(List<List<string>> jsonDatas, NowLevelAndHadChip fuzhuData, int indexIcon)
+    private void ShowOneFuZhuRules(IReadOnlyList<IReadOnlyList<string>> jsonDatas, NowLevelAndHadChip card, int indexIcon)
     {
+        //todo 必须重新整理表结构 目前trap引用的 iconIndex是第八列，但实际是第九列
+        if ((GameCardType) card.typeIndex == GameCardType.Trap)
+            indexIcon = 9;
+
         GameObject obj = GetHeroCardToShow();
         //名字
-        ShowNameTextRules(obj.transform.GetChild(3).GetComponent<Text>(), jsonDatas[fuzhuData.id][1]);
+        ShowNameTextRules(obj.transform.GetChild(3).GetComponent<Text>(), jsonDatas[card.id][1]);
         //名字颜色根据稀有度
-        obj.transform.GetChild(3).GetComponent<Text>().color = NameColorChoose(jsonDatas[fuzhuData.id][3]);
+        obj.transform.GetChild(3).GetComponent<Text>().color = NameColorChoose(jsonDatas[card.id][3]);
         //卡牌
-        obj.transform.GetChild(1).GetComponent<Image>().sprite = GameResources.FuZhuImg[int.Parse(jsonDatas[fuzhuData.id][indexIcon])];
+        obj.transform.GetChild(1).GetComponent<Image>().sprite = GameResources.FuZhuImg[int.Parse(jsonDatas[card.id][indexIcon])];
         //兵种框
         obj.transform.GetChild(5).GetComponent<Image>().sprite = GameResources.ClassImg[1];
         //兵种名
-        obj.transform.GetChild(5).GetComponentInChildren<Text>().text = jsonDatas[fuzhuData.id][5];
+        obj.transform.GetChild(5).GetComponentInChildren<Text>().text = jsonDatas[card.id][5];
         //边框
-        FrameChoose(jsonDatas[fuzhuData.id][3], obj.transform.GetChild(6).GetComponent<Image>());
+        FrameChoose(jsonDatas[card.id][3], obj.transform.GetChild(6).GetComponent<Image>());
         //碎片
-        if (fuzhuData.level < LoadJsonFile.upGradeTableDatas.Count)
+        if (card.level < DataTable.UpGradeData.Count)
         {
-            obj.transform.GetChild(2).GetComponent<Text>().text = fuzhuData.chips + "/" + LoadJsonFile.upGradeTableDatas[fuzhuData.level][1];
-            obj.transform.GetChild(2).GetComponent<Text>().color = fuzhuData.chips >= int.Parse(LoadJsonFile.upGradeTableDatas[fuzhuData.level][1]) ? ColorDataStatic.deep_green : Color.white;
+            obj.transform.GetChild(2).GetComponent<Text>().text = card.chips + "/" + DataTable.UpGradeData[card.level][1];
+            obj.transform.GetChild(2).GetComponent<Text>().color = card.chips >= int.Parse(DataTable.UpGradeData[card.level][1]) ? ColorDataStatic.deep_green : Color.white;
 
         }
         else
         {
             obj.transform.GetChild(2).GetComponent<Text>().text = "";
         }
-        if (fuzhuData.level > 0)
+        if (card.level > 0)
         {
             obj.transform.GetChild(4).GetComponent<Image>().enabled = true;
             //设置星级展示
-            obj.transform.GetChild(4).GetComponent<Image>().sprite = GameResources.GradeImg[fuzhuData.level];
+            obj.transform.GetChild(4).GetComponent<Image>().sprite = GameResources.GradeImg[card.level];
             obj.transform.GetChild(8).gameObject.SetActive(false);
             //出战标记
-            if (fuzhuData.isFight > 0)
+            if (card.isFight > 0)
             {
-                PlayerDataForGame.instance.AddOrCutFightCardId(fuzhuData.typeIndex, fuzhuData.id, true);
+                PlayerDataForGame.instance.AddOrCutFightCardId(card.typeIndex, card.id, true);
                 obj.transform.GetChild(7).gameObject.SetActive(true);
             }
             else
@@ -1160,7 +1154,7 @@ public class UIManager : MonoBehaviour
         obj.GetComponent<Button>().onClick.RemoveAllListeners();
         obj.GetComponent<Button>().onClick.AddListener(delegate ()
         {
-            OnClickFuZhuCardFun(jsonDatas, fuzhuData, obj.transform.GetChild(9).GetComponent<Image>(), indexIcon);
+            OnClickFuZhuCardFun(jsonDatas, card, obj.transform.GetChild(9).GetComponent<Image>(), indexIcon);
         });
     }
 
@@ -1168,7 +1162,7 @@ public class UIManager : MonoBehaviour
     /// 点击辅助卡牌的方法
     /// </summary>
     /// <param name="fuzhuData"></param>
-    private void OnClickFuZhuCardFun(List<List<string>> jsonDatas, NowLevelAndHadChip fuzhuData, Image selectImg, int indexIcon)
+    private void OnClickFuZhuCardFun(IReadOnlyList<IReadOnlyList<string>> jsonDatas, NowLevelAndHadChip fuzhuData, Image selectImg, int indexIcon)
     {
         PlayOnClickMusic();
 
@@ -1194,10 +1188,10 @@ public class UIManager : MonoBehaviour
         //边框
         FrameChoose(jsonDatas[fuzhuData.id][3], showCardObj.transform.GetChild(6).GetComponent<Image>());
         //碎片
-        if (fuzhuData.level < LoadJsonFile.upGradeTableDatas.Count)
+        if (fuzhuData.level < DataTable.UpGradeData.Count)
         {
-            showCardObj.transform.GetChild(2).GetComponent<Text>().text = fuzhuData.chips + "/" + LoadJsonFile.upGradeTableDatas[fuzhuData.level][1];
-            showCardObj.transform.GetChild(2).GetComponent<Text>().color = fuzhuData.chips >= int.Parse(LoadJsonFile.upGradeTableDatas[fuzhuData.level][1]) ? ColorDataStatic.deep_green : Color.black;
+            showCardObj.transform.GetChild(2).GetComponent<Text>().text = fuzhuData.chips + "/" + DataTable.UpGradeData[fuzhuData.level][1];
+            showCardObj.transform.GetChild(2).GetComponent<Text>().color = fuzhuData.chips >= int.Parse(DataTable.UpGradeData[fuzhuData.level][1]) ? ColorDataStatic.deep_green : Color.black;
         }
         else
         {
@@ -1223,12 +1217,12 @@ public class UIManager : MonoBehaviour
             if (fuzhuData.isFight > 0)
             {
                 showCardObj.transform.GetChild(7).gameObject.SetActive(true);
-                holdOrFightBtn.GetComponentInChildren<Text>().text = LoadJsonFile.GetStringText(30);
+                holdOrFightBtn.GetComponentInChildren<Text>().text = DataTable.GetStringText(30);
             }
             else
             {
                 showCardObj.transform.GetChild(7).gameObject.SetActive(false);
-                holdOrFightBtn.GetComponentInChildren<Text>().text = LoadJsonFile.GetStringText(31);
+                holdOrFightBtn.GetComponentInChildren<Text>().text = DataTable.GetStringText(31);
             }
         }
         else
@@ -1269,7 +1263,7 @@ public class UIManager : MonoBehaviour
         for (int i = 0; i < PlayerDataForGame.instance.hstData.heroSaveData.Count; i++)
         {
             heroDataIndex = PlayerDataForGame.instance.hstData.heroSaveData[i];
-            if (indexChooseListForceId==int.Parse(LoadJsonFile.heroTableDatas[heroDataIndex.id][6]))
+            if (indexChooseListForceId==int.Parse(DataTable.HeroData[heroDataIndex.id][6]))
             {
                 if (heroDataIndex.level > 0 || heroDataIndex.chips > 0)
                 {
@@ -1283,38 +1277,38 @@ public class UIManager : MonoBehaviour
             }
         }
 
-        NowLevelAndHadChip fuzhuDataIndex = new NowLevelAndHadChip();
+        NowLevelAndHadChip card = new NowLevelAndHadChip();
         SortHSTData(PlayerDataForGame.instance.hstData.towerSaveData);
         for (int i = 0; i < PlayerDataForGame.instance.hstData.towerSaveData.Count; i++)
         {
-            fuzhuDataIndex = PlayerDataForGame.instance.hstData.towerSaveData[i];
-            if (indexChooseListForceId == int.Parse(LoadJsonFile.towerTableDatas[fuzhuDataIndex.id][15]))
+            card = PlayerDataForGame.instance.hstData.towerSaveData[i];
+            if (indexChooseListForceId == int.Parse(DataTable.TowerData[card.id][15]))
             {
-                if (fuzhuDataIndex.level > 0 || fuzhuDataIndex.chips > 0)
+                if (card.level > 0 || card.chips > 0)
                 {
-                    if (fuzhuDataIndex.isFight > 0)
+                    if (card.isFight > 0)
                     {
-                        PlayerDataForGame.instance.fightTowerId.Add(fuzhuDataIndex.id);
+                        PlayerDataForGame.instance.fightTowerId.Add(card.id);
                     }
                     cardNums++;
-                    ShowOneFuZhuRules(LoadJsonFile.towerTableDatas, fuzhuDataIndex, 10);
+                    ShowOneFuZhuRules(DataTable.TowerData, card, 10);
                 }
             }
         }
         SortHSTData(PlayerDataForGame.instance.hstData.trapSaveData);
         for (int i = 0; i < PlayerDataForGame.instance.hstData.trapSaveData.Count; i++)
         {
-            fuzhuDataIndex = PlayerDataForGame.instance.hstData.trapSaveData[i];
-            if (indexChooseListForceId == int.Parse(LoadJsonFile.trapTableDatas[fuzhuDataIndex.id][14]))
+            card = PlayerDataForGame.instance.hstData.trapSaveData[i];
+            if (indexChooseListForceId == int.Parse(DataTable.TrapData[card.id][14]))
             {
-                if (fuzhuDataIndex.level > 0 || fuzhuDataIndex.chips > 0)
+                if (card.level > 0 || card.chips > 0)
                 {
-                    if (fuzhuDataIndex.isFight > 0)
+                    if (card.isFight > 0)
                     {
-                        PlayerDataForGame.instance.fightTrapId.Add(fuzhuDataIndex.id);
+                        PlayerDataForGame.instance.fightTrapId.Add(card.id);
                     }
                     cardNums++;
-                    ShowOneFuZhuRules(LoadJsonFile.trapTableDatas, fuzhuDataIndex, 8);
+                    ShowOneFuZhuRules(DataTable.TrapData, card, 8);
                 }
             }
         }
@@ -1370,22 +1364,22 @@ public class UIManager : MonoBehaviour
     {
         GameObject obj = GetHeroCardToShow();
         //名字
-        ShowNameTextRules(obj.transform.GetChild(3).GetComponent<Text>(), LoadJsonFile.heroTableDatas[heroData.id][1]);
+        ShowNameTextRules(obj.transform.GetChild(3).GetComponent<Text>(), DataTable.HeroData[heroData.id][1]);
         //名字颜色根据稀有度
-        obj.transform.GetChild(3).GetComponent<Text>().color = NameColorChoose(LoadJsonFile.heroTableDatas[heroData.id][3]);
+        obj.transform.GetChild(3).GetComponent<Text>().color = NameColorChoose(DataTable.HeroData[heroData.id][3]);
         //卡牌
         obj.transform.GetChild(1).GetComponent<Image>().sprite = GameResources.HeroImg[heroData.id];
         //兵种名
-        obj.transform.GetChild(5).GetComponentInChildren<Text>().text = LoadJsonFile.classTableDatas[int.Parse(LoadJsonFile.heroTableDatas[heroData.id][5])][3];
+        obj.transform.GetChild(5).GetComponentInChildren<Text>().text = DataTable.ClassData[int.Parse(DataTable.HeroData[heroData.id][5])][3];
         //兵种框
         obj.transform.GetChild(5).GetComponent<Image>().sprite = GameResources.ClassImg[0];
         //边框
-        FrameChoose(LoadJsonFile.heroTableDatas[heroData.id][3], obj.transform.GetChild(6).GetComponent<Image>());
+        FrameChoose(DataTable.HeroData[heroData.id][3], obj.transform.GetChild(6).GetComponent<Image>());
         //碎片
-        if (heroData.level < LoadJsonFile.upGradeTableDatas.Count)
+        if (heroData.level < DataTable.UpGradeData.Count)
         {
-            obj.transform.GetChild(2).GetComponent<Text>().text = heroData.chips + "/" + LoadJsonFile.upGradeTableDatas[heroData.level][1];
-            obj.transform.GetChild(2).GetComponent<Text>().color = heroData.chips >= int.Parse(LoadJsonFile.upGradeTableDatas[heroData.level][1]) ? ColorDataStatic.deep_green : Color.white;
+            obj.transform.GetChild(2).GetComponent<Text>().text = heroData.chips + "/" + DataTable.UpGradeData[heroData.level][1];
+            obj.transform.GetChild(2).GetComponent<Text>().color = heroData.chips >= int.Parse(DataTable.UpGradeData[heroData.level][1]) ? ColorDataStatic.deep_green : Color.white;
         }
         else
         {
@@ -1431,34 +1425,34 @@ public class UIManager : MonoBehaviour
 
         //Debug.Log("点击的武将id：" + heroData.id);
         //武将名字
-        infoTran.GetChild(0).GetComponent<Text>().text = LoadJsonFile.heroTableDatas[heroData.id][1];
+        infoTran.GetChild(0).GetComponent<Text>().text = DataTable.HeroData[heroData.id][1];
         //武将名字颜色
-        infoTran.GetChild(0).GetComponent<Text>().color = NameColorChoose(LoadJsonFile.heroTableDatas[heroData.id][3]);
+        infoTran.GetChild(0).GetComponent<Text>().color = NameColorChoose(DataTable.HeroData[heroData.id][3]);
         //武将属性
-        string[] strs_attack = LoadJsonFile.heroTableDatas[heroData.id][7].Split(',');
-        infoTran.GetChild(1).GetComponent<Text>().text = string.Format(LoadJsonFile.GetStringText(32), strs_attack[heroData.level > 0 ? heroData.level - 1 : 0]);
-        string[] strs_health = LoadJsonFile.heroTableDatas[heroData.id][8].Split(',');
-        infoTran.GetChild(2).GetComponent<Text>().text = string.Format(LoadJsonFile.GetStringText(33), strs_health[heroData.level > 0 ? heroData.level - 1 : 0]);
+        string[] strs_attack = DataTable.HeroData[heroData.id][7].Split(',');
+        infoTran.GetChild(1).GetComponent<Text>().text = string.Format(DataTable.GetStringText(32), strs_attack[heroData.level > 0 ? heroData.level - 1 : 0]);
+        string[] strs_health = DataTable.HeroData[heroData.id][8].Split(',');
+        infoTran.GetChild(2).GetComponent<Text>().text = string.Format(DataTable.GetStringText(33), strs_health[heroData.level > 0 ? heroData.level - 1 : 0]);
         //武将介绍
-        infoTran.GetChild(3).GetComponent<Text>().text = LoadJsonFile.heroTableDatas[heroData.id][2];
+        infoTran.GetChild(3).GetComponent<Text>().text = DataTable.HeroData[heroData.id][2];
 
         //名字
-        ShowNameTextRules(showCardObj.transform.GetChild(3).GetComponent<Text>(), LoadJsonFile.heroTableDatas[heroData.id][1]);
+        ShowNameTextRules(showCardObj.transform.GetChild(3).GetComponent<Text>(), DataTable.HeroData[heroData.id][1]);
         //名字颜色
-        showCardObj.transform.GetChild(3).GetComponent<Text>().color = NameColorChoose(LoadJsonFile.heroTableDatas[heroData.id][3]);
+        showCardObj.transform.GetChild(3).GetComponent<Text>().color = NameColorChoose(DataTable.HeroData[heroData.id][3]);
         //卡牌
         showCardObj.transform.GetChild(1).GetComponent<Image>().sprite = GameResources.HeroImg[heroData.id];
         //兵种名
-        showCardObj.transform.GetChild(5).GetComponentInChildren<Text>().text = LoadJsonFile.classTableDatas[int.Parse(LoadJsonFile.heroTableDatas[heroData.id][5])][3];
+        showCardObj.transform.GetChild(5).GetComponentInChildren<Text>().text = DataTable.ClassData[int.Parse(DataTable.HeroData[heroData.id][5])][3];
         //兵种框
         showCardObj.transform.GetChild(5).GetComponent<Image>().sprite = GameResources.ClassImg[0];
         //边框
-        FrameChoose(LoadJsonFile.heroTableDatas[heroData.id][3], showCardObj.transform.GetChild(6).GetComponent<Image>());
+        FrameChoose(DataTable.HeroData[heroData.id][3], showCardObj.transform.GetChild(6).GetComponent<Image>());
         //碎片
-        if (heroData.level < LoadJsonFile.upGradeTableDatas.Count)
+        if (heroData.level < DataTable.UpGradeData.Count)
         {
-            showCardObj.transform.GetChild(2).GetComponent<Text>().text = heroData.chips + "/" + LoadJsonFile.upGradeTableDatas[heroData.level][1];
-            showCardObj.transform.GetChild(2).GetComponent<Text>().color = heroData.chips >= int.Parse(LoadJsonFile.upGradeTableDatas[heroData.level][1]) ? ColorDataStatic.deep_green : Color.black;
+            showCardObj.transform.GetChild(2).GetComponent<Text>().text = heroData.chips + "/" + DataTable.UpGradeData[heroData.level][1];
+            showCardObj.transform.GetChild(2).GetComponent<Text>().color = heroData.chips >= int.Parse(DataTable.UpGradeData[heroData.level][1]) ? ColorDataStatic.deep_green : Color.black;
         }
         else
         {
@@ -1484,12 +1478,12 @@ public class UIManager : MonoBehaviour
             if (heroData.isFight > 0)
             {
                 showCardObj.transform.GetChild(7).gameObject.SetActive(true);
-                holdOrFightBtn.GetComponentInChildren<Text>().text = LoadJsonFile.GetStringText(30);
+                holdOrFightBtn.GetComponentInChildren<Text>().text = DataTable.GetStringText(30);
             }
             else
             {
                 showCardObj.transform.GetChild(7).gameObject.SetActive(false);
-                holdOrFightBtn.GetComponentInChildren<Text>().text = LoadJsonFile.GetStringText(31);
+                holdOrFightBtn.GetComponentInChildren<Text>().text = DataTable.GetStringText(31);
             }
         }
         else
@@ -1519,19 +1513,19 @@ public class UIManager : MonoBehaviour
         switch (cardType)
         {
             case 0:
-                rarityStr = LoadJsonFile.heroTableDatas[cardId][3];
+                rarityStr = DataTable.HeroData[cardId][3];
                 break;
             case 1:
-                rarityStr = LoadJsonFile.soldierTableDatas[cardId][3];
+                rarityStr = DataTable.SoldierData[cardId][3];
                 break;
             case 2:
-                rarityStr = LoadJsonFile.towerTableDatas[cardId][3];
+                rarityStr = DataTable.TowerData[cardId][3];
                 break;
             case 3:
-                rarityStr = LoadJsonFile.trapTableDatas[cardId][3];
+                rarityStr = DataTable.TrapData[cardId][3];
                 break;
             case 4:
-                rarityStr = LoadJsonFile.spellTableDatas[cardId][3];
+                rarityStr = DataTable.SpellData[cardId][3];
                 break;
             default:
                 break;
@@ -1545,7 +1539,7 @@ public class UIManager : MonoBehaviour
         int chips = heroData.chips;
         for (int i = 0; i < heroData.level; i++)
         {
-            chips += int.Parse(LoadJsonFile.upGradeTableDatas[i][1]);
+            chips += int.Parse(DataTable.UpGradeData[i][1]);
         }
         int golds = 0;
         switch (GetIdBackCardRarity(heroData.typeIndex, heroData.id))
@@ -1716,20 +1710,20 @@ public class UIManager : MonoBehaviour
     public void InitializationPlayerInfo()
     {
         //player`s name
-        playerInfoObj.transform.GetChild(1).GetChild(1).GetComponent<Text>().text = LoadJsonFile.playerInitialTableDatas[PlayerDataForGame.instance.pyData.ForceId][1];
-        if (PlayerDataForGame.instance.pyData.Level >= LoadJsonFile.playerLevelTableDatas.Count)
+        playerInfoObj.transform.GetChild(1).GetChild(1).GetComponent<Text>().text = DataTable.PlayerInitialData[PlayerDataForGame.instance.pyData.ForceId][1];
+        if (PlayerDataForGame.instance.pyData.Level >= DataTable.PlayerLevelData.Count)
         {
             playerInfoObj.transform.GetChild(0).GetComponent<Slider>().value = 1;
-            playerInfoObj.transform.GetChild(2).GetChild(1).GetComponent<Text>().text =LoadJsonFile.GetStringText(34);
+            playerInfoObj.transform.GetChild(2).GetChild(1).GetComponent<Text>().text =DataTable.GetStringText(34);
             playerInfoObj.transform.GetChild(0).GetChild(2).GetComponent<Text>().text = PlayerDataForGame.instance.pyData.Exp + "/" + 99999;
         }
         else
         {
             //Exp
-            playerInfoObj.transform.GetChild(0).GetComponent<Slider>().value = PlayerDataForGame.instance.pyData.Exp / float.Parse(LoadJsonFile.playerLevelTableDatas[PlayerDataForGame.instance.pyData.Level][1]);
+            playerInfoObj.transform.GetChild(0).GetComponent<Slider>().value = PlayerDataForGame.instance.pyData.Exp / float.Parse(DataTable.PlayerLevelData[PlayerDataForGame.instance.pyData.Level][1]);
             //Level
-            playerInfoObj.transform.GetChild(2).GetChild(1).GetComponent<Text>().text = string.Format(LoadJsonFile.GetStringText(35), PlayerDataForGame.instance.pyData.Level);//玩家等级
-            playerInfoObj.transform.GetChild(0).GetChild(2).GetComponent<Text>().text = PlayerDataForGame.instance.pyData.Exp + "/" + LoadJsonFile.playerLevelTableDatas[PlayerDataForGame.instance.pyData.Level][1];
+            playerInfoObj.transform.GetChild(2).GetChild(1).GetComponent<Text>().text = string.Format(DataTable.GetStringText(35), PlayerDataForGame.instance.pyData.Level);//玩家等级
+            playerInfoObj.transform.GetChild(0).GetChild(2).GetComponent<Text>().text = PlayerDataForGame.instance.pyData.Exp + "/" + DataTable.PlayerLevelData[PlayerDataForGame.instance.pyData.Level][1];
         }
         //货币
         yuanBaoNumText.text = PlayerDataForGame.instance.pyData.YuanBao.ToString();
@@ -1756,9 +1750,9 @@ public class UIManager : MonoBehaviour
             heImgObj.SetActive(false);
         }
         heImgObj.SetActive(nowLevel == 0);
-        if (nowLevel < LoadJsonFile.upGradeTableDatas.Count)
+        if (nowLevel < DataTable.UpGradeData.Count)
         {
-            needYuanBaoNums = int.Parse(LoadJsonFile.upGradeTableDatas[nowLevel][2]);
+            needYuanBaoNums = int.Parse(DataTable.UpGradeData[nowLevel][2]);
             heChengBtn.transform.GetComponentInChildren<Text>().text = "" + needYuanBaoNums;
             heChengBtn.SetActive(true);
         }
@@ -1773,11 +1767,11 @@ public class UIManager : MonoBehaviour
     /// </summary>
     public void SynthesizeCard()
     {
-        if (selectCardData.chips >= int.Parse(LoadJsonFile.upGradeTableDatas[selectCardData.level][1]))
+        if (selectCardData.chips >= int.Parse(DataTable.UpGradeData[selectCardData.level][1]))
         {
             if (ConsumeManager.instance.DeductYuanBao(needYuanBaoNums))
             {
-                selectCardData.chips -= int.Parse(LoadJsonFile.upGradeTableDatas[selectCardData.level][1]);
+                selectCardData.chips -= int.Parse(DataTable.UpGradeData[selectCardData.level][1]);
 
                 selectCardData.level++;
                 if (!selectCardData.isHad)
@@ -1807,14 +1801,14 @@ public class UIManager : MonoBehaviour
             else
             {
                 //Debug.Log("元宝不足，合成失败");
-                PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(36));
+                PlayerDataForGame.instance.ShowStringTips(DataTable.GetStringText(36));
                 PlayOnClickMusic();
             }
         }
         else
         {
             //Debug.Log("碎片不足，合成失败");
-            PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(37));
+            PlayerDataForGame.instance.ShowStringTips(DataTable.GetStringText(37));
             PlayOnClickMusic();
         }
     }
@@ -1838,7 +1832,7 @@ public class UIManager : MonoBehaviour
             {
                 listCard.GetChild(7).gameObject.SetActive(false);
                 showCardObj.transform.GetChild(7).gameObject.SetActive(false);
-                holdOrFightBtn.GetComponentInChildren<Text>().text = LoadJsonFile.GetStringText(31);
+                holdOrFightBtn.GetComponentInChildren<Text>().text = DataTable.GetStringText(31);
                 selectCardData.isFight = 0;
                 AudioController0.instance.ChangeAudioClip(15);
                 AudioController0.instance.PlayAudioSource(0);
@@ -1854,14 +1848,14 @@ public class UIManager : MonoBehaviour
             {
                 listCard.GetChild(7).gameObject.SetActive(true);
                 showCardObj.transform.GetChild(7).gameObject.SetActive(true);
-                holdOrFightBtn.GetComponentInChildren<Text>().text = LoadJsonFile.GetStringText(30);
+                holdOrFightBtn.GetComponentInChildren<Text>().text = DataTable.GetStringText(30);
                 selectCardData.isFight = 1;
                 AudioController0.instance.ChangeAudioClip(14);
                 AudioController0.instance.PlayAudioSource(0);
             }
             else
             {
-                PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(38));
+                PlayerDataForGame.instance.ShowStringTips(DataTable.GetStringText(38));
 
                 PlayOnClickMusic();
             }
@@ -1877,10 +1871,10 @@ public class UIManager : MonoBehaviour
     {
         //Debug.Log("selectCardData.Level: " + selectCardData.Level);
         Transform listCard = lastSelectImg.transform.parent;
-        if (selectCardData.level < LoadJsonFile.upGradeTableDatas.Count)
+        if (selectCardData.level < DataTable.UpGradeData.Count)
         {
-            listCard.GetChild(2).GetComponent<Text>().text = selectCardData.chips + "/" + LoadJsonFile.upGradeTableDatas[selectCardData.level][1];
-            listCard.GetChild(2).GetComponent<Text>().color = selectCardData.chips >= int.Parse(LoadJsonFile.upGradeTableDatas[selectCardData.level][1]) ? ColorDataStatic.deep_green : Color.white;
+            listCard.GetChild(2).GetComponent<Text>().text = selectCardData.chips + "/" + DataTable.UpGradeData[selectCardData.level][1];
+            listCard.GetChild(2).GetComponent<Text>().color = selectCardData.chips >= int.Parse(DataTable.UpGradeData[selectCardData.level][1]) ? ColorDataStatic.deep_green : Color.white;
         }
         else
         {
@@ -2000,30 +1994,30 @@ public class UIManager : MonoBehaviour
             {
                 case 0:
                     cardTran.GetComponent<Image>().sprite = GameResources.HeroImg[rewardsCard.cardId];
-                    ShowNameTextRules(cardTran.GetChild(0).GetComponent<Text>(), LoadJsonFile.heroTableDatas[rewardsCard.cardId][1]);
-                    cardTran.GetChild(0).GetComponent<Text>().color = NameColorChoose(LoadJsonFile.heroTableDatas[rewardsCard.cardId][3]);
+                    ShowNameTextRules(cardTran.GetChild(0).GetComponent<Text>(), DataTable.HeroData[rewardsCard.cardId][1]);
+                    cardTran.GetChild(0).GetComponent<Text>().color = NameColorChoose(DataTable.HeroData[rewardsCard.cardId][3]);
                     cardTran.GetChild(1).GetComponent<Image>().sprite = GameResources.ClassImg[0];
-                    cardTran.GetChild(1).GetChild(0).GetComponentInChildren<Text>().text = LoadJsonFile.classTableDatas[int.Parse(LoadJsonFile.heroTableDatas[rewardsCard.cardId][5])][3];
-                    FrameChoose(LoadJsonFile.heroTableDatas[rewardsCard.cardId][3], cardTran.GetChild(2).GetComponent<Image>());
+                    cardTran.GetChild(1).GetChild(0).GetComponentInChildren<Text>().text = DataTable.ClassData[int.Parse(DataTable.HeroData[rewardsCard.cardId][5])][3];
+                    FrameChoose(DataTable.HeroData[rewardsCard.cardId][3], cardTran.GetChild(2).GetComponent<Image>());
                     break;
                 case 1:
                     //cardTran.GetChild(0).GetComponent<Text>().text = LoadJsonFile.soldierTableDatas[rewardsCard.cardId][1];
                     break;
                 case 2:
-                    cardTran.GetComponent<Image>().sprite = GameResources.FuZhuImg[int.Parse(LoadJsonFile.towerTableDatas[rewardsCard.cardId][10])];
-                    ShowNameTextRules(cardTran.GetChild(0).GetComponent<Text>(), LoadJsonFile.towerTableDatas[rewardsCard.cardId][1]);
-                    cardTran.GetChild(0).GetComponent<Text>().color = NameColorChoose(LoadJsonFile.towerTableDatas[rewardsCard.cardId][3]);
+                    cardTran.GetComponent<Image>().sprite = GameResources.FuZhuImg[int.Parse(DataTable.TowerData[rewardsCard.cardId][10])];
+                    ShowNameTextRules(cardTran.GetChild(0).GetComponent<Text>(), DataTable.TowerData[rewardsCard.cardId][1]);
+                    cardTran.GetChild(0).GetComponent<Text>().color = NameColorChoose(DataTable.TowerData[rewardsCard.cardId][3]);
                     cardTran.GetChild(1).GetComponent<Image>().sprite = GameResources.ClassImg[1];
-                    cardTran.GetChild(1).GetChild(0).GetComponentInChildren<Text>().text = LoadJsonFile.towerTableDatas[rewardsCard.cardId][5];
-                    FrameChoose(LoadJsonFile.towerTableDatas[rewardsCard.cardId][3], cardTran.GetChild(2).GetComponent<Image>());
+                    cardTran.GetChild(1).GetChild(0).GetComponentInChildren<Text>().text = DataTable.TowerData[rewardsCard.cardId][5];
+                    FrameChoose(DataTable.TowerData[rewardsCard.cardId][3], cardTran.GetChild(2).GetComponent<Image>());
                     break;
                 case 3:
-                    cardTran.GetComponent<Image>().sprite = GameResources.FuZhuImg[int.Parse(LoadJsonFile.trapTableDatas[rewardsCard.cardId][8])];
-                    ShowNameTextRules(cardTran.GetChild(0).GetComponent<Text>(), LoadJsonFile.trapTableDatas[rewardsCard.cardId][1]);
-                    cardTran.GetChild(0).GetComponent<Text>().color = NameColorChoose(LoadJsonFile.trapTableDatas[rewardsCard.cardId][3]);
+                    cardTran.GetComponent<Image>().sprite = GameResources.FuZhuImg[int.Parse(DataTable.TrapData[rewardsCard.cardId][8])];
+                    ShowNameTextRules(cardTran.GetChild(0).GetComponent<Text>(), DataTable.TrapData[rewardsCard.cardId][1]);
+                    cardTran.GetChild(0).GetComponent<Text>().color = NameColorChoose(DataTable.TrapData[rewardsCard.cardId][3]);
                     cardTran.GetChild(1).GetComponent<Image>().sprite = GameResources.ClassImg[1];
-                    cardTran.GetChild(1).GetChild(0).GetComponentInChildren<Text>().text = LoadJsonFile.trapTableDatas[rewardsCard.cardId][5];
-                    FrameChoose(LoadJsonFile.trapTableDatas[rewardsCard.cardId][3], cardTran.GetChild(2).GetComponent<Image>());
+                    cardTran.GetChild(1).GetChild(0).GetComponentInChildren<Text>().text = DataTable.TrapData[rewardsCard.cardId][5];
+                    FrameChoose(DataTable.TrapData[rewardsCard.cardId][3], cardTran.GetChild(2).GetComponent<Image>());
                     break;
                 case 4:
                     //cardTran.GetChild(0).GetComponent<Text>().text = LoadJsonFile.spellTableDatas[rewardsCard.cardId][1];
@@ -2085,7 +2079,7 @@ public class UIManager : MonoBehaviour
             case 1://主城
                 break;
             case 3://对决
-                PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(67));
+                PlayerDataForGame.instance.ShowStringTips(DataTable.GetStringText(67));
                 break;
             default :
                 XDebug.LogError<UIManager>($"未知页面索引[{index}]。");
@@ -2146,7 +2140,7 @@ public class UIManager : MonoBehaviour
     /// <param name="expNums"></param>
     public void GetPlayerExp(int expNums)
     {
-        if (PlayerDataForGame.instance.pyData.Level >= LoadJsonFile.playerLevelTableDatas.Count)
+        if (PlayerDataForGame.instance.pyData.Level >= DataTable.PlayerLevelData.Count)
         {
             PlayerDataForGame.instance.pyData.Exp += expNums;
             playerInfoObj.transform.GetChild(0).GetChild(2).GetComponent<Text>().text = PlayerDataForGame.instance.pyData.Exp + "/" + 99999;
@@ -2154,28 +2148,28 @@ public class UIManager : MonoBehaviour
         else
         {
             PlayerDataForGame.instance.pyData.Exp += expNums;
-            while (int.Parse(LoadJsonFile.playerLevelTableDatas[PlayerDataForGame.instance.pyData.Level][1]) <= PlayerDataForGame.instance.pyData.Exp)
+            while (int.Parse(DataTable.PlayerLevelData[PlayerDataForGame.instance.pyData.Level][1]) <= PlayerDataForGame.instance.pyData.Exp)
             {
-                PlayerDataForGame.instance.pyData.Exp -= int.Parse(LoadJsonFile.playerLevelTableDatas[PlayerDataForGame.instance.pyData.Level][1]);
+                PlayerDataForGame.instance.pyData.Exp -= int.Parse(DataTable.PlayerLevelData[PlayerDataForGame.instance.pyData.Level][1]);
                 PlayerDataForGame.instance.pyData.Level++;
-                PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(39));
-                if (PlayerDataForGame.instance.pyData.Level >= LoadJsonFile.playerLevelTableDatas.Count)
+                PlayerDataForGame.instance.ShowStringTips(DataTable.GetStringText(39));
+                if (PlayerDataForGame.instance.pyData.Level >= DataTable.PlayerLevelData.Count)
                 {
-                    PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(40));
+                    PlayerDataForGame.instance.ShowStringTips(DataTable.GetStringText(40));
                     break;
                 }
             }
-            if (PlayerDataForGame.instance.pyData.Level >= LoadJsonFile.playerLevelTableDatas.Count)
+            if (PlayerDataForGame.instance.pyData.Level >= DataTable.PlayerLevelData.Count)
             {
                 playerInfoObj.transform.GetChild(0).GetComponent<Slider>().value = 1;
-                playerInfoObj.transform.GetChild(2).GetChild(1).GetComponent<Text>().text = LoadJsonFile.GetStringText(34);
+                playerInfoObj.transform.GetChild(2).GetChild(1).GetComponent<Text>().text = DataTable.GetStringText(34);
                 playerInfoObj.transform.GetChild(0).GetChild(2).GetComponent<Text>().text = PlayerDataForGame.instance.pyData.Exp + "/" + 99999;
             }
             else
             {
-                playerInfoObj.transform.GetChild(0).GetComponent<Slider>().value = PlayerDataForGame.instance.pyData.Exp / float.Parse(LoadJsonFile.playerLevelTableDatas[PlayerDataForGame.instance.pyData.Level][1]);
-                playerInfoObj.transform.GetChild(2).GetChild(1).GetComponent<Text>().text = string.Format(LoadJsonFile.GetStringText(35), PlayerDataForGame.instance.pyData.Level);
-                playerInfoObj.transform.GetChild(0).GetChild(2).GetComponent<Text>().text = PlayerDataForGame.instance.pyData.Exp + "/" + LoadJsonFile.playerLevelTableDatas[PlayerDataForGame.instance.pyData.Level][1];
+                playerInfoObj.transform.GetChild(0).GetComponent<Slider>().value = PlayerDataForGame.instance.pyData.Exp / float.Parse(DataTable.PlayerLevelData[PlayerDataForGame.instance.pyData.Level][1]);
+                playerInfoObj.transform.GetChild(2).GetChild(1).GetComponent<Text>().text = string.Format(DataTable.GetStringText(35), PlayerDataForGame.instance.pyData.Level);
+                playerInfoObj.transform.GetChild(0).GetChild(2).GetComponent<Text>().text = PlayerDataForGame.instance.pyData.Exp + "/" + DataTable.PlayerLevelData[PlayerDataForGame.instance.pyData.Level][1];
             }
             UpdateCardNumsShow();
         }
@@ -2252,11 +2246,11 @@ public class UIManager : MonoBehaviour
         PlayOnClickMusic();
         if (AudioController0.instance.isPlayMusic != 1)
         {
-            musicBtnText.text = LoadJsonFile.GetStringText(41);
+            musicBtnText.text = DataTable.GetStringText(41);
         }
         else
         {
-            musicBtnText.text = LoadJsonFile.GetStringText(42);
+            musicBtnText.text = DataTable.GetStringText(42);
         }
     }
 
@@ -2269,7 +2263,7 @@ public class UIManager : MonoBehaviour
             PlayerPrefs.SetInt(LoadSaveData.instance.IsPlayMusicStr, 1);
             AudioController0.instance.isPlayMusic = 1;
             AudioController1.instance.audioSource.Play();
-            musicBtnText.text = LoadJsonFile.GetStringText(42);
+            musicBtnText.text = DataTable.GetStringText(42);
             PlayOnClickMusic();
         }
         else
@@ -2279,7 +2273,7 @@ public class UIManager : MonoBehaviour
             AudioController0.instance.isPlayMusic = 0;
             AudioController0.instance.audioSource.Pause();
             AudioController1.instance.audioSource.Pause();
-            musicBtnText.text = LoadJsonFile.GetStringText(41);
+            musicBtnText.text = DataTable.GetStringText(41);
         }
     }
 
@@ -2306,15 +2300,15 @@ public class UIManager : MonoBehaviour
         string str = rtInputField.text;
         if (str == "")
         {
-            PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(45));
+            PlayerDataForGame.instance.ShowStringTips(DataTable.GetStringText(45));
             PlayOnClickMusic();
         }
         else
         {
             int indexId = -1;
-            for (int i = 0; i < LoadJsonFile.rCodeTableDatas.Count; i++)
+            for (int i = 0; i < DataTable.RCodeData.Count; i++)
             {
-                if (str == LoadJsonFile.rCodeTableDatas[i][1])
+                if (str == DataTable.RCodeData[i][1])
                 {
                     indexId = i;
                     break;
@@ -2322,7 +2316,7 @@ public class UIManager : MonoBehaviour
             }
             if (indexId != -1)
             {
-                string[] arr = LoadJsonFile.rCodeTableDatas[indexId][2].Split('-');
+                string[] arr = DataTable.RCodeData[indexId][2].Split('-');
                 DateTime startTime = DateTime.ParseExact(arr[0], "yyyyMMdd", System.Globalization.CultureInfo.CurrentCulture);
                 DateTime endTime = DateTime.ParseExact(arr[1], "yyyyMMdd", System.Globalization.CultureInfo.CurrentCulture);
                 DateTime nowTime = TimeSystemControl.instance.SystemTimer.Now.LocalDateTime;
@@ -2330,7 +2324,7 @@ public class UIManager : MonoBehaviour
                 if (nowTime < startTime || nowTime > endTime)
                 {
                     rtInputField.text = "";
-                    PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(47));
+                    PlayerDataForGame.instance.ShowStringTips(DataTable.GetStringText(47));
                     PlayOnClickMusic();
                 }
                 else
@@ -2338,25 +2332,22 @@ public class UIManager : MonoBehaviour
                     if (!PlayerDataForGame.instance.gbocData.redemptionCodeGotList[indexId].isGot)
                     {
                         //获得奖励
-                        int addYvQueNums = int.Parse(LoadJsonFile.rCodeTableDatas[indexId][4]);
+                        int addYvQueNums = int.Parse(DataTable.RCodeData[indexId][4]);
                         ConsumeManager.instance.AddYuQue(addYvQueNums);
-                        int addYuanBaoNums = int.Parse(LoadJsonFile.rCodeTableDatas[indexId][5]);
+                        int addYuanBaoNums = int.Parse(DataTable.RCodeData[indexId][5]);
                         ConsumeManager.instance.AddYuanBao(addYuanBaoNums);
-                        int tiLiNums = int.Parse(LoadJsonFile.rCodeTableDatas[indexId][6]);
+                        int tiLiNums = int.Parse(DataTable.RCodeData[indexId][6]);
                         AddTiLiNums(tiLiNums);
-                        string[] arrRewards = LoadJsonFile.rCodeTableDatas[indexId][7].Split(';');
+                        string[] arrRewards = DataTable.RCodeData[indexId][7].Split(';');
                         List<RewardsCardClass> rewards = new List<RewardsCardClass>();
-                        int cardType = 0;
-                        int cardId = 0;
-                        int chips = 0;
                         for (int i = 0; i < arrRewards.Length; i++)
                         {
                             if (arrRewards[i] != "")
                             {
                                 string[] arrs = arrRewards[i].Split(',');
-                                cardType = int.Parse(arrs[0]);
-                                cardId = int.Parse(arrs[1]);
-                                chips = int.Parse(arrs[2]);
+                                var cardType = int.Parse(arrs[0]);
+                                var cardId = int.Parse(arrs[1]);
+                                var chips = int.Parse(arrs[2]);
                                 rewardManager.RewardCard((GameCardType)cardType, cardId, chips);
                                 RewardsCardClass rewardCard = new RewardsCardClass();
                                 rewardCard.cardType = cardType;
@@ -2374,7 +2365,7 @@ public class UIManager : MonoBehaviour
                         LoadSaveData.instance.SaveGameData(4);
 
                         rtInputField.text = "";
-                        PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.rCodeTableDatas[indexId][3]);
+                        PlayerDataForGame.instance.ShowStringTips(DataTable.RCodeData[indexId][3]);
                         rtCloseBtn.onClick.Invoke();
                         AudioController0.instance.ChangeAudioClip(0);
                         AudioController0.instance.PlayAudioSource(0);
@@ -2382,7 +2373,7 @@ public class UIManager : MonoBehaviour
                     else
                     {
                         rtInputField.text = "";
-                        PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(48));
+                        PlayerDataForGame.instance.ShowStringTips(DataTable.GetStringText(48));
                         PlayOnClickMusic();
                     }
                 }
@@ -2390,7 +2381,7 @@ public class UIManager : MonoBehaviour
             else
             {
                 rtInputField.text = "";
-                PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(49));
+                PlayerDataForGame.instance.ShowStringTips(DataTable.GetStringText(49));
                 PlayOnClickMusic();
             }
         }
@@ -2409,11 +2400,11 @@ public class UIManager : MonoBehaviour
                 ChickenShoppingGetTiLi(index);
             });
             //显示体力的数量
-            chickenShopBtns[i].transform.parent.GetChild(1).GetComponent<Text>().text = "×" + LoadJsonFile.tiLiStoreTableDatas[i][1];
+            chickenShopBtns[i].transform.parent.GetChild(1).GetComponent<Text>().text = "×" + DataTable.TiLiStoreData[i][1];
             //显示消耗玉阙的数量
             if (i != 0)
             {
-                chickenShopBtns[i].transform.GetChild(0).GetComponent<Text>().text = "×" + LoadJsonFile.tiLiStoreTableDatas[i][2];
+                chickenShopBtns[i].transform.GetChild(0).GetComponent<Text>().text = "×" + DataTable.TiLiStoreData[i][2];
             }
         }
 
@@ -2452,8 +2443,8 @@ public class UIManager : MonoBehaviour
     {
         AudioController0.instance.ChangeAudioClip(13);
         OpenOrCloseChickenBtn(false);
-        int getTiLiNums = int.Parse(LoadJsonFile.tiLiStoreTableDatas[indexBtn][1]);
-        int needYvQueNums = int.Parse(LoadJsonFile.tiLiStoreTableDatas[indexBtn][2]);
+        int getTiLiNums = int.Parse(DataTable.TiLiStoreData[indexBtn][1]);
+        int needYvQueNums = int.Parse(DataTable.TiLiStoreData[indexBtn][2]);
         switch (indexBtn)
         {
             case 0:
@@ -2461,14 +2452,14 @@ public class UIManager : MonoBehaviour
                 {
 
                     GetTiLiForChicken(needYvQueNums, getTiLiNums);
-                    PlayerDataForGame.instance.ShowStringTips(string.Format(LoadJsonFile.GetStringText(50),
+                    PlayerDataForGame.instance.ShowStringTips(string.Format(DataTable.GetStringText(50),
                         getTiLiNums));
                     GetCkChangeTimeAndWindow();
                     AudioController0.instance.ChangeAudioClip(25);
                     AudioController0.instance.PlayAudioSource(0);
                 }, () =>
                 {
-                    PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(6));
+                    PlayerDataForGame.instance.ShowStringTips(DataTable.GetStringText(6));
                     OpenOrCloseChickenBtn(true);
                 });
                 break;
@@ -2476,7 +2467,7 @@ public class UIManager : MonoBehaviour
             case 2:
                 if (GetTiLiForChicken(needYvQueNums, getTiLiNums))
                 {
-                    PlayerDataForGame.instance.ShowStringTips(string.Format(LoadJsonFile.GetStringText(51), getTiLiNums));
+                    PlayerDataForGame.instance.ShowStringTips(string.Format(DataTable.GetStringText(51), getTiLiNums));
                     GetCkChangeTimeAndWindow();
                     AudioController0.instance.ChangeAudioClip(25);
                 }
@@ -2720,7 +2711,7 @@ public class UIManager : MonoBehaviour
             else
             {
                 isShowQuitTips = true;
-                PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(52));
+                PlayerDataForGame.instance.ShowStringTips(DataTable.GetStringText(52));
                 Invoke("ResetQuitBool", 2f);
             }
         }

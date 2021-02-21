@@ -29,16 +29,21 @@ public class SanGuoTvUi : MonoBehaviour
     public void GenerateReport()
     {
         var now = DateTime.Now;
-        var result = LoadJsonFile.baYeTVTableDatas
-            .Select(row => new Report
+        var result = DataTable.BaYeTvData
+            .Select(row =>
             {
-                Id = int.Parse(row[0]),
-                Weight = int.Parse(row[1]),//权重
-                Text = row[2],//文本
-                Time = row[3],//时间
-                Format = int.Parse(row[4])//格式
+                int.TryParse(row[4], out var format);
+                return new Report
+                {
+                    Id = int.Parse(row[0]),
+                    Weight = int.Parse(row[1]), //权重
+                    Text = row[2], //文本
+                    Time = row[3], //时间
+                    Format = format //格式
 
-            }).Where(r => r.Time.IsTableTimeInRange(now)).Pick(contents.Length).ToList();
+                };
+            }).Where(r => r.Time.IsTableTimeInRange(now))
+            .Pick(contents.Length).ToList();
         for (int i = 0; i < result.Count; i++)
         {
             clocks[i].text = SystemTimer.instance.CurrentClock;
@@ -48,7 +53,7 @@ public class SanGuoTvUi : MonoBehaviour
 
     private string GetFormattedText(Report report)
     {
-        object[] names = LoadJsonFile.baYeNameTableDatas.Select(row => new Character
+        object[] names = DataTable.BaYeNameData.Select(row => new Character
         {
             Name = row[2],
             Weight = int.Parse(row[1])

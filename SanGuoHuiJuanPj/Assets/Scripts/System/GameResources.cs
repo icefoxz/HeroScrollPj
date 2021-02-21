@@ -63,10 +63,9 @@ public class GameResources
     {
         if (isInit && !forceReload) return;
         var heroTable =
-            LoadJsonFile.heroTableDatas
+            DataTable.HeroData
                 .Where(row=>row.Count>16 && !string.IsNullOrWhiteSpace(row[1]))
-                .Select(
-                row => new {heroId = int.Parse(row[0]), imageId = int.Parse(row[16])});
+                .Select(row => new {heroId = int.Parse(row[0]), imageId = int.Parse(row[16])});
          var list = Resources.LoadAll<Sprite>(HeroImagesPath)
              .Select(o => new {imageId = int.Parse(o.name), sprite = o})
             .Join(heroTable, c => c.imageId, t => t.imageId,

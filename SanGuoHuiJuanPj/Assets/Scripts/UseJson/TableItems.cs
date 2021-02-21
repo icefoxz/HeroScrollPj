@@ -1,4 +1,4 @@
-﻿public class PlayerInitialTableItem
+﻿public class PlayerInitialTable
 {
     public string id { get; set; }
     public string power { get; set; }
@@ -7,13 +7,13 @@
     public string initialTower { get; set; }
     public string powerIntro { get; set; }
 }
-public class AssetTableItem
+public class AssetTable
 {
     public string id { get; set; }
     public string type { get; set; }
     public string startValue { get; set; }
 }
-public class HeroTableItem
+public class HeroTable
 {
     public string id { get; set; }
     public string name { get; set; }
@@ -42,7 +42,7 @@ public class HeroTableItem
     public string faShuMianShang { get; set; }
     public string fettersRelated { get; set; }
 }
-public class PlayerLevelTableItem
+public class PlayerLevelTable
 {
     public string level { get; set; }
     public string exp { get; set; }
@@ -58,7 +58,7 @@ public class PlayerLevelTableItem
     public string BaYeBattleLevel { get; set; }
 
 }
-public class SoldierTableItem
+public class SoldierTable
 {
     public string id { get; set; }
     public string name { get; set; }
@@ -78,7 +78,7 @@ public class SoldierTableItem
     public string tag2 { get; set; }
     public string onShow { get; set; }
 }
-public class TowerTableItem
+public class TowerTable
 {
     public string id { get; set; }
     public string name { get; set; }
@@ -97,7 +97,7 @@ public class TowerTableItem
     public string chanChu { get; set; }
     public string shiLi { get; set; }
 }
-public class ClassTableItem
+public class ClassTable
 {
     public string id { get; set; }
     public string type { get; set; }
@@ -106,13 +106,13 @@ public class ClassTableItem
     public string info { get; set; }
     public string bingZhongXi { get; set; }
 }
-public class UpGradeTableItem
+public class UpGradeTable
 {
     public string starLevel { get; set; }
     public string partsDemand { get; set; }
     public string yuanbaoDemand { get; set; }
 }
-public class TrapTableItem
+public class TrapTable
 {
     public string id { get; set; }
     public string name { get; set; }
@@ -130,7 +130,7 @@ public class TrapTableItem
     public string chanChu { get; set; }
     public string shiLi { get; set; }
 }
-public class SpellTableItem
+public class SpellTable
 {
     public string id { get; set; }
     public string name { get; set; }
@@ -141,7 +141,7 @@ public class SpellTableItem
     public string icon { get; set; }
     public string onShow { get; set; }
 }
-public class WarChestTableItem
+public class WarChestTable
 {
     public string id { get; set; }
     public string chestType { get; set; }
@@ -153,7 +153,7 @@ public class WarChestTableItem
     public string tower { get; set; }
     public string hero { get; set; }
 }
-public class WarTableItem
+public class WarTable
 {
     public string warId { get; set; }
     public string warName { get; set; }
@@ -168,27 +168,27 @@ public class WarTableItem
     public string TiLiR { get; set; }
     public string JunTuan { get; set; }
 }
-public class CityLevelTableItem
+public class CityLevelTable
 {
     public string cityLevel { get; set; }
     public string cost { get; set; }
     public string cityDur { get; set; }
     public string heroFightLimit { get; set; }
 }
-public class PointTableItem
+public class PointTable
 {
-    public string pointId { get; set; }
+    public int pointId { get; set; }
     public string nextPoint { get; set; }
     public string pointName { get; set; }
-    public string eventType { get; set; }
-    public string eventId { get; set; }
+    public int eventType { get; set; }
+    public int eventId { get; set; }
     public string pointStory { get; set; }
-    public string cityIcon { get; set; }
-    public string battleBG { get; set; }
-    public string battleBGM { get; set; }
+    public int cityIcon { get; set; }
+    public int battleBG { get; set; }
+    public int battleBGM { get; set; }
     public string flag { get; set; }
 }
-public class BattleEventTableItem
+public class BattleEventTable
 {
     public string battleId { get; set; }
     public string enemyPower { get; set; }
@@ -198,7 +198,7 @@ public class BattleEventTableItem
     public string goldReward { get; set; }
     public string type { get; set; }
 }
-public class EnemyTableItem
+public class EnemyTable
 {
     public string enemyId { get; set; }
     public string pos1 { get; set; }
@@ -222,7 +222,7 @@ public class EnemyTableItem
     public string pos19 { get; set; }
     public string pos20 { get; set; }
 }
-public class EnemyUnitTableItem
+public class EnemyUnitTable
 {
     public string enemyUnit { get; set; }
     public string unitType { get; set; }
@@ -231,7 +231,7 @@ public class EnemyUnitTableItem
     public string goldReward { get; set; }
     public string warChest { get; set; }
 }
-public class StoryTableItem
+public class StoryTable
 {
     public string id { get; set; }
     public string story { get; set; }
@@ -242,7 +242,7 @@ public class StoryTableItem
     public string option1ToEnding { get; set; }
     public string option2ToEnding { get; set; }
 }
-public class StoryRTableItem
+public class StoryRTable
 {
     public string id { get; set; }
     public string ending { get; set; }
@@ -252,7 +252,7 @@ public class StoryRTableItem
     public string unitCount { get; set; }
     public string goldReward { get; set; }
 }
-public class TestTableItem
+public class TestTable
 {
     public string id { get; set; }
     public string question { get; set; }
@@ -262,7 +262,7 @@ public class TestTableItem
     public string answer3 { get; set; }
     public string weightValue { get; set; }
 }
-public class TestRTableItem
+public class TestRTable
 {
     public string id { get; set; }
     public string weightValue { get; set; }
@@ -270,7 +270,7 @@ public class TestRTableItem
     public string rarity { get; set; }
     public string level { get; set; }
 }
-public class EncounterTableItem
+public class EncounterTable
 {
     public string id { get; set; }
     public string weightValue { get; set; }
@@ -280,7 +280,7 @@ public class EncounterTableItem
     public string cost { get; set; }
 
 }
-public class ShoppingTableItem
+public class ShoppingTable
 {
     public string id { get; set; }
     public string weightValue { get; set; }
@@ -288,7 +288,7 @@ public class ShoppingTableItem
     public string rarity { get; set; }
     public string level { get; set; }
 }
-public class ChoseWarTableItem
+public class ChoseWarTable
 {
     public string id { get; set; }
     public string difficulty { get; set; }
@@ -297,7 +297,7 @@ public class ChoseWarTableItem
     public string tiliCost { get; set; }
     public string instructions { get; set; }
 }
-public class GuideTableItem
+public class GuideTable
 {
     public string id { get; set; }
     public string title { get; set; }
@@ -350,7 +350,7 @@ public class GuideTableItem
     public string epos19 { get; set; }
     public string epos20 { get; set; }
 }
-public class KnowledgeTableItem
+public class KnowledgeTable
 {
     public string id { get; set; }
     public string type { get; set; }
@@ -360,7 +360,7 @@ public class KnowledgeTableItem
     public string Name { get; set; }
 
 }
-public class RCodeTableItem
+public class RCodeTable
 {
     public string id { get; set; }
     public string code { get; set; }
@@ -371,13 +371,13 @@ public class RCodeTableItem
     public string TiLi { get; set; }
     public string SuiPian { get; set; }
 }
-public class TiLiStoreTableItem
+public class TiLiStoreTable
 {
     public string id { get; set; }
     public string TiLi { get; set; }
     public string YuQue { get; set; }
 }
-public class EnemyBOSSTableItem
+public class EnemyBOSSTable
 {
     public string enemyId { get; set; }
     public string pos1 { get; set; }
@@ -401,17 +401,17 @@ public class EnemyBOSSTableItem
     public string pos19 { get; set; }
     public string pos20 { get; set; }
 }
-public class StringTextTableItem
+public class StringTextTable
 {
     public string id { get; set; }
     public string stringContent { get; set; }
 }
-public class NumParametersTableItem
+public class NumParametersTable
 {
     public string id { get; set; }
     public string numContent { get; set; }
 }
-public class JiBanTableItem
+public class JiBanTable
 {
     public string id { get; set; }
     public string jiBanMing { get; set; }
@@ -420,7 +420,7 @@ public class JiBanTableItem
     public string jiBanXiaoGuo { get; set; }
     public string BOSSId { get; set; }
 }
-public class ShiLiTableItem 
+public class ShiLiTable 
 {
     public string id { get; set; }
     public string ShiLi { get; set; }
@@ -429,14 +429,14 @@ public class ShiLiTableItem
     public string UnlockLevel { get; set; }
     public string JunTuanInfo { get; set; }
 }
-public class BaYeDiTuTableItem
+public class BaYeDiTuTable
 {
     public string id { get; set; }
     public string type { get; set; }
     public string events { get; set; }
     public string name { get; set; }
 }
-public class BaYeShiJianTableItem
+public class BaYeShiJianTable
 {
     public string id { get; set; }
     public string QuanZhong { get; set; }
@@ -445,7 +445,7 @@ public class BaYeShiJianTableItem
     public string Flag { get; set; }
     public string FlagWord { get; set; }
 }
-public class BaYeBattleTableItem
+public class BaYeBattleTable
 {
     public string id { get; set; }
     public string level0 { get; set; }
@@ -459,18 +459,18 @@ public class BaYeBattleTableItem
     public string level8 { get; set; }
     public string level9 { get; set; }
 }
-public class BaYeRenWuTableItem
+public class BaYeRenWuTable
 { 
     public string id { get; set; }
     public string jingYan { get; set; }
     public string jiangLi { get; set; }
 }
-public class StoryPoolTableItem 
+public class StoryPoolTable 
 {
     public string poolId { get; set; }
     public string storyId { get; set; }
 }
-public class StoryIdTableItem 
+public class StoryIdTable 
 {
     public string storyId { get; set; }
     public string weight { get; set; }
@@ -483,7 +483,7 @@ public class StoryIdTableItem
     public string Time { get; set; }
     public string WarId { get; set; }
 }
-public class BaYeTVTableItem 
+public class BaYeTVTable 
 {
     public string id { get; set; }
     public string weight { get; set; }
@@ -491,7 +491,7 @@ public class BaYeTVTableItem
     public string time { get; set; }
     public string type { get; set; }
 }
-public class BaYeNameTableItem
+public class BaYeNameTable
 {
     public string id { get; set; }
     public string weight { get; set; }

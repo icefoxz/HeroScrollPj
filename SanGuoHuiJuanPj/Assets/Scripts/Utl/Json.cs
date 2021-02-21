@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 public static class Json
 {
@@ -43,6 +44,33 @@ public static class Json
             return null;
         }
     }
+    public static T Deserialize<T>(string value,JsonConverter[] converters) where T : class
+    {
+        try
+        {
+            return value == null ? null : JsonConvert.DeserializeObject<T>(value, converters);
+        }
+        catch (Exception e)
+        {
+            return null;
+        }
+    }
+    public static T Deserialize<T>(string value,IContractResolver resolver) where T : class
+    {
+        try
+        {
+            return value == null ? null : JsonConvert.DeserializeObject<T>(value, new JsonSerializerSettings
+            {
+                ContractResolver = resolver
+            });
+        }
+        catch (Exception e)
+        {
+            return null;
+        }
+    }
 
+    public static List<T> DeserializeList<T>(string jList,params JsonConverter[] converters) => string.IsNullOrWhiteSpace(jList) ? new List<T>() : Deserialize<List<T>>(jList,converters);
+    public static List<T> DeserializeList<T>(string jList,IContractResolver resolver) => string.IsNullOrWhiteSpace(jList) ? new List<T>() : Deserialize<List<T>>(jList,resolver);
     public static List<T> DeserializeList<T>(string jList) => string.IsNullOrWhiteSpace(jList) ? new List<T>() : Deserialize<List<T>>(jList);
 }
