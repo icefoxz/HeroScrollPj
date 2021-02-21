@@ -405,17 +405,13 @@ public class DataTable : MonoBehaviour
             for (var index = 0; index < props.Length; index++)
             {
                 var info = props[index];
-                var cell = row[index];
-                if (info.PropertyType != typeof(string))
-                {
-                    map.Value[index] = string.IsNullOrWhiteSpace(cell)
-                        ? Activator.CreateInstance(info.PropertyType).ToString()
-                        : row[index];
-                }
-                else if (cell == null)
-                {
-                    map.Value[index] = string.Empty;
-                }
+                var cell = map.Value[index];
+
+                if (info.PropertyType != StringType && string.IsNullOrWhiteSpace(cell))
+                {   //如果类型不是string并且内容为空 将实例一个预设值类型
+                    map.Value[index] = Activator.CreateInstance(info.PropertyType).ToString();
+                }   //如果是string并内容是null值，给个string.Empty
+                else if (cell == null) map.Value[index] = string.Empty;
             }
         }
         return newMap.ToDictionary(kv=>kv.Key,kv=>kv.Value as IReadOnlyList<string>);

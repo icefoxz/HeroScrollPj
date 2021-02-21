@@ -4873,8 +4873,8 @@ public class FightController : MonoBehaviour
                 }
             }
         }
-        getGold += int.Parse(DataTable.BattleEventData[FightForManager.instance.battleIdIndex][5]);
-        string[] arr1 = DataTable.BattleEventData[FightForManager.instance.battleIdIndex][4].Split(',');
+        getGold += int.Parse(DataTable.BattleEvent[FightForManager.instance.battleIdIndex][5]);
+        string[] arr1 = DataTable.BattleEvent[FightForManager.instance.battleIdIndex][4].Split(',');
         for (int k = 0; k < arr1.Length; k++)
         {
             if (arr1[k] != "")

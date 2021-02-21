@@ -138,18 +138,18 @@ public class FightForManager : MonoBehaviour
             }
         }
         //对战势力名
-        string battleEnemyPowerName = DataTable.BattleEventData[battleId][1];
-        string[] arrs = DataTable.BattleEventData[battleId][2].Split(',');
+        string battleEnemyPowerName = DataTable.BattleEvent[battleId][1];
+        string[] arrs = DataTable.BattleEvent[battleId][2].Split(',');
         int enemyRandId = int.Parse(arrs[Random.Range(0, (arrs[arrs.Length - 1] == "" ? arrs.Length - 1 : arrs.Length))]);    //敌人随机库抽取一个id
 
         //随机敌人卡牌
-        if (DataTable.BattleEventData[battleId][6] == "0")
+        if (DataTable.BattleEvent[battleId][6] == "0")
         {
             for (int i = 0; i < 20; i++)
             {
-                if (DataTable.EnemyData[enemyRandId][i + 1] != "0")
+                if (DataTable.Enemy[enemyRandId][i + 1] != "0")
                 {
-                    FightCardData data = CreateEnemyFightUnit(int.Parse(DataTable.EnemyData[enemyRandId][i + 1]), false);
+                    FightCardData data = CreateEnemyFightUnit(int.Parse(DataTable.Enemy[enemyRandId][i + 1]), false);
                     data.posIndex = i;
                     data.isPlayerCard = false;
                     data.cardObj.transform.position = enemyCardsPos[i].transform.position;
@@ -161,7 +161,7 @@ public class FightForManager : MonoBehaviour
         else
         {
             //固定敌人卡牌
-            if (DataTable.BattleEventData[battleId][6] == "1")
+            if (DataTable.BattleEvent[battleId][6] == "1")
             {
                 for (int i = 0; i < 20; i++)
                 {
@@ -182,7 +182,7 @@ public class FightForManager : MonoBehaviour
         FightCardData enemyHomeData = new FightCardData();
         enemyHomeData.cardObj = Instantiate(homeCardObj, enemyCardsBox);
         enemyHomeData.cardObj.transform.position = enemyCardsPos[17].transform.position;
-        enemyHomeData.fullHp = enemyHomeData.nowHp = int.Parse(DataTable.BattleEventData[battleId][3]);
+        enemyHomeData.fullHp = enemyHomeData.nowHp = int.Parse(DataTable.BattleEvent[battleId][3]);
         enemyHomeData.hpr = 0;
         enemyHomeData.cardType = 522;
         enemyHomeData.posIndex = 17;
