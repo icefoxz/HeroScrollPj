@@ -24965,6 +24965,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c8aa45ae1749b884a8b07d925c97d129, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  staminaMax: 1000
   Bug1_9YvQueCheck: 10000
   Bug1_9YvQueSet: 0
   WarType: 0
