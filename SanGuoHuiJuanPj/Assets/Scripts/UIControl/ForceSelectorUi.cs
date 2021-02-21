@@ -29,25 +29,25 @@ public class ForceSelectorUi : MonoBehaviour
         var totalUnlock = int.Parse(DataTable.PlayerLevelData[PlayerDataForGame.instance.pyData.Level - 1][6]);
         var totalDisplayForce = mode == Modes.仅显示可用
             ? totalUnlock + 1
-            : DataTable.ShiLiData.Count;
+            : DataTable.ShiLi.Count;
 
         for (int i = 0; i < totalDisplayForce; i++)
         {
-            int forceIndex = i;
+            int forceId = i;
             Button btn;
             ForceFlagUI forceFlag;
-            if (!data.ContainsKey(forceIndex))
+            if (!data.ContainsKey(forceId))
             {
                 btn = Instantiate(buttonPrefab, content.transform);//复制按钮
                 btn.transform.localScale = Vector3.one;
-                btn.gameObject.name = forceIndex.ToString();
+                btn.gameObject.name = forceId.ToString();
                 forceFlag = btn.GetComponentInChildren<ForceFlagUI>(true);
-                forceFlag.Set((ForceFlags) forceIndex);
-                data.Add(forceIndex, forceFlag);
+                forceFlag.Set((ForceFlags) forceId);
+                data.Add(forceId, forceFlag);
             }
             else
             {
-                forceFlag = data[forceIndex];
+                forceFlag = data[forceId];
                 btn = forceFlag.GetComponentInParent<Button>();
             }
 
@@ -57,13 +57,13 @@ public class ForceSelectorUi : MonoBehaviour
                 {
                     var isEnable=i <= totalUnlock;
                     btn.interactable = isEnable;
-                    forceFlag.Interaction(isEnable,DataTable.ShiLiData[forceIndex][4] + "级");
-                    if (btn.enabled) btn.onClick.AddListener(() => OnSelected(warType, forceIndex));
+                    forceFlag.Interaction(isEnable,DataTable.ShiLi[forceId][4] + "级");
+                    if (btn.enabled) btn.onClick.AddListener(() => OnSelected(warType, forceId));
                     break;
                 }
                 case Modes.仅显示可用:
                 {
-                    btn.onClick.AddListener(() => OnSelected(warType, forceIndex));
+                    btn.onClick.AddListener(() => OnSelected(warType, forceId));
                     break;
                 }
                 default:

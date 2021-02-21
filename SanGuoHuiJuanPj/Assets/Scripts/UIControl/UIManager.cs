@@ -381,15 +381,15 @@ public class UIManager : MonoBehaviour
         cityFields = new List<BaYeCityField>();
         for (int i = 0; i < baYeBattleEventController.eventList.Length; i++)
         {
-            int indexId = i;
+            int cityPoint = i;
             //得到战役id
             var ui = baYeBattleEventController.eventList[i];
             var cityField = ui.gameObject.AddComponent<BaYeCityField>();
-            cityField.id = indexId;
+            cityField.id = cityPoint;
             cityField.button = ui.button;
             cityFields.Add(cityField);
-            var baYeEvent = BaYeManager.instance.Map.Single(e => e.CityId == indexId);
-            var baYeRecord = baYe.data.SingleOrDefault(f => f.CityId == indexId);
+            var baYeEvent = BaYeManager.instance.Map.Single(e => e.CityId == cityPoint);
+            var baYeRecord = baYe.data.SingleOrDefault(f => f.CityId == cityPoint);
             var flag = (ForceFlags)int.Parse(DataTable.BaYeShiJian[baYeEvent.EventId][4]);//旗帜id
             var flagName = DataTable.BaYeShiJian[baYeEvent.EventId][5];//旗帜文字
             ui.button.interactable = cityList.Length > i;
@@ -402,7 +402,7 @@ public class UIManager : MonoBehaviour
                 ui.button.onClick
                     .AddListener(
                         () => BaYeManager.instance.OnBaYeWarEventPointSelected(BaYeManager.EventTypes.City, baYeEvent.CityId));
-                ui.text.text = DataTable.BaYeDiTu[indexId][3]; //城市名
+                ui.text.text = DataTable.BaYeDiTu[cityPoint][3]; //城市名
             }
             else
             {
@@ -447,20 +447,18 @@ public class UIManager : MonoBehaviour
     //main场景羁绊内容的初始化
     private void InitJiBanForMainFun()
     {
-        for (int i = 0; i < DataTable.JiBanData.Count; i++)
+        foreach (var map in DataTable.JiBan)
         {
-            if (DataTable.JiBanData[i][2] == "1")
+            var enableValue = int.Parse(map.Value[2]);
+            if (enableValue == 0) continue;
+            Transform tran = jibanBtnBoxTran.GetChild(map.Key);
+            if (tran != null)
             {
-                Transform tran = jibanBtnBoxTran.GetChild(i);
-                if (tran != null)
-                {
-                    int index = i;
-                    tran.GetChild(0).GetChild(0).GetComponent<Image>().sprite = Resources.Load("Image/JiBan/name_v/" + i, typeof(Sprite)) as Sprite;
-                    tran.GetChild(0).GetChild(0).GetComponent<Button>().onClick.AddListener(delegate() {
-                        ShowJiBanInfoOnClick(index);
-                    });
-                    tran.gameObject.SetActive(true);
-                }
+                tran.GetChild(0).GetChild(0).GetComponent<Image>().sprite =
+                    Resources.Load("Image/JiBan/name_v/" + map.Key, typeof(Sprite)) as Sprite;
+                tran.GetChild(0).GetChild(0).GetComponent<Button>().onClick.AddListener(() =>
+                    ShowJiBanInfoOnClick(map.Key));
+                tran.gameObject.SetActive(true);
             }
         }
         jiBanWinCloseBtn.onClick.AddListener(CloseHuiJuanWinObjFun);
@@ -474,7 +472,7 @@ public class UIManager : MonoBehaviour
             jibanHeroBoxTran.transform.GetChild(i).gameObject.SetActive(false);
         }
 
-        string[] arrs = DataTable.JiBanData[indexId][3].Split(';');
+        string[] arrs = DataTable.JiBan[indexId][3].Split(';');
         for (int i = 0; i < arrs.Length; i++)
         {
             if (arrs[i] != "")
@@ -725,17 +723,17 @@ public class UIManager : MonoBehaviour
     public void GetBaYeProgressReward(int index)
     {
         var baYe = PlayerDataForGame.instance.warsData.baYe;
-        var rewardTable = DataTable.BaYeRenWu
-            .Select(map =>
-                new {id = map.Key, exp = int.Parse(map.Value[1]), rewardId = int.Parse(map.Value[2])})
+        var baYeRewardList = DataTable.BaYeRenWuData
+            .Select(row =>
+                new {exp = int.Parse(row[1]), rewardId = int.Parse(row[2])})
             .ToList();
-        if (baYe.CurrentExp < rewardTable[index].exp)
+        if (baYe.CurrentExp < baYeRewardList[index].exp)
         {
             PlayerDataForGame.instance.ShowStringTips("当前经验不足以领取！");
             return;
         }
         baYeChestButtons[index].Opened();
-        var data = DataTable.BaYeRenWuData[index].Select(int.Parse).ToList();
+        var data = DataTable.BaYeRenWu[index].Select(int.Parse).ToList();
         var isOpen =baYe.openedChest[index];
         if (isOpen)
         {

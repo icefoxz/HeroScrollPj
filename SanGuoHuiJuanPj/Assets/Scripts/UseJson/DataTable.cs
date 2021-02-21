@@ -384,14 +384,14 @@ public class DataTable : MonoBehaviour
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    public static string GetStringText(int id) => StringTextData[id][1];
+    public static string GetStringText(int id) => StringText[id][1];
 
     /// <summary>
     /// 根据id获取游戏数值内容
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    public static int GetGameValue(int id) => int.Parse(NumParametersData[id][1]);
+    public static int GetGameValue(int id) => int.Parse(NumParameters[id][1]);
 
     private static Dictionary<int,IReadOnlyList<string>> SpecificTableResolver(Dictionary<int,IReadOnlyList<string>> field, Type type)
     {

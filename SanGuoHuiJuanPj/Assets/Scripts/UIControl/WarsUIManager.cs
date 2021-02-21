@@ -829,76 +829,76 @@ public class WarsUIManager : MonoBehaviour
             {
                 int btnIndex = i;
                 int indexId = GetRandomBaseOnWeight(DataTable.Encounter, 1);
-                int cardType = int.Parse(DataTable.EncounterData[indexId][2]);
-                string cardRarity = DataTable.EncounterData[indexId][3];
-                int cardLevel = int.Parse(DataTable.EncounterData[indexId][4]);
+                int cardType = int.Parse(DataTable.Encounter[indexId][2]);
+                string cardRarity = DataTable.Encounter[indexId][3];
+                int cardLevel = int.Parse(DataTable.Encounter[indexId][4]);
                 int cardId = 0;
                 switch (cardType)
                 {
                     case 0:
                         cardId = RandomPickFromRareClass(DataTable.Hero, cardRarity);
                         woodsList.GetChild(i).GetChild(1).GetComponent<Image>().sprite = re.HeroImg[cardId];
-                        ShowNameTextRules(woodsList.GetChild(i).GetChild(3).GetComponent<Text>(), DataTable.HeroData[cardId][1]);
+                        ShowNameTextRules(woodsList.GetChild(i).GetChild(3).GetComponent<Text>(), DataTable.Hero[cardId][1]);
                         //名字颜色
-                        woodsList.GetChild(i).GetChild(3).GetComponent<Text>().color = NameColorChoose(DataTable.HeroData[cardId][3]);
-                        woodsList.GetChild(i).GetChild(5).GetComponentInChildren<Text>().text = DataTable.ClassData[int.Parse(DataTable.HeroData[cardId][5])][3];
+                        woodsList.GetChild(i).GetChild(3).GetComponent<Text>().color = NameColorChoose(DataTable.Hero[cardId][3]);
+                        woodsList.GetChild(i).GetChild(5).GetComponentInChildren<Text>().text = DataTable.Class[int.Parse(DataTable.Hero[cardId][5])][3];
                         //兵种框
                         woodsList.GetChild(i).GetChild(5).GetComponent<Image>().sprite = re.ClassImg[0];
-                        FrameChoose(int.Parse(DataTable.HeroData[cardId][3]), woodsList.GetChild(i).GetChild(6).GetComponent<Image>());
+                        FrameChoose(int.Parse(DataTable.Hero[cardId][3]), woodsList.GetChild(i).GetChild(6).GetComponent<Image>());
 
                         woodsList.GetChild(i).GetComponent<Button>().onClick.RemoveAllListeners();
                         woodsList.GetChild(i).GetComponent<Button>().onClick.AddListener(delegate ()
                         {
-                            OnClickToShowShopInfo(btnIndex, DataTable.ClassData[int.Parse(DataTable.HeroData[cardId][5])][4]);
+                            OnClickToShowShopInfo(btnIndex, DataTable.Class[int.Parse(DataTable.Hero[cardId][5])][4]);
                         });
                         break;
                     case 1:
                         cardId = RandomPickFromRareClass(DataTable.Soldier, cardRarity);
-                        woodsList.GetChild(i).GetChild(1).GetComponent<Image>().sprite = re.FuZhuImg[int.Parse(DataTable.SoldierData[cardId][13])];
-                        ShowNameTextRules(woodsList.GetChild(i).GetChild(3).GetComponent<Text>(), DataTable.SoldierData[cardId][1]);
+                        woodsList.GetChild(i).GetChild(1).GetComponent<Image>().sprite = re.FuZhuImg[int.Parse(DataTable.Soldier[cardId][13])];
+                        ShowNameTextRules(woodsList.GetChild(i).GetChild(3).GetComponent<Text>(), DataTable.Soldier[cardId][1]);
                         //名字颜色
-                        woodsList.GetChild(i).GetChild(3).GetComponent<Text>().color = NameColorChoose(DataTable.SoldierData[cardId][3]);
-                        woodsList.GetChild(i).GetChild(5).GetComponentInChildren<Text>().text = DataTable.ClassData[int.Parse(DataTable.SoldierData[cardId][5])][3];
+                        woodsList.GetChild(i).GetChild(3).GetComponent<Text>().color = NameColorChoose(DataTable.Soldier[cardId][3]);
+                        woodsList.GetChild(i).GetChild(5).GetComponentInChildren<Text>().text = DataTable.Class[int.Parse(DataTable.Soldier[cardId][5])][3];
                         //兵种框
                         woodsList.GetChild(i).GetChild(5).GetComponent<Image>().sprite = re.ClassImg[1];
-                        FrameChoose(int.Parse(DataTable.SoldierData[cardId][3]),
+                        FrameChoose(int.Parse(DataTable.Soldier[cardId][3]),
                             woodsList.GetChild(i).GetChild(6).GetComponent<Image>());
                         woodsList.GetChild(i).GetComponent<Button>().onClick.RemoveAllListeners();
                         woodsList.GetChild(i).GetComponent<Button>().onClick.AddListener(delegate ()
                         {
-                            OnClickToShowShopInfo(btnIndex, DataTable.ClassData[int.Parse(DataTable.SoldierData[cardId][5])][4]);
+                            OnClickToShowShopInfo(btnIndex, DataTable.Class[int.Parse(DataTable.Soldier[cardId][5])][4]);
                         });
                         break;
                     case 2:
                         cardId = RandomPickFromRareClass(DataTable.Tower, cardRarity);
-                        woodsList.GetChild(i).GetChild(1).GetComponent<Image>().sprite = re.FuZhuImg[int.Parse(DataTable.TowerData[cardId][10])];
-                        ShowNameTextRules(woodsList.GetChild(i).GetChild(3).GetComponent<Text>(), DataTable.TowerData[cardId][1]);
+                        woodsList.GetChild(i).GetChild(1).GetComponent<Image>().sprite = re.FuZhuImg[int.Parse(DataTable.Tower[cardId][10])];
+                        ShowNameTextRules(woodsList.GetChild(i).GetChild(3).GetComponent<Text>(), DataTable.Tower[cardId][1]);
                         //名字颜色
-                        woodsList.GetChild(i).GetChild(3).GetComponent<Text>().color = NameColorChoose(DataTable.TowerData[cardId][3]);
-                        woodsList.GetChild(i).GetChild(5).GetComponentInChildren<Text>().text = DataTable.TowerData[cardId][5];
+                        woodsList.GetChild(i).GetChild(3).GetComponent<Text>().color = NameColorChoose(DataTable.Tower[cardId][3]);
+                        woodsList.GetChild(i).GetChild(5).GetComponentInChildren<Text>().text = DataTable.Tower[cardId][5];
                         //兵种框
                         woodsList.GetChild(i).GetChild(5).GetComponent<Image>().sprite = re.ClassImg[1];
-                        FrameChoose(int.Parse(DataTable.TowerData[cardId][3]), woodsList.GetChild(i).GetChild(6).GetComponent<Image>());
+                        FrameChoose(int.Parse(DataTable.Tower[cardId][3]), woodsList.GetChild(i).GetChild(6).GetComponent<Image>());
                         woodsList.GetChild(i).GetComponent<Button>().onClick.RemoveAllListeners();
                         woodsList.GetChild(i).GetComponent<Button>().onClick.AddListener(delegate ()
                         {
-                            OnClickToShowShopInfo(btnIndex, DataTable.TowerData[cardId][12]);
+                            OnClickToShowShopInfo(btnIndex, DataTable.Tower[cardId][12]);
                         });
                         break;
                     case 3:
                         cardId = RandomPickFromRareClass(DataTable.Trap, cardRarity);
-                        woodsList.GetChild(i).GetChild(1).GetComponent<Image>().sprite = re.FuZhuImg[int.Parse(DataTable.TrapData[cardId][8])];
-                        ShowNameTextRules(woodsList.GetChild(i).GetChild(3).GetComponent<Text>(), DataTable.TrapData[cardId][1]);
+                        woodsList.GetChild(i).GetChild(1).GetComponent<Image>().sprite = re.FuZhuImg[int.Parse(DataTable.Trap[cardId][8])];
+                        ShowNameTextRules(woodsList.GetChild(i).GetChild(3).GetComponent<Text>(), DataTable.Trap[cardId][1]);
                         //名字颜色
-                        woodsList.GetChild(i).GetChild(3).GetComponent<Text>().color = NameColorChoose(DataTable.TrapData[cardId][3]);
-                        woodsList.GetChild(i).GetChild(5).GetComponentInChildren<Text>().text = DataTable.TrapData[cardId][5];
+                        woodsList.GetChild(i).GetChild(3).GetComponent<Text>().color = NameColorChoose(DataTable.Trap[cardId][3]);
+                        woodsList.GetChild(i).GetChild(5).GetComponentInChildren<Text>().text = DataTable.Trap[cardId][5];
                         //兵种框
                         woodsList.GetChild(i).GetChild(5).GetComponent<Image>().sprite = re.ClassImg[1];
-                        FrameChoose(int.Parse(DataTable.TrapData[cardId][3]), woodsList.GetChild(i).GetChild(6).GetComponent<Image>());
+                        FrameChoose(int.Parse(DataTable.Trap[cardId][3]), woodsList.GetChild(i).GetChild(6).GetComponent<Image>());
                         woodsList.GetChild(i).GetComponent<Button>().onClick.RemoveAllListeners();
                         woodsList.GetChild(i).GetComponent<Button>().onClick.AddListener(delegate ()
                         {
-                            OnClickToShowShopInfo(btnIndex, DataTable.TrapData[cardId][11]);
+                            OnClickToShowShopInfo(btnIndex, DataTable.Trap[cardId][11]);
                         });
                         break;
                     case 4:

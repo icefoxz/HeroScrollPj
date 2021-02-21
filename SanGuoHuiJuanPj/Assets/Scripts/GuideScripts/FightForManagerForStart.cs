@@ -1,6 +1,7 @@
 ﻿using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -530,9 +531,8 @@ public class FightForManagerForStart : MonoBehaviour
     private void UpdateCardDataForStory()
     {
         //羁绊数据重置
-        InitJiBanTypeListFun(FightControlForStart.instance.playerJiBanAllTypes);
-        InitJiBanTypeListFun(FightControlForStart.instance.enemyJiBanAllTypes);
-
+        CardManager.ResetJiBan(FightControlForStart.instance.playerJiBanAllTypes);
+        CardManager.ResetJiBan(FightControlForStart.instance.enemyJiBanAllTypes);
         if (playerFightCardsDatas[17] == null)
         {
             CreatePlayerHomeCard();
@@ -1002,38 +1002,6 @@ public class FightForManagerForStart : MonoBehaviour
     }
 
     /// <summary>
-    /// 初始化羁绊集合
-    /// </summary>
-    private void InitJiBanTypeListFun(Dictionary<int, JiBanActivedClass> jiBanActivedClasses)
-    {
-        jiBanActivedClasses.Clear();
-        for (int i = 0; i < DataTable.JiBanData.Count; i++)
-        {
-            if (DataTable.JiBanData[i][2] != "0")
-            {
-                JiBanActivedClass jiBanActivedClass = new JiBanActivedClass();
-                jiBanActivedClass.jiBanIndex = i;
-                jiBanActivedClass.isActived = false;
-                jiBanActivedClass.cardTypeLists = new List<JiBanCardTypeClass>();
-                string[] arrs = DataTable.JiBanData[i][3].Split(';');
-                for (int j = 0; j < arrs.Length; j++)
-                {
-                    if (arrs[j] != "")
-                    {
-                        JiBanCardTypeClass jiBanCardTypeClass = new JiBanCardTypeClass();
-                        string[] arrss = arrs[j].Split(',');
-                        jiBanCardTypeClass.cardType = int.Parse(arrss[0]);
-                        jiBanCardTypeClass.cardId = int.Parse(arrss[1]);
-                        jiBanCardTypeClass.cardLists = new List<FightCardData>();
-                        jiBanActivedClass.cardTypeLists.Add(jiBanCardTypeClass);
-                    }
-                }
-                jiBanActivedClasses.Add(i, jiBanActivedClass);
-            }
-        }
-    }
-
-    /// <summary>
     /// 尝试激活或取消羁绊
     /// </summary>
     /// <param name="cardData">行动卡牌</param>
@@ -1049,7 +1017,7 @@ public class FightForManagerForStart : MonoBehaviour
             //遍历所属羁绊
             for (int i = 0; i < arrs.Length; i++)
             {
-                if (arrs[i] != "" && DataTable.JiBanData[int.Parse(arrs[i])][2] != "0")
+                if (arrs[i] != "" && DataTable.JiBan[int.Parse(arrs[i])][2] != "0")
                 {
                     JiBanActivedClass jiBanActivedClass = jiBanActivedClasses[int.Parse(arrs[i])];
                     bool isActived = true;

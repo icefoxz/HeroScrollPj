@@ -93,7 +93,7 @@ public class FightForManager : MonoBehaviour
         floDisY = 2 * oneDisY * xFlo;
 
         //玩家羁绊集合初始化
-        InitJiBanTypeListFun(FightController.instance.playerJiBanAllTypes);
+        CardManager.ResetJiBan(FightController.instance.playerJiBanAllTypes);
 
         CreatePlayerHomeCard();
         UpdateFightNumTextShow();
@@ -121,7 +121,7 @@ public class FightForManager : MonoBehaviour
     public void InitEnemyCardForFight(int battleId)
     {
         //初始化敌方羁绊原始集合
-        InitJiBanTypeListFun(FightController.instance.enemyJiBanAllTypes);
+        CardManager.ResetJiBan(FightController.instance.enemyJiBanAllTypes);
 
         battleIdIndex = battleId;
 
@@ -408,50 +408,6 @@ public class FightForManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 初始化羁绊集合
-    /// </summary>
-    private void InitJiBanTypeListFun(Dictionary<int, JiBanActivedClass> jiBanActivedClasses)
-    {
-        jiBanActivedClasses.Clear();
-        for (int i = 0; i < DataTable.JiBanData.Count; i++)
-        {
-            if (DataTable.JiBanData[i][2] != "0")
-            {
-                JiBanActivedClass jiBanActivedClass = new JiBanActivedClass();
-                jiBanActivedClass.jiBanIndex = i;
-                jiBanActivedClass.isActived = false;
-                jiBanActivedClass.cardTypeLists = new List<JiBanCardTypeClass>();
-                string[] arrs = DataTable.JiBanData[i][3].Split(';');
-                string[] arrBoss = new string[] { }; //  记录bossId
-                if (DataTable.JiBanData[i][5]!="")
-                {
-                    jiBanActivedClass.isHadBossId = true;
-                    arrBoss = DataTable.JiBanData[i][5].Split(';');
-                }
-                else
-                {
-                    jiBanActivedClass.isHadBossId = false;
-                }
-                for (int j = 0; j < arrs.Length; j++)
-                {
-                    if (arrs[j] != "")
-                    {
-                        JiBanCardTypeClass jiBanCardTypeClass = new JiBanCardTypeClass();
-                        string[] arrss = arrs[j].Split(',');
-                        jiBanCardTypeClass.cardType = int.Parse(arrss[0]);
-                        jiBanCardTypeClass.cardId = int.Parse(arrss[1]);
-                        if (jiBanActivedClass.isHadBossId)
-                            jiBanCardTypeClass.bossId = int.Parse(arrBoss[j].Split(',')[1]);
-                        jiBanCardTypeClass.cardLists = new List<FightCardData>();
-                        jiBanActivedClass.cardTypeLists.Add(jiBanCardTypeClass);
-                    }
-                }
-                jiBanActivedClasses.Add(i, jiBanActivedClass);
-            }
-        }
-    }
-
-    /// <summary>
     /// 尝试激活或取消羁绊
     /// </summary>
     /// <param name="cardData">行动卡牌</param>
@@ -459,15 +415,15 @@ public class FightForManager : MonoBehaviour
     /// <param name="isAdd">是否上阵</param>
     public void TryToActivatedBond(FightCardData cardData, bool isAdd)
     {
-        if (DataTable.HeroData[cardData.cardId][25] != "")
+        if (DataTable.Hero[cardData.cardId][25] != "")
         {
             Dictionary<int, JiBanActivedClass> jiBanActivedClasses = cardData.isPlayerCard ? FightController.instance.playerJiBanAllTypes : FightController.instance.enemyJiBanAllTypes;
 
-            string[] arrs = DataTable.HeroData[cardData.cardId][25].Split(',');
+            string[] arrs = DataTable.Hero[cardData.cardId][25].Split(',');
             //遍历所属羁绊
             for (int i = 0; i < arrs.Length; i++)
             {
-                if (arrs[i] != "" && DataTable.JiBanData[int.Parse(arrs[i])][2] != "0")
+                if (arrs[i] != "" && DataTable.JiBan[int.Parse(arrs[i])][2] != "0")
                 {
                     JiBanActivedClass jiBanActivedClass = jiBanActivedClasses[int.Parse(arrs[i])];
                     bool isActived = true;
