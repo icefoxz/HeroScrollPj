@@ -271,17 +271,17 @@ public class MainWuBeiUIManager : MonoBehaviour
             if (PlayerDataForGame.instance.hstData.trapSaveData[i].isHad)
             {
                 //卡牌
-                obj.transform.GetChild(0).GetComponent<Image>().sprite = Resources.Load("Image/Cards/FuZhu/" + DataTable.TrapData[PlayerDataForGame.instance.hstData.trapSaveData[i].id][8], typeof(Sprite)) as Sprite;
+                obj.transform.GetChild(0).GetComponent<Image>().sprite = Resources.Load("Image/Cards/FuZhu/" + DataTable.Trap[PlayerDataForGame.instance.hstData.trapSaveData[i].id][9], typeof(Sprite)) as Sprite;
                 GiveGameObjEventForHoldOn(obj.transform.GetChild(0).gameObject,
-                    DataTable.TrapData[PlayerDataForGame.instance.hstData.trapSaveData[i].id][1] + ":\n" + DataTable.TrapData[PlayerDataForGame.instance.hstData.trapSaveData[i].id][2]);
+                    DataTable.Trap[PlayerDataForGame.instance.hstData.trapSaveData[i].id][1] + ":\n" + DataTable.Trap[PlayerDataForGame.instance.hstData.trapSaveData[i].id][2]);
                 //名字
-                UIManager.instance.ShowNameTextRules(obj.transform.GetChild(0).GetChild(0).GetComponent<Text>(), DataTable.TrapData[PlayerDataForGame.instance.hstData.trapSaveData[i].id][1]);
+                UIManager.instance.ShowNameTextRules(obj.transform.GetChild(0).GetChild(0).GetComponent<Text>(), DataTable.Trap[PlayerDataForGame.instance.hstData.trapSaveData[i].id][1]);
                 obj.transform.GetChild(0).GetChild(0).GetComponent<Text>().color = UIManager.instance.NameColorChoose(GetIdBackCardRarity(PlayerDataForGame.instance.hstData.trapSaveData[i].typeIndex, PlayerDataForGame.instance.hstData.trapSaveData[i].id).ToString());
                 //星级
                 obj.transform.GetChild(0).GetChild(1).GetComponent<Image>().sprite = Resources.Load("Image/gradeImage/" + PlayerDataForGame.instance.hstData.trapSaveData[i].maxLevel, typeof(Sprite)) as Sprite;
                 //兵种
                 obj.transform.GetChild(0).GetChild(2).GetComponent<Image>().sprite = Resources.Load("Image/classImage/" + 1, typeof(Sprite)) as Sprite;
-                obj.transform.GetChild(0).GetChild(2).GetComponentInChildren<Text>().text = DataTable.TrapData[PlayerDataForGame.instance.hstData.trapSaveData[i].id][5];
+                obj.transform.GetChild(0).GetChild(2).GetComponentInChildren<Text>().text = DataTable.Trap[PlayerDataForGame.instance.hstData.trapSaveData[i].id][5];
             }
             else
             {

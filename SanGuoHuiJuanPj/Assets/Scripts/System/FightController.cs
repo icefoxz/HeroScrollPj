@@ -341,7 +341,7 @@ public class FightController : MonoBehaviour
                 AttackedAnimShow(attackedUnit, damage, false);
                 if (isCanFightBack && attackUnit.cardMoveType == 0)  //踩地雷的是近战
                 {
-                    int dileiDamage = (int)(int.Parse(DataTable.TrapData[attackedUnit.cardId][6].Split(',')[attackedUnit.cardGrade - 1]) * DataTable.GetGameValue(9) / 100f);
+                    int dileiDamage = (int)(int.Parse(DataTable.Trap[attackedUnit.cardId][6].Split(',')[attackedUnit.cardGrade - 1]) * DataTable.GetGameValue(9) / 100f);
                     dileiDamage = DefDamageProcessFun(attackedUnit, attackUnit, dileiDamage);
                     attackUnit.nowHp -= dileiDamage;
                     AttackToEffectShow(attackUnit, false, "201A");

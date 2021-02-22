@@ -303,7 +303,7 @@ public class DataTable : MonoBehaviour
     /// <summary>                                                  
     /// 敌人BOSS固定布阵表                                          
     /// </summary>                                                 
-    public static IReadOnlyList<IReadOnlyList<string>> EnemyBOSSData => ValueCache();
+    public static IReadOnlyList<IReadOnlyList<string>> EnemyBossData => ValueCache();
     /// <summary>                                                  
     /// 文本内容表                                                  
     /// </summary>                                                 

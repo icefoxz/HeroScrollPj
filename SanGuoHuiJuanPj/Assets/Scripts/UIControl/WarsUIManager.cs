@@ -887,7 +887,7 @@ public class WarsUIManager : MonoBehaviour
                         break;
                     case 3:
                         cardId = RandomPickFromRareClass(DataTable.Trap, cardRarity);
-                        woodsList.GetChild(i).GetChild(1).GetComponent<Image>().sprite = re.FuZhuImg[int.Parse(DataTable.Trap[cardId][8])];
+                        woodsList.GetChild(i).GetChild(1).GetComponent<Image>().sprite = re.FuZhuImg[int.Parse(DataTable.Trap[cardId][9])];
                         ShowNameTextRules(woodsList.GetChild(i).GetChild(3).GetComponent<Text>(), DataTable.Trap[cardId][1]);
                         //名字颜色
                         woodsList.GetChild(i).GetChild(3).GetComponent<Text>().color = NameColorChoose(DataTable.Trap[cardId][3]);
@@ -1163,15 +1163,15 @@ public class WarsUIManager : MonoBehaviour
                 for (int i = 0; i < 3; i++)
                 {
                     int cardId = RandomPickFromRareClass(DataTable.Trap, cardRarity);
-                    woodsList.GetChild(i).GetChild(1).GetComponent<Image>().sprite = resources.FuZhuImg[int.Parse(DataTable.TrapData[cardId][8])];
-                    ShowNameTextRules(woodsList.GetChild(i).GetChild(3).GetComponent<Text>(), DataTable.TrapData[cardId][1]);
+                    woodsList.GetChild(i).GetChild(1).GetComponent<Image>().sprite = resources.FuZhuImg[int.Parse(DataTable.Trap[cardId][9])];
+                    ShowNameTextRules(woodsList.GetChild(i).GetChild(3).GetComponent<Text>(), DataTable.Trap[cardId][1]);
                     //名字颜色
-                    woodsList.GetChild(i).GetChild(3).GetComponent<Text>().color = NameColorChoose(DataTable.TrapData[cardId][3]);
+                    woodsList.GetChild(i).GetChild(3).GetComponent<Text>().color = NameColorChoose(DataTable.Trap[cardId][3]);
                     woodsList.GetChild(i).GetChild(4).GetComponent<Image>().sprite = resources.GradeImg[cardLevel];
-                    woodsList.GetChild(i).GetChild(5).GetComponentInChildren<Text>().text = DataTable.TrapData[cardId][5];
+                    woodsList.GetChild(i).GetChild(5).GetComponentInChildren<Text>().text = DataTable.Trap[cardId][5];
                     //兵种框
                     woodsList.GetChild(i).GetChild(5).GetComponent<Image>().sprite = resources.ClassImg[1];
-                    FrameChoose(int.Parse(DataTable.TrapData[cardId][3]), woodsList.GetChild(i).GetChild(6).GetComponent<Image>());
+                    FrameChoose(int.Parse(DataTable.Trap[cardId][3]), woodsList.GetChild(i).GetChild(6).GetComponent<Image>());
                     Transform getBtnTran = woodsList.GetChild(i).GetChild(9);
                     getBtnTran.GetChild(0).gameObject.SetActive(true);
                     getBtnTran.GetChild(1).gameObject.SetActive(false);
@@ -1187,7 +1187,7 @@ public class WarsUIManager : MonoBehaviour
                     woodsList.GetChild(i).GetComponent<Button>().onClick.RemoveAllListeners();
                     woodsList.GetChild(i).GetComponent<Button>().onClick.AddListener(delegate ()
                     {
-                        OnClickToShowShopInfo(btnIndex, DataTable.TrapData[cardId][11]);
+                        OnClickToShowShopInfo(btnIndex, DataTable.Trap[cardId][12]);
                     });
                 }
                 break;
@@ -1574,17 +1574,17 @@ public class WarsUIManager : MonoBehaviour
         var re = GameResources;
         GameObject obj = Instantiate(cardForWarListPres, heroCardListObj.transform);
         obj.GetComponent<CardForDrag>().posIndex = -1;
-        obj.transform.GetChild(1).GetComponent<Image>().sprite = re.FuZhuImg[int.Parse(DataTable.TrapData[cardData.id][8])];
-        ShowNameTextRules(obj.transform.GetChild(3).GetComponent<Text>(), DataTable.TrapData[cardData.id][1]);
+        obj.transform.GetChild(1).GetComponent<Image>().sprite = re.FuZhuImg[int.Parse(DataTable.Trap[cardData.id][9])];
+        ShowNameTextRules(obj.transform.GetChild(3).GetComponent<Text>(), DataTable.Trap[cardData.id][1]);
         //名字颜色
-        obj.transform.GetChild(3).GetComponent<Text>().color = NameColorChoose(DataTable.TrapData[cardData.id][3]);
+        obj.transform.GetChild(3).GetComponent<Text>().color = NameColorChoose(DataTable.Trap[cardData.id][3]);
         obj.transform.GetChild(4).GetComponent<Image>().sprite = re.GradeImg[cardData.level];
-        obj.transform.GetChild(5).GetComponentInChildren<Text>().text = DataTable.TrapData[cardData.id][5];
+        obj.transform.GetChild(5).GetComponentInChildren<Text>().text = DataTable.Trap[cardData.id][5];
         //兵种框
         obj.transform.GetChild(5).GetComponent<Image>().sprite = re.ClassImg[1];
-        FrameChoose(int.Parse(DataTable.TrapData[cardData.id][3]), obj.transform.GetChild(6).GetComponent<Image>());
+        FrameChoose(int.Parse(DataTable.Trap[cardData.id][3]), obj.transform.GetChild(6).GetComponent<Image>());
         //添加按住抬起方法
-        FightForManager.instance.GiveGameObjEventForHoldOn(obj, DataTable.TrapData[cardData.id][11]);
+        FightForManager.instance.GiveGameObjEventForHoldOn(obj, DataTable.Trap[cardData.id][12]);
         FightCardData data = new FightCardData();
         data.unitId = 1;
         data.cardObj = obj;
@@ -1593,9 +1593,9 @@ public class WarsUIManager : MonoBehaviour
         data.posIndex = -1;
         data.cardGrade = cardData.level;
         data.fightState = new FightState();
-        data.damage = int.Parse(DataTable.TrapData[data.cardId][6].Split(',')[data.cardGrade - 1]);
-        data.hpr = int.Parse(DataTable.TrapData[data.cardId][10]);
-        data.fullHp = data.nowHp = int.Parse(DataTable.TrapData[data.cardId][7].Split(',')[data.cardGrade - 1]);
+        data.damage = int.Parse(DataTable.Trap[data.cardId][6].Split(',')[data.cardGrade - 1]);
+        data.hpr = int.Parse(DataTable.Trap[data.cardId][8]);
+        data.fullHp = data.nowHp = int.Parse(DataTable.Trap[data.cardId][7].Split(',')[data.cardGrade - 1]);
         data.activeUnit = false;
         data.isPlayerCard = true;
         data.cardMoveType = 0;

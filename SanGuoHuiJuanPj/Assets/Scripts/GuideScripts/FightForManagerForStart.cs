@@ -691,20 +691,20 @@ public class FightForManagerForStart : MonoBehaviour
                 data.cardDamageType = 0;
                 break;
             case 3:
-                data.cardObj.transform.GetChild(1).GetComponent<Image>().sprite = Resources.Load("Image/Cards/FuZhu/" + DataTable.TrapData[data.cardId][8], typeof(Sprite)) as Sprite;
+                data.cardObj.transform.GetChild(1).GetComponent<Image>().sprite = Resources.Load("Image/Cards/FuZhu/" + DataTable.Trap[data.cardId][9], typeof(Sprite)) as Sprite;
                 data.cardObj.transform.GetChild(2).GetComponent<Image>().fillAmount = 0;
-                ShowNameTextRules(data.cardObj.transform.GetChild(3).GetComponent<Text>(), DataTable.TrapData[data.cardId][1]);
+                ShowNameTextRules(data.cardObj.transform.GetChild(3).GetComponent<Text>(), DataTable.Trap[data.cardId][1]);
                 //名字颜色
-                data.cardObj.transform.GetChild(3).GetComponent<Text>().color = NameColorChoose(DataTable.TrapData[data.cardId][3]);
+                data.cardObj.transform.GetChild(3).GetComponent<Text>().color = NameColorChoose(DataTable.Trap[data.cardId][3]);
                 data.cardObj.transform.GetChild(4).GetComponent<Image>().sprite = Resources.Load("Image/gradeImage/" + data.cardGrade, typeof(Sprite)) as Sprite;
-                data.cardObj.transform.GetChild(5).GetComponentInChildren<Text>().text = DataTable.TrapData[data.cardId][5];
+                data.cardObj.transform.GetChild(5).GetComponentInChildren<Text>().text = DataTable.Trap[data.cardId][5];
                 //兵种框
                 data.cardObj.transform.GetChild(5).GetComponent<Image>().sprite = Resources.Load("Image/classImage/" + 1, typeof(Sprite)) as Sprite;
-                FrameChoose(DataTable.TrapData[data.cardId][3], data.cardObj.transform.GetChild(6).GetComponent<Image>());
+                FrameChoose(DataTable.Trap[data.cardId][3], data.cardObj.transform.GetChild(6).GetComponent<Image>());
 
-                data.damage = int.Parse(DataTable.TrapData[data.cardId][6].Split(',')[data.cardGrade - 1]);
-                data.hpr = int.Parse(DataTable.TrapData[data.cardId][10]);
-                data.fullHp = data.nowHp = int.Parse(DataTable.TrapData[data.cardId][7].Split(',')[data.cardGrade - 1]);
+                data.damage = int.Parse(DataTable.Trap[data.cardId][6].Split(',')[data.cardGrade - 1]);
+                data.hpr = int.Parse(DataTable.Trap[data.cardId][8]);
+                data.fullHp = data.nowHp = int.Parse(DataTable.Trap[data.cardId][7].Split(',')[data.cardGrade - 1]);
                 data.activeUnit = false;
                 data.cardMoveType = 0;
                 data.cardDamageType = 0;

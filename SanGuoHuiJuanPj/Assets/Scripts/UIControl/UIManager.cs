@@ -1096,25 +1096,21 @@ public class UIManager : MonoBehaviour
     /// <summary>
     /// 显示单个辅助
     /// </summary>
-    private void ShowOneFuZhuRules(IReadOnlyList<IReadOnlyList<string>> jsonDatas, NowLevelAndHadChip card, int indexIcon)
+    private void ShowOneFuZhuRules(IReadOnlyDictionary<int,IReadOnlyList<string>> data, NowLevelAndHadChip card, int indexIcon)
     {
-        //todo 必须重新整理表结构 目前trap引用的 iconIndex是第八列，但实际是第九列
-        if ((GameCardType) card.typeIndex == GameCardType.Trap)
-            indexIcon = 9;
-
         GameObject obj = GetHeroCardToShow();
         //名字
-        ShowNameTextRules(obj.transform.GetChild(3).GetComponent<Text>(), jsonDatas[card.id][1]);
+        ShowNameTextRules(obj.transform.GetChild(3).GetComponent<Text>(), data[card.id][1]);
         //名字颜色根据稀有度
-        obj.transform.GetChild(3).GetComponent<Text>().color = NameColorChoose(jsonDatas[card.id][3]);
+        obj.transform.GetChild(3).GetComponent<Text>().color = NameColorChoose(data[card.id][3]);
         //卡牌
-        obj.transform.GetChild(1).GetComponent<Image>().sprite = GameResources.FuZhuImg[int.Parse(jsonDatas[card.id][indexIcon])];
+        obj.transform.GetChild(1).GetComponent<Image>().sprite = GameResources.FuZhuImg[int.Parse(data[card.id][indexIcon])];
         //兵种框
         obj.transform.GetChild(5).GetComponent<Image>().sprite = GameResources.ClassImg[1];
         //兵种名
-        obj.transform.GetChild(5).GetComponentInChildren<Text>().text = jsonDatas[card.id][5];
+        obj.transform.GetChild(5).GetComponentInChildren<Text>().text = data[card.id][5];
         //边框
-        FrameChoose(jsonDatas[card.id][3], obj.transform.GetChild(6).GetComponent<Image>());
+        FrameChoose(data[card.id][3], obj.transform.GetChild(6).GetComponent<Image>());
         //碎片
         if (card.level < DataTable.UpGradeData.Count)
         {
@@ -1152,7 +1148,7 @@ public class UIManager : MonoBehaviour
         obj.GetComponent<Button>().onClick.RemoveAllListeners();
         obj.GetComponent<Button>().onClick.AddListener(delegate ()
         {
-            OnClickFuZhuCardFun(jsonDatas, card, obj.transform.GetChild(9).GetComponent<Image>(), indexIcon);
+            OnClickFuZhuCardFun(data, card, obj.transform.GetChild(9).GetComponent<Image>(), indexIcon);
         });
     }
 
@@ -1160,31 +1156,31 @@ public class UIManager : MonoBehaviour
     /// 点击辅助卡牌的方法
     /// </summary>
     /// <param name="fuzhuData"></param>
-    private void OnClickFuZhuCardFun(IReadOnlyList<IReadOnlyList<string>> jsonDatas, NowLevelAndHadChip fuzhuData, Image selectImg, int indexIcon)
+    private void OnClickFuZhuCardFun(IReadOnlyDictionary<int,IReadOnlyList<string>> data, NowLevelAndHadChip fuzhuData, Image selectImg, int indexIcon)
     {
         PlayOnClickMusic();
 
         //名字
-        infoTran.GetChild(0).GetComponent<Text>().text = jsonDatas[fuzhuData.id][1];
+        infoTran.GetChild(0).GetComponent<Text>().text = data[fuzhuData.id][1];
         //名字颜色
-        infoTran.GetChild(0).GetComponent<Text>().color = NameColorChoose(jsonDatas[fuzhuData.id][3]);
+        infoTran.GetChild(0).GetComponent<Text>().color = NameColorChoose(data[fuzhuData.id][3]);
         //属性 为空
         infoTran.GetChild(1).GetComponent<Text>().text = "";
         infoTran.GetChild(2).GetComponent<Text>().text = "";
         //介绍
-        infoTran.GetChild(3).GetComponent<Text>().text = jsonDatas[fuzhuData.id][2];
+        infoTran.GetChild(3).GetComponent<Text>().text = data[fuzhuData.id][2];
         //名字
-        ShowNameTextRules(showCardObj.transform.GetChild(3).GetComponent<Text>(), jsonDatas[fuzhuData.id][1]);
+        ShowNameTextRules(showCardObj.transform.GetChild(3).GetComponent<Text>(), data[fuzhuData.id][1]);
         //名字颜色
-        showCardObj.transform.GetChild(3).GetComponent<Text>().color = NameColorChoose(jsonDatas[fuzhuData.id][3]);
+        showCardObj.transform.GetChild(3).GetComponent<Text>().color = NameColorChoose(data[fuzhuData.id][3]);
         //卡牌
-        showCardObj.transform.GetChild(1).GetComponent<Image>().sprite = GameResources.FuZhuImg[int.Parse(jsonDatas[fuzhuData.id][indexIcon])];
+        showCardObj.transform.GetChild(1).GetComponent<Image>().sprite = GameResources.FuZhuImg[int.Parse(data[fuzhuData.id][indexIcon])];
         //兵种框
         showCardObj.transform.GetChild(5).GetComponent<Image>().sprite = GameResources.ClassImg[1];
         //兵种名
-        showCardObj.transform.GetChild(5).GetComponentInChildren<Text>().text = jsonDatas[fuzhuData.id][5];
+        showCardObj.transform.GetChild(5).GetComponentInChildren<Text>().text = data[fuzhuData.id][5];
         //边框
-        FrameChoose(jsonDatas[fuzhuData.id][3], showCardObj.transform.GetChild(6).GetComponent<Image>());
+        FrameChoose(data[fuzhuData.id][3], showCardObj.transform.GetChild(6).GetComponent<Image>());
         //碎片
         if (fuzhuData.level < DataTable.UpGradeData.Count)
         {
@@ -1289,7 +1285,7 @@ public class UIManager : MonoBehaviour
                         PlayerDataForGame.instance.fightTowerId.Add(card.id);
                     }
                     cardNums++;
-                    ShowOneFuZhuRules(DataTable.TowerData, card, 10);
+                    ShowOneFuZhuRules(DataTable.Tower, card, 10);
                 }
             }
         }
@@ -1297,7 +1293,7 @@ public class UIManager : MonoBehaviour
         for (int i = 0; i < PlayerDataForGame.instance.hstData.trapSaveData.Count; i++)
         {
             card = PlayerDataForGame.instance.hstData.trapSaveData[i];
-            if (indexChooseListForceId == int.Parse(DataTable.TrapData[card.id][14]))
+            if (indexChooseListForceId == int.Parse(DataTable.Trap[card.id][14]))
             {
                 if (card.level > 0 || card.chips > 0)
                 {
@@ -1306,7 +1302,7 @@ public class UIManager : MonoBehaviour
                         PlayerDataForGame.instance.fightTrapId.Add(card.id);
                     }
                     cardNums++;
-                    ShowOneFuZhuRules(DataTable.TrapData, card, 8);
+                    ShowOneFuZhuRules(DataTable.Trap, card, 9);
                 }
             }
         }
@@ -1520,7 +1516,7 @@ public class UIManager : MonoBehaviour
                 rarityStr = DataTable.TowerData[cardId][3];
                 break;
             case 3:
-                rarityStr = DataTable.TrapData[cardId][3];
+                rarityStr = DataTable.Trap[cardId][3];
                 break;
             case 4:
                 rarityStr = DataTable.SpellData[cardId][3];
@@ -2011,11 +2007,11 @@ public class UIManager : MonoBehaviour
                     break;
                 case 3:
                     cardTran.GetComponent<Image>().sprite = GameResources.FuZhuImg[int.Parse(DataTable.TrapData[rewardsCard.cardId][8])];
-                    ShowNameTextRules(cardTran.GetChild(0).GetComponent<Text>(), DataTable.TrapData[rewardsCard.cardId][1]);
-                    cardTran.GetChild(0).GetComponent<Text>().color = NameColorChoose(DataTable.TrapData[rewardsCard.cardId][3]);
+                    ShowNameTextRules(cardTran.GetChild(0).GetComponent<Text>(), DataTable.Trap[rewardsCard.cardId][1]);
+                    cardTran.GetChild(0).GetComponent<Text>().color = NameColorChoose(DataTable.Trap[rewardsCard.cardId][3]);
                     cardTran.GetChild(1).GetComponent<Image>().sprite = GameResources.ClassImg[1];
-                    cardTran.GetChild(1).GetChild(0).GetComponentInChildren<Text>().text = DataTable.TrapData[rewardsCard.cardId][5];
-                    FrameChoose(DataTable.TrapData[rewardsCard.cardId][3], cardTran.GetChild(2).GetComponent<Image>());
+                    cardTran.GetChild(1).GetChild(0).GetComponentInChildren<Text>().text = DataTable.Trap[rewardsCard.cardId][5];
+                    FrameChoose(DataTable.Trap[rewardsCard.cardId][3], cardTran.GetChild(2).GetComponent<Image>());
                     break;
                 case 4:
                     //cardTran.GetChild(0).GetComponent<Text>().text = LoadJsonFile.spellTableDatas[rewardsCard.cardId][1];

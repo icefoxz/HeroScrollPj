@@ -639,7 +639,7 @@ public class LoadSaveData : MonoBehaviour
             }
         }
         hstSaveData.trapSaveData = new List<NowLevelAndHadChip>();
-        for (int i = 0; i < DataTable.TrapData.Count; i++)
+        for (int i = 0; i < DataTable.Trap.Count; i++)
         {
             NowLevelAndHadChip nlahc = new NowLevelAndHadChip();
             nlahc.id = i;

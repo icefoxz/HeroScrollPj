@@ -1,26 +1,26 @@
-﻿using DG.Tweening;
-using UnityEngine;
-using UnityEngine.UI;
+﻿//using DG.Tweening;
+//using UnityEngine;
+//using UnityEngine.UI;
 
-public class StartPvpManager : MonoBehaviour
-{
-    public static StartPvpManager instance;
+//public class StartPvpManager : MonoBehaviour
+//{
+//    public static StartPvpManager instance;
 
-    [SerializeField]
-    Button startBtn;
+//    [SerializeField]
+//    Button startBtn;
 
-    private void Awake()
-    {
-        if (instance == null)
-        {
-            instance = this;
-        }
-    }
+//    private void Awake()
+//    {
+//        if (instance == null)
+//        {
+//            instance = this;
+//        }
+//    }
 
-    private void Start()
-    {
-        startBtn.onClick.AddListener(delegate() {
-            FightManagerForPvp.instance.InitEnemyCardForFight();
-        });
-    }
-}
+//    private void Start()
+//    {
+//        startBtn.onClick.AddListener(delegate() {
+//            FightManagerForPvp.instance.InitEnemyCardForFight();
+//        });
+//    }
+//}

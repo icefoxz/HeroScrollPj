@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 
 #region 玩家数据相关类
 
-public enum SignalRDataTypes
+public enum SignalRDataType
 {
     Message,
     Generic
@@ -14,7 +14,7 @@ public enum SignalRDataTypes
 
 public interface ISignalRField
 {
-    SignalRDataTypes DataTypes { get; }
+    SignalRDataType DataTypes { get; }
     string Method { get; }
     string JData { get; }
 }

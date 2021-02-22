@@ -81,7 +81,7 @@ public class RewardManager : MonoBehaviour
                 case GameCardType.Tower:
                     return GetWeightList(DataTable.Tower, isZy ? 11 : 13, 14, rarity);
                 case GameCardType.Trap:
-                    return GetWeightList(DataTable.Trap, isZy ? 9 : 12, 13, rarity);
+                    return GetWeightList(DataTable.Trap, isZy ? 10 : 11, 13, rarity);
                 default:
                     throw new ArgumentOutOfRangeException($"cardType = {cardType}");
             }

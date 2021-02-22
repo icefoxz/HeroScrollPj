@@ -90,7 +90,12 @@ public static class GameSystemExtension
         var isTimeInRange = checkDate >= dates[0] && checkDate <= dates[1];
         return isTimeInRange;
     }
-
+    /// <summary>
+    /// 上阵
+    /// </summary>
+    /// <param name="cards"></param>
+    /// <param name="forceId">军团Id</param>
+    /// <returns></returns>
     public static IEnumerable<NowLevelAndHadChip> Enlist(this IEnumerable<NowLevelAndHadChip> cards,int forceId)=> cards.Where(card =>
     {
         //单位类型0武将 1士兵 2塔 3陷阱 4技能
@@ -98,13 +103,13 @@ public static class GameSystemExtension
         switch (card.typeIndex)
         {
             case 0 : 
-                force = int.Parse(DataTable.HeroData[card.id][6]);
+                force = int.Parse(DataTable.Hero[card.id][6]);
                 break;
             case 2 :
-                force = int.Parse(DataTable.TowerData[card.id][15]);
+                force = int.Parse(DataTable.Tower[card.id][15]);
                 break;
             case 3 :
-                force = int.Parse(DataTable.TrapData[card.id][14]);
+                force = int.Parse(DataTable.Trap[card.id][14]);
                 break;
         }
         return force == forceId && (card.level > 0 || card.chips > 0) && card.isFight > 0;
