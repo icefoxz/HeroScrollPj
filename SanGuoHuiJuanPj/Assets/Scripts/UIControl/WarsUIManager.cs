@@ -882,7 +882,7 @@ public class WarsUIManager : MonoBehaviour
                         woodsList.GetChild(i).GetComponent<Button>().onClick.RemoveAllListeners();
                         woodsList.GetChild(i).GetComponent<Button>().onClick.AddListener(delegate ()
                         {
-                            OnClickToShowShopInfo(btnIndex, DataTable.Tower[cardId][12]);
+                            OnClickToShowShopInfo(btnIndex, DataTable.Tower[cardId][13]);
                         });
                         break;
                     case 3:

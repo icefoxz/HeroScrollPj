@@ -2006,7 +2006,7 @@ public class UIManager : MonoBehaviour
                     FrameChoose(DataTable.TowerData[rewardsCard.cardId][3], cardTran.GetChild(2).GetComponent<Image>());
                     break;
                 case 3:
-                    cardTran.GetComponent<Image>().sprite = GameResources.FuZhuImg[int.Parse(DataTable.TrapData[rewardsCard.cardId][8])];
+                    cardTran.GetComponent<Image>().sprite = GameResources.FuZhuImg[int.Parse(DataTable.TrapData[rewardsCard.cardId][9])];
                     ShowNameTextRules(cardTran.GetChild(0).GetComponent<Text>(), DataTable.Trap[rewardsCard.cardId][1]);
                     cardTran.GetChild(0).GetComponent<Text>().color = NameColorChoose(DataTable.Trap[rewardsCard.cardId][3]);
                     cardTran.GetChild(1).GetComponent<Image>().sprite = GameResources.ClassImg[1];
