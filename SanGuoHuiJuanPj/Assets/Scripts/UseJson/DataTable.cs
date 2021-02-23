@@ -12,6 +12,8 @@ public class DataTable : MonoBehaviour
     private const string TableSuffix = "Table";
     private const string DataSuffix = "Data";
     private static Type StringType = typeof(string);
+    private static Type DataType = typeof(Dictionary<int, IReadOnlyList<string>>);
+    private static Type TextAssetType = typeof(TextAsset);
     public static DataTable instance;
     private static Dictionary<string, IReadOnlyList<IReadOnlyList<string>>> cache = new Dictionary<string, IReadOnlyList<IReadOnlyList<string>>>();
 
@@ -364,49 +366,29 @@ public class DataTable : MonoBehaviour
             instance = this;
         }
         DontDestroyOnLoad(gameObject);
-        playerInitialData = Json.DeserializeList<List<string>>(playerInitialTable.text).ToDictionary(row => int.Parse(row[0]), row => row as IReadOnlyList<string>);
-        assetData = Json.DeserializeList<List<string>>(assetTable.text).ToDictionary(row => int.Parse(row[0]), row => row as IReadOnlyList<string>);
-        heroData = Json.DeserializeList<List<string>>(heroTable.text).ToDictionary(row => int.Parse(row[0]), row => row as IReadOnlyList<string>);
-        playerLevelData = Json.DeserializeList<List<string>>(playerLevelTable.text).ToDictionary(row => int.Parse(row[0]), row => row as IReadOnlyList<string>);
-        soldierData = Json.DeserializeList<List<string>>(soldierTable.text).ToDictionary(row => int.Parse(row[0]), row => row as IReadOnlyList<string>);
-        towerData = Json.DeserializeList<List<string>>(towerTable.text).ToDictionary(row => int.Parse(row[0]), row => row as IReadOnlyList<string>);
-        classData = Json.DeserializeList<List<string>>(classTable.text).ToDictionary(row => int.Parse(row[0]), row => row as IReadOnlyList<string>);
-        upGradeData = Json.DeserializeList<List<string>>(upGradeTable.text).ToDictionary(row => int.Parse(row[0]), row => row as IReadOnlyList<string>);
-        trapData = Json.DeserializeList<List<string>>(trapTable.text).ToDictionary(row => int.Parse(row[0]), row => row as IReadOnlyList<string>);
-        spellData = Json.DeserializeList<List<string>>(spellTable.text).ToDictionary(row => int.Parse(row[0]), row => row as IReadOnlyList<string>);
-        warChestData = Json.DeserializeList<List<string>>(warChestTable.text).ToDictionary(row => int.Parse(row[0]), row => row as IReadOnlyList<string>);
-        warData = Json.DeserializeList<List<string>>(warTable.text).ToDictionary(row => int.Parse(row[0]), row => row as IReadOnlyList<string>);
-        cityLevelData = Json.DeserializeList<List<string>>(cityLevelTable.text).ToDictionary(row => int.Parse(row[0]), row => row as IReadOnlyList<string>);
-        pointData = Json.DeserializeList<List<string>>(pointTable.text).ToDictionary(row => int.Parse(row[0]), row => row as IReadOnlyList<string>);
-        battleEventData = Json.DeserializeList<List<string>>(battleEventTable.text).ToDictionary(row => int.Parse(row[0]), row => row as IReadOnlyList<string>);
-        enemyData = Json.DeserializeList<List<string>>(enemyTable.text).ToDictionary(row => int.Parse(row[0]), row => row as IReadOnlyList<string>);
-        enemyUnitData = Json.DeserializeList<List<string>>(enemyUnitTable.text).ToDictionary(row => int.Parse(row[0]), row => row as IReadOnlyList<string>);
-        storyData = Json.DeserializeList<List<string>>(storyTable.text).ToDictionary(row => int.Parse(row[0]), row => row as IReadOnlyList<string>);
-        storyRData = Json.DeserializeList<List<string>>(storyRTable.text).ToDictionary(row => int.Parse(row[0]), row => row as IReadOnlyList<string>);
-        testData = Json.DeserializeList<List<string>>(testTable.text).ToDictionary(row => int.Parse(row[0]), row => row as IReadOnlyList<string>);
-        testRData = Json.DeserializeList<List<string>>(testRTable.text).ToDictionary(row => int.Parse(row[0]), row => row as IReadOnlyList<string>);
-        encounterData = Json.DeserializeList<List<string>>(encounterTable.text).ToDictionary(row => int.Parse(row[0]), row => row as IReadOnlyList<string>);
-        shoppingData = Json.DeserializeList<List<string>>(shoppingTable.text).ToDictionary(row => int.Parse(row[0]), row => row as IReadOnlyList<string>);
-        choseWarData = Json.DeserializeList<List<string>>(choseWarTable.text).ToDictionary(row => int.Parse(row[0]), row => row as IReadOnlyList<string>);
-        guideData = Json.DeserializeList<List<string>>(guideTable.text).ToDictionary(row => int.Parse(row[0]), row => row as IReadOnlyList<string>);
-        knowledgeData = Json.DeserializeList<List<string>>(knowledgeTable.text).ToDictionary(row => int.Parse(row[0]), row => row as IReadOnlyList<string>);
-        rCodeData = Json.DeserializeList<List<string>>(rCodeTable.text).ToDictionary(row => int.Parse(row[0]), row => row as IReadOnlyList<string>);
-        tiLiStoreData = Json.DeserializeList<List<string>>(tiLiStoreTable.text).ToDictionary(row => int.Parse(row[0]), row => row as IReadOnlyList<string>);
-        enemyBossData = Json.DeserializeList<List<string>>(enemyBOSSTable.text).ToDictionary(row => int.Parse(row[0]), row => row as IReadOnlyList<string>);
-        stringTextData = Json.DeserializeList<List<string>>(stringTextTable.text).ToDictionary(row => int.Parse(row[0]), row => row as IReadOnlyList<string>);
-        numParametersData = Json.DeserializeList<List<string>>(numParametersTable.text).ToDictionary(row => int.Parse(row[0]), row => row as IReadOnlyList<string>);
-        jiBanData = Json.DeserializeList<List<string>>(jiBanTable.text).ToDictionary(row => int.Parse(row[0]), row => row as IReadOnlyList<string>);
-        shiLiData = Json.DeserializeList<List<string>>(shiLiTable.text).ToDictionary(row => int.Parse(row[0]), row => row as IReadOnlyList<string>);
-        baYeDiTuData = Json.DeserializeList<List<string>>(baYeDiTuTable.text).ToDictionary(row => int.Parse(row[0]), row => row as IReadOnlyList<string>);
-        baYeShiJianData = Json.DeserializeList<List<string>>(baYeShiJianTable.text).ToDictionary(row => int.Parse(row[0]), row => row as IReadOnlyList<string>);
-        baYeBattleData = Json.DeserializeList<List<string>>(baYeBattleTable.text).ToDictionary(row => int.Parse(row[0]), row => row as IReadOnlyList<string>);
-        baYeRenWuData = Json.DeserializeList<List<string>>(baYeRenWuTable.text).ToDictionary(row => int.Parse(row[0]), row => row as IReadOnlyList<string>);
-        storyPoolData = Json.DeserializeList<List<string>>(storyPoolTable.text).ToDictionary(row => int.Parse(row[0]), row => row as IReadOnlyList<string>);
-        storyIdData = Json.DeserializeList<List<string>>(storyIdTable.text).ToDictionary(row => int.Parse(row[0]), row => row as IReadOnlyList<string>);
-        baYeTvData = Json.DeserializeList<List<string>>(baYeTVTable.text).ToDictionary(row => int.Parse(row[0]), row => row as IReadOnlyList<string>);
-        baYeNameData = Json.DeserializeList<List<string>>(baYeNameTable.text).ToDictionary(row => int.Parse(row[0]), row => row as IReadOnlyList<string>);
-
+        Init();
         ResolverInit();
+    }
+
+    private void Init()
+    {
+        var type = GetType();
+        var textAssets = type.GetFields().Where(f => f.FieldType == TextAssetType)
+            .ToDictionary(p => p.Name.Replace(TableSuffix,string.Empty).ToLower(), p => p);
+        var staticData = type.GetFields(BindingFlags.Static | BindingFlags.NonPublic).Where(f => f.FieldType == DataType)
+            .ToDictionary(p => p.Name.Replace(DataSuffix, string.Empty).ToLower(), p => p);
+        textAssets.Join(staticData,tx=>tx.Key,st=>st.Key, (tx, st) =>new {Asset = tx.Value, Data = st.Value}).ToList().ForEach(
+            map =>
+            {
+                var textAsset = (TextAsset) map.Asset.GetValue(this);
+                map.Data.SetValue(null,ConvertText(textAsset));
+            });
+    }
+
+    private Dictionary<int, IReadOnlyList<string>> ConvertText(TextAsset asset)
+    {
+        var text = asset.text.Replace(@"\\", @"\");
+        return Json.DeserializeList<List<string>>(text).ToDictionary(row => int.Parse(row[0]), row =>row as IReadOnlyList<string>);
     }
 
     private static IReadOnlyList<IReadOnlyList<string>> ValueCache([CallerMemberName]string methodName = "")

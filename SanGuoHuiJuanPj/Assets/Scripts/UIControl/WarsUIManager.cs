@@ -829,13 +829,13 @@ public class WarsUIManager : MonoBehaviour
             {
                 int btnIndex = i;
                 int indexId = GetRandomBaseOnWeight(DataTable.Encounter, 1);
-                int cardType = int.Parse(DataTable.Encounter[indexId][2]);
+                var cardType = (GameCardType)int.Parse(DataTable.Encounter[indexId][2]);
                 string cardRarity = DataTable.Encounter[indexId][3];
                 int cardLevel = int.Parse(DataTable.Encounter[indexId][4]);
                 int cardId = 0;
                 switch (cardType)
                 {
-                    case 0:
+                    case GameCardType.Hero:
                         cardId = RandomPickFromRareClass(DataTable.Hero, cardRarity);
                         woodsList.GetChild(i).GetChild(1).GetComponent<Image>().sprite = re.HeroImg[cardId];
                         ShowNameTextRules(woodsList.GetChild(i).GetChild(3).GetComponent<Text>(), DataTable.Hero[cardId][1]);
@@ -852,7 +852,7 @@ public class WarsUIManager : MonoBehaviour
                             OnClickToShowShopInfo(btnIndex, DataTable.Class[int.Parse(DataTable.Hero[cardId][5])][4]);
                         });
                         break;
-                    case 1:
+                    case GameCardType.Soldier:
                         cardId = RandomPickFromRareClass(DataTable.Soldier, cardRarity);
                         woodsList.GetChild(i).GetChild(1).GetComponent<Image>().sprite = re.FuZhuImg[int.Parse(DataTable.Soldier[cardId][13])];
                         ShowNameTextRules(woodsList.GetChild(i).GetChild(3).GetComponent<Text>(), DataTable.Soldier[cardId][1]);
@@ -869,7 +869,7 @@ public class WarsUIManager : MonoBehaviour
                             OnClickToShowShopInfo(btnIndex, DataTable.Class[int.Parse(DataTable.Soldier[cardId][5])][4]);
                         });
                         break;
-                    case 2:
+                    case GameCardType.Tower:
                         cardId = RandomPickFromRareClass(DataTable.Tower, cardRarity);
                         woodsList.GetChild(i).GetChild(1).GetComponent<Image>().sprite = re.FuZhuImg[int.Parse(DataTable.Tower[cardId][10])];
                         ShowNameTextRules(woodsList.GetChild(i).GetChild(3).GetComponent<Text>(), DataTable.Tower[cardId][1]);
@@ -885,7 +885,7 @@ public class WarsUIManager : MonoBehaviour
                             OnClickToShowShopInfo(btnIndex, DataTable.Tower[cardId][13]);
                         });
                         break;
-                    case 3:
+                    case GameCardType.Trap:
                         cardId = RandomPickFromRareClass(DataTable.Trap, cardRarity);
                         woodsList.GetChild(i).GetChild(1).GetComponent<Image>().sprite = re.FuZhuImg[int.Parse(DataTable.Trap[cardId][9])];
                         ShowNameTextRules(woodsList.GetChild(i).GetChild(3).GetComponent<Text>(), DataTable.Trap[cardId][1]);
@@ -898,13 +898,11 @@ public class WarsUIManager : MonoBehaviour
                         woodsList.GetChild(i).GetComponent<Button>().onClick.RemoveAllListeners();
                         woodsList.GetChild(i).GetComponent<Button>().onClick.AddListener(delegate ()
                         {
-                            OnClickToShowShopInfo(btnIndex, DataTable.Trap[cardId][11]);
+                            OnClickToShowShopInfo(btnIndex, DataTable.Trap[cardId][12]);
                         });
                         break;
-                    case 4:
-                        break;
                     default:
-                        break;
+                        throw new ArgumentOutOfRangeException();
                 }
                 woodsList.GetChild(i).GetChild(4).GetComponent<Image>().sprite = re.GradeImg[cardLevel];
 
@@ -1055,13 +1053,13 @@ public class WarsUIManager : MonoBehaviour
     {
         var resources = GameResources;
         int indexId = GetRandomBaseOnWeight(DataTable.Encounter, 1);
-        int cardType = int.Parse(DataTable.EncounterData[indexId][2]);
-        string cardRarity = DataTable.EncounterData[indexId][3];
-        int cardLevel = int.Parse(DataTable.EncounterData[indexId][4]);
+        var cardType = (GameCardType)int.Parse(DataTable.Encounter[indexId][2]);
+        string cardRarity = DataTable.Encounter[indexId][3];
+        int cardLevel = int.Parse(DataTable.Encounter[indexId][4]);
         Transform woodsList = eventsWindows[3].transform.GetChild(0).GetChild(1);
         switch (cardType)
         {
-            case 0:
+            case GameCardType.Hero:
                 for (int i = 0; i < 3; i++)
                 {
                     int cardId = RandomPickFromRareClass(DataTable.Hero, cardRarity);
@@ -1094,7 +1092,7 @@ public class WarsUIManager : MonoBehaviour
                     });
                 }
                 break;
-            case 1:
+            case GameCardType.Soldier:
                 for (int i = 0; i < 3; i++)
                 {
                     int cardId = RandomPickFromRareClass(DataTable.Soldier, cardRarity);
@@ -1126,7 +1124,7 @@ public class WarsUIManager : MonoBehaviour
                     });
                 }
                 break;
-            case 2:
+            case GameCardType.Tower:
                 for (int i = 0; i < 3; i++)
                 {
                     int cardId = RandomPickFromRareClass(DataTable.Tower, cardRarity);
@@ -1159,7 +1157,7 @@ public class WarsUIManager : MonoBehaviour
                     });
                 }
                 break;
-            case 3:
+            case GameCardType.Trap:
                 for (int i = 0; i < 3; i++)
                 {
                     int cardId = RandomPickFromRareClass(DataTable.Trap, cardRarity);
@@ -1191,10 +1189,9 @@ public class WarsUIManager : MonoBehaviour
                     });
                 }
                 break;
-            case 4:
-                break;
+            case GameCardType.Spell:
             default:
-                break;
+                throw new ArgumentOutOfRangeException();
         }
     }
 
@@ -1228,7 +1225,7 @@ public class WarsUIManager : MonoBehaviour
     }
 
     //获得或购买三选物品
-    private void GetOrBuyCards(bool isBuy, int money, int cardType, int cardId, int cardLevel, int btnIndex)
+    private void GetOrBuyCards(bool isBuy, int money, GameCardType cardType, int cardId, int cardLevel, int btnIndex)
     {
         if (isBuy)
         {
@@ -1250,20 +1247,20 @@ public class WarsUIManager : MonoBehaviour
         nowLevelAndHadChip.level = cardLevel;
         switch (cardType)
         {
-            case 0:
+            case GameCardType.Hero:
                 CreateHeroCardToFightList(nowLevelAndHadChip);
                 break;
-            case 1:
+            case GameCardType.Soldier:
                 CreateSoldierCardToFightList(nowLevelAndHadChip);
                 break;
-            case 2:
+            case GameCardType.Tower:
                 CreateTowerCardToFightList(nowLevelAndHadChip);
                 break;
-            case 3:
+            case GameCardType.Trap:
                 CreateTrapCardToFightList(nowLevelAndHadChip);
                 break;
             default:
-                break;
+                throw new ArgumentOutOfRangeException(nameof(cardType), cardType, null);
         }
         if (!isBuy)
         {

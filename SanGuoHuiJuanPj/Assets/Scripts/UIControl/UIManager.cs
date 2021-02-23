@@ -484,14 +484,14 @@ public class UIManager : MonoBehaviour
                     Transform tran = jibanHeroBoxTran.GetChild(i);
                     GameObject obj = tran.GetChild(0).gameObject;
                     //名字
-                    ShowNameTextRules(obj.transform.GetChild(2).GetComponent<Text>(), DataTable.HeroData[heroId][1]);
+                    ShowNameTextRules(obj.transform.GetChild(2).GetComponent<Text>(), DataTable.Hero[heroId][1]);
                     //名字颜色根据稀有度
-                    obj.transform.GetChild(2).GetComponent<Text>().color = NameColorChoose(DataTable.HeroData[heroId][3]);
+                    obj.transform.GetChild(2).GetComponent<Text>().color = NameColorChoose(DataTable.Hero[heroId][3]);
                     //卡牌
                     obj.transform.GetChild(1).GetComponent<Image>().sprite =
                         GameResources.HeroImg[heroId];
                     //兵种名
-                    obj.transform.GetChild(4).GetComponentInChildren<Text>().text = DataTable.ClassData[int.Parse(DataTable.HeroData[heroId][5])][3];
+                    obj.transform.GetChild(4).GetComponentInChildren<Text>().text = DataTable.ClassData[int.Parse(DataTable.Hero[heroId][5])][3];
                     //兵种框
                     obj.transform.GetChild(4).GetComponent<Image>().sprite = GameResources.ClassImg[0];
                     tran.gameObject.SetActive(true);
@@ -1057,13 +1057,13 @@ public class UIManager : MonoBehaviour
         changeCardsListNameImg.sprite = Resources.Load("Image/shiLi/Name/" + indexChooseListForceId, typeof(Sprite)) as Sprite;
         CreateHeroAndTowerContent();
         UpdateCardNumsShow();
-        StartCoroutine(LiteToChangeViewShow(0));
+        StartCoroutine(LateToChangeViewShow(0));
     }
 
     /// <summary>
     /// 延时刷新列表置顶
     /// </summary>
-    IEnumerator LiteToChangeViewShow(float startTime)
+    IEnumerator LateToChangeViewShow(float startTime)
     {
         yield return new WaitForSeconds(startTime);
 
@@ -1098,7 +1098,7 @@ public class UIManager : MonoBehaviour
     /// </summary>
     private void ShowOneFuZhuRules(IReadOnlyDictionary<int,IReadOnlyList<string>> data, NowLevelAndHadChip card, int indexIcon)
     {
-        GameObject obj = GetHeroCardToShow();
+        GameObject obj = GetHeroCardFromPool();
         //名字
         ShowNameTextRules(obj.transform.GetChild(3).GetComponent<Text>(), data[card.id][1]);
         //名字颜色根据稀有度
@@ -1257,7 +1257,7 @@ public class UIManager : MonoBehaviour
         for (int i = 0; i < PlayerDataForGame.instance.hstData.heroSaveData.Count; i++)
         {
             heroDataIndex = PlayerDataForGame.instance.hstData.heroSaveData[i];
-            if (indexChooseListForceId==int.Parse(DataTable.HeroData[heroDataIndex.id][6]))
+            if (indexChooseListForceId==int.Parse(DataTable.Hero[heroDataIndex.id][6]))
             {
                 if (heroDataIndex.level > 0 || heroDataIndex.chips > 0)
                 {
@@ -1356,19 +1356,19 @@ public class UIManager : MonoBehaviour
     /// <param name="heroData"></param>
     private void ShowOneHeroRules(NowLevelAndHadChip heroData)
     {
-        GameObject obj = GetHeroCardToShow();
+        GameObject obj = GetHeroCardFromPool();
         //名字
-        ShowNameTextRules(obj.transform.GetChild(3).GetComponent<Text>(), DataTable.HeroData[heroData.id][1]);
+        ShowNameTextRules(obj.transform.GetChild(3).GetComponent<Text>(), DataTable.Hero[heroData.id][1]);
         //名字颜色根据稀有度
-        obj.transform.GetChild(3).GetComponent<Text>().color = NameColorChoose(DataTable.HeroData[heroData.id][3]);
+        obj.transform.GetChild(3).GetComponent<Text>().color = NameColorChoose(DataTable.Hero[heroData.id][3]);
         //卡牌
         obj.transform.GetChild(1).GetComponent<Image>().sprite = GameResources.HeroImg[heroData.id];
         //兵种名
-        obj.transform.GetChild(5).GetComponentInChildren<Text>().text = DataTable.ClassData[int.Parse(DataTable.HeroData[heroData.id][5])][3];
+        obj.transform.GetChild(5).GetComponentInChildren<Text>().text = DataTable.ClassData[int.Parse(DataTable.Hero[heroData.id][5])][3];
         //兵种框
         obj.transform.GetChild(5).GetComponent<Image>().sprite = GameResources.ClassImg[0];
         //边框
-        FrameChoose(DataTable.HeroData[heroData.id][3], obj.transform.GetChild(6).GetComponent<Image>());
+        FrameChoose(DataTable.Hero[heroData.id][3], obj.transform.GetChild(6).GetComponent<Image>());
         //碎片
         if (heroData.level < DataTable.UpGradeData.Count)
         {
@@ -1419,29 +1419,29 @@ public class UIManager : MonoBehaviour
 
         //Debug.Log("点击的武将id：" + heroData.id);
         //武将名字
-        infoTran.GetChild(0).GetComponent<Text>().text = DataTable.HeroData[heroData.id][1];
+        infoTran.GetChild(0).GetComponent<Text>().text = DataTable.Hero[heroData.id][1];
         //武将名字颜色
-        infoTran.GetChild(0).GetComponent<Text>().color = NameColorChoose(DataTable.HeroData[heroData.id][3]);
+        infoTran.GetChild(0).GetComponent<Text>().color = NameColorChoose(DataTable.Hero[heroData.id][3]);
         //武将属性
-        string[] strs_attack = DataTable.HeroData[heroData.id][7].Split(',');
+        string[] strs_attack = DataTable.Hero[heroData.id][7].Split(',');
         infoTran.GetChild(1).GetComponent<Text>().text = string.Format(DataTable.GetStringText(32), strs_attack[heroData.level > 0 ? heroData.level - 1 : 0]);
-        string[] strs_health = DataTable.HeroData[heroData.id][8].Split(',');
+        string[] strs_health = DataTable.Hero[heroData.id][8].Split(',');
         infoTran.GetChild(2).GetComponent<Text>().text = string.Format(DataTable.GetStringText(33), strs_health[heroData.level > 0 ? heroData.level - 1 : 0]);
         //武将介绍
-        infoTran.GetChild(3).GetComponent<Text>().text = DataTable.HeroData[heroData.id][2];
+        infoTran.GetChild(3).GetComponent<Text>().text = DataTable.Hero[heroData.id][2];
 
         //名字
-        ShowNameTextRules(showCardObj.transform.GetChild(3).GetComponent<Text>(), DataTable.HeroData[heroData.id][1]);
+        ShowNameTextRules(showCardObj.transform.GetChild(3).GetComponent<Text>(), DataTable.Hero[heroData.id][1]);
         //名字颜色
-        showCardObj.transform.GetChild(3).GetComponent<Text>().color = NameColorChoose(DataTable.HeroData[heroData.id][3]);
+        showCardObj.transform.GetChild(3).GetComponent<Text>().color = NameColorChoose(DataTable.Hero[heroData.id][3]);
         //卡牌
         showCardObj.transform.GetChild(1).GetComponent<Image>().sprite = GameResources.HeroImg[heroData.id];
         //兵种名
-        showCardObj.transform.GetChild(5).GetComponentInChildren<Text>().text = DataTable.ClassData[int.Parse(DataTable.HeroData[heroData.id][5])][3];
+        showCardObj.transform.GetChild(5).GetComponentInChildren<Text>().text = DataTable.ClassData[int.Parse(DataTable.Hero[heroData.id][5])][3];
         //兵种框
         showCardObj.transform.GetChild(5).GetComponent<Image>().sprite = GameResources.ClassImg[0];
         //边框
-        FrameChoose(DataTable.HeroData[heroData.id][3], showCardObj.transform.GetChild(6).GetComponent<Image>());
+        FrameChoose(DataTable.Hero[heroData.id][3], showCardObj.transform.GetChild(6).GetComponent<Image>());
         //碎片
         if (heroData.level < DataTable.UpGradeData.Count)
         {
@@ -1507,7 +1507,7 @@ public class UIManager : MonoBehaviour
         switch (cardType)
         {
             case 0:
-                rarityStr = DataTable.HeroData[cardId][3];
+                rarityStr = DataTable.Hero[cardId][3];
                 break;
             case 1:
                 rarityStr = DataTable.SoldierData[cardId][3];
@@ -1728,7 +1728,7 @@ public class UIManager : MonoBehaviour
         CreateHeroAndTowerContent();
         UpdateCardNumsShow();
 
-        StartCoroutine(LiteToChangeViewShow(0));
+        StartCoroutine(LateToChangeViewShow(0));
     }
 
     //得到合成所需元宝
@@ -1988,11 +1988,11 @@ public class UIManager : MonoBehaviour
             {
                 case 0:
                     cardTran.GetComponent<Image>().sprite = GameResources.HeroImg[rewardsCard.cardId];
-                    ShowNameTextRules(cardTran.GetChild(0).GetComponent<Text>(), DataTable.HeroData[rewardsCard.cardId][1]);
-                    cardTran.GetChild(0).GetComponent<Text>().color = NameColorChoose(DataTable.HeroData[rewardsCard.cardId][3]);
+                    ShowNameTextRules(cardTran.GetChild(0).GetComponent<Text>(), DataTable.Hero[rewardsCard.cardId][1]);
+                    cardTran.GetChild(0).GetComponent<Text>().color = NameColorChoose(DataTable.Hero[rewardsCard.cardId][3]);
                     cardTran.GetChild(1).GetComponent<Image>().sprite = GameResources.ClassImg[0];
-                    cardTran.GetChild(1).GetChild(0).GetComponentInChildren<Text>().text = DataTable.ClassData[int.Parse(DataTable.HeroData[rewardsCard.cardId][5])][3];
-                    FrameChoose(DataTable.HeroData[rewardsCard.cardId][3], cardTran.GetChild(2).GetComponent<Image>());
+                    cardTran.GetChild(1).GetChild(0).GetComponentInChildren<Text>().text = DataTable.ClassData[int.Parse(DataTable.Hero[rewardsCard.cardId][5])][3];
+                    FrameChoose(DataTable.Hero[rewardsCard.cardId][3], cardTran.GetChild(2).GetComponent<Image>());
                     break;
                 case 1:
                     //cardTran.GetChild(0).GetComponent<Text>().text = LoadJsonFile.soldierTableDatas[rewardsCard.cardId][1];
@@ -2189,7 +2189,7 @@ public class UIManager : MonoBehaviour
     /// 从卡牌池中获取空卡牌
     /// </summary>
     /// <returns></returns>
-    private GameObject GetHeroCardToShow()
+    private GameObject GetHeroCardFromPool()
     {
         foreach (GameObject item in heroCardPoolList)
         {
