@@ -6590,6 +6590,21 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.x
       value: 3.6652832
       objectReference: {fileID: 0}
+    - target: {fileID: 954313829337501413, guid: 4460466dc8cacc540a9bb4a7b0a73593,
+        type: 3}
+      propertyPath: m_Color.g
+      value: 0.01900063
+      objectReference: {fileID: 0}
+    - target: {fileID: 954313829337501413, guid: 4460466dc8cacc540a9bb4a7b0a73593,
+        type: 3}
+      propertyPath: m_FontData.m_MaxSize
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 954313829337501413, guid: 4460466dc8cacc540a9bb4a7b0a73593,
+        type: 3}
+      propertyPath: m_FontData.m_FontSize
+      value: 50
+      objectReference: {fileID: 0}
     - target: {fileID: 1307369618487975168, guid: 4460466dc8cacc540a9bb4a7b0a73593,
         type: 3}
       propertyPath: m_AnchoredPosition.x
@@ -6813,6 +6828,27 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 287598039}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &287598041 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3345940550477607920, guid: 4460466dc8cacc540a9bb4a7b0a73593,
+    type: 3}
+  m_PrefabInstance: {fileID: 287598039}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &287598042
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 287598041}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e19747de3f5aca642ab2be37e372fb86, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_EffectColor: {r: 1, g: 1, b: 1, a: 1}
+  m_EffectDistance: {x: 1, y: -1}
+  m_UseGraphicAlpha: 1
 --- !u!1 &289163569
 GameObject:
   m_ObjectHideFlags: 0
@@ -21218,7 +21254,7 @@ PrefabInstance:
     - target: {fileID: 954313829337501413, guid: 4460466dc8cacc540a9bb4a7b0a73593,
         type: 3}
       propertyPath: m_FontData.m_FontSize
-      value: 45
+      value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 1307369618487975168, guid: 4460466dc8cacc540a9bb4a7b0a73593,
         type: 3}
@@ -34817,7 +34853,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0.48278105}
-  m_AnchoredPosition: {x: 0, y: -137}
+  m_AnchoredPosition: {x: 0, y: -137.00003}
   m_SizeDelta: {x: 1080, y: -273}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1082312976
@@ -56378,7 +56414,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.573}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 171.00006}
+  m_AnchoredPosition: {x: 0, y: 171.00003}
   m_SizeDelta: {x: 0, y: -342}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1555229569
