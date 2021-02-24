@@ -500,17 +500,6 @@ public class PlayerDataForGame : MonoBehaviour
         textTipsObj.SetActive(true);
     }
 
-    /// <summary> 
-    /// 为战斗类型预设个记号，在场景转换的时候将读取战斗记号并打开相应的页面 
-    /// </summary> 
-    /// <param name="warType"></param> 
-    public void FlagWarTypeBeforeBattle(int warType)
-    {
-        WarType = warType >= 0 && warType <= 2
-            ? (WarTypes)warType
-            : throw new ArgumentOutOfRangeException($"Type of {nameof(WarTypes)} : {warType}");
-    }
-
     public void SetRedeemCount(RedeemTypes type, int count)
     {
         switch (type)

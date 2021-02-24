@@ -2349,12 +2349,12 @@ MonoBehaviour:
   warsChooseListObj: {fileID: 309969162}
   warsChooseBtnPreObj: {fileID: 867509523253436387, guid: 8b38cc76adfee21429debdabe7fa109d,
     type: 3}
-  warIntroText: {fileID: 1375555297}
   holdOrFightBtn: {fileID: 1446978157}
   sellCardBtn: {fileID: 935170476}
   tiLiRecordTimer: {fileID: 1573185806}
   queRenWindows: {fileID: 1268676929}
   boxBtnObjs: []
+  expedition: {fileID: 1066029935}
   taoYuan: {fileID: 479209820}
   JinNangQuota: {fileID: 720334579}
   rewardsParent: {fileID: 1218467906}
@@ -2375,7 +2375,6 @@ MonoBehaviour:
   - {fileID: 1292695640}
   chickenCloseText: {fileID: 1678826690}
   cutTiLiTextObj: {fileID: 1401711411}
-  warForceSelectorUi: {fileID: 701762566}
   baYeForceSelectorUi: {fileID: 110482964}
   baYeProgressUi: {fileID: 100429886}
   baYeChestButtons:
@@ -6087,7 +6086,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.426582}
   m_AnchorMax: {x: 1, y: 0.531}
-  m_AnchoredPosition: {x: -34.299988, y: -1.699997}
+  m_AnchoredPosition: {x: -34.299988, y: -1.6999512}
   m_SizeDelta: {x: -631.00116, y: 3.4998932}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &250071417
@@ -8798,8 +8797,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 82871244}
-        m_MethodName: OnClickStartWars
-        m_Mode: 3
+        m_MethodName: OnClickStartExpedition
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -17380,8 +17379,8 @@ RectTransform:
   m_Father: {fileID: 734229976}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMin: {x: 1, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 20, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -31976,7 +31975,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0.0009765625, y: 115}
-  m_SizeDelta: {x: 0, y: -228}
+  m_SizeDelta: {x: -851.89996, y: -228}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &999866687
 MonoBehaviour:
@@ -33687,13 +33686,14 @@ GameObject:
   - component: {fileID: 1066029932}
   - component: {fileID: 1066029934}
   - component: {fileID: 1066029933}
+  - component: {fileID: 1066029935}
   m_Layer: 5
   m_Name: War
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1066029932
 RectTransform:
   m_ObjectHideFlags: 0
@@ -33753,6 +33753,31 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1066029931}
   m_CullTransparentMesh: 0
+--- !u!114 &1066029935
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1066029931}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e0da0079e7dd8c4489f22a2ae1e40105, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  warIntroText: {fileID: 1375555297}
+  difficultyButtons:
+  - {fileID: 211999462}
+  - {fileID: 468837081}
+  - {fileID: 411824408}
+  - {fileID: 1243386896}
+  - {fileID: 1572529243}
+  - {fileID: 1351518885}
+  yuanZhengButton: {fileID: 1034230967}
+  warStageBtnPrefab: {fileID: 7090570751535716923, guid: 8b38cc76adfee21429debdabe7fa109d,
+    type: 3}
+  warStageScrollRect: {fileID: 1027029997}
+  warForceSelectorUi: {fileID: 701762566}
 --- !u!1 &1066426667
 GameObject:
   m_ObjectHideFlags: 0
@@ -67460,9 +67485,9 @@ RectTransform:
   m_Father: {fileID: 999866686}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 60, y: -100}
   m_SizeDelta: {x: 120, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1799541504
@@ -91320,7 +91345,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!222 &8303325172684391206
 CanvasRenderer:
   m_ObjectHideFlags: 0
