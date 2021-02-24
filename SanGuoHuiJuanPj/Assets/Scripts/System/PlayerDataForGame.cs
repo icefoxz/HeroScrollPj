@@ -567,5 +567,7 @@ public class PlayerDataForGame : MonoBehaviour
     {
         if (totalStagesPass > warsData.warUnlockSaveData[selectedWarId].unLockCount)
             warsData.warUnlockSaveData[selectedWarId].unLockCount = totalStagesPass;
+        isNeedSaveData = true;
+        LoadSaveData.instance.SaveGameData(3);
     }
 }

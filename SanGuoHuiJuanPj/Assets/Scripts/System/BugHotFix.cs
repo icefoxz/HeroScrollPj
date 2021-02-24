@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -103,6 +104,22 @@ public static class BugHotFix
             baYe.zhanLingMap = zhanLingMap;
             PlayerDataForGame.instance.isNeedSaveData = true;
             SavePlayerDataWithFixVersion(fixVersion, 5);
+        }
+    }
+
+    public static void OnFixLianYuV2_02()
+    {
+        const float fixVersion = 2.02f;
+        if (PlayerDataForGame.instance.pyData.LastGameVersion > fixVersion) return;
+        ResetWar(80);
+        ResetWar(81);
+        ResetWar(82);
+        void ResetWar(int warId)
+        {
+            var war = PlayerDataForGame.instance.warsData.warUnlockSaveData.Single(w => w.warId == warId);
+            var index = PlayerDataForGame.instance.warsData.warUnlockSaveData.IndexOf(war);
+            PlayerDataForGame.instance.warsData.warUnlockSaveData[index] = new UnlockWarCount {warId = warId};
+            SavePlayerDataWithFixVersion(fixVersion,1);
         }
     }
 }
