@@ -20,10 +20,12 @@ public class ForceSelectorUi : MonoBehaviour
     public int onSelectedAudioId = -1;
 
     private Dictionary<int, ForceFlagUI> data = new Dictionary<int, ForceFlagUI>();
+    private Dictionary<int, Button> btnData = new Dictionary<int, Button>();
     /// <summary>
     /// Key = forceId, value = ForceFlagUI
     /// </summary>
     public IReadOnlyDictionary<int, ForceFlagUI> Data => data;
+    public IReadOnlyDictionary<int, Button> BtnData => btnData;
     public virtual void Init(PlayerDataForGame.WarTypes warType)
     {
         var totalUnlock = int.Parse(DataTable.PlayerLevelData[PlayerDataForGame.instance.pyData.Level - 1][6]);
@@ -44,13 +46,14 @@ public class ForceSelectorUi : MonoBehaviour
                 forceFlag = btn.GetComponentInChildren<ForceFlagUI>(true);
                 forceFlag.Set((ForceFlags) forceId);
                 data.Add(forceId, forceFlag);
+                btnData.Add(forceId, btn);
             }
             else
             {
                 forceFlag = data[forceId];
-                btn = forceFlag.GetComponentInParent<Button>();
+                btn = btnData[forceId];
             }
-
+            ButtonUiReset(btn);
             switch (mode)
             {
                 case Modes.全显值暗:
@@ -75,7 +78,15 @@ public class ForceSelectorUi : MonoBehaviour
         OnSelected(warType, PlayerDataForGame.instance.WarForceMap[warType]);
     }
 
-    protected virtual void OnSelected(PlayerDataForGame.WarTypes warType,int forceId)
+    private void ButtonUiReset(Button btn)
+    {
+        btn.onClick.RemoveAllListeners();
+        btn.interactable = true;
+        btn.enabled = true;
+        btn.gameObject.SetActive(false);
+    }
+
+    public virtual void OnSelected(PlayerDataForGame.WarTypes warType,int forceId = -1)
     {
         if (onSelectedAudioId > -1)
         {
@@ -89,4 +100,5 @@ public class ForceSelectorUi : MonoBehaviour
         }
         PlayerDataForGame.instance.WarForceMap[warType] = forceId;
     }
+
 }

@@ -563,4 +563,9 @@ public class PlayerDataForGame : MonoBehaviour
         LoadSaveData.instance.SaveGameData(3);
     }
 
+    public void UpdateWarUnlockProgress(int totalStagesPass)
+    {
+        if (totalStagesPass > warsData.warUnlockSaveData[selectedWarId].unLockCount)
+            warsData.warUnlockSaveData[selectedWarId].unLockCount = totalStagesPass;
+    }
 }

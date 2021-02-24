@@ -654,15 +654,21 @@ public class UIManager : MonoBehaviour
     /// <summary> 
     /// 开始对战 
     /// </summary> 
-    public void OnClickStartExpedition()
+    [SkipRename]public void OnClickStartExpedition()
     {
-        if (PlayerDataForGame.instance.selectedWarId < 0)
+        if (PlayerDataForGame.instance.selectedWarId < 0 || expedition.RecordedExpeditionWarId < 0)
         {
             PlayerDataForGame.instance.ShowStringTips("请选择战役！");
             PlayOnClickMusic();
             return;
         }
 
+        if (expedition.warForceSelectorUi.Data.Values.All(ui => !ui.Selected))
+        {
+            PlayerDataForGame.instance.ShowStringTips("请选择势力！");
+            PlayOnClickMusic();
+            return;
+        }
         PlayerDataForGame.instance.WarType = PlayerDataForGame.WarTypes.Expedition;
         if (!IsJumping)
         {
@@ -1741,7 +1747,7 @@ public class UIManager : MonoBehaviour
             case 2://战役 
                 ShowOrHideGuideObj(3, true);
                 warsChooseListObj.transform.parent.parent.GetComponent<ScrollRect>().DOVerticalNormalizedPos(0f, 0.3f);
-                expedition.OnClickChangeWarsFun();
+                expedition.OnClickChangeWarsFun(expedition.RecordedExpeditionWarId);
                 break;
             case 4://霸业 
                 bayeBelowLevelPanel.gameObject.SetActive(PlayerDataForGame.instance.pyData.Level < 5);

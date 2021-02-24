@@ -18637,8 +18637,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   buttonPrefab: {fileID: 1780022939}
   content: {fileID: 1783778404}
-  mode: 0
-  onSelectedAudioId: -1
+  mode: 1
+  onSelectedAudioId: 14
 --- !u!114 &701762567
 MonoBehaviour:
   m_ObjectHideFlags: 0

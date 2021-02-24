@@ -12,17 +12,20 @@ public class Expedition : MonoBehaviour
     public Button yuanZhengButton;
     public WarStageBtnUi warStageBtnPrefab;
     public ScrollRect warStageScrollRect;
+    private const int YuanZhengIndex = 6;
+    private const int LianYuIndex = 4;
 
     public ForceSelectorUi warForceSelectorUi; //战役势力选择器
     private int lastAvailableStageIndex; //最远可战的战役索引
     private List<WarStageBtnUi> stages;
     private int recordedExpeditionWarId = -1;//当前选择战役的WarId
+    public int RecordedExpeditionWarId => recordedExpeditionWarId;
     /// <summary>
     /// key = btn index, value = warStageId
     /// </summary>
     private Dictionary<int, WarMode> indexWarStageMap; //按键和难度的映射
     private WarMode currentMode;//当前选择的难度
-    public int[] SelectedWarStaminaCost => indexWarStageMap[recordedExpeditionWarId].tili;
+    public int[] SelectedWarStaminaCost => currentMode.tili;
 
     public void Init()
     {
@@ -30,7 +33,6 @@ public class Expedition : MonoBehaviour
         indexWarStageMap = new Dictionary<int, WarMode>();
         stages = new List<WarStageBtnUi>();
         InitWarDifBtnShow();
-        recordedExpeditionWarId = lastAvailableStageIndex;
     }
 
     private void InitWarDifBtnShow()
@@ -77,8 +79,9 @@ public class Expedition : MonoBehaviour
         InitWarsListInfo(lastAvailableStageIndex, true);
 
         //远征关卡
-        const int YuanZhengIndex = 6;
+        
         var yuanZhengMode = new WarMode(DataTable.ChoseWar[YuanZhengIndex]);
+        indexWarStageMap.Add(YuanZhengIndex, yuanZhengMode);
         var isYuanZhengUnlock = IsWarUnlock(yuanZhengMode);
         yuanZhengButton.gameObject.SetActive(isYuanZhengUnlock);
         if (isYuanZhengUnlock)
@@ -186,28 +189,44 @@ public class Expedition : MonoBehaviour
 
     private void OnSelectDifficultyUiScale(int index)
     {
+        var scaleUp = new Vector2(1.2f, 1.2f);
+        yuanZhengButton.transform.localScale = index == YuanZhengIndex ? scaleUp : Vector2.one;
         for (int i = 0; i < difficultyButtons.Length; i++)
-            difficultyButtons[i].transform.localScale = index == i ? new Vector2(1.2f, 1.2f) : Vector2.one;
+            difficultyButtons[i].transform.localScale = index == i ? scaleUp : Vector2.one;
     }
 
     //选择战役的改变
-    public void OnClickChangeWarsFun(int warsId = -1)
+    public void OnClickChangeWarsFun(int warId)
     {
-        if (warsId == -1) warsId = recordedExpeditionWarId;
         for (int i = 0; i < stages.Count; i++)
         {
             var boundWarId = stages[i].boundWarId;
-            stages[i].selectedImage.enabled = warsId == boundWarId;
+            stages[i].selectedImage.enabled = warId == boundWarId;
         }
 
+        var limitedForce = DataTable.War[warId][11];
+        if (!string.IsNullOrWhiteSpace(limitedForce))
+        {
+            var forces = limitedForce.TableStringToInts().ToArray();
+            foreach (var flagUi in warForceSelectorUi.Data)
+            {
+                var ui = flagUi.Value;
+                var enable = forces.Contains(flagUi.Key);
+                ui.Interaction(enable);
+                if(!enable) warForceSelectorUi.BtnData[flagUi.Key].onClick.RemoveAllListeners();
+            }
+            warForceSelectorUi.OnSelected(PlayerDataForGame.WarTypes.Expedition);
+        }else warForceSelectorUi.Init(PlayerDataForGame.WarTypes.Expedition);
+
         PlayerDataForGame.instance.zhanYiColdNums = 10;
-        PlayerDataForGame.instance.selectedWarId = warsId;
+        PlayerDataForGame.instance.selectedWarId = warId;
+        recordedExpeditionWarId = warId;
         //战役介绍
         warIntroText.DOPause();
         warIntroText.text = string.Empty;
         warIntroText.color = new Color(warIntroText.color.r, warIntroText.color.g, warIntroText.color.b, 0);
         warIntroText.DOFade(1, 3f);
-        warIntroText.DOText(("\u2000\u2000\u2000\u2000" + DataTable.War[warsId][2]), 3f).SetEase(Ease.Linear)
+        warIntroText.DOText(("\u2000\u2000\u2000\u2000" + DataTable.War[warId][2]), 3f).SetEase(Ease.Linear)
             .SetAutoKill(false);
     }
 

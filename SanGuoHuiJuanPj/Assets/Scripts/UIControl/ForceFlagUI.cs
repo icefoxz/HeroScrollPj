@@ -17,6 +17,7 @@ public class ForceFlagUI : MonoBehaviour
     public GameObject lingObj;
     public Text nameText;
     public Text panelText;
+    public bool Selected => selected.gameObject.activeSelf;
 
     public void Set(ForceFlags flag, bool display = true, string nameInText = null)
     {

@@ -327,22 +327,17 @@ public class WarsUIManager : MonoBehaviour
             }
             //霸业的战斗金币传到主城
             PlayerDataForGame.instance.warsData.baYe.gold = GoldForCity;
+        } else if (PlayerDataForGame.instance.WarType == PlayerDataForGame.WarTypes.Expedition)
+        {
+            PlayerDataForGame.instance.UpdateWarUnlockProgress(passedGuanQiaNums);
         }
 
         int guanQiaSum = int.Parse(DataTable.WarData[PlayerDataForGame.instance.selectedWarId][4]);
-        if (treasureChestNums > 0)
-        {
-            rewardMap.Trade(2, treasureChestNums); //index2是宝箱图
-        }
+        if (treasureChestNums > 0) rewardMap.Trade(2, treasureChestNums); //index2是宝箱图
 
         //gameOverWindow.Show(rewardMap);
         gameOverWindow.ShowWithZhanLing(rewardMap, zhanLing);
 
-        if (passedGuanQiaNums > PlayerDataForGame.instance.warsData.warUnlockSaveData[PlayerDataForGame.instance.selectedWarId].unLockCount)
-        {
-            PlayerDataForGame.instance.warsData.warUnlockSaveData[PlayerDataForGame.instance.selectedWarId].unLockCount = passedGuanQiaNums;
-        }
-        
         PlayerDataForGame.instance.isNeedSaveData = true;
         LoadSaveData.instance.SaveGameData(3);
         //gameOverObj.SetActive(true);
