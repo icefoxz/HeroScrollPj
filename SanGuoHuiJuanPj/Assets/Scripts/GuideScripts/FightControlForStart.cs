@@ -519,6 +519,10 @@ public class FightControlForStart : MonoBehaviour
             int nowDamage = DefDamageProcessFun(attackUnit, attackedUnit, damage);
             attackedUnit.nowHp -= nowDamage;
             AttackedAnimShow(attackedUnit, nowDamage, false);
+            if (attackedUnit.cardType == 522 && attackedUnit.nowHp <= 0)
+            {
+                recordWinner = attackUnit.isPlayerCard ? 1 : -1;
+            }
         }
     }
 
