@@ -97,7 +97,7 @@ public class FightController : MonoBehaviour
     //普攻
     IEnumerator PuTongGongji(float damageBonus, FightCardData attackUnit, FightCardData attackedUnit, bool isCanFightBack)
     {
-        isNeedToAttack = true;//*远程兵种是普攻
+        isNeedToAttack = true;//*远程兵种普攻
         //受击者是老家
         if (attackedUnit.cardType == 522)
         {
@@ -495,7 +495,7 @@ public class FightController : MonoBehaviour
                     {
                         nowDamage = nowDamage * 2;
                     }
-                    if (cardIndex != 17)
+                    if (cardIndex != 17)//？
                     {
                         fightCardDatas[cardIndex].nowHp -= nowDamage;
                         TakeOneUnitDizzed(fightCardDatas[cardIndex], dizzedRate);
