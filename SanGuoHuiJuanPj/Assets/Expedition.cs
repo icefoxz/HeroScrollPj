@@ -1,19 +1,23 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
 
+//征战页面
 public class Expedition : MonoBehaviour
 {
     public Text warIntroText; //战役介绍文本obj
+    public Image stageTipUi;//模式说明
+    public Text stageTipForceName;
     public Button[] difficultyButtons;
     public Button yuanZhengButton;
     public WarStageBtnUi warStageBtnPrefab;
     public ScrollRect warStageScrollRect;
-    private const int YuanZhengIndex = 6;
-    private const int LianYuIndex = 4;
+    private const int YuanZhengIndex = 6;//远征id
+
 
     public ForceSelectorUi warForceSelectorUi; //战役势力选择器
     private int lastAvailableStageIndex; //最远可战的战役索引
@@ -23,19 +27,19 @@ public class Expedition : MonoBehaviour
     /// <summary>
     /// key = btn index, value = warStageId
     /// </summary>
-    private Dictionary<int, WarMode> indexWarStageMap; //按键和难度的映射
+    private Dictionary<int, WarMode> indexWarModeMap; //按键和难度的映射
     private WarMode currentMode;//当前选择的难度
     public int[] SelectedWarStaminaCost => currentMode.tili;
 
     public void Init()
     {
         warForceSelectorUi.Init(PlayerDataForGame.WarTypes.Expedition);
-        indexWarStageMap = new Dictionary<int, WarMode>();
+        indexWarModeMap = new Dictionary<int, WarMode>();
         stages = new List<WarStageBtnUi>();
-        InitWarDifBtnShow();
+        InitWarModes();
     }
 
-    private void InitWarDifBtnShow()
+    private void InitWarModes()
     {
         lastAvailableStageIndex = 0;
         var warModes = DataTable.ChoseWar.Where(map => !string.IsNullOrWhiteSpace(map.Value[2]))
@@ -50,7 +54,7 @@ public class Expedition : MonoBehaviour
                 continue;
             }
             var warMode = warModes[i];
-            indexWarStageMap.Add(i, warMode);
+            indexWarModeMap.Add(i, warMode);
             var textUi = uiBtn.GetComponentInChildren<Text>();
             textUi.text = warMode.title;
             var isUnlock = IsWarUnlock(warMode);
@@ -81,7 +85,7 @@ public class Expedition : MonoBehaviour
         //远征关卡
         
         var yuanZhengMode = new WarMode(DataTable.ChoseWar[YuanZhengIndex]);
-        indexWarStageMap.Add(YuanZhengIndex, yuanZhengMode);
+        indexWarModeMap.Add(YuanZhengIndex, yuanZhengMode);
         var isYuanZhengUnlock = IsWarUnlock(yuanZhengMode);
         yuanZhengButton.gameObject.SetActive(isYuanZhengUnlock);
         if (isYuanZhengUnlock)
@@ -107,7 +111,7 @@ public class Expedition : MonoBehaviour
     }
 
     /// <summary>
-    /// 选择难度按钮以改变战役列表
+    /// 初始化征战关卡(左边)列表
     /// </summary>
     private void InitWarsListInfo(int btnIndex,bool forceRefresh = false)
     {
@@ -115,26 +119,26 @@ public class Expedition : MonoBehaviour
         if (UIManager.instance.IsJumping)
             return;
 
-        if (!forceRefresh && currentMode == indexWarStageMap[btnIndex])
+        if (!forceRefresh && currentMode == indexWarModeMap[btnIndex])
             return;
-        currentMode = indexWarStageMap[btnIndex];
+        currentMode = indexWarModeMap[btnIndex];
         //右侧难度选择按钮刷新大小
         OnSelectDifficultyUiScale(btnIndex);
-        var warStage = indexWarStageMap[btnIndex];
+        var warMode = indexWarModeMap[btnIndex];
 
         //删除战役列表
         foreach (var ui in stages) Destroy(ui.gameObject);
         stages.Clear();
 
         int startWarId,lastWarId = 0;
-        if (warStage.id == 6)
+        if (warMode.id == 6)
         {
             startWarId = lastWarId = int.Parse(DataTable.PlayerLevelData[PlayerDataForGame.instance.pyData.Level - 1][5]);
         }
         else
         {
-            startWarId = warStage.warList[0];
-            lastWarId = warStage.warList[1];
+            startWarId = warMode.warList[0];
+            lastWarId = warMode.warList[1];
         }
 
         int index = startWarId;
@@ -182,8 +186,10 @@ public class Expedition : MonoBehaviour
             if(playerStageProgress.unLockCount < warsCount)break;
         }
 
+        var lastStageWarId = PlayerDataForGame.instance.warsData.warUnlockSaveData[index > lastWarId ? lastWarId : index]
+            .warId;
         //默认选择最后一个关卡
-        OnClickChangeWarsFun(PlayerDataForGame.instance.warsData.warUnlockSaveData[index > lastWarId? lastWarId: index].warId);
+        OnClickChangeWarsFun(lastStageWarId);
         warStageScrollRect.DOVerticalNormalizedPos(0f, 0.3f);
     }
 
@@ -203,9 +209,13 @@ public class Expedition : MonoBehaviour
             var boundWarId = stages[i].boundWarId;
             stages[i].selectedImage.enabled = warId == boundWarId;
         }
-
         var limitedForce = DataTable.War[warId][11];
-        if (!string.IsNullOrWhiteSpace(limitedForce))
+        var isLimitedForce = !string.IsNullOrWhiteSpace(limitedForce);
+        stageTipUi.gameObject.SetActive(isLimitedForce);
+        stageTipForceName.text = string.Empty;
+        warForceSelectorUi.Init(PlayerDataForGame.WarTypes.Expedition);
+
+        if (isLimitedForce)
         {
             var forces = limitedForce.TableStringToInts().ToArray();
             foreach (var flagUi in warForceSelectorUi.Data)
@@ -213,10 +223,13 @@ public class Expedition : MonoBehaviour
                 var ui = flagUi.Value;
                 var enable = forces.Contains(flagUi.Key);
                 ui.Interaction(enable);
+
                 if(!enable) warForceSelectorUi.BtnData[flagUi.Key].onClick.RemoveAllListeners();
             }
+
+            stageTipForceName.text = forces.Length > 0 ? DataTable.War[warId][12] : string.Empty;
             warForceSelectorUi.OnSelected(PlayerDataForGame.WarTypes.Expedition);
-        }else warForceSelectorUi.Init(PlayerDataForGame.WarTypes.Expedition);
+        }
 
         PlayerDataForGame.instance.zhanYiColdNums = 10;
         PlayerDataForGame.instance.selectedWarId = warId;

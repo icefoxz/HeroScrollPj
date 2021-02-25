@@ -367,7 +367,7 @@ public class BaYeManager : MonoBehaviour
                 UIManager.instance.baYeWindowUi.ShowSelection(sEvent.ZhanLing, selectedId =>
                 {
                     var message = TradeZhanLing(selectedId, sEvent.ZhanLing[selectedId])
-                        ? $"获得[{DataTable.ShiLi[selectedId]}]战令"
+                        ? $"获得[{DataTable.ShiLi[selectedId][1]}]战令"
                         : "战令获取异常！";
                     UIManager.instance.baYeForceSelectorUi.UpdateZhanLing();
                     PlayerDataForGame.instance.ShowStringTips(message);

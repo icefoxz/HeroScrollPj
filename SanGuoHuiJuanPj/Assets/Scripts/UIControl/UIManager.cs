@@ -370,11 +370,21 @@ public class UIManager : MonoBehaviour
         //霸业经验条和宝箱初始化 
         ResetBaYeProgressAndGold();
         //城市点初始化 
-        var cityLvlUnlock = DataTable.PlayerLevel.Select(map =>
+        var cityLvlMap = new Dictionary<int,int>();//maxCity, level
+        DataTable.PlayerLevel.Select(map =>
         {
             var maxCity = map.Value[7].TableStringToInts().Max();
-            return (map.Key, maxCity);
-        }).ToDictionary(o => o.Key, o => o.maxCity);
+            return new {level = map.Key, maxCity};
+        }).ToList().ForEach(map =>
+        {
+            if (!cityLvlMap.ContainsKey(map.maxCity))
+            {
+                cityLvlMap.Add(map.maxCity, map.level);
+                return;
+            }
+
+            cityLvlMap[map.maxCity] = cityLvlMap[map.maxCity] > map.level ? cityLvlMap[map.maxCity] : map.level;
+        });
         var cityList = DataTable.PlayerLevel[PlayerDataForGame.instance.pyData.Level][7].TableStringToInts().ToArray();
         if (cityFields != null && cityFields.Count > 0)
             cityFields.ForEach(Destroy);
@@ -406,7 +416,7 @@ public class UIManager : MonoBehaviour
             }
             else
             {
-                ui.text.text = $"{cityLvlUnlock[i]}级开启";
+                ui.text.text = $"{cityLvlMap[i]}级开启";
                 ui.InactiveCityColor();
             }
 

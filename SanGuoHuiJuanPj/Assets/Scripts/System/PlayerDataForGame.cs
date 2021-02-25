@@ -59,8 +59,16 @@ public class PlayerDataForGame : MonoBehaviour
 
     public PlayerData pyData;  //玩家基本信息 
     public GetBoxOrCodeData gbocData = new GetBoxOrCodeData();  //玩家宝箱与兑换码信息 
-    public HSTDataClass hstData = new HSTDataClass();       //玩家武将士兵塔等信息 
-    public WarsDataClass warsData = new WarsDataClass();       //玩家战役解锁+霸业进度信息 
+    public HSTDataClass hstData = new HSTDataClass(); //玩家武将士兵塔等信息 
+
+    public WarsDataClass warsData
+    {
+        get => _warsData;
+        set
+        {
+            _warsData = value;
+        }
+    } //玩家战役解锁+霸业进度信息 
 
     [HideInInspector]
     public int[] guideObjsShowed;   //存放各个指引展示情况 
@@ -488,6 +496,7 @@ public class PlayerDataForGame : MonoBehaviour
     public int selectedBaYeEventId; //当前选择的霸业城池 
     public int selectedCity;
     public string mainSceneTips;
+    private WarsDataClass _warsData = new WarsDataClass();
 
     /// <summary> 
     /// 场景底部文本提示 

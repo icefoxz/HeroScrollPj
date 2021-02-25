@@ -171,6 +171,7 @@ public class WarTable
     public int YuQueR { get; set; }
     public int TiLiR { get; set; }
     public string JunTuan { get; set; }
+    public string JunTuanIntro { get; set; }
 }
 public class CityLevelTable
 {
@@ -434,6 +435,7 @@ public class ShiLiTable
     public int Qi { get; set; }//已修正
     public int UnlockLevel { get; set; }//已修正
     public string JunTuanInfo { get; set; }
+    public string JunTuanLeader { get; set; }
 }
 public class BaYeDiTuTable
 {

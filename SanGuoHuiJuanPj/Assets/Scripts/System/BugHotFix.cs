@@ -110,7 +110,7 @@ public static class BugHotFix
     public static void OnFixLianYuV2_02()
     {
         const float fixVersion = 2.02f;
-        if (PlayerDataForGame.instance.pyData.LastGameVersion > fixVersion) return;
+        if (PlayerDataForGame.instance.pyData.LastGameVersion >= fixVersion) return;
         ResetWar(80);
         ResetWar(81);
         ResetWar(82);

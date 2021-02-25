@@ -1349,7 +1349,7 @@ public class FightForManager : MonoBehaviour
                 data.activeUnit = (data.cardId == 0 || data.cardId == 1 || data.cardId == 2 || data.cardId == 3 || data.cardId == 6);
                 data.cardMoveType = 1;
                 data.cardDamageType = 0;
-                GiveGameObjEventForHoldOn(data.cardObj, DataTable.TowerData[data.cardId][12]);
+                GiveGameObjEventForHoldOn(data.cardObj, DataTable.Tower[data.cardId][13]);
                 break;
             case 3:
                 data.cardObj.transform.GetChild(1).GetComponent<Image>().sprite = Resources.Load("Image/Cards/FuZhu/" + DataTable.Trap[data.cardId][9], typeof(Sprite)) as Sprite;
@@ -1369,7 +1369,7 @@ public class FightForManager : MonoBehaviour
                 data.activeUnit = false;
                 data.cardMoveType = 0;
                 data.cardDamageType = 0;
-                GiveGameObjEventForHoldOn(data.cardObj, DataTable.TrapData[data.cardId][12]);//按下显示简介
+                GiveGameObjEventForHoldOn(data.cardObj, DataTable.Trap[data.cardId][12]);//按下显示简介
                 break;
             case 4:
                 //技能牌
