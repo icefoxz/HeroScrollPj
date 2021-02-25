@@ -14754,37 +14754,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1161321289}
   m_CullTransparentMesh: 0
---- !u!1 &1164638531
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1164638533}
-  - component: {fileID: 7034324352119971239}
-  m_Layer: 0
-  m_Name: DataTable
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1164638533
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1164638531}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 6
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1191045649
 GameObject:
   m_ObjectHideFlags: 0
@@ -30755,6 +30724,75 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!1001 &4338110031451838153
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 3476264747875985992, guid: 6568317d1a6524a4ab99115f69a5fecc,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 3476264747875985992, guid: 6568317d1a6524a4ab99115f69a5fecc,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3476264747875985992, guid: 6568317d1a6524a4ab99115f69a5fecc,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3476264747875985992, guid: 6568317d1a6524a4ab99115f69a5fecc,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3476264747875985992, guid: 6568317d1a6524a4ab99115f69a5fecc,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3476264747875985992, guid: 6568317d1a6524a4ab99115f69a5fecc,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3476264747875985992, guid: 6568317d1a6524a4ab99115f69a5fecc,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3476264747875985992, guid: 6568317d1a6524a4ab99115f69a5fecc,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3476264747875985992, guid: 6568317d1a6524a4ab99115f69a5fecc,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3476264747875985992, guid: 6568317d1a6524a4ab99115f69a5fecc,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3476264747875985992, guid: 6568317d1a6524a4ab99115f69a5fecc,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3476264747875985998, guid: 6568317d1a6524a4ab99115f69a5fecc,
+        type: 3}
+      propertyPath: m_Name
+      value: DataTable
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 6568317d1a6524a4ab99115f69a5fecc, type: 3}
 --- !u!222 &4340977792696767652
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -30908,59 +30946,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &7034324352119971239
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1164638531}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b24c1c2cf2bc08541969411947a62cc6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  playerInitialTable: {fileID: 4900000, guid: e52d501b6935f824487b3e01b91c6bed, type: 3}
-  assetTable: {fileID: 4900000, guid: bcf99a1562c385649bf26da036943e41, type: 3}
-  heroTable: {fileID: 4900000, guid: e25a6c4b14da66f4899b5ebc6dd09296, type: 3}
-  playerLevelTable: {fileID: 4900000, guid: 98ce2d29e2c124243886a32a0aa7c77f, type: 3}
-  soldierTable: {fileID: 4900000, guid: fc6af6ee21358cc42a84b3c9a76706a0, type: 3}
-  towerTable: {fileID: 4900000, guid: 9a2558febce25d34c81f3bf9c4f98c00, type: 3}
-  classTable: {fileID: 4900000, guid: 4df4b3b3926231443bdd8c2e27069754, type: 3}
-  upGradeTable: {fileID: 4900000, guid: 6910cedbe06802f40afd3043311ba4ce, type: 3}
-  trapTable: {fileID: 4900000, guid: d7c3bcd7d24e69b439d81fee1fbc1437, type: 3}
-  spellTable: {fileID: 4900000, guid: d61d88779b1e94b4e882a774451cd919, type: 3}
-  warChestTable: {fileID: 4900000, guid: d594c932049d21e4cbf44d1e36ae2eab, type: 3}
-  warTable: {fileID: 4900000, guid: b8e24a57929f29b4e8904471f942af74, type: 3}
-  cityLevelTable: {fileID: 4900000, guid: b4bd2780a1538444e9932d992a764078, type: 3}
-  pointTable: {fileID: 4900000, guid: 40eeb7c33769c4b4ea259ef994063107, type: 3}
-  battleEventTable: {fileID: 4900000, guid: 35b1aba95a396f74684600088c0bdf8f, type: 3}
-  enemyTable: {fileID: 4900000, guid: e7bfc6c943ca9bc4eac960e0def2733c, type: 3}
-  enemyUnitTable: {fileID: 4900000, guid: d5ea54e72ebe18f46bbb5d95d4882adc, type: 3}
-  storyTable: {fileID: 4900000, guid: ef0f4c405a7f1ea4681a193a39f57240, type: 3}
-  storyRTable: {fileID: 4900000, guid: 2d36c689b0482f64ab34b56879c7d470, type: 3}
-  testTable: {fileID: 4900000, guid: d10f977935c3f55468efd44e0f278c23, type: 3}
-  testRTable: {fileID: 4900000, guid: 2de1ffaef25c65f45bd0629ab5e56ed7, type: 3}
-  encounterTable: {fileID: 4900000, guid: 139bffdd544820549b25a302d16c6ca2, type: 3}
-  shoppingTable: {fileID: 4900000, guid: 543daf8cdbc5d2a4b886a507437b3439, type: 3}
-  choseWarTable: {fileID: 4900000, guid: 6ee5d1016537b164aa88e8156bbb7996, type: 3}
-  guideTable: {fileID: 4900000, guid: 938d9842f8ebbb24e89ffd019278dcb4, type: 3}
-  knowledgeTable: {fileID: 4900000, guid: bd73a93b9bc74f749a5297554ab61585, type: 3}
-  rCodeTable: {fileID: 4900000, guid: 43415751529165640be625efba298618, type: 3}
-  tiLiStoreTable: {fileID: 4900000, guid: dfe371c88144e8f478935c69ee6a45d8, type: 3}
-  enemyBOSSTable: {fileID: 4900000, guid: 49e10e983c630a94ba770117f32bd016, type: 3}
-  stringTextTable: {fileID: 4900000, guid: 8897b9623e260cd48898f27a1e1c06c4, type: 3}
-  numParametersTable: {fileID: 4900000, guid: 6d84abbc6e5a57249935cce90b008888, type: 3}
-  jiBanTable: {fileID: 4900000, guid: e4ca6bffff1c17a4b920a2e29d3fb07e, type: 3}
-  shiLiTable: {fileID: 4900000, guid: 6abd8ad173520f24cb3be2104f2c7ae2, type: 3}
-  baYeDiTuTable: {fileID: 4900000, guid: 26f761180bfcd244f8a0ca05fa07768f, type: 3}
-  baYeShiJianTable: {fileID: 4900000, guid: b1d441e725e95264b88267670a3b7447, type: 3}
-  baYeBattleTable: {fileID: 4900000, guid: ec40a1778af9df14c87a302fa17defd6, type: 3}
-  baYeRenWuTable: {fileID: 4900000, guid: b97dd6cc028b65841a83d0501b3c2f3a, type: 3}
-  storyPoolTable: {fileID: 4900000, guid: dae3804c60cc9ae4c8fc3e4444c4b1d7, type: 3}
-  storyIdTable: {fileID: 4900000, guid: 6497a555bd965d74abd0d1cd329a33b1, type: 3}
-  baYeTVTable: {fileID: 4900000, guid: 5954c7fba09cf55499a9cb39b94b52f0, type: 3}
-  baYeNameTable: {fileID: 4900000, guid: 5640efbcfbe49ff4e95fbdd8e5c8c551, type: 3}
 --- !u!1001 &8510239562958822156
 PrefabInstance:
   m_ObjectHideFlags: 0
