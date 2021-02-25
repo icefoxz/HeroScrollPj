@@ -666,7 +666,7 @@ public class UIManager : MonoBehaviour
 
         if (expedition.warForceSelectorUi.Data.Values.All(ui => !ui.Selected))
         {
-            PlayerDataForGame.instance.ShowStringTips("请选择势力！");
+            PlayerDataForGame.instance.ShowStringTips("请选择军团！");
             PlayOnClickMusic();
             return;
         }
