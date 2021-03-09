@@ -558,6 +558,7 @@ public class LoadSaveData : MonoBehaviour
         pySaveData.Exp = 0;
         pySaveData.YvQue = int.Parse(DataTable.AssetData[0][2]);//startValue
         pySaveData.YuanBao = int.Parse(DataTable.AssetData[1][2]);//startValue
+        pySaveData.Stamina = int.Parse(DataTable.Asset[2][2]);
         pySaveData.ForceId = firstForceId;   //暂给初始势力
         pySaveData.LastGameVersion = float.Parse(Application.version);
         SaveByJson(pySaveData);

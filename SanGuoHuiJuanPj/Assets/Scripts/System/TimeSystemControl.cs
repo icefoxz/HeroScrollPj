@@ -130,12 +130,11 @@ public class TimeSystemControl : MonoBehaviour
         PlayerPrefs.SetString(freeBoxOpenTime2, "0");
 
         //isNeedHuiFuTiLi = false;
-        PlayerPrefs.SetInt(staminaStr, int.Parse(DataTable.AssetData[2][2]));//startValue
         //tiLiHfTimeLong = 0;
         PlayerPrefs.SetInt(tiLiHuiFuNeedTimes, 0);
         PlayerPrefs.SetString(tiLiHuiFuTime, "0");
         maxStaminaNum = int.Parse(DataTable.AssetData[2][2]);//startValue
-        isNeedHuiFuTiLi = (PlayerPrefs.GetInt(staminaStr) < maxStaminaNum);
+        isNeedHuiFuTiLi = PlayerDataForGame.instance.pyData.Stamina < maxStaminaNum;
         tiLiHfTimeLong = long.Parse(PlayerPrefs.GetString(tiLiHuiFuTime));
 
         PlayerPrefs.SetInt(openCKTime0_str, 0);
@@ -162,7 +161,7 @@ public class TimeSystemControl : MonoBehaviour
         //openJinNangTimeLong = long.Parse(PlayerPrefs.GetString(jinNangOpenTime));
 
         maxStaminaNum = int.Parse(DataTable.AssetData[2][2]);//startValue
-        isNeedHuiFuTiLi = (PlayerPrefs.GetInt(staminaStr) < maxStaminaNum);
+        isNeedHuiFuTiLi = PlayerDataForGame.instance.pyData.Stamina < maxStaminaNum;
         long.TryParse(PlayerPrefs.GetString(tiLiHuiFuTime), out tiLiHfTimeLong);
     }
 
@@ -288,11 +287,11 @@ public class TimeSystemControl : MonoBehaviour
         }
         else
         {
-            int nowStamina = PlayerPrefs.GetInt(staminaStr);
+            int nowStamina = PlayerDataForGame.instance.pyData.Stamina;
             var staminaSet = nowStamina + addNums;
             var staminaMax = PlayerDataForGame.instance.staminaMax;//极限值
             staminaSet = staminaSet > staminaMax ? staminaMax : staminaSet;//体力永远不大于极限值
-            PlayerPrefs.SetInt(staminaStr, staminaSet);   //存入增加后得体力值
+            PlayerDataForGame.instance.SetStamina(staminaSet);
 
             if (isNeedHuiFuTiLi)
             {
@@ -349,12 +348,11 @@ public class TimeSystemControl : MonoBehaviour
         //Debug.Log("cutSeconds: " + cutSeconds + "  totalTimes: " + totalTimes);
         int secondsRemaining = 0;
         int totalTimesNums = totalTimes;    //恢复满总需时间
-
         totalTimesNums -= cutSeconds;
         if (totalTimesNums <= 0)
         {
             totalTimesNums = 0;
-            PlayerPrefs.SetInt(staminaStr, maxStaminaNum);
+            PlayerDataForGame.instance.SetStamina(maxStaminaNum);
             secondsRemaining = 0;
             isNeedHuiFuTiLi = false;
             tiLiHfTimeLong = 0;
@@ -364,7 +362,7 @@ public class TimeSystemControl : MonoBehaviour
         {
             secondsRemaining = totalTimesNums % oneTiLiHfSeconds;
             int nowStaminaNum = (int.Parse(DataTable.AssetData[2][2]) * oneTiLiHfSeconds - totalTimesNums) / oneTiLiHfSeconds;
-            PlayerPrefs.SetInt(staminaStr, nowStaminaNum);
+            PlayerDataForGame.instance.SetStamina(nowStaminaNum);
         }
         if (isOpenMainScene)
         {
@@ -376,7 +374,7 @@ public class TimeSystemControl : MonoBehaviour
     //消耗体力
     public void LetTiLiTimerTake(int usedNums)
     {
-        int nowStamina = PlayerPrefs.GetInt(staminaStr);
+        int nowStamina = PlayerDataForGame.instance.pyData.Stamina;
 
         if ((nowStamina - usedNums) < maxStaminaNum)
         {

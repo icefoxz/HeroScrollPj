@@ -122,4 +122,15 @@ public static class BugHotFix
             SavePlayerDataWithFixVersion(fixVersion,1);
         }
     }
+
+    public static void OnFixStaminaV2_04()
+    {
+        const float fixVersion = 2.04f;
+        const string onFixStaminaV2_04 = "OnFixStaminaV2_04";
+        if (float.Parse(Application.version) <= fixVersion && PlayerPrefs.GetInt(onFixStaminaV2_04) == 0)
+        {
+            PlayerPrefs.SetInt(onFixStaminaV2_04, 1);
+            PlayerDataForGame.instance.SetStamina(PlayerPrefs.GetInt(TimeSystemControl.staminaStr));
+        }
+    }
 }
