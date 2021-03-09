@@ -911,8 +911,8 @@ public class WarsUIManager : MonoBehaviour
                 adBtn.enabled = true;
                 //需要的金币数
                 int needMoney = 0;
-                //广告概率17%
-                if (Random.Range(0, 100) < 20)
+                //广告概率
+                if (Random.Range(0, 100) < 25)
                 {
                     needMoney = 0;
                     getBtnTran.GetChild(1).gameObject.SetActive(false);
