@@ -180,6 +180,7 @@ public class StartSceneToServerCS : MonoBehaviour
         }
 #endif
         if (busyPanel) busyPanel.SetActive(true);
+        BugHotFix.OnFixStaminaV2_05();
         //尝试登录并获取登录信息 
         var response =
             await Http.PostAsync(Server.USER_LOGIN_API,

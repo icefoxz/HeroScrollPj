@@ -159,6 +159,9 @@ public class UIManager : MonoBehaviour
         //版本修正 
         BugHotFix.OnFixYvQueV1_90();
         BugHotFix.OnFixLianYuV2_02();
+        TimeSystemControl.instance.InitStaminaCount(PlayerDataForGame.instance.pyData.Stamina <
+                                                    TimeSystemControl.instance.MaxStamina);
+
         //第一次进入主场景的时候初始化霸业管理器 
         if (PlayerDataForGame.instance.baYeManager == null)
         {

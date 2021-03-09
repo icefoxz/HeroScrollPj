@@ -123,13 +123,13 @@ public static class BugHotFix
         }
     }
 
-    public static void OnFixStaminaV2_04()
+    public static void OnFixStaminaV2_05()
     {
-        const float fixVersion = 2.04f;
-        const string onFixStaminaV2_04 = "OnFixStaminaV2_04";
-        if (float.Parse(Application.version) <= fixVersion && PlayerPrefs.GetInt(onFixStaminaV2_04) == 0)
+        const float fixVersion = 2.05f;
+        const string onFixStaminaV2_05 = "OnFixStaminaV2_04";
+        if (float.Parse(Application.version) <= fixVersion && PlayerPrefs.GetInt(onFixStaminaV2_05) == 0)
         {
-            PlayerPrefs.SetInt(onFixStaminaV2_04, 1);
+            PlayerPrefs.SetInt(onFixStaminaV2_05, 1);
             PlayerDataForGame.instance.SetStamina(PlayerPrefs.GetInt(TimeSystemControl.staminaStr));
         }
     }

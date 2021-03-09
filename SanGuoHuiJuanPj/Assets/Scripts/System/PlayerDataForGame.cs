@@ -589,10 +589,10 @@ public class PlayerDataForGame : MonoBehaviour
     public void AddStamina(int stamina)
     {
         pyData.Stamina += stamina;
-        if (stamina < 0)
+        if (pyData.Stamina < 0)
         {
-            stamina = 0;
             throw new InvalidOperationException($"体力小于0! stamina = ({stamina})");
+            pyData.Stamina = 0;
         }
         isNeedSaveData = true;
         LoadSaveData.instance.SaveGameData(1);
