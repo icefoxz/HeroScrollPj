@@ -134,6 +134,8 @@ public class PlayerData : IPlayerData
     public int YuanBao { get; set; }
     //玉阙
     public int YvQue { get; set; }
+    //体力
+    public int Stamina { get; set; }
     //玩家初始势力id
     public int ForceId { get; set; }
     //上次锦囊获取时间

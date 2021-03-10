@@ -159,6 +159,9 @@ public class UIManager : MonoBehaviour
         //版本修正 
         BugHotFix.OnFixYvQueV1_90();
         BugHotFix.OnFixLianYuV2_02();
+        TimeSystemControl.instance.InitStaminaCount(PlayerDataForGame.instance.pyData.Stamina <
+                                                    TimeSystemControl.instance.MaxStamina);
+
         //第一次进入主场景的时候初始化霸业管理器 
         if (PlayerDataForGame.instance.baYeManager == null)
         {
@@ -654,7 +657,8 @@ public class UIManager : MonoBehaviour
         {
             tiLiRecordTimer.text = recordStr;
         }
-        int nowStaminaNums = PlayerPrefs.GetInt(TimeSystemControl.staminaStr);
+
+        int nowStaminaNums = PlayerDataForGame.instance.pyData.Stamina;
         if (showTiLiNums != nowStaminaNums)
         {
             showTiLiNums = nowStaminaNums;
@@ -685,15 +689,15 @@ public class UIManager : MonoBehaviour
         {
             var staminaMap = expedition.SelectedWarStaminaCost;
             int staminaCost = staminaMap[0];
-            if (PlayerPrefs.GetInt(TimeSystemControl.staminaStr) >= staminaCost)
+            if (PlayerDataForGame.instance.pyData.Stamina >= staminaCost)
             {
                 ShowOrHideGuideObj(3, false);
                 IsJumping = true;
                 AudioController0.instance.ChangeAudioClip(12);
                 AudioController0.instance.PlayAudioSource(0);
                 TimeSystemControl.instance.LetTiLiTimerTake(staminaCost);
-                PlayerPrefs.SetInt(TimeSystemControl.staminaStr, (PlayerPrefs.GetInt(TimeSystemControl.staminaStr) - staminaCost));
-                showTiLiNums = PlayerPrefs.GetInt(TimeSystemControl.staminaStr);
+                PlayerDataForGame.instance.AddStamina(-staminaCost);
+                showTiLiNums = PlayerDataForGame.instance.pyData.Stamina;
                 tiLiNumText.text = showTiLiNums + "/90";
                 cutTiLiTextObj.SetActive(false);
                 cutTiLiTextObj.GetComponent<Text>().color = ColorDataStatic.name_red;
@@ -1427,7 +1431,7 @@ public class UIManager : MonoBehaviour
         //货币 
         yuanBaoNumText.text = PlayerDataForGame.instance.pyData.YuanBao.ToString();
         yvQueNumText.text = PlayerDataForGame.instance.pyData.YvQue.ToString();
-        showTiLiNums = PlayerPrefs.GetInt(TimeSystemControl.staminaStr);
+        showTiLiNums = PlayerDataForGame.instance.pyData.Stamina;
         tiLiNumText.text = showTiLiNums + "/90";
 
         CreateHeroAndTowerContent();
