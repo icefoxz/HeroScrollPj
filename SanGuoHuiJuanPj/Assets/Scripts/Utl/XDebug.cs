@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using UnityEngine;
 using Debug = UnityEngine.Debug;
 
 /// <summary>
@@ -8,6 +9,36 @@ using Debug = UnityEngine.Debug;
 /// </summary>
 public static class XDebug
 {
+    private static bool isInit;
+    public static void Init()
+    {
+        if (isInit)return;
+        Application.logMessageReceived += Application_logMessageReceived;
+        //打印log附加代码 
+        AppDebugClass.DeleteOldAppLog();   //删除原先DebugFile 
+    }
+
+    private static void Application_logMessageReceived(string condition, string stackTrace, LogType type)
+    {
+        switch (type)
+        {
+            case LogType.Error:
+                break;
+            case LogType.Assert:
+                break;
+            case LogType.Warning:
+                break;
+            case LogType.Log:
+                break;
+            case LogType.Exception:
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(type), type, null);
+        }
+
+        AppDebugClass.LogForUnityLog(condition, stackTrace, type);
+    }
+
     public static void StopWatch(Action action, string actionName = null, [CallerMemberName] string methodName = null)
     {
         var sw = new Stopwatch();
