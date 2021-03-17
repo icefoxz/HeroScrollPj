@@ -50,9 +50,7 @@ public class BaYeManager : MonoBehaviour
     public void Init()
     {
         var baYe = PlayerDataForGame.instance.warsData.baYe;
-        var zhanLing = DataTable.PlayerLevelData[PlayerDataForGame.instance.pyData.Level - 1][10]
-            .Split(',').Where(s => !string.IsNullOrWhiteSpace(s))
-            .Select(int.Parse).ToArray();
+        var zhanLing = DataTable.PlayerLevelConfig[PlayerDataForGame.instance.pyData.Level].BaYeForceLings;
         var zhanLingMap = new Dictionary<int, int>();
         for (int i = 0; i < zhanLing.Length; i++) zhanLingMap.Add(i, zhanLing[i]);
         //如果没有霸业记录或是记录已经过期(不是今天)将初始化新的霸业记录
@@ -76,16 +74,11 @@ public class BaYeManager : MonoBehaviour
     private void InitBaYeMap()
     {
         //初始化城池
-        var maps = DataTable.BaYeDiTu
-            .Select(m => new
+        var events = DataTable.BaYeCity.Values.Select(city =>
             {
-                Point = m.Key, Events = m.Value[2].TableStringToInts().ToList()
-            }).Where(a => a.Events.Count > 0).ToList(); //获取表里的地图数据
-        var events = maps.Select(city =>
-            {
-                var cityId = city.Point;
-                var baYeEventId = city.Events.Select(id =>
-                    new BaYeEventWeightElement(id, int.Parse(DataTable.BaYeShiJian[id][1]))).Pick().Id;
+                var cityId = city.EventPoint;
+                var baYeEventId = city.BaYeCityEventTableIds.Select(id =>
+                    new BaYeEventWeightElement(id, DataTable.BaYeCityEvent[id].Weight)).Pick().Id;
                  //根据地图获取对应的事件id列表，并根据权重随机获取一个事件id
                 var baYeEvent = GetBaYeEvent(baYeEventId, cityId);
                 return (cityId, baYeEventId, baYeEvent.ExpList, WarIds: baYeEvent.WarIds);
@@ -103,12 +96,9 @@ public class BaYeManager : MonoBehaviour
         //初始化故事事件
         //事件点初始化
         var now = DateTime.Now;
-        storyEventSet = DataTable.StoryPool
-            .ToDictionary(obj => obj.Key, obj => obj.Value[1].TableStringToInts()
-                .Where(id =>
-                    DataTable.StoryId[id][8]
-                        .IsTableTimeInRange(now)
-                ).ToArray()); //读取数据表转化城key=事件点,value=事件列
+        storyEventSet = DataTable.BaYeStoryPool.Values
+            .Where(m => DataTable.BaYeStoryEvent[m.EventId].Time.IsTableTimeInRange(now))
+            .ToDictionary(m=>m.EventId,m=>m.BaYeStoryTableIds); //读取数据表转化城key=事件点,value=事件列
 
         if (isHourlyEventRegistered) return;
         isHourlyEventRegistered = true;
@@ -133,10 +123,8 @@ public class BaYeManager : MonoBehaviour
         //根据权重随机故事事件(story)id
         //再每个事件点上的故事id随机行上的奖励范围
         //储存在霸业存档里
-        var eventPoints = DataTable.PlayerLevelData[PlayerDataForGame.instance.pyData.Level - 1][8]
-            .TableStringToInts().ToList();
         //事件点和故事信息
-        var eventPointStoryMap = eventPoints
+        var eventPointStoryMap = DataTable.PlayerLevelConfig[PlayerDataForGame.instance.pyData.Level].BaYeStoryPoints
             .Join(storyEventSet, pId => pId, se => se.Key, (point, s) => new {point, storyIds = s.Value})
             .Select(s =>
             {
@@ -144,19 +132,13 @@ public class BaYeManager : MonoBehaviour
                 {
                     s.point, storyEvents = s.storyIds.Select(id =>
                     {
-                        var weight = int.Parse(DataTable.StoryId[id][1]);
-                        var type = int.Parse(DataTable.StoryId[id][2]);
-                        var goldRange = DataTable.StoryId[id][3].TableStringToInts().ToList();
-                        var expRange = DataTable.StoryId[id][4].TableStringToInts().ToList();
-                        var yuQueRange = DataTable.StoryId[id][5].TableStringToInts().ToList();
-                        var yuanBaoRange = DataTable.StoryId[id][6].TableStringToInts().ToList();
-                        var zhanLing = DataTable.StoryId[id][7].TableStringToInts().ToList();
-                        return new StoryEvent(id, weight, type,
-                            (goldRange[0], goldRange[1]),
-                            (expRange[0], expRange[1]),
-                            (yuQueRange[0], yuQueRange[1]),
-                            (yuanBaoRange[0], yuanBaoRange[1]),
-                            (zhanLing[0], zhanLing[1]));
+                        var story = DataTable.BaYeStoryEvent[id];
+                        return new StoryEvent(id, story.Weight, story.StoryType,
+                            (story.Gold.Min, story.Gold.IncMax),
+                            (story.Exp.Min, story.Exp.IncMax),
+                            (story.YvQue.Min, story.YvQue.IncMax),
+                            (story.YuanBao.Min, story.YuanBao.IncMax),
+                            (story.ForceLing.Min, story.ForceLing.IncMax));
                     })
                 };
             })
@@ -164,6 +146,8 @@ public class BaYeManager : MonoBehaviour
         PlayerDataForGame.instance.warsData.baYe.storyMap = eventPointStoryMap.ToDictionary(m => m.Key, m =>
         {
             var story = m.Value;
+            var warId = DataTable.BaYeStoryEvent[story.Id].WarId;
+            warId = warId == default ? -1 : warId;
             return new BaYeStoryEvent
             {
                 StoryId = story.Id,
@@ -172,7 +156,7 @@ public class BaYeManager : MonoBehaviour
                 ExpReward = Random.Range(story.ExpRange.Item1, story.ExpRange.Item2),
                 YvQueReward = Random.Range(story.YuQueRange.Item1, story.YuQueRange.Item2),
                 YuanBaoReward = Random.Range(story.YuanBaoRange.Item1, story.YuanBaoRange.Item2),
-                WarId = int.TryParse(DataTable.StoryId[story.Id][9], out var warId) ? warId : -1,
+                WarId = warId,
                 ZhanLing = GetZhanLing(story.ZhanLingRange.Item1, story.ZhanLingRange.Item2)
             };
         }).Where(kv => kv.Value.StoryId != 0).ToDictionary(kv => kv.Key, kv => kv.Value);
@@ -188,7 +172,7 @@ public class BaYeManager : MonoBehaviour
 
         Dictionary<int, int> GetZhanLing(int min, int max)
         {
-            var forceList = DataTable.ShiLi.Keys.ToList();
+            var forceList = DataTable.Force.Keys.ToList();
             var zhanLingSelection = new Dictionary<int, int>();
             for (int i = 0; i < 2; i++)
             {
@@ -252,15 +236,21 @@ public class BaYeManager : MonoBehaviour
 
     private BaYeCityEvent GetBaYeEvent(int eventId,int cityId)
     {
-        var battleId = int.Parse(DataTable.PlayerLevel[PlayerDataForGame.instance.pyData.Level][9]);//根据等级表获取战斗id
-        var baYeEvent = DataTable.BaYeShiJian[eventId];//读取事件数据
-        var expList = baYeEvent[2].TableStringToInts().ToList();//从霸业事件[2]列获取对于的经验列
-        var baYeBattleId = int.Parse(baYeEvent[3]);//霸业事件[3]列读取BaYeBattle表Id
-        var battleStageList = DataTable.BaYeBattle[baYeBattleId];//获取对应战斗表
-        var warIds = battleStageList[battleId].TableStringToInts().ToList();
-        return new BaYeCityEvent {EventId = eventId, CityId = cityId, WarIds = warIds, ExpList = expList, PassedStages = new bool[expList.Count]};
-    }
+        var baYeEvent = DataTable.BaYeCityEvent[eventId];//读取事件数据
+        var mappingTable = DataTable.BaYeLevelMapping[baYeEvent.BaYeBattleTableId];//获取对应战斗表
 
+        return new BaYeCityEvent {EventId = eventId, CityId = cityId, WarIds = GetWarList(mappingTable).ToList(), ExpList = baYeEvent.BaYeExps.ToList(), PassedStages = new bool[baYeEvent.BaYeExps.Length]};
+    }
+    private int[] GetWarList(BaYeLevelMappingTable mapping)
+    {
+        var levelMappingId = DataTable.PlayerLevelConfig[PlayerDataForGame.instance.pyData.Level].BaYeLevel;//根据等级表获取战斗id
+        var levels = new[]
+        {
+            mapping.Level0, mapping.Level1, mapping.Level2, mapping.Level3, mapping.Level4, mapping.Level5,
+            mapping.Level6, mapping.Level7, mapping.Level8, mapping.Level9
+        };
+        return levels[levelMappingId];
+    }
     public void AddExp(int expIndex,int exp)
     {
         if (PlayerDataForGame.instance.warsData.baYe.ExpData.ContainsKey(expIndex))
@@ -343,11 +333,8 @@ public class BaYeManager : MonoBehaviour
                 break;
             case StoryEventTypes.答题:
             {
-                var count = DataTable.TestData.Count;
-                var pick = Random.Range(0, count);
-                var row = DataTable.TestData[pick];
-                var answerIndex = int.Parse(row[2]) - 1; //-1答案从1开始，索引从0开始。
-                UIManager.instance.baYeWindowUi.ShowQuest(row[1], new[] {row[3], row[4], row[5]}, answerIndex, () =>
+                var pick = Random.Range(0, DataTable.Quest.Count);
+                UIManager.instance.baYeWindowUi.ShowQuest(DataTable.Quest[pick], () =>
                     {
                         OnReward(sEvent);
                         PlayerDataForGame.instance.ShowStringTips("三日不见，当刮目相看！");
@@ -367,7 +354,7 @@ public class BaYeManager : MonoBehaviour
                 UIManager.instance.baYeWindowUi.ShowSelection(sEvent.ZhanLing, selectedId =>
                 {
                     var message = TradeZhanLing(selectedId, sEvent.ZhanLing[selectedId])
-                        ? $"获得[{DataTable.ShiLi[selectedId][1]}]战令"
+                        ? $"获得[{DataTable.Force[selectedId].Short}]战令"
                         : "战令获取异常！";
                     UIManager.instance.baYeForceSelectorUi.UpdateZhanLing();
                     PlayerDataForGame.instance.ShowStringTips(message);

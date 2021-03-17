@@ -28,10 +28,10 @@ public class ForceSelectorUi : MonoBehaviour
     public IReadOnlyDictionary<int, Button> BtnData => btnData;
     public virtual void Init(PlayerDataForGame.WarTypes warType)
     {
-        var totalUnlock = int.Parse(DataTable.PlayerLevelData[PlayerDataForGame.instance.pyData.Level - 1][6]);
+        var totalUnlock = DataTable.PlayerLevelConfig[PlayerDataForGame.instance.pyData.Level].UnlockForces;
         var totalDisplayForce = mode == Modes.仅显示可用
             ? totalUnlock + 1
-            : DataTable.ShiLi.Count;
+            : DataTable.Force.Count;
 
         for (int i = 0; i < totalDisplayForce; i++)
         {
@@ -60,7 +60,7 @@ public class ForceSelectorUi : MonoBehaviour
                 {
                     var isEnable=i <= totalUnlock;
                     btn.interactable = isEnable;
-                    forceFlag.Interaction(isEnable,DataTable.ShiLi[forceId][4] + "级");
+                    forceFlag.Interaction(isEnable,DataTable.Force[forceId].UnlockLevel + "级");
                     if (btn.enabled) btn.onClick.AddListener(() => OnSelected(warType, forceId));
                     break;
                 }

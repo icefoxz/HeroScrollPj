@@ -1,9 +1,11 @@
-﻿using DG.Tweening;
+﻿using System;
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
+using Random = UnityEngine.Random;
 
 
 public class FightForManagerForStart : MonoBehaviour
@@ -98,6 +100,8 @@ public class FightForManagerForStart : MonoBehaviour
         new int[2]{ 14,16},             //19
     };
 
+    private GameResources GameResources;
+
     private void Awake()
     {
         if (instance == null)
@@ -107,7 +111,6 @@ public class FightForManagerForStart : MonoBehaviour
         playerCardsDatas = new List<FightCardData>();
         enemyFightCardsDatas = new FightCardData[20];
         playerFightCardsDatas = new FightCardData[20];
-
         Input.multiTouchEnabled = false;    //限制多指拖拽
         _isDragItem = false;
     }
@@ -115,11 +118,13 @@ public class FightForManagerForStart : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        GameResources = new GameResources();
+        GameResources.Init();
         oneDisY = Screen.height / (1920 / gridLayoutGroup.cellSize.y) / 9;
         float xFlo = (1920f / 1080f) / ((float)Screen.height / Screen.width);
         floDisY = 2 * oneDisY * xFlo;
         indexNowStoryId = 0;
-        storyNums = DataTable.GuideData.Count;
+        storyNums = DataTable.Guide.Count;
 
         barragesList = new List<string[]>();
         barragesList.Add(pTBarrages_1);
@@ -422,7 +427,7 @@ public class FightForManagerForStart : MonoBehaviour
         playerHomeData.activeUnit = false;
         playerHomeData.fightState = new FightState();
         playerFightCardsDatas[17] = playerHomeData;
-        playerFightCardsDatas[17].fullHp = playerFightCardsDatas[17].nowHp = int.Parse(DataTable.GuideData[indexNowStoryId][8]);  //我方血量
+        playerFightCardsDatas[17].fullHp = playerFightCardsDatas[17].nowHp = DataTable.Guide[indexNowStoryId].BaseHp;  //我方血量
 
         FightCardData enemyHomeData = new FightCardData();
         enemyHomeData.cardObj = Instantiate(homeCardObj, enemyCardsBox);
@@ -434,7 +439,7 @@ public class FightForManagerForStart : MonoBehaviour
         enemyHomeData.activeUnit = false;
         enemyHomeData.fightState = new FightState();
         enemyFightCardsDatas[17] = enemyHomeData;
-        enemyFightCardsDatas[17].fullHp = enemyFightCardsDatas[17].nowHp = int.Parse(DataTable.GuideData[indexNowStoryId][9]);    //敌方血量
+        enemyFightCardsDatas[17].fullHp = enemyFightCardsDatas[17].nowHp = DataTable.Guide[indexNowStoryId].EnemyBaseHp;    //敌方血量
     }
 
     //隐藏故事界面
@@ -453,7 +458,7 @@ public class FightForManagerForStart : MonoBehaviour
             AudioController1.instance.ChangeAudioClip(audioClipsFightBack[indexNowStoryId], audioVolumeFightBack[indexNowStoryId]);
             AudioController1.instance.PlayLongBackMusInit();
 
-            fightBackImage.sprite = Resources.Load("Image/battleBG/" + DataTable.GuideData[indexNowStoryId - 1][1], typeof(Sprite)) as Sprite;
+            fightBackImage.sprite = Resources.Load("Image/battleBG/" + DataTable.Guide[indexNowStoryId].MapBg, typeof(Sprite)) as Sprite;
 
             bottonImg.sprite = Resources.Load("Image/startFightImg/Image/" + (indexNowStoryId + 1), typeof(Sprite)) as Sprite;
             storyObj.GetComponent<Image>().DOFade(0, 1f).OnComplete(delegate ()
@@ -515,7 +520,7 @@ public class FightForManagerForStart : MonoBehaviour
             }
             storyText.color = new Color(storyText.color.r, storyText.color.g, storyText.color.b, 0);
             storyText.DOFade(1, 5f);
-            storyText.DOText(DataTable.GuideData[indexNowStoryId][2], 8f).OnComplete(delegate ()
+            storyText.DOText(DataTable.Guide[indexNowStoryId].Intro, 8f).OnComplete(delegate ()
             {
                 guideStoryObj.transform.GetChild(1).gameObject.SetActive(true);
                 guideStoryObj.transform.GetChild(2).gameObject.SetActive(true);
@@ -542,17 +547,21 @@ public class FightForManagerForStart : MonoBehaviour
             playerFightCardsDatas[17].cardObj.transform.GetChild(4).gameObject.SetActive(false);
             enemyFightCardsDatas[17].cardObj.transform.GetChild(4).gameObject.SetActive(false);
 
-            playerFightCardsDatas[17].fullHp = playerFightCardsDatas[17].nowHp = int.Parse(DataTable.GuideData[indexNowStoryId][8]);  //我方血量
-            enemyFightCardsDatas[17].fullHp = enemyFightCardsDatas[17].nowHp = int.Parse(DataTable.GuideData[indexNowStoryId][9]);    //敌方血量
+            playerFightCardsDatas[17].fullHp =
+                playerFightCardsDatas[17].nowHp = DataTable.Guide[indexNowStoryId].BaseHp; //我方血量
+            enemyFightCardsDatas[17].fullHp =
+                enemyFightCardsDatas[17].nowHp = DataTable.Guide[indexNowStoryId].EnemyBaseHp; //敌方血量
 
             playerFightCardsDatas[17].cardObj.transform.GetChild(2).GetComponent<Image>().fillAmount = 0;
             enemyFightCardsDatas[17].cardObj.transform.GetChild(2).GetComponent<Image>().fillAmount = 0;
         }
+
         //清空备战位
         for (int i = 0; i < herosCardListTran.childCount; i++)
         {
             Destroy(herosCardListTran.GetChild(i).gameObject);
         }
+
         playerCardsDatas.Clear();
         //清空棋盘单位
         for (int i = 0; i < 20; i++)
@@ -564,6 +573,7 @@ public class FightForManagerForStart : MonoBehaviour
                     Destroy(playerFightCardsDatas[i].cardObj);
                     playerFightCardsDatas[i] = null;
                 }
+
                 if (enemyFightCardsDatas[i] != null)
                 {
                     Destroy(enemyFightCardsDatas[i].cardObj);
@@ -571,145 +581,85 @@ public class FightForManagerForStart : MonoBehaviour
                 }
             }
         }
-        FightControlForStart.instance.ClearEmTieQiCardList();
 
+        FightControlForStart.instance.ClearEmTieQiCardList();
+        var guide = DataTable.Guide[indexNowStoryId];
         //创建玩家备战单位
-        for (int i = 3; i < 8; i++)
+        foreach (var card in guide.Poses(GuideProps.Card))
         {
-            if (DataTable.GuideData[indexNowStoryId][i] != "")
-            {
-                FightCardData data = CreateFightUnit(DataTable.GuideData[indexNowStoryId][i], herosCardListTran, true);
-                data.cardObj.GetComponent<CardDragForStart>().posIndex = -1;
-                data.cardObj.GetComponent<CardDragForStart>().isFightCard = false;
-                data.posIndex = -1;
-                data.isPlayerCard = true;
-                playerCardsDatas.Add(data);
-            }
+            FightCardData data = CreateFightUnit(card, herosCardListTran, true);
+            data.cardObj.GetComponent<CardDragForStart>().posIndex = -1;
+            data.cardObj.GetComponent<CardDragForStart>().isFightCard = false;
+            data.posIndex = -1;
+            data.isPlayerCard = true;
+            playerCardsDatas.Add(data);
         }
+
         //创建玩家棋盘单位
-        for (int i = 0; i < 20; i++)
+        var playerChessmen = guide.Poses(GuideProps.Player);
+        for (var i = 0; i < playerChessmen.Length; i++)
         {
-            if (DataTable.GuideData[indexNowStoryId][i + 10] != "")
-            {
-                FightCardData data = CreateFightUnit(DataTable.GuideData[indexNowStoryId][i + 10], playerCardsBox, true);
-                data.cardObj.GetComponent<CardDragForStart>().posIndex = i;
-                data.cardObj.GetComponent<CardDragForStart>().isFightCard = true;
-                data.posIndex = i;
-                data.isPlayerCard = true;
-                data.cardObj.transform.position = playerCardsPos[i].transform.position;
-                playerFightCardsDatas[i] = data;
-                CardGoIntoBattleProcess(playerFightCardsDatas[i], i, playerFightCardsDatas, true);
-            }
+            FightCardData data = CreateFightUnit(playerChessmen[i], playerCardsBox, true);
+            data.cardObj.GetComponent<CardDragForStart>().posIndex = i;
+            data.cardObj.GetComponent<CardDragForStart>().isFightCard = true;
+            data.posIndex = i;
+            data.isPlayerCard = true;
+            data.cardObj.transform.position = playerCardsPos[i].transform.position;
+            playerFightCardsDatas[i] = data;
+            CardGoIntoBattleProcess(playerFightCardsDatas[i], i, playerFightCardsDatas, true);
         }
+
         //创建敌人棋盘单位
+        var enemyChessmen = guide.Poses(GuideProps.Enemy);
         for (int i = 0; i < 20; i++)
         {
-            if (DataTable.GuideData[indexNowStoryId][i + 30] != "")
-            {
-                FightCardData data = CreateFightUnit(DataTable.GuideData[indexNowStoryId][i + 30], enemyCardsBox, false);
-                data.posIndex = i;
-                data.isPlayerCard = false;
-                data.cardObj.transform.position = enemyCardsPos[i].transform.position;
-                enemyFightCardsDatas[i] = data;
-                CardGoIntoBattleProcess(enemyFightCardsDatas[i], i, enemyFightCardsDatas, true);
-            }
+            FightCardData data = CreateFightUnit(enemyChessmen[i], enemyCardsBox, false);
+            data.posIndex = i;
+            data.isPlayerCard = false;
+            data.cardObj.transform.position = enemyCardsPos[i].transform.position;
+            enemyFightCardsDatas[i] = data;
+            CardGoIntoBattleProcess(enemyFightCardsDatas[i], i, enemyFightCardsDatas, true);
         }
     }
 
     //创建敌方卡牌战斗单位数据
-    private FightCardData CreateFightUnit(string dataStr, Transform cardsBoxTran, bool isPlayerCard)
+    private FightCardData CreateFightUnit(Chessman chessman, Transform cardsBoxTran, bool isPlayerCard)
     {
-        string[] arrs = dataStr.Split(',');
-
         FightCardData data = new FightCardData();
         data.cardObj = Instantiate(isPlayerCard ? fightCardPyPre : fightCardPre, cardsBoxTran);
-        data.cardType = int.Parse(arrs[0]);
-        data.cardId = int.Parse(arrs[1]);
-        data.cardGrade = int.Parse(arrs[2]);
+        data.cardType = chessman.CardType;
+        data.cardId = chessman.CardId;
+        data.cardGrade = chessman.Star;
         data.fightState = new FightState();
-
-        switch (data.cardType)
-        {
-            case 0:
-                //兵种
-                data.cardObj.transform.GetChild(1).GetComponent<Image>().sprite = Resources.Load("Image/Cards/Hero/" + DataTable.HeroData[data.cardId][16], typeof(Sprite)) as Sprite;
-                //血量
-                data.cardObj.transform.GetChild(2).GetComponent<Image>().fillAmount = 0;
-                //名字
-                ShowNameTextRules(data.cardObj.transform.GetChild(3).GetComponent<Text>(), DataTable.HeroData[data.cardId][1]);
-                //名字颜色
-                data.cardObj.transform.GetChild(3).GetComponent<Text>().color = NameColorChoose(DataTable.HeroData[data.cardId][3]);
-                //星级
-                data.cardObj.transform.GetChild(4).GetComponent<Image>().sprite = Resources.Load("Image/gradeImage/" + data.cardGrade, typeof(Sprite)) as Sprite;
-                //兵种
-                data.cardObj.transform.GetChild(5).GetComponentInChildren<Text>().text = DataTable.ClassData[int.Parse(DataTable.HeroData[data.cardId][5])][3];
-                //兵种框
-                data.cardObj.transform.GetChild(5).GetComponent<Image>().sprite = Resources.Load("Image/classImage/" + 0, typeof(Sprite)) as Sprite;
-                //边框
-                FrameChoose(DataTable.HeroData[data.cardId][3], data.cardObj.transform.GetChild(6).GetComponent<Image>());
-
-                data.damage = int.Parse(DataTable.HeroData[data.cardId][7].Split(',')[data.cardGrade - 1]);
-                data.hpr = int.Parse(DataTable.HeroData[data.cardId][9]);
-                data.fullHp = data.nowHp = int.Parse(DataTable.HeroData[data.cardId][8].Split(',')[data.cardGrade - 1]);
-                data.activeUnit = true;
-                data.cardMoveType = int.Parse(DataTable.HeroData[data.cardId][17]);
-                data.cardDamageType = int.Parse(DataTable.HeroData[data.cardId][18]);
-                break;
-            case 1:
-                data.cardObj.transform.GetChild(1).GetComponent<Image>().sprite = Resources.Load("Image/Cards/FuZhu/" + DataTable.SoldierData[data.cardId][13], typeof(Sprite)) as Sprite;
-                data.cardObj.transform.GetChild(2).GetComponent<Image>().fillAmount = 0;
-                ShowNameTextRules(data.cardObj.transform.GetChild(3).GetComponent<Text>(), DataTable.SoldierData[data.cardId][1]);
-                //名字颜色
-                data.cardObj.transform.GetChild(3).GetComponent<Text>().color = NameColorChoose(DataTable.SoldierData[data.cardId][3]);
-                data.cardObj.transform.GetChild(4).GetComponent<Image>().sprite = Resources.Load("Image/gradeImage/" + data.cardGrade, typeof(Sprite)) as Sprite;
-                data.cardObj.transform.GetChild(5).GetComponentInChildren<Text>().text = DataTable.ClassData[int.Parse(DataTable.SoldierData[data.cardId][5])][3];
-                //兵种框
-                data.cardObj.transform.GetChild(5).GetComponent<Image>().sprite = Resources.Load("Image/classImage/" + 1, typeof(Sprite)) as Sprite;
-                FrameChoose(DataTable.SoldierData[data.cardId][3], data.cardObj.transform.GetChild(6).GetComponent<Image>());
-
-                data.damage = int.Parse(DataTable.SoldierData[data.cardId][6].Split(',')[data.cardGrade - 1]);
-                data.hpr = int.Parse(DataTable.SoldierData[data.cardId][8]);
-                data.fullHp = data.nowHp = int.Parse(DataTable.SoldierData[data.cardId][7].Split(',')[data.cardGrade - 1]);
-                data.activeUnit = true;
-                break;
-            case 2:
-                data.cardObj.transform.GetChild(1).GetComponent<Image>().sprite = Resources.Load("Image/Cards/FuZhu/" + DataTable.TowerData[data.cardId][10], typeof(Sprite)) as Sprite;
-                data.cardObj.transform.GetChild(2).GetComponent<Image>().fillAmount = 0;
-                ShowNameTextRules(data.cardObj.transform.GetChild(3).GetComponent<Text>(), DataTable.TowerData[data.cardId][1]);
-                //名字颜色
-                data.cardObj.transform.GetChild(3).GetComponent<Text>().color = NameColorChoose(DataTable.TowerData[data.cardId][3]);
-                data.cardObj.transform.GetChild(4).GetComponent<Image>().sprite = Resources.Load("Image/gradeImage/" + data.cardGrade, typeof(Sprite)) as Sprite;
-                data.cardObj.transform.GetChild(5).GetComponentInChildren<Text>().text = DataTable.TowerData[data.cardId][5];
-                FrameChoose(DataTable.TowerData[data.cardId][3], data.cardObj.transform.GetChild(6).GetComponent<Image>());
-                //兵种框
-                data.cardObj.transform.GetChild(5).GetComponent<Image>().sprite = Resources.Load("Image/classImage/" + 1, typeof(Sprite)) as Sprite;
-                data.damage = int.Parse(DataTable.TowerData[data.cardId][6].Split(',')[data.cardGrade - 1]);
-                data.hpr = int.Parse(DataTable.TowerData[data.cardId][8]);
-                data.fullHp = data.nowHp = int.Parse(DataTable.TowerData[data.cardId][7].Split(',')[data.cardGrade - 1]);
-                data.activeUnit = (data.cardId == 0 || data.cardId == 1 || data.cardId == 2 || data.cardId == 3 || data.cardId == 6);
-                data.cardMoveType = 1;
-                data.cardDamageType = 0;
-                break;
-            case 3:
-                data.cardObj.transform.GetChild(1).GetComponent<Image>().sprite = Resources.Load("Image/Cards/FuZhu/" + DataTable.Trap[data.cardId][9], typeof(Sprite)) as Sprite;
-                data.cardObj.transform.GetChild(2).GetComponent<Image>().fillAmount = 0;
-                ShowNameTextRules(data.cardObj.transform.GetChild(3).GetComponent<Text>(), DataTable.Trap[data.cardId][1]);
-                //名字颜色
-                data.cardObj.transform.GetChild(3).GetComponent<Text>().color = NameColorChoose(DataTable.Trap[data.cardId][3]);
-                data.cardObj.transform.GetChild(4).GetComponent<Image>().sprite = Resources.Load("Image/gradeImage/" + data.cardGrade, typeof(Sprite)) as Sprite;
-                data.cardObj.transform.GetChild(5).GetComponentInChildren<Text>().text = DataTable.Trap[data.cardId][5];
-                //兵种框
-                data.cardObj.transform.GetChild(5).GetComponent<Image>().sprite = Resources.Load("Image/classImage/" + 1, typeof(Sprite)) as Sprite;
-                FrameChoose(DataTable.Trap[data.cardId][3], data.cardObj.transform.GetChild(6).GetComponent<Image>());
-
-                data.damage = int.Parse(DataTable.Trap[data.cardId][6].Split(',')[data.cardGrade - 1]);
-                data.hpr = int.Parse(DataTable.Trap[data.cardId][8]);
-                data.fullHp = data.nowHp = int.Parse(DataTable.Trap[data.cardId][7].Split(',')[data.cardGrade - 1]);
-                data.activeUnit = false;
-                data.cardMoveType = 0;
-                data.cardDamageType = 0;
-                break;
-        }
+        var cardType = (GameCardType) chessman.CardType;
+        var card = new NowLevelAndHadChip().Instance(cardType, chessman.CardId);
+        card.level = chessman.Star;
+        var info = card.GetInfo();
+        //兵种
+        data.cardObj.transform.GetChild(1).GetComponent<Image>().sprite = cardType == GameCardType.Hero
+            ? GameResources.HeroImg[card.id]
+            : GameResources.FuZhuImg[info.ImageId];
+        //血量
+        data.cardObj.transform.GetChild(2).GetComponent<Image>().fillAmount = 0;
+        //名字
+        ShowNameTextRules(data.cardObj.transform.GetChild(3).GetComponent<Text>(), info.Name);
+        //名字颜色
+        data.cardObj.transform.GetChild(3).GetComponent<Text>().color = NameColorChoose(info.Rare);
+        //星级
+        data.cardObj.transform.GetChild(4).GetComponent<Image>().sprite = GameResources.GradeImg[info.Rare];
+        //兵种
+        data.cardObj.transform.GetChild(5).GetComponentInChildren<Text>().text = info.Short;
+        //边框
+        FrameChoose(info.Rare, data.cardObj.transform.GetChild(6).GetComponent<Image>());
+        data.damage = info.GetDamage(card.level);
+        data.hpr = info.GameSetRecovery;
+        data.fullHp = data.nowHp = info.GetHp(card.level);
+        data.activeUnit = cardType == GameCardType.Hero || ((cardType == GameCardType.Tower) &&
+                                                            (info.Id == 0 || info.Id == 1 || info.Id == 2 ||
+                                                             info.Id == 3 || info.Id == 6));
+        data.cardMoveType = info.CombatType;
+        data.cardDamageType = info.DamageType;
+        if (cardType != GameCardType.Hero) data.cardObj.transform.GetChild(5).GetComponent<Image>().sprite = GameResources.ClassImg[1];
         return data;
     }
 
@@ -768,20 +718,20 @@ public class FightForManagerForStart : MonoBehaviour
     }
 
     //匹配稀有度边框
-    private void FrameChoose(string rarity, Image img)
+    private void FrameChoose(int rarity, Image img)
     {
         img.enabled = false;
         return;
         img.enabled = true;
         switch (rarity)
         {
-            case "4":
+            case 4:
                 img.sprite = Resources.Load("Image/frameImage/tong", typeof(Sprite)) as Sprite;
                 break;
-            case "5":
+            case 5:
                 img.sprite = Resources.Load("Image/frameImage/yin", typeof(Sprite)) as Sprite;
                 break;
-            case "6":
+            case 6:
                 img.sprite = Resources.Load("Image/frameImage/jin", typeof(Sprite)) as Sprite;
                 break;
             default:
@@ -1005,71 +955,75 @@ public class FightForManagerForStart : MonoBehaviour
     /// 尝试激活或取消羁绊
     /// </summary>
     /// <param name="cardData">行动卡牌</param>
-    /// <param name="cardDatas">上阵卡牌集合</param>
     /// <param name="isAdd">是否上阵</param>
     public void TryToActivatedBond(FightCardData cardData, bool isAdd)
     {
-        if (DataTable.HeroData[cardData.cardId][25] != "")
-        {
-            Dictionary<int, JiBanActivedClass> jiBanActivedClasses = cardData.isPlayerCard ? FightControlForStart.instance.playerJiBanAllTypes : FightControlForStart.instance.enemyJiBanAllTypes;
+        var jiBanIds = DataTable.Hero[cardData.cardId].JiBanIds;
+        if (jiBanIds == null || jiBanIds.Length == 0) return;
 
-            string[] arrs = DataTable.HeroData[cardData.cardId][25].Split(',');
-            //遍历所属羁绊
-            for (int i = 0; i < arrs.Length; i++)
+        Dictionary<int, JiBanActivedClass> jiBanActivedClasses = cardData.isPlayerCard
+            ? FightControlForStart.instance.playerJiBanAllTypes
+            : FightControlForStart.instance.enemyJiBanAllTypes;
+
+        //遍历所属羁绊
+        for (int i = 0; i < jiBanIds.Length; i++)
+        {
+            var jiBan = DataTable.JiBan[jiBanIds[i]];
+            if (jiBan.IsOpen == 0) continue;
+            JiBanActivedClass jiBanActivedClass = jiBanActivedClasses[jiBan.Id];
+            bool isActived = true;
+            for (int j = 0; j < jiBanActivedClass.cardTypeLists.Count; j++)
             {
-                if (arrs[i] != "" && DataTable.JiBan[int.Parse(arrs[i])][2] != "0")
+                if (jiBanActivedClass.cardTypeLists[j].cardType == cardData.cardType &&
+                    jiBanActivedClass.cardTypeLists[j].cardId == cardData.cardId)
                 {
-                    JiBanActivedClass jiBanActivedClass = jiBanActivedClasses[int.Parse(arrs[i])];
-                    bool isActived = true;
-                    for (int j = 0; j < jiBanActivedClass.cardTypeLists.Count; j++)
+                    if (isAdd)
                     {
-                        if (jiBanActivedClass.cardTypeLists[j].cardType == cardData.cardType && jiBanActivedClass.cardTypeLists[j].cardId == cardData.cardId)
+                        if (!jiBanActivedClass.cardTypeLists[j].cardLists.Exists(t => t == cardData))
                         {
-                            if (isAdd)
-                            {
-                                if (!jiBanActivedClass.cardTypeLists[j].cardLists.Exists(t => t == cardData))
-                                {
-                                    jiBanActivedClass.cardTypeLists[j].cardLists.Add(cardData);
-                                }
-                            }
-                            else
-                            {
-                                jiBanActivedClass.cardTypeLists[j].cardLists.Remove(cardData);
-                            }
-                        }
-                        if (jiBanActivedClass.cardTypeLists[j].cardLists.Count <= 0)
-                        {
-                            isActived = false;
+                            jiBanActivedClass.cardTypeLists[j].cardLists.Add(cardData);
                         }
                     }
-                    if (!jiBanActivedClass.isActived && isActived)
+                    else
                     {
-                        for (int k = 0; k < jiBanActivedClass.cardTypeLists.Count; k++)
-                        {
-                            for (int s = 0; s < jiBanActivedClass.cardTypeLists[k].cardLists.Count; s++)
-                            {
-                                jiBanActivedClass.cardTypeLists[k].cardLists[s].cardObj.transform.GetChild(10).gameObject.SetActive(false);
-                                jiBanActivedClass.cardTypeLists[k].cardLists[s].cardObj.transform.GetChild(10).gameObject.SetActive(true);
-                            }
-                        }
+                        jiBanActivedClass.cardTypeLists[j].cardLists.Remove(cardData);
                     }
-                    jiBanActivedClass.isActived = isActived;
+                }
+
+                if (jiBanActivedClass.cardTypeLists[j].cardLists.Count <= 0)
+                {
+                    isActived = false;
                 }
             }
+
+            if (!jiBanActivedClass.isActived && isActived)
+            {
+                for (int k = 0; k < jiBanActivedClass.cardTypeLists.Count; k++)
+                {
+                    for (int s = 0; s < jiBanActivedClass.cardTypeLists[k].cardLists.Count; s++)
+                    {
+                        jiBanActivedClass.cardTypeLists[k].cardLists[s].cardObj.transform.GetChild(10).gameObject
+                            .SetActive(false);
+                        jiBanActivedClass.cardTypeLists[k].cardLists[s].cardObj.transform.GetChild(10).gameObject
+                            .SetActive(true);
+                    }
+                }
+            }
+            jiBanActivedClass.isActived = isActived;
         }
     }
 
     //上阵卡牌特殊相关处理
     public void CardGoIntoBattleProcess(FightCardData cardData, int posIndex, FightCardData[] cardDatas, bool isAdd)
     {
+
         switch (cardData.cardType)
         {
             case 0:
                 TryToActivatedBond(cardData, isAdd);
-
-                switch (DataTable.HeroData[cardData.cardId][5])
+                switch (DataTable.Hero[cardData.cardId].MilitaryUnitTableId)
                 {
-                    case "4"://盾兵
+                    case 4://盾兵
                         if (isAdd)
                         {
                             if (cardData.fightState.withStandNums <= 0)
@@ -1084,7 +1038,7 @@ public class FightForManagerForStart : MonoBehaviour
                             DestroySateIcon(cardData.cardObj.transform.GetChild(7), StringNameStatic.StateIconPath_withStand, true);
                         }
                         break;
-                    case "58"://铁骑
+                    case 58://铁骑
                         FightControlForStart.instance.UpdateTieQiStateIconShow(cardData, isAdd);
                         break;
                     default:
@@ -1185,9 +1139,11 @@ public class FightForManagerForStart : MonoBehaviour
         for (int i = 0; i < CardNearbyAdditionForeach[posIndex].Length; i++)
         {
             FightCardData addtionCard = cardDatas[CardNearbyAdditionForeach[posIndex][i]];
+            
             if (addtionCard != null && addtionCard.cardType == 2 && addtionCard.nowHp > 0)
             {
                 int addtionNums = GetTowerAddValue(addtionCard.cardId, addtionCard.cardGrade);
+                var armedType = MilitaryInfo.GetInfo(cardData.cardId).ArmedType;
                 switch (addtionCard.cardId)
                 {
                     case 2://奏乐台
@@ -1272,7 +1228,7 @@ public class FightForManagerForStart : MonoBehaviour
                         }
                         break;
                     case 14://曹魏旗
-                        if (DataTable.HeroData[cardData.cardId][6] == "1")
+                        if (DataTable.Hero[cardData.cardId].ForceTableId == 1)
                         {
                             if (cardData.fightState.zhangutaiAddtion <= 0)
                             {
@@ -1282,7 +1238,7 @@ public class FightForManagerForStart : MonoBehaviour
                         }
                         break;
                     case 15://蜀汉旗
-                        if (DataTable.HeroData[cardData.cardId][6] == "0")
+                        if (DataTable.Hero[cardData.cardId].ForceTableId == 0)
                         {
                             if (cardData.fightState.zhangutaiAddtion <= 0)
                             {
@@ -1292,7 +1248,7 @@ public class FightForManagerForStart : MonoBehaviour
                         }
                         break;
                     case 16://东吴旗
-                        if (DataTable.HeroData[cardData.cardId][6] == "2")
+                        if (DataTable.Hero[cardData.cardId].ForceTableId == 2)
                         {
                             if (cardData.fightState.zhangutaiAddtion <= 0)
                             {
@@ -1316,7 +1272,7 @@ public class FightForManagerForStart : MonoBehaviour
                         cardData.fightState.miWuZhenAddtion += addtionNums;
                         break;
                     case 19://骑兵营
-                        if (DataTable.ClassData[int.Parse(DataTable.HeroData[cardData.cardId][5])][5] == "5")
+                        if (armedType == 5)
                         {
                             if (cardData.fightState.zhangutaiAddtion <= 0)
                             {
@@ -1326,7 +1282,7 @@ public class FightForManagerForStart : MonoBehaviour
                         }
                         break;
                     case 20://弓弩营
-                        if (DataTable.ClassData[int.Parse(DataTable.HeroData[cardData.cardId][5])][5] == "9")
+                        if (armedType == 9)
                         {
                             if (cardData.fightState.zhangutaiAddtion <= 0)
                             {
@@ -1336,7 +1292,7 @@ public class FightForManagerForStart : MonoBehaviour
                         }
                         break;
                     case 22://长持营
-                        if (DataTable.ClassData[int.Parse(DataTable.HeroData[cardData.cardId][5])][5] == "3")
+                        if (armedType == 3)
                         {
                             if (cardData.fightState.zhangutaiAddtion <= 0)
                             {
@@ -1346,7 +1302,7 @@ public class FightForManagerForStart : MonoBehaviour
                         }
                         break;
                     case 23://战船营
-                        if (DataTable.ClassData[int.Parse(DataTable.HeroData[cardData.cardId][5])][5] == "8")
+                        if (armedType == 8)
                         {
                             if (cardData.fightState.zhangutaiAddtion <= 0)
                             {
@@ -1638,7 +1594,7 @@ public class FightForManagerForStart : MonoBehaviour
                     FightCardData addedFightCard = cardDatas[CardNearbyAdditionForeach[posIndex][i]];
                     if (addedFightCard != null && addedFightCard.cardType == 0 && addedFightCard.nowHp > 0)
                     {
-                        if (DataTable.HeroData[addedFightCard.cardId][6] == "1") //魏势力
+                        if (DataTable.Hero[addedFightCard.cardId].ForceTableId == 1) //魏势力
                         {
                             DamageTowerAdditionFun(addedFightCard, isAdd, addtionNums);
                         }
@@ -1651,7 +1607,7 @@ public class FightForManagerForStart : MonoBehaviour
                     FightCardData addedFightCard = cardDatas[CardNearbyAdditionForeach[posIndex][i]];
                     if (addedFightCard != null && addedFightCard.cardType == 0 && addedFightCard.nowHp > 0)
                     {
-                        if (DataTable.HeroData[addedFightCard.cardId][6] == "0") //蜀势力
+                        if (DataTable.Hero[addedFightCard.cardId].ForceTableId == 0) //蜀势力
                         {
                             DamageTowerAdditionFun(addedFightCard, isAdd, addtionNums);
                         }
@@ -1664,7 +1620,7 @@ public class FightForManagerForStart : MonoBehaviour
                     FightCardData addedFightCard = cardDatas[CardNearbyAdditionForeach[posIndex][i]];
                     if (addedFightCard != null && addedFightCard.cardType == 0 && addedFightCard.nowHp > 0)
                     {
-                        if (DataTable.HeroData[addedFightCard.cardId][6] == "1") //吴势力
+                        if (DataTable.Hero[addedFightCard.cardId].ForceTableId == 2) //吴势力
                         {
                             DamageTowerAdditionFun(addedFightCard, isAdd, addtionNums);
                         }
@@ -1677,7 +1633,7 @@ public class FightForManagerForStart : MonoBehaviour
                     FightCardData addedFightCard = cardDatas[CardNearbyAdditionForeach[posIndex][i]];
                     if (addedFightCard != null && addedFightCard.cardType == 0 && addedFightCard.nowHp > 0)
                     {
-                        if (DataTable.ClassData[int.Parse(DataTable.HeroData[addedFightCard.cardId][5])][5] == "5")
+                        if (MilitaryInfo.GetInfo(addedFightCard.cardId).ArmedType == 5)
                         {
                             DamageTowerAdditionFun(addedFightCard, isAdd, addtionNums);
                         }
@@ -1690,7 +1646,7 @@ public class FightForManagerForStart : MonoBehaviour
                     FightCardData addedFightCard = cardDatas[CardNearbyAdditionForeach[posIndex][i]];
                     if (addedFightCard != null && addedFightCard.cardType == 0 && addedFightCard.nowHp > 0)
                     {
-                        if (DataTable.ClassData[int.Parse(DataTable.HeroData[addedFightCard.cardId][5])][5] == "9")
+                        if (MilitaryInfo.GetInfo(addedFightCard.cardId).ArmedType == 9)
                         {
                             DamageTowerAdditionFun(addedFightCard, isAdd, addtionNums);
                         }
@@ -1703,7 +1659,7 @@ public class FightForManagerForStart : MonoBehaviour
                     FightCardData addedFightCard = cardDatas[CardNearbyAdditionForeach[posIndex][i]];
                     if (addedFightCard != null && addedFightCard.cardType == 0 && addedFightCard.nowHp > 0)
                     {
-                        if (DataTable.ClassData[int.Parse(DataTable.HeroData[addedFightCard.cardId][5])][5] == "3")
+                        if (MilitaryInfo.GetInfo(addedFightCard.cardId).ArmedType == 3)
                         {
                             DamageTowerAdditionFun(addedFightCard, isAdd, addtionNums);
                         }
@@ -1716,7 +1672,7 @@ public class FightForManagerForStart : MonoBehaviour
                     FightCardData addedFightCard = cardDatas[CardNearbyAdditionForeach[posIndex][i]];
                     if (addedFightCard != null && addedFightCard.cardType == 0 && addedFightCard.nowHp > 0)
                     {
-                        if (DataTable.ClassData[int.Parse(DataTable.HeroData[addedFightCard.cardId][5])][5] == "8")
+                        if (MilitaryInfo.GetInfo(addedFightCard.cardId).ArmedType == 8)
                         {
                             DamageTowerAdditionFun(addedFightCard, isAdd, addtionNums);
                         }
@@ -1752,11 +1708,7 @@ public class FightForManagerForStart : MonoBehaviour
     }
 
     //获取塔的加成值
-    private int GetTowerAddValue(int towerId, int towerGrade)
-    {
-        string[] arrs = DataTable.TowerData[towerId][6].Split(',');
-        return int.Parse(arrs[towerGrade - 1]);
-    }
+    private int GetTowerAddValue(int towerId, int towerGrade) => GameCardInfo.GetInfo(GameCardType.Tower,towerId).GetDamage(towerGrade);
 
     /// <summary>
     /// 创建状态图标
@@ -1796,30 +1748,30 @@ public class FightForManagerForStart : MonoBehaviour
     /// 匹配稀有度的颜色
     /// </summary>
     /// <returns></returns>
-    private Color NameColorChoose(string rarity)
+    private Color NameColorChoose(int rarity)
     {
         Color color = new Color();
         switch (rarity)
         {
-            case "1":
+            case 1:
                 color = ColorDataStatic.name_gray;
                 break;
-            case "2":
+            case 2:
                 color = ColorDataStatic.name_green;
                 break;
-            case "3":
+            case 3:
                 color = ColorDataStatic.name_blue;
                 break;
-            case "4":
+            case 4:
                 color = ColorDataStatic.name_purple;
                 break;
-            case "5":
+            case 5:
                 color = ColorDataStatic.name_orange;
                 break;
-            case "6":
+            case 6:
                 color = ColorDataStatic.name_red;
                 break;
-            case "7":
+            case 7:
                 color = ColorDataStatic.name_black;
                 break;
             default:

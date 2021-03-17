@@ -195,9 +195,9 @@ public class PlayerDataForGame : MonoBehaviour
 
         asyncOp = SceneManager.LoadSceneAsync(sceneIndex, LoadSceneMode.Single);//异步加载场景，Single:不保留现有场景 
 
-        int index = Random.Range(0, DataTable.KnowledgeData.Count);
-        infoText.text = DataTable.KnowledgeData[index][2];
-        infoText.transform.GetChild(0).GetComponent<Text>().text = DataTable.KnowledgeData[index][5];
+        var tips = DataTable.Tips.RandomPick().Value;
+        infoText.text = tips.Text;
+        infoText.transform.GetChild(0).GetComponent<Text>().text = tips.Sign;
 
         loadingText.gameObject.SetActive(true);
         infoText.gameObject.SetActive(true);
@@ -295,7 +295,7 @@ public class PlayerDataForGame : MonoBehaviour
             case 0:
                 if (isAdd)
                 {
-                    if (CalculationFightCount() < int.Parse(DataTable.PlayerLevelData[pyData.Level - 1][2]))
+                    if (CalculationFightCount() < DataTable.PlayerLevelConfig[pyData.Level].CardLimit)
                     {
                         if (!fightHeroId.Contains(cardId))
                         {
@@ -327,7 +327,7 @@ public class PlayerDataForGame : MonoBehaviour
             case 1:
                 if (isAdd)
                 {
-                    if (CalculationFightCount() < int.Parse(DataTable.PlayerLevelData[pyData.Level - 1][2]))
+                    if (CalculationFightCount() < DataTable.PlayerLevelConfig[pyData.Level].CardLimit)
                     {
                         if (!fightSoLdierId.Contains(cardId))
                         {
@@ -360,7 +360,7 @@ public class PlayerDataForGame : MonoBehaviour
             case 2:
                 if (isAdd)
                 {
-                    if (CalculationFightCount() < int.Parse(DataTable.PlayerLevelData[pyData.Level - 1][2]))
+                    if (CalculationFightCount() < DataTable.PlayerLevelConfig[pyData.Level - 1].CardLimit)
                     {
                         if (!fightTowerId.Contains(cardId))
                         {
@@ -393,7 +393,7 @@ public class PlayerDataForGame : MonoBehaviour
             case 3:
                 if (isAdd)
                 {
-                    if (CalculationFightCount() < int.Parse(DataTable.PlayerLevelData[pyData.Level - 1][2]))
+                    if (CalculationFightCount() < DataTable.PlayerLevelConfig[pyData.Level].CardLimit)
                     {
                         if (!fightTrapId.Contains(cardId))
                         {
@@ -426,7 +426,7 @@ public class PlayerDataForGame : MonoBehaviour
             case 4:
                 if (isAdd)
                 {
-                    if (CalculationFightCount() < int.Parse(DataTable.PlayerLevelData[pyData.Level - 1][2]))
+                    if (CalculationFightCount() < DataTable.PlayerLevelConfig[pyData.Level].CardLimit)
                     {
                         if (!fightSpellId.Contains(cardId))
                         {

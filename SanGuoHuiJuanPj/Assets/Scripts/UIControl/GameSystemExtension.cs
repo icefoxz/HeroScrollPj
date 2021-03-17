@@ -5,90 +5,13 @@ using System.Globalization;
 using System.Linq;
 using Random = UnityEngine.Random;
 
-public enum GameCardType
-{
-    Hero = 0,
-    Soldier = 1,
-    Tower = 2,
-    Trap = 3,
-    Spell = 4
-}
-
-/// <summary>
-/// 权重元素接口，一旦声明这个接口，便可以在列表中根据权重随机选择一个元素
-/// </summary>
-public interface IWeightElement
-{
-    int Weight { get; }
-}
-
 public static class GameSystemExtension
 {
-    private const char Comma = ',';
-    private const char Dash = '-';
-    /// <summary>
-    /// 根据权重随机获取一个元素
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="list"></param>
-    /// <returns></returns>
-    public static T Pick<T>(this IEnumerable<T> list) where T : IWeightElement
+    public static T RandomPick<T>(this IEnumerable<T> data)
     {
-        //随机开彩
-        var ticketMap = list.PickMap();
-        var draw = Random.Range(0, ticketMap.Count);
-        return ticketMap[draw]; //返回选中索引
-    }
-
-    public static IEnumerable<T> Pick<T>(this IEnumerable<T> list, int pickAmt,bool repeatItem = false)
-        where T : IWeightElement
-    {
-        var ticketMap = list.PickMap();
-        var result = new List<T>();
-        for (int i = 0; i < pickAmt; i++)
-        {
-            var drawElement = ticketMap[Random.Range(0, ticketMap.Count)];
-            result.Add(drawElement);
-            if (!repeatItem) 
-                ticketMap = ticketMap.Where(t => !t.Equals(drawElement)).ToList();
-        }
-        return result;
-    }
-
-    private static List<T> PickMap<T>(this IEnumerable<T> list) where T : IWeightElement
-    {
-        var weightElements = list.Where(obj => obj.Weight > 0).ToArray();
-        if (weightElements.Length == 0)
-            throw new InvalidOperationException($"{nameof(GameSystemExtension)}.{nameof(Pick)}:权重元素为空！");
-        //声明票根
-        var ticket = 0;
-        //声明抽奖桶
-        var elements = new List<T>();
-        //循环每个权重元素
-        foreach (var element in weightElements)
-        {
-            //根据每个权重元素的权重数，给予票号
-            for (var i = 0; i < element.Weight; i++) elements.Add(element);
-        }
-
-        return elements;
-    }
-
-    public static IEnumerable<int> TableStringToInts(this string text, char separator = Comma) => text.Split(separator)
-        .Where(t => !string.IsNullOrWhiteSpace(t)).Select(int.Parse);
-
-    public static IEnumerable<DateTime> TableStringToDates(this string text, char separator = Dash) => text.Split(separator)
-        .Where(t => !string.IsNullOrWhiteSpace(t))
-        .Select(s => DateTime.ParseExact(s, "yyyyMMdd", CultureInfo.InvariantCulture));
-
-    public static bool IsTableTimeInRange(this string dateText, DateTime checkDate,
-        char separator = Dash)
-    {
-        var isNoTimeLimit = string.IsNullOrWhiteSpace(dateText);
-        if (isNoTimeLimit) return true;
-        var dates = dateText.TableStringToDates(separator).ToArray();
-        var isTimeInRange = checkDate >= dates[0] && checkDate <= dates[1];
-        return isTimeInRange;
+        var list = data.ToList();
+        var pick = Random.Range(0, list.Count);
+        return list[pick];
     }
     /// <summary>
     /// 上阵
@@ -103,13 +26,13 @@ public static class GameSystemExtension
         switch (card.typeIndex)
         {
             case 0 : 
-                force = int.Parse(DataTable.Hero[card.id][6]);
+                force = DataTable.Hero[card.id].ForceTableId;
                 break;
             case 2 :
-                force = int.Parse(DataTable.Tower[card.id][15]);
+                force = DataTable.Tower[card.id].ForceId;
                 break;
             case 3 :
-                force = int.Parse(DataTable.Trap[card.id][14]);
+                force = DataTable.Trap[card.id].ForceId;
                 break;
         }
         return force == forceId && (card.level > 0 || card.chips > 0) && card.isFight > 0;
@@ -120,30 +43,232 @@ public static class GameSystemExtension
         var card = cards.SingleOrDefault(c => c.id == cardId);
         if (card == null)
         {
-            card = new NowLevelAndHadChip
-            {
-                id = cardId,
-                level = 1,
-                maxLevel = 1,
-                typeIndex = cards.First().typeIndex,
-                isHad = true
-            };
+            card = new NowLevelAndHadChip().Instance((GameCardType) cards.First().typeIndex, cardId);
             cards.Add(card);
             cards.Sort((o1, o2) => o1.id.CompareTo(o2.id));
         }
         return card;
     }
 
-    public static IDictionary<TKey, int> Trade<TKey>(this IDictionary<TKey, int> map,TKey key,int value,bool keepValueBelowZero = false)
+    public static NowLevelAndHadChip Instance(this NowLevelAndHadChip card, GameCardType type, int cardId, int cardLevel = 1)
     {
-        if (map.ContainsKey(key))
-            map[key] += value;
-        else map.Add(key, value);
-        if(!keepValueBelowZero)
-        {
-            if (map[key] <= 0)
-                map.Remove(key);
-        }
-        return map;
+        card.id = cardId;
+        card.level = cardLevel;
+        card.maxLevel = cardLevel;
+        card.typeIndex = (int) type;
+        card.isHad = true;
+        return card;
     }
+
+    public static Chessman[] Poses(this GuideTable c, GuideProps prop)
+    {
+        switch (prop)
+        { 
+            case GuideProps.Card:
+                return new[] {c.Card1, c.Card2, c.Card3, c.Card4, c.Card5};
+            case GuideProps.Player:
+                return new []{c.Pos1,c.Pos2,c.Pos3,c.Pos4,c.Pos5,c.Pos6,c.Pos7,c.Pos8,c.Pos9,c.Pos10,c.Pos11,c.Pos12,c.Pos13,c.Pos14,c.Pos15,c.Pos16,c.Pos17,c.Pos18,c.Pos19,c.Pos20};
+            case GuideProps.Enemy:
+                return new[]
+                {
+                    c.EPos1, c.EPos2, c.EPos3, c.EPos4, c.EPos5, c.EPos6, c.EPos7, c.EPos8, c.EPos9, c.EPos10, c.EPos11,
+                    c.EPos12, c.EPos13, c.EPos14, c.EPos15, c.EPos16, c.EPos17, c.EPos18, c.EPos19, c.EPos20
+                };
+            default:
+                throw new ArgumentOutOfRangeException($"{c.GetType().Name}.{nameof(prop)}", prop, null);
+        }
+    }
+    public static int[] Poses(this EnemyTable c)
+    {
+        return new[]
+        {
+            c.Pos1, c.Pos2, c.Pos3, c.Pos4, c.Pos5, c.Pos6, c.Pos7, c.Pos8, c.Pos9, c.Pos10, c.Pos11, c.Pos12, c.Pos13,
+            c.Pos14, c.Pos15, c.Pos16, c.Pos17, c.Pos18, c.Pos19, c.Pos20
+        };
+    }
+    public static Chessman[] Poses(this StaticArrangementTable c)
+    {
+        return new[]
+        {
+            c.Pos1, c.Pos2, c.Pos3, c.Pos4, c.Pos5, c.Pos6, c.Pos7, c.Pos8, c.Pos9, c.Pos10, c.Pos11, c.Pos12, c.Pos13,
+            c.Pos14, c.Pos15, c.Pos16, c.Pos17, c.Pos18, c.Pos19, c.Pos20
+        };
+    }
+
+    public static GameCardInfo GetInfo(this NowLevelAndHadChip card) => GameCardInfo.GetInfo(card);
+
+}
+
+public enum GuideProps
+{
+    Card,
+    Player,
+    Enemy
+}
+
+/// <summary>
+/// 卡牌信息
+/// </summary>
+public class GameCardInfo
+{
+    public static GameCardInfo GetInfo(NowLevelAndHadChip card) => GetInfo((GameCardType) card.typeIndex, card.id);
+
+    public static GameCardInfo GetInfo(GameCardType type,int id)
+    {
+        switch (type)
+        {
+            case GameCardType.Hero:
+            {
+                var c = DataTable.Hero[id];
+                var militaryShort = DataTable.Military[c.MilitaryUnitTableId].Short;
+                return new GameCardInfo(c.Id, GameCardType.Hero, c.Name, c.Intro, c.Rarity, c.ForceTableId,
+                    c.ImageId, c.IsProduce > 0, militaryShort, c.GameSetRecovery, c.Damages, c.Hps, c.CombatType,
+                    c.DamageType);
+            }
+            case GameCardType.Tower:
+            {
+                var c = DataTable.Tower[id];
+                return new GameCardInfo(c.Id, GameCardType.Tower, c.Name, c.Intro, c.Rarity, c.ForceId,
+                    c.ImageId, c.IsProduce > 0, c.Short, c.GameSetRecovery, c.Damages, c.Hps, 1, 0);
+            }
+            case GameCardType.Trap:
+            {
+                var c = DataTable.Trap[id];
+                return new GameCardInfo(c.Id, GameCardType.Trap, c.Name, c.Intro, c.Rarity, c.ForceId, c.ImageId,
+                    c.IsProduce > 0, c.Short, c.GameSetRecovery, c.Damages, c.Hps, 0, 0);
+            }
+            default:
+                throw new ArgumentOutOfRangeException($"type = {type}, id = {id}", type, null);
+        }
+    }
+
+    public static GameCardInfo RandomPick(GameCardType type, int rare)
+    {
+        var ids = new List<int>();
+        switch (type)
+        {
+            case GameCardType.Hero:
+                ids = DataTable.Hero.Values.Where(c => c.Rarity == rare).Select(c=>c.Id).ToList();
+                break;
+            case GameCardType.Tower:
+                ids = DataTable.Tower.Values.Where(c => c.Rarity == rare).Select(c=>c.Id).ToList();
+                break;
+            case GameCardType.Trap:
+                ids = DataTable.Trap.Values.Where(c => c.Rarity == rare).Select(c=>c.Id).ToList();
+                break;
+            default:
+                throw new ArgumentOutOfRangeException($"type = {type}, rare = {rare}", type, null);
+        }
+        var pick = Random.Range(0, ids.Count);
+        var id = ids[pick];
+        return GetInfo(type, id);
+    }
+
+    public int Id { get; }
+    public GameCardType Type { get; }
+    public string Name { get; }
+    public string Intro { get; }
+    public int Rare { get; }
+    public int ForceId { get; }
+    public int ImageId { get; }
+    public bool IsProduce { get; }
+    public string Short { get; }
+    public int GameSetRecovery { get; }
+    public int CombatType { get; }
+    public int DamageType { get; }
+    private readonly Dictionary<int, int> damageMap;
+    private readonly Dictionary<int, int> hpsMap;
+    public IReadOnlyDictionary<int, int> DamageMap => damageMap;
+    public IReadOnlyDictionary<int, int> HpMap => hpsMap;
+
+    private GameCardInfo(int id, GameCardType type, string name, string intro, int rare, int forceId, int imageId,
+        bool isProduce, string @short, int gameSetRecovery, int[] damages, int[] hps, int combatType, int damageType)
+    {
+        Id = id;
+        Name = name;
+        Intro = intro;
+        Rare = rare;
+        ForceId = forceId;
+        ImageId = imageId;
+        IsProduce = isProduce;
+        Short = @short;
+        GameSetRecovery = gameSetRecovery;
+        CombatType = combatType;
+        DamageType = damageType;
+        Type = type;
+        damageMap = new Dictionary<int, int>();
+        hpsMap = new Dictionary<int, int>();
+        var index = 1;
+        foreach (var damage in damages)
+        {
+            damageMap.Add(index, damage);
+            index++;
+        }
+        index = 1;
+        foreach (var hp in hps)
+        {
+            hpsMap.Add(index, hp);
+            index++;
+        }
+    }
+
+    public int GetDamage(int level) => damageMap[level];
+    public int GetHp(int level) => hpsMap[level];
+}
+
+/// <summary>
+/// 兵种信息(仅限英雄类)
+/// </summary>
+public class MilitaryInfo
+{
+    public static MilitaryInfo GetInfo(int heroId) => new MilitaryInfo(DataTable.Military[DataTable.Hero[heroId].MilitaryUnitTableId]);
+    public int Id { get; }
+    public string Name { get; }
+    public string Specialty { get; }
+    public string Short { get; }
+    public string Info { get; }
+    public int ArmedType { get; }
+
+    private MilitaryInfo(MilitaryTable t)
+    {
+        Id = t.Id;
+        Name = t.Type;
+        Specialty = t.Specialty;
+        Short = t.Short;
+        Info = t.Info;
+        ArmedType = t.ArmedType;
+    }
+}
+
+/// <summary>
+/// 英雄战斗信息结构
+/// </summary>
+public class HeroCombatInfo
+{
+    public static HeroCombatInfo GetInfo(int heroId) => new HeroCombatInfo (DataTable.Hero[heroId]);
+    public int DodgeRatio { get; }
+    public int Armor { get; }
+    public int CriticalRatio { get; }
+    public int CriticalDamage { get; }
+    public int RouseRatio { get; }
+    public int RouseDamage { get; }
+    public int ConditionResist { get; }
+    public int PhysicalResist { get; }
+    public int MagicResist { get; }
+
+    private HeroCombatInfo(HeroTable h)
+    {
+        DodgeRatio = h.DodgeRatio;
+        Armor = h.ArmorResist;
+        CriticalRatio = h.CriticalRatio;
+        CriticalDamage = h.CriticalDamage;
+        RouseRatio = h.RouseRatio;
+        RouseDamage = h.RouseDamage;
+        ConditionResist = h.ConditionResist;
+        PhysicalResist = h.PhysicalResist;
+        MagicResist = h.MagicResist;
+    }
+
+    public float GetRouseDamage(int damage) => RouseDamage / 100f * damage;
+    public float GetCriticalDamage(int damage) => CriticalDamage / 100f * damage;
 }

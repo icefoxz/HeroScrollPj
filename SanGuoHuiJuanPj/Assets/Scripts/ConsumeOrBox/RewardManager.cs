@@ -15,51 +15,36 @@ public class RewardManager : MonoBehaviour
         else Destroy(this);
     }
 
-    public int GetYvQue(int chestId)
+    public int GetRandomYvQue(int chestId)
     {
-        var list = DataTable.WarChestData[chestId][4].Split(',');
-        return UnityEngine.Random.Range(int.Parse(list[0]), int.Parse(list[1]) + 1);
+        var yvQue = DataTable.WarChest[chestId].YvQue;
+        return UnityEngine.Random.Range(yvQue.Min, yvQue.ExcMax);
     }
-    public int GetYuanBao(int chestId)
+    public int GetRandomYuanBao(int chestId)
     {
-        var list = DataTable.WarChestData[chestId][5].Split(',');
-        return UnityEngine.Random.Range(int.Parse(list[0]), int.Parse(list[1]) + 1);
+        var yuanBao = DataTable.WarChest[chestId].YuanBao;
+        return UnityEngine.Random.Range(yuanBao.Min, yuanBao.ExcMax);
     }
 
     public List<RewardsCardClass> GetCards(int chestId, bool isZyBox)
     {
-        const int trapIndex = 6;
-        const int towerIndex = 7;
-        const int heroIndex = 8;
-        var row = DataTable.WarChest[chestId];
-        var trapMap = row[trapIndex].Split(';').Where(s => !string.IsNullOrWhiteSpace(s)).ToList();
-        var towerMap = row[towerIndex].Split(';').Where(s => !string.IsNullOrWhiteSpace(s)).ToList();
-        var heroMap = row[heroIndex].Split(';').Where(s => !string.IsNullOrWhiteSpace(s)).ToList();
-        var rewards = new List<RewardsCardClass>();
-        var trapReward = RandomPickBaseOnStrategy(trapMap, GameCardType.Trap);
-        var towerReward = RandomPickBaseOnStrategy(towerMap, GameCardType.Tower);
-        var heroReward = RandomPickBaseOnStrategy(heroMap, GameCardType.Hero);
-        if (trapReward != null && trapReward.Count > 0) rewards.AddRange(trapReward);
-        if (towerReward != null && towerReward.Count > 0) rewards.AddRange(towerReward);
-        if (heroReward != null && heroReward.Count > 0) rewards.AddRange(heroReward);
-        return rewards;
+        return RandomPickBaseOnStrategy(GameCardType.Trap, DataTable.WarChest[chestId].Trap.ToList())
+            .Concat(RandomPickBaseOnStrategy(GameCardType.Tower, DataTable.WarChest[chestId].Tower.ToList()))
+            .Concat(RandomPickBaseOnStrategy(GameCardType.Hero, DataTable.WarChest[chestId].Hero.ToList())).ToList();
 
         //private method
-        List<RewardsCardClass> RandomPickBaseOnStrategy(List<string> items, GameCardType gameCardType)
+        List<RewardsCardClass> RandomPickBaseOnStrategy(GameCardType gameCardType,List<CardRandomProduction> items)
         {
             var list = new List<RewardsCardClass>();
             items.ForEach(r =>
             {
-                var map = r.TableStringToInts().ToList();
-                var randomValue = map[1];
-                if (randomValue >= UnityEngine.Random.Range(0, 101))
+                if (r.Ratio >= UnityEngine.Random.Range(0, 101))
                 {
                     var type = gameCardType;
-                    var rare = map[0];
-                    var rewardCards = GetRewardCards(type, rare, isZyBox);
+                    var rewardCards = GetWeightList(type,isZyBox, r.Rare);
                     if (rewardCards.Count == 0) return;
                     var pick = rewardCards.Pick();
-                    var chips = UnityEngine.Random.Range(map[2], map[3] + 1);
+                    var chips = UnityEngine.Random.Range(r.MinChips, r.ExcMaxChips);
                     RewardCard(type, pick.cardId, chips);
                     list.Add(new RewardsCardClass
                     {
@@ -71,46 +56,55 @@ public class RewardManager : MonoBehaviour
             });
             return list;
         }
-
-        List<CardIdAndWeights> GetRewardCards(GameCardType cardType, int rarity, bool isZy)
-        {
-            switch (cardType)
-            {
-                case GameCardType.Hero:
-                    return GetWeightList(DataTable.Hero, isZy ? 19 : 20, 21, rarity);
-                case GameCardType.Tower:
-                    return GetWeightList(DataTable.Tower, isZy ? 11 : 12, 14, rarity);
-                case GameCardType.Trap:
-                    return GetWeightList(DataTable.Trap, isZy ? 10 : 11, 13, rarity);
-                default:
-                    throw new ArgumentOutOfRangeException($"cardType = {cardType}");
-            }
-        }
     }
 
     /// <summary>
     /// 返回随机选中卡牌id
     /// </summary>
-    /// <param name="data"></param>
-    /// <param name="outputStrategyIndex"></param>
-    /// <param name="outputIndex"></param>
-    /// <param name="rarity"></param>
-    /// <returns></returns>
-    private List<CardIdAndWeights> GetWeightList(IReadOnlyDictionary<int,IReadOnlyList<string>> data, int outputStrategyIndex, int outputIndex, int rarity)
+    private List<CardIdAndWeights> GetWeightList(GameCardType cardType, bool isZhanYi, int rarity)
     {
-        const string NoOutput = "0";
-        var playerLevel = PlayerDataForGame.instance.pyData.Level;
-        return data.Where(map => map.Value[outputIndex] != NoOutput && int.Parse(map.Value[3]) == rarity)
-            .Select(map =>
-            {
-                var strategy = map.Value[outputStrategyIndex].TableStringToInts().ToList();
-                return new CardIdAndWeights
-                {
-                    cardId = map.Key,
-                    outputLevel = strategy[0],
-                    weight = strategy[1]
-                };
-            }).Where(c => c.outputLevel != 0 && c.outputLevel <= playerLevel).ToList();
+        var level = PlayerDataForGame.instance.pyData.Level;
+        switch (cardType)
+        {
+            case GameCardType.Hero:
+                return DataTable.Hero.Where(c => c.Value.IsProduce > 0 && c.Value.Rarity == rarity)
+                    .Select(c =>
+                    {
+                        var production = isZhanYi ? c.Value.ZhanYiChestProduction : c.Value.ConsumeChestProduction;
+                        return new CardIdAndWeights
+                        {
+                            cardId = c.Key,
+                            outputLevel = production.Level,
+                            weight = production.Weight
+                        };
+                    }).Where(c => c.outputLevel != 0 && c.outputLevel <= level).ToList();
+            case GameCardType.Tower:
+                return DataTable.Tower.Where(c => c.Value.IsProduce > 0 && c.Value.Rarity == rarity)
+                    .Select(c =>
+                    {
+                        var production = isZhanYi ? c.Value.ZhanYiChestProduction : c.Value.ConsumeChestProduction;
+                        return new CardIdAndWeights
+                        {
+                            cardId = c.Key,
+                            outputLevel = production.Level,
+                            weight = production.Weight
+                        };
+                    }).Where(c => c.outputLevel != 0 && c.outputLevel <= level).ToList();
+            case GameCardType.Trap:
+                return DataTable.Trap.Where(c => c.Value.IsProduce > 0 && c.Value.Rarity == rarity)
+                    .Select(c =>
+                    {
+                        var production = isZhanYi ? c.Value.ZhanYiChestProduction : c.Value.ConsumeChestProduction;
+                        return new CardIdAndWeights
+                        {
+                            cardId = c.Key,
+                            outputLevel = production.Level,
+                            weight = production.Weight
+                        };
+                    }).Where(c => c.outputLevel != 0 && c.outputLevel <= level).ToList();
+            default:
+                throw new ArgumentOutOfRangeException(nameof(cardType), cardType, null);
+        }
     }
 
     /// <summary>
