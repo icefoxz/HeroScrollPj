@@ -29,18 +29,16 @@ public class SanGuoTvUi : MonoBehaviour
     public void GenerateReport()
     {
         var now = DateTime.Now;
-        var result = DataTable.BaYeTv
-            .Select(map =>
+        var result = DataTable.BaYeTv.Values
+            .Select(obj =>
             {
-                int.TryParse(map.Value[4], out var format);
                 return new Report
                 {
-                    Id = map.Key,
-                    Weight = int.Parse(map.Value[1]), //权重
-                    Text = map.Value[2], //文本
-                    Time = map.Value[3], //时间
-                    Format = format //格式
-
+                    Id = obj.Id,
+                    Weight = obj.Weight, //权重
+                    Text = obj.Text, //文本
+                    Time = obj.Time, //时间
+                    Format = obj.Format //格式
                 };
             }).Where(r => r.Time.IsTableTimeInRange(now))
             .Pick(contents.Length).ToList();
@@ -53,10 +51,10 @@ public class SanGuoTvUi : MonoBehaviour
 
     private string GetFormattedText(Report report)
     {
-        object[] names = DataTable.BaYeName.Select(map => new Character
+        object[] names = DataTable.BaYeName.Values.Select(obj => new Character
         {
-            Name = map.Value[2],
-            Weight = int.Parse(map.Value[1])
+            Name = obj.Name,
+            Weight = obj.Weight
         }).Pick(report.Format).Select(r => r.Name).ToArray();
         return string.Format(report.Text, names);
     }

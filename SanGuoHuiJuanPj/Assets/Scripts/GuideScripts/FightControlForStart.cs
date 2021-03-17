@@ -103,12 +103,13 @@ public class FightControlForStart : MonoBehaviour
     {
         isNeedToAttack = true;
         //攻击的是老家
+        var armed = MilitaryInfo.GetInfo(attackUnit.cardId).ArmedType;
         if (attackedUnit.cardType == 522)
         {
-            if (DataTable.HeroData[attackUnit.cardId][5] == "28" ||
-                DataTable.HeroData[attackUnit.cardId][5] == "29" ||
-                DataTable.HeroData[attackUnit.cardId][5] == "32" ||
-                DataTable.HeroData[attackUnit.cardId][5] == "33") { }
+            if (armed == 28 ||
+                armed == 29 ||
+                armed == 32 ||
+                armed == 33) { }
             else
             {
                 int cutHpNum = (int)(HeroCardMakeSomeDamages(isCanFightBack, attackUnit) * damageBonus);
@@ -129,10 +130,10 @@ public class FightControlForStart : MonoBehaviour
             //攻击的是陷阱单位
             if (attackedUnit.cardType == 3)
             {
-                if (DataTable.HeroData[attackUnit.cardId][5] == "28" ||
-                    DataTable.HeroData[attackUnit.cardId][5] == "29" ||
-                    DataTable.HeroData[attackUnit.cardId][5] == "32" ||
-                    DataTable.HeroData[attackUnit.cardId][5] == "33") { }
+                if (armed == 28 ||
+                    armed == 29 ||
+                    armed == 32 ||
+                    armed == 33) { }
                 else
                 {
                     int finalDamage = (int)(HeroCardMakeSomeDamages(isCanFightBack, attackUnit) * damageBonus);
@@ -148,10 +149,10 @@ public class FightControlForStart : MonoBehaviour
                 //攻击的是塔单位
                 if (attackedUnit.cardType == 2)
                 {
-                    if (DataTable.HeroData[attackUnit.cardId][5] == "28" ||
-                        DataTable.HeroData[attackUnit.cardId][5] == "29" ||
-                        DataTable.HeroData[attackUnit.cardId][5] == "32" ||
-                        DataTable.HeroData[attackUnit.cardId][5] == "33") { }
+                    if (armed == 28 ||
+                        armed == 29 ||
+                        armed == 32 ||
+                        armed == 33) { }
                     else
                     {
                         int finalDamage = (int)(HeroCardMakeSomeDamages(isCanFightBack, attackUnit) * damageBonus);
@@ -196,17 +197,17 @@ public class FightControlForStart : MonoBehaviour
     /// <returns></returns>
     private int HeroCardMakeSomeDamages(bool isCanAdd, FightCardData fightCardData)
     {
-        IReadOnlyList<string> heroData = DataTable.HeroData[fightCardData.cardId];
-        int damage = (int)(fightCardData.damage * (fightCardData.fightState.zhangutaiAddtion + 100) / 100f);
+        var combat = HeroCombatInfo.GetInfo(fightCardData.cardId);
+         int damage = (int)(fightCardData.damage * (fightCardData.fightState.zhangutaiAddtion + 100) / 100f);
         if (isCanAdd)
         {
             switch (indexAttackType)
             {
                 case 1:
-                    damage = (int)(damage * float.Parse(heroData[15]) / 100f);
+                    damage = (int)combat.GetRouseDamage(damage);
                     break;
                 case 2:
-                    damage = (int)(damage * float.Parse(heroData[13]) / 100f);
+                    damage = (int)combat.GetCriticalDamage(damage);
                     break;
                 default:
                     break;
@@ -223,12 +224,14 @@ public class FightControlForStart : MonoBehaviour
     ///////攻击trap单位////////////
     private void AttackTrapUnit(int damage, FightCardData attackUnit, FightCardData attackedUnit, bool isCanFightBack)
     {
+        var isGongChengChe = ((GameCardType)attackUnit.cardType) == GameCardType.Hero &&
+                             DataTable.Hero[attackUnit.cardId].MilitaryUnitTableId == 23;//攻城车
         switch (attackedUnit.cardId)
         {
             case 0://拒马
                 attackedUnit.nowHp -= damage;
                 AttackedAnimShow(attackedUnit, damage, false);
-                if (isCanFightBack && attackUnit.cardMoveType == 0 && DataTable.HeroData[attackUnit.cardId][5] != "23")
+                if (isCanFightBack && attackUnit.cardMoveType == 0 && !isGongChengChe)
                 {
                     damage = DefDamageProcessFun(attackedUnit, attackUnit, damage);
                     attackUnit.nowHp -= (int)(damage * (DataTable.GetGameValue(8) / 100f));
@@ -243,7 +246,10 @@ public class FightControlForStart : MonoBehaviour
                 AttackedAnimShow(attackUnit, damage, false);
                 if (isCanFightBack && attackUnit.cardMoveType == 0)  //踩地雷的是近战
                 {
-                    int dileiDamage = (int)(int.Parse(DataTable.Trap[attackedUnit.cardId][6].Split(',')[attackedUnit.cardGrade - 1]) * DataTable.GetGameValue(9) / 100f);
+                    var dmg = GameCardInfo.GetInfo(GameCardType.Trap, attackUnit.cardId)
+                        .GetDamage(attackUnit.cardGrade);
+                    //todo : 这里的代码与FightController(351)不同
+                    int dileiDamage = (int)(dmg * DataTable.GetGameValue(9) / 100f);
                     dileiDamage = DefDamageProcessFun(attackedUnit, attackUnit, dileiDamage);
                     attackUnit.nowHp -= dileiDamage;
                     AttackToEffectShow(attackUnit, false, "201A");
@@ -258,7 +264,7 @@ public class FightControlForStart : MonoBehaviour
             case 3://八阵图
                 attackedUnit.nowHp -= damage;
                 AttackedAnimShow(attackedUnit, damage, false);
-                if (attackUnit.cardMoveType == 0 && DataTable.HeroData[attackUnit.cardId][5] != "23")
+                if (attackUnit.cardMoveType == 0 && !isGongChengChe)
                 {
                     TakeOneUnitDizzed(attackUnit, DataTable.GetGameValue(133));
                 }
@@ -266,7 +272,7 @@ public class FightControlForStart : MonoBehaviour
             case 4://金锁阵
                 attackedUnit.nowHp -= damage;
                 AttackedAnimShow(attackedUnit, damage, false);
-                if (attackUnit.cardMoveType == 0 && DataTable.HeroData[attackUnit.cardId][5] != "23")
+                if (attackUnit.cardMoveType == 0 && !isGongChengChe)
                 {
                     TakeToImprisoned(attackUnit, DataTable.GetGameValue(10));
                 }
@@ -274,7 +280,7 @@ public class FightControlForStart : MonoBehaviour
             case 5://鬼兵阵
                 attackedUnit.nowHp -= damage;
                 AttackedAnimShow(attackedUnit, damage, false);
-                if (attackUnit.cardMoveType == 0 && DataTable.HeroData[attackUnit.cardId][5] != "23")
+                if (attackUnit.cardMoveType == 0 && !isGongChengChe)
                 {
                     TakeToCowardly(attackUnit, DataTable.GetGameValue(11));
                 }
@@ -282,7 +288,7 @@ public class FightControlForStart : MonoBehaviour
             case 6://火墙
                 attackedUnit.nowHp -= damage;
                 AttackedAnimShow(attackedUnit, damage, false);
-                if (isCanFightBack && attackUnit.cardMoveType == 0 && DataTable.HeroData[attackUnit.cardId][5] != "23")
+                if (isCanFightBack && attackUnit.cardMoveType == 0 && !isGongChengChe)
                 {
                     TakeToBurn(attackUnit, DataTable.GetGameValue(12));
                 }
@@ -290,7 +296,7 @@ public class FightControlForStart : MonoBehaviour
             case 7://毒泉
                 attackedUnit.nowHp -= damage;
                 AttackedAnimShow(attackedUnit, damage, false);
-                if (isCanFightBack && attackUnit.cardMoveType == 0 && DataTable.HeroData[attackUnit.cardId][5] != "23")
+                if (isCanFightBack && attackUnit.cardMoveType == 0 && !isGongChengChe)
                 {
                     TakeToPoisoned(attackUnit, DataTable.GetGameValue(13));
                 }
@@ -298,7 +304,7 @@ public class FightControlForStart : MonoBehaviour
             case 8://刀墙
                 attackedUnit.nowHp -= damage;
                 AttackedAnimShow(attackedUnit, damage, false);
-                if (isCanFightBack && attackUnit.cardMoveType == 0 && DataTable.HeroData[attackUnit.cardId][5] != "23")
+                if (isCanFightBack && attackUnit.cardMoveType == 0 && !isGongChengChe)
                 {
                     TakeToBleed(attackUnit, DataTable.GetGameValue(14));
                 }
@@ -331,7 +337,7 @@ public class FightControlForStart : MonoBehaviour
         if (attackedUnit.nowHp <= 0)
         {
             GameObject obj = EffectsPoolingControl.instance.GetEffectToFight("GetGold", 1.5f, attackedUnit.cardObj.transform);
-            obj.GetComponentInChildren<Text>().text = string.Format(DataTable.GetStringText(8), DataTable.EnemyUnitData[attackedUnit.unitId][4]);
+            obj.GetComponentInChildren<Text>().text = string.Format(DataTable.GetStringText(8), DataTable.EnemyUnit[attackedUnit.unitId].GoldReward);
             PlayAudioForSecondClip(98, 0);
         }
     }
@@ -536,13 +542,13 @@ public class FightControlForStart : MonoBehaviour
         {
             if (attackUnit.fightState.imprisonedNums <= 0) //攻击者没有禁锢状态
             {
-                switch (DataTable.HeroData[attackUnit.cardId][5])
+                switch (DataTable.Hero[attackUnit.cardId].MilitaryUnitTableId)
                 {
-                    case "3":
+                    case 3:
                         PlayAudioForSecondClip(3, 0);
                         AttackToEffectShow(attackedUnit, false, "3A");
                         break;
-                    case "4":
+                    case 4:
                         ShowSpellTextObj(attackUnit.cardObj, "4", false);
                         AttackToEffectShow(attackUnit, false, "4A");
                         if (attackUnit.fightState.withStandNums <= 0)
@@ -552,192 +558,192 @@ public class FightControlForStart : MonoBehaviour
                         attackUnit.fightState.withStandNums++;
                         PlayAudioForSecondClip(4, 0);
                         break;
-                    case "6":
+                    case 6:
                         AttackToEffectShow(attackedUnit, false, "6A");
                         PlayAudioForSecondClip(6, 0);
                         break;
-                    case "8":
+                    case 8:
                         XiangBingTrampleAttAck(attackedUnit, attackUnit);
                         break;
-                    case "9":
+                    case 9:
                         AttackToEffectShow(attackedUnit, false, "9A");
                         PlayAudioForSecondClip(9, 0);
                         break;
-                    case "60":
+                    case 60:
                         AttackToEffectShow(attackedUnit, false, "60A");
                         PlayAudioForSecondClip(9, 0);
                         break;
-                    case "10":
+                    case 10:
                         finalDamage = SiShiSheMingAttack(finalDamage, attackUnit, attackedUnit);
                         break;
-                    case "11":
+                    case 11:
                         finalDamage = TieQiWuWeiAttack(finalDamage, attackUnit, attackedUnit);
                         break;
-                    case "12":
+                    case 12:
                         finalDamage = ShenWuZhanYiAttack(finalDamage, attackUnit, attackedUnit);
                         break;
-                    case "59":
+                    case 59:
                         QiangBingChuanCiAttack(finalDamage, attackUnit, attackedUnit, 59);
                         break;
-                    case "14":
+                    case 14:
                         QiangBingChuanCiAttack(finalDamage, attackUnit, attackedUnit, 14);
                         break;
-                    case "15":
+                    case 15:
                         JianBingHengSaoAttack(finalDamage, attackUnit, attackedUnit);
                         break;
-                    case "16":
+                    case 16:
                         AttackToEffectShow(attackedUnit, false, "16A");
                         PlayAudioForSecondClip(16, 0);
                         break;
-                    case "17":
+                    case 17:
                         AttackToEffectShow(attackedUnit, false, "17A");
                         PlayAudioForSecondClip(17, 0);
                         break;
-                    case "18":
+                    case 18:
                         finalDamage = FuBingTuLuAttack(finalDamage, attackedUnit, attackUnit);
                         break;
-                    case "19":
+                    case 19:
                         AttackToEffectShow(attackedUnit, false, "19A");
                         PlayAudioForSecondClip(19, 0);
                         break;
-                    case "51":
+                    case 51:
                         AttackToEffectShow(attackedUnit, false, "19A");
                         PlayAudioForSecondClip(19, 0);
                         break;
-                    case "20":
+                    case 20:
                         GongBingYuanSheSkill(finalDamage, attackUnit, attackedUnit, 20);
                         break;
-                    case "52":
+                    case 52:
                         GongBingYuanSheSkill(finalDamage, attackUnit, attackedUnit, 52);
                         break;
-                    case "21":
+                    case 21:
                         finalDamage = ZhanChuanChongJiAttack(finalDamage, attackedUnit, attackUnit);
                         break;
-                    case "22":
+                    case 22:
                         finalDamage = ZhanCheZhuangYaAttack(finalDamage, attackedUnit, attackUnit);
                         break;
-                    case "23":
+                    case 23:
                         finalDamage = GongChengChePoCheng(finalDamage, attackUnit, attackedUnit);
                         break;
-                    case "24":
+                    case 24:
                         TouShiCheSkill(finalDamage, attackUnit);
                         break;
-                    case "25":
+                    case 25:
                         CiKePoJiaAttack(attackedUnit, attackUnit);
                         break;
-                    case "26":
+                    case 26:
                         JunShiSkill(attackUnit, 26, finalDamage);
                         SpecilSkillNeedPuGongFun(attackedUnit);
                         break;
-                    case "27":
+                    case 27:
                         JunShiSkill(attackUnit, 27, finalDamage);
                         SpecilSkillNeedPuGongFun(attackedUnit);
                         break;
-                    case "28":
+                    case 28:
                         isNeedToAttack = false;
                         break;
-                    case "29":
+                    case 29:
                         isNeedToAttack = false;
                         break;
-                    case "30":
+                    case 30:
                         DuShiSkill(DataTable.GetGameValue(19), attackUnit, 30, finalDamage);
                         SpecilSkillNeedPuGongFun(attackedUnit);
                         break;
-                    case "31":
+                    case 31:
                         DuShiSkill(DataTable.GetGameValue(20), attackUnit, 31, finalDamage);
                         SpecilSkillNeedPuGongFun(attackedUnit);
                         break;
-                    case "32":
+                    case 32:
                         isNeedToAttack = false;
                         break;
-                    case "33":
+                    case 33:
                         isNeedToAttack = false;
                         break;
-                    case "34":
+                    case 34:
                         BianShiSkill(DataTable.GetGameValue(21), attackUnit, 34);
                         SpecilSkillNeedPuGongFun(attackedUnit);
                         break;
-                    case "35":
+                    case 35:
                         BianShiSkill(DataTable.GetGameValue(22), attackUnit, 35);
                         SpecilSkillNeedPuGongFun(attackedUnit);
                         break;
-                    case "36":
+                    case 36:
                         MouShiSkill(DataTable.GetGameValue(23), attackUnit, 36);
                         SpecilSkillNeedPuGongFun(attackedUnit);
                         break;
-                    case "37":
+                    case 37:
                         MouShiSkill(DataTable.GetGameValue(24), attackUnit, 37);
                         SpecilSkillNeedPuGongFun(attackedUnit);
                         break;
-                    case "38":
+                    case 38:
                         NeiZhengSkill(attackUnit);
                         SpecilSkillNeedPuGongFun(attackedUnit);
                         break;
-                    case "39":
+                    case 39:
                         FuZuoBiHuSkill(finalDamage, attackUnit);
                         SpecilSkillNeedPuGongFun(attackedUnit);
                         break;
-                    case "40":
+                    case 40:
                         QiXieXiuFu(attackUnit);
                         SpecilSkillNeedPuGongFun(attackedUnit);
                         break;
-                    case "42":
+                    case 42:
                         YiShengSkill(DataTable.GetGameValue(25), attackUnit, 42);
                         SpecilSkillNeedPuGongFun(attackedUnit);
                         break;
-                    case "43":
+                    case 43:
                         YiShengSkill(DataTable.GetGameValue(26), attackUnit, 43);
                         SpecilSkillNeedPuGongFun(attackedUnit);
                         break;
-                    case "44":
+                    case 44:
                         ShuiBingXieJia(attackUnit, attackedUnit);
                         break;
-                    case "45":
+                    case 45:
                         MeiRenJiNeng(attackUnit, 45);
                         SpecilSkillNeedPuGongFun(attackedUnit);
                         break;
-                    case "46":
+                    case 46:
                         MeiRenJiNeng(attackUnit, 46);
                         SpecilSkillNeedPuGongFun(attackedUnit);
                         break;
-                    case "47":
+                    case 47:
                         ShuiKeSkill(DataTable.GetGameValue(27), attackUnit, 47);
                         SpecilSkillNeedPuGongFun(attackedUnit);
                         break;
-                    case "48":
+                    case 48:
                         ShuiKeSkill(DataTable.GetGameValue(28), attackUnit, 48);
                         SpecilSkillNeedPuGongFun(attackedUnit);
                         break;
-                    case "49":
+                    case 49:
                         PlayAudioForSecondClip(49, 0);
                         AttackToEffectShow(attackedUnit, false, "49A");
                         break;
-                    case "50":
+                    case 50:
                         PlayAudioForSecondClip(50, 0);
                         AttackToEffectShow(attackedUnit, false, "50A");
                         break;
-                    case "53":
+                    case 53:
                         YinShiSkill(DataTable.GetGameValue(29), attackUnit, 53, finalDamage);
                         SpecilSkillNeedPuGongFun(attackedUnit);
                         break;
-                    case "54":
+                    case 54:
                         YinShiSkill(DataTable.GetGameValue(30), attackUnit, 54, finalDamage);
                         SpecilSkillNeedPuGongFun(attackedUnit);
                         break;
-                    case "55":
+                    case 55:
                         HuoChuanSkill(finalDamage, attackUnit, attackedUnit);
                         break;
-                    case "56":
+                    case 56:
                         ManZuSkill(attackUnit, attackedUnit);
                         break;
-                    case "57":
+                    case 57:
                         PlayAudioForSecondClip(57, 0);
                         AttackToEffectShow(attackedUnit, false, "57A");
                         break;
-                    case "58":
+                    case 58:
                         finalDamage = TieQiSkill(finalDamage, attackUnit, attackedUnit);
                         break;
-                    case "65":
+                    case 65:
                         finalDamage = HuangJinSkill(finalDamage, attackUnit, attackedUnit);
                         break;
                     default:
@@ -756,9 +762,9 @@ public class FightControlForStart : MonoBehaviour
 
         if (attackedUnit.cardType == 0)
         {
-            switch (DataTable.HeroData[attackedUnit.cardId][5])
+            switch (DataTable.Hero[attackedUnit.cardId].MilitaryUnitTableId)
             {
-                case "7":
+                case 7:
                     if (isCanFightBack)
                     {
                         CiJiaFanShangAttack(finalDamage, attackUnit, attackedUnit);
@@ -779,7 +785,7 @@ public class FightControlForStart : MonoBehaviour
             if (attackedUnit.fightState.dizzyNums <= 0 && attackedUnit.fightState.imprisonedNums <= 0)
             {
                 //禁卫
-                if (DataTable.HeroData[attackedUnit.cardId][5] == "13" && attackUnit.cardMoveType == 0)
+                if (DataTable.Hero[attackedUnit.cardId].MilitaryUnitTableId == 13 && attackUnit.cardMoveType == 0)
                 {
                     yield return StartCoroutine(JinWeiFanJiAttack(attackedUnit, attackUnit));
                 }
@@ -804,39 +810,39 @@ public class FightControlForStart : MonoBehaviour
         }
         else
         {
-            switch (DataTable.HeroData[attackUnit.cardId][5])
+            switch (DataTable.Hero[attackUnit.cardId].MilitaryUnitTableId)
             {
-                case "9":
+                case 9:
                     yield return StartCoroutine(XianFengYongWu(attackUnit, attackedUnit, 9));
                     break;
-                case "60":
+                case 60:
                     yield return StartCoroutine(XianFengYongWu(attackUnit, attackedUnit, 60));
                     break;
-                case "16":
+                case 16:
                     yield return StartCoroutine(QiBingChiCheng(attackUnit, attackedUnit));
                     break;
-                case "17":
+                case 17:
                     yield return StartCoroutine(DaoBingLianZhan(damageBonus, attackUnit, attackedUnit));
                     break;
-                case "19":
+                case 19:
                     yield return StartCoroutine(NuBingLianShe(attackUnit, attackedUnit, 19));
                     break;
-                case "51":
+                case 51:
                     yield return StartCoroutine(NuBingLianShe(attackUnit, attackedUnit, 51));
                     break;
-                case "28":
+                case 28:
                     yield return StartCoroutine(ShuShiLuoLei(DataTable.GetGameValue(31), attackUnit, 28));
                     break;
-                case "29":
+                case 29:
                     yield return StartCoroutine(ShuShiLuoLei(DataTable.GetGameValue(32), attackUnit, 29));
                     break;
-                case "32":
+                case 32:
                     yield return StartCoroutine(TongShuaiSkill(attackUnit, 32));
                     break;
-                case "33":
+                case 33:
                     yield return StartCoroutine(TongShuaiSkill(attackUnit, 33));
                     break;
-                case "12":
+                case 12:
                     yield return StartCoroutine(ShenWuZhanYi(damageBonus, attackUnit, attackedUnit));
                     break;
                 default:
@@ -1228,7 +1234,7 @@ public class FightControlForStart : MonoBehaviour
         int sameTypeHeroNums = 0;
         for (int i = 0; i < fightCardDatas.Length; i++)
         {
-            if (fightCardDatas[i] != null && fightCardDatas[i].nowHp > 0 && fightCardDatas[i].cardType == 0 && DataTable.HeroData[fightCardDatas[i].cardId][5] == "65")
+            if (fightCardDatas[i] != null && fightCardDatas[i].nowHp > 0 && fightCardDatas[i].cardType == 0 && DataTable.Hero[fightCardDatas[i].cardId].MilitaryUnitTableId == 65)
             {
                 AttackToEffectShow(fightCardDatas[i], false, "65B");
                 sameTypeHeroNums++;
@@ -1252,9 +1258,9 @@ public class FightControlForStart : MonoBehaviour
         int damage = finalDamage;
         if (attackedUnit.cardType == 0)
         {
-            switch (DataTable.HeroData[attackedUnit.cardId][5])
+            switch (DataTable.Hero[attackedUnit.cardId].MilitaryUnitTableId)
             {
-                case "58":
+                case 58:
                     List<FightCardData> tieQiCardsList = attackedUnit.isPlayerCard ? tieQiCardsPy : tieQiCardsEm;
                     int survivalUnit = 0;
                     for (int i = 0; i < tieQiCardsList.Count; i++)
@@ -2539,10 +2545,10 @@ public class FightControlForStart : MonoBehaviour
             return;
         if (fightCardData.cardType == 0)
         {
-            switch (DataTable.HeroData[fightCardData.cardId][5])
+            switch (DataTable.Hero[fightCardData.cardId].MilitaryUnitTableId)
             {
                 //武将的陷阵兵种
-                case "5":
+                case 5:
                     if (fightCardData.nowHp / (float)fightCardData.fullHp <= (DataTable.GetGameValue(104) / 100f))
                     {
                         if (fightCardData.fightState.invincibleNums <= 0)
@@ -2553,7 +2559,7 @@ public class FightControlForStart : MonoBehaviour
                     }
                     break;
                 //敢死兵种添加死战
-                case "41":
+                case 41:
                     SiZhanStateCreate(fightCardData);
                     break;
                 default:
@@ -2574,20 +2580,22 @@ public class FightControlForStart : MonoBehaviour
         int finalDamage = damage;
         if (attackedUnit.cardType == 0)
         {
+            var attUnit = HeroCombatInfo.GetInfo(attackUnit.cardId);
+            var defUnit = HeroCombatInfo.GetInfo(attackedUnit.cardId);
             //判断闪避
-            int dodgeRateNums = int.Parse(DataTable.HeroData[attackedUnit.cardId][10]) + attackedUnit.fightState.fengShenTaiAddtion;
-            if (DataTable.HeroData[attackedUnit.cardId][5] == "3" || DataTable.HeroData[attackedUnit.cardId][5] == "10")   //飞甲，死士 自身血量每降低10 %，提高5%闪避
+            int dodgeRate = defUnit.DodgeRatio + attackedUnit.fightState.fengShenTaiAddtion;
+            if (DataTable.Hero[attackedUnit.cardId].MilitaryUnitTableId == 3 || DataTable.Hero[attackedUnit.cardId].MilitaryUnitTableId == 10)   //飞甲，死士 自身血量每降低10 %，提高5%闪避
             {
-                if (DataTable.HeroData[attackedUnit.cardId][5] == "3")
+                if (DataTable.Hero[attackedUnit.cardId].MilitaryUnitTableId == 3)
                 {
-                    dodgeRateNums = dodgeRateNums + (int)((1f - (float)attackedUnit.nowHp / attackedUnit.fullHp) / (DataTable.GetGameValue(106) / 100f) * DataTable.GetGameValue(107));
+                    dodgeRate = dodgeRate + (int)((1f - (float)attackedUnit.nowHp / attackedUnit.fullHp) / (DataTable.GetGameValue(106) / 100f) * DataTable.GetGameValue(107));
                 }
                 else
                 {
-                    dodgeRateNums = dodgeRateNums + (int)((1f - (float)attackedUnit.nowHp / attackedUnit.fullHp) / (DataTable.GetGameValue(108) / 100f) * DataTable.GetGameValue(109));
+                    dodgeRate = dodgeRate + (int)((1f - (float)attackedUnit.nowHp / attackedUnit.fullHp) / (DataTable.GetGameValue(108) / 100f) * DataTable.GetGameValue(109));
                 }
             }
-            if (TakeSpecialAttack(dodgeRateNums))
+            if (TakeSpecialAttack(dodgeRate))
             {
                 finalDamage = 0;
                 ShowSpellTextObj(attackedUnit.cardObj, DataTable.GetStringText(19), false);
@@ -2629,19 +2637,19 @@ public class FightControlForStart : MonoBehaviour
                             //免伤计算
                             if (attackedUnit.fightState.removeArmorNums <= 0)   //是否有卸甲
                             {
-                                int defPropNums = int.Parse(DataTable.HeroData[attackedUnit.cardId][11]) + attackedUnit.fightState.fenghuotaiAddtion;
+                                int defPropNums = defUnit.Armor + attackedUnit.fightState.fenghuotaiAddtion;
                                 //白马/重甲，自身血量每降低10%，提高5%免伤
-                                switch (DataTable.HeroData[attackedUnit.cardId][5])
+                                switch (DataTable.Hero[attackedUnit.cardId].MilitaryUnitTableId)
                                 {
-                                    case "2":
+                                    case 2:
                                         //重甲，自身血量每降低10%，提高5%免伤
                                         defPropNums = defPropNums + (int)((1f - (float)attackedUnit.nowHp / attackedUnit.fullHp) / (DataTable.GetGameValue(110) / 100f) * DataTable.GetGameValue(111));
                                         break;
-                                    case "11":
+                                    case 11:
                                         //白马，自身血量每降低10%，提高5%免伤
                                         defPropNums = defPropNums + (int)((1f - (float)attackedUnit.nowHp / attackedUnit.fullHp) / (DataTable.GetGameValue(112) / 100f) * DataTable.GetGameValue(113));
                                         break;
-                                    case "58":
+                                    case 58:
                                         //铁骑，单位越多免伤越高
                                         List<FightCardData> tieQiList = attackedUnit.isPlayerCard ? tieQiCardsPy : tieQiCardsEm;
                                         int nowTieQiNums = 0;
@@ -2663,12 +2671,12 @@ public class FightControlForStart : MonoBehaviour
                                 defPropNums = defPropNums > DataTable.GetGameValue(116) ? DataTable.GetGameValue(116) : defPropNums;
                                 finalDamage = (int)((100f - defPropNums) / 100f * finalDamage);
                                 //判断攻击者的伤害类型，获得被攻击者的物理或法术免伤百分比
-                                defPropNums = int.Parse(DataTable.HeroData[attackedUnit.cardId][attackUnit.cardDamageType == 0 ? 23 : 24]);
+                                defPropNums = GameCardInfo.GetInfo((GameCardType)attackUnit.cardType, attackUnit.cardId).DamageType == 0 ? defUnit.PhysicalResist : defUnit.MagicResist;
                                 finalDamage = (int)((100f - defPropNums) / 100f * finalDamage);
                             }
 
                             //藤甲免疫物理伤害
-                            if (DataTable.HeroData[attackedUnit.cardId][5] == "57" && attackUnit.cardDamageType == 0)
+                            if (DataTable.Hero[attackedUnit.cardId].MilitaryUnitTableId == 57 && attackUnit.cardDamageType == 0)
                             {
                                 finalDamage = 0;
                             }
@@ -2686,9 +2694,10 @@ public class FightControlForStart : MonoBehaviour
             }
             if (attackedUnit.cardType == 0)
             {
-                switch (DataTable.HeroData[attackedUnit.cardId][5])
+                var defInfo = GameCardInfo.GetInfo((GameCardType) attackedUnit.cardType, attackedUnit.cardId);
+                switch (DataTable.Hero[defInfo.Id].MilitaryUnitTableId)
                 {
-                    case "1":
+                    case 1:
                         //近战兵种受到暴击和会心加盾
                         if (attackedUnit.fightState.dizzyNums <= 0 && attackedUnit.fightState.imprisonedNums <= 0)
                         {
@@ -2702,7 +2711,7 @@ public class FightControlForStart : MonoBehaviour
                             }
                         }
                         break;
-                    case "12":
+                    case 12:
                         //神武战意技能
                         if (attackedUnit.fightState.willFightNums <= 0)
                         {
@@ -2715,7 +2724,7 @@ public class FightControlForStart : MonoBehaviour
                         }
                         ShowSpellTextObj(attackedUnit.cardObj, "12", false);
                         break;
-                    case "41":
+                    case 41:
                         //敢死死战技能
                         finalDamage = GanSiSiZhanAttack(finalDamage, attackedUnit);
                         break;
@@ -2724,9 +2733,9 @@ public class FightControlForStart : MonoBehaviour
                 }
                 if (attackUnit.fightState.dizzyNums <= 0 && attackUnit.fightState.imprisonedNums <= 0)
                 {
-                    switch (DataTable.HeroData[attackUnit.cardId][5])
+                    switch (DataTable.Hero[attackUnit.cardId].MilitaryUnitTableId)
                     {
-                        case "6":
+                        case 6:
                             //虎卫吸血
                             if (attackUnit.fightState.dizzyNums <= 0 && attackUnit.fightState.imprisonedNums <= 0)
                             {
@@ -3350,9 +3359,9 @@ public class FightControlForStart : MonoBehaviour
             fightCardData = FightForManagerForStart.instance.playerFightCardsDatas[i];
             if (i != 17 && fightCardData != null && fightCardData.cardType == 0 && fightCardData.nowHp > 0)
             {
-                switch (DataTable.HeroData[fightCardData.cardId][5])
+                switch (DataTable.Hero[fightCardData.cardId].MilitaryUnitTableId)
                 {
-                    case "4"://盾兵
+                    case 4://盾兵
                         if (fightCardData.fightState.withStandNums <= 0)
                         {
                             FightForManagerForStart.instance.CreateSateIcon(fightCardData.cardObj.transform.GetChild(7), StringNameStatic.StateIconPath_withStand, true);
@@ -3459,7 +3468,7 @@ public class FightControlForStart : MonoBehaviour
             if (item.Value.isActived)
             {
                 //Debug.Log("触发羁绊： " + item.Value.jiBanIndex);
-                ShowAllScreenFightEffect(FullScreenEffectName.JiBanEffect, item.Value.jiBanIndex);
+                ShowAllScreenFightEffect(FullScreenEffectName.JiBanEffect, item.Value.jiBanId);
                 yield return new WaitForSeconds(1f);
                 JiBanAddStateForCard(item.Value, true);
                 yield return new WaitForSeconds(1f);
@@ -3471,7 +3480,7 @@ public class FightControlForStart : MonoBehaviour
             if (item.Value.isActived)
             {
                 //Debug.Log("敌方触发羁绊： " + item.Value.jiBanIndex);
-                ShowAllScreenFightEffect(FullScreenEffectName.JiBanEffect, item.Value.jiBanIndex);
+                ShowAllScreenFightEffect(FullScreenEffectName.JiBanEffect, item.Value.jiBanId);
                 yield return new WaitForSeconds(1f);
                 JiBanAddStateForCard(item.Value, false);
                 yield return new WaitForSeconds(1f);
@@ -3485,7 +3494,7 @@ public class FightControlForStart : MonoBehaviour
         FightCardData fightCardData;
         FightCardData[] cardDatas = isPlayer ? FightForManagerForStart.instance.playerFightCardsDatas : FightForManagerForStart.instance.enemyFightCardsDatas;
 
-        switch ((JiBanSkillName)jiBanActivedClass.jiBanIndex)
+        switch ((JiBanSkillName)jiBanActivedClass.jiBanId)
         {
             case JiBanSkillName.TaoYuanJieYi:
                 //30%概率分别为羁绊武将增加1层【神助】
@@ -3496,7 +3505,7 @@ public class FightControlForStart : MonoBehaviour
                         fightCardData = jiBanActivedClass.cardTypeLists[i].cardLists[j];
                         if (fightCardData != null && fightCardData.nowHp > 0)
                         {
-                            AttackToEffectShow(fightCardData, false, "JB" + jiBanActivedClass.jiBanIndex);
+                            AttackToEffectShow(fightCardData, false, "JB" + jiBanActivedClass.jiBanId);
                             if (TakeSpecialAttack(DataTable.GetGameValue(134)))
                             {
                                 if (fightCardData.fightState.shenzhuNums <= 0)
@@ -3518,7 +3527,7 @@ public class FightControlForStart : MonoBehaviour
                         fightCardData = jiBanActivedClass.cardTypeLists[i].cardLists[j];
                         if (fightCardData != null && fightCardData.nowHp > 0)
                         {
-                            AttackToEffectShow(fightCardData, false, "JB" + jiBanActivedClass.jiBanIndex);
+                            AttackToEffectShow(fightCardData, false, "JB" + jiBanActivedClass.jiBanId);
                             if (TakeSpecialAttack(DataTable.GetGameValue(135)))
                             {
                                 if (fightCardData.fightState.neizhuNums <= 0)
@@ -3538,9 +3547,10 @@ public class FightControlForStart : MonoBehaviour
                     fightCardData = cardDatas[i];
                     if (fightCardData != null && fightCardData.cardType == 0 && fightCardData.nowHp > 0)
                     {
-                        if (DataTable.ClassData[int.Parse(DataTable.HeroData[fightCardData.cardId][5])][5] == "11")
+                        var armed = MilitaryInfo.GetInfo(fightCardData.cardId).ArmedType;
+                        if (armed == 11)
                         {
-                            AttackToEffectShow(fightCardData, false, "JB" + jiBanActivedClass.jiBanIndex);
+                            AttackToEffectShow(fightCardData, false, "JB" + jiBanActivedClass.jiBanId);
                             if (TakeSpecialAttack(DataTable.GetGameValue(136)))
                             {
                                 if (fightCardData.fightState.neizhuNums <= 0)
@@ -3562,7 +3572,7 @@ public class FightControlForStart : MonoBehaviour
                         fightCardData = jiBanActivedClass.cardTypeLists[i].cardLists[j];
                         if (fightCardData != null && fightCardData.nowHp > 0)
                         {
-                            AttackToEffectShow(fightCardData, false, "JB" + jiBanActivedClass.jiBanIndex);
+                            AttackToEffectShow(fightCardData, false, "JB" + jiBanActivedClass.jiBanId);
                             if (TakeSpecialAttack(DataTable.GetGameValue(137)))
                             {
                                 if (fightCardData.fightState.withStandNums <= 0)
@@ -3584,7 +3594,7 @@ public class FightControlForStart : MonoBehaviour
                         fightCardData = jiBanActivedClass.cardTypeLists[i].cardLists[j];
                         if (fightCardData != null && fightCardData.nowHp > 0)
                         {
-                            AttackToEffectShow(fightCardData, false, "JB" + jiBanActivedClass.jiBanIndex);
+                            AttackToEffectShow(fightCardData, false, "JB" + jiBanActivedClass.jiBanId);
                             if (TakeSpecialAttack(DataTable.GetGameValue(138)))
                             {
                                 if (fightCardData.fightState.neizhuNums <= 0)
@@ -3604,9 +3614,10 @@ public class FightControlForStart : MonoBehaviour
                     fightCardData = cardDatas[i];
                     if (fightCardData != null && fightCardData.cardType == 0 && fightCardData.nowHp > 0)
                     {
-                        if (DataTable.ClassData[int.Parse(DataTable.HeroData[fightCardData.cardId][5])][5] == "12")
+                        var armed = MilitaryInfo.GetInfo(fightCardData.cardId).ArmedType;
+                        if (armed == 12)
                         {
-                            AttackToEffectShow(fightCardData, false, "JB" + jiBanActivedClass.jiBanIndex);
+                            AttackToEffectShow(fightCardData, false, "JB" + jiBanActivedClass.jiBanId);
                             if (TakeSpecialAttack(DataTable.GetGameValue(139)))
                             {
                                 if (fightCardData.fightState.neizhuNums <= 0)
@@ -3626,9 +3637,10 @@ public class FightControlForStart : MonoBehaviour
                     fightCardData = cardDatas[i];
                     if (fightCardData != null && fightCardData.cardType == 0 && fightCardData.nowHp > 0)
                     {
-                        if (DataTable.ClassData[int.Parse(DataTable.HeroData[fightCardData.cardId][5])][6] == "3")
+                        var armed = MilitaryInfo.GetInfo(fightCardData.cardId).ArmedType;
+                        if (armed == 3)
                         {
-                            AttackToEffectShow(fightCardData, false, "JB" + jiBanActivedClass.jiBanIndex);
+                            AttackToEffectShow(fightCardData, false, "JB" + jiBanActivedClass.jiBanId);
                             if (TakeSpecialAttack(DataTable.GetGameValue(140)))
                             {
                                 if (fightCardData.fightState.neizhuNums <= 0)
@@ -3648,9 +3660,9 @@ public class FightControlForStart : MonoBehaviour
                     fightCardData = cardDatas[i];
                     if (fightCardData != null && fightCardData.cardType == 0 && fightCardData.nowHp > 0)
                     {
-                        if (DataTable.ClassData[int.Parse(DataTable.HeroData[fightCardData.cardId][5])][5] == "8")
+                        if (DataTable.Hero[fightCardData.cardId].MilitaryUnitTableId == 8)
                         {
-                            AttackToEffectShow(fightCardData, false, "JB" + jiBanActivedClass.jiBanIndex);
+                            AttackToEffectShow(fightCardData, false, "JB" + jiBanActivedClass.jiBanId);
                             if (TakeSpecialAttack(DataTable.GetGameValue(141)))
                             {
                                 if (fightCardData.fightState.neizhuNums <= 0)
@@ -3672,7 +3684,7 @@ public class FightControlForStart : MonoBehaviour
                         fightCardData = jiBanActivedClass.cardTypeLists[i].cardLists[j];
                         if (fightCardData != null && fightCardData.nowHp > 0)
                         {
-                            AttackToEffectShow(fightCardData, false, "JB" + jiBanActivedClass.jiBanIndex);
+                            AttackToEffectShow(fightCardData, false, "JB" + jiBanActivedClass.jiBanId);
                             if (TakeSpecialAttack(DataTable.GetGameValue(142)))
                             {
                                 if (fightCardData.fightState.neizhuNums <= 0)
@@ -3694,7 +3706,7 @@ public class FightControlForStart : MonoBehaviour
                         fightCardData = jiBanActivedClass.cardTypeLists[i].cardLists[j];
                         if (fightCardData != null && fightCardData.nowHp > 0)
                         {
-                            AttackToEffectShow(fightCardData, false, "JB" + jiBanActivedClass.jiBanIndex);
+                            AttackToEffectShow(fightCardData, false, "JB" + jiBanActivedClass.jiBanId);
                             if (TakeSpecialAttack(DataTable.GetGameValue(143)))
                             {
                                 if (fightCardData.fightState.withStandNums <= 0)
@@ -3716,7 +3728,7 @@ public class FightControlForStart : MonoBehaviour
                         fightCardData = jiBanActivedClass.cardTypeLists[i].cardLists[j];
                         if (fightCardData != null && fightCardData.nowHp > 0)
                         {
-                            AttackToEffectShow(fightCardData, false, "JB" + jiBanActivedClass.jiBanIndex);
+                            AttackToEffectShow(fightCardData, false, "JB" + jiBanActivedClass.jiBanId);
                             if (TakeSpecialAttack(DataTable.GetGameValue(144)))
                             {
                                 if (fightCardData.fightState.shenzhuNums <= 0)
@@ -3738,7 +3750,7 @@ public class FightControlForStart : MonoBehaviour
                         fightCardData = jiBanActivedClass.cardTypeLists[i].cardLists[j];
                         if (fightCardData != null && fightCardData.nowHp > 0)
                         {
-                            AttackToEffectShow(fightCardData, false, "JB" + jiBanActivedClass.jiBanIndex);
+                            AttackToEffectShow(fightCardData, false, "JB" + jiBanActivedClass.jiBanId);
                             if (TakeSpecialAttack(DataTable.GetGameValue(145)))
                             {
                                 if (fightCardData.fightState.shenzhuNums <= 0)
@@ -3779,8 +3791,8 @@ public class FightControlForStart : MonoBehaviour
                     nowRounds = UpdateOneCardBeforeRound(FightForManagerForStart.instance.playerFightCardsDatas[i]);
                     //是否有统帅
                     if (!isHadTongShuai && FightForManagerForStart.instance.playerFightCardsDatas[i].nowHp > 0 &&
-                        (DataTable.HeroData[FightForManagerForStart.instance.playerFightCardsDatas[i].cardId][5] == "32" ||
-                        DataTable.HeroData[FightForManagerForStart.instance.playerFightCardsDatas[i].cardId][5] == "33"))
+                        (DataTable.Hero[FightForManagerForStart.instance.playerFightCardsDatas[i].cardId].MilitaryUnitTableId == 32 ||
+                        DataTable.Hero[FightForManagerForStart.instance.playerFightCardsDatas[i].cardId].MilitaryUnitTableId == 33))
                     {
                         isHadTongShuai = true;
                     }
@@ -3865,8 +3877,8 @@ public class FightControlForStart : MonoBehaviour
                     nowRounds = UpdateOneCardBeforeRound(FightForManagerForStart.instance.enemyFightCardsDatas[i]);
                     //是否有统帅
                     if (!isHadTongShuai && FightForManagerForStart.instance.enemyFightCardsDatas[i].nowHp > 0 &&
-                        (DataTable.HeroData[FightForManagerForStart.instance.enemyFightCardsDatas[i].cardId][5] == "32" ||
-                        DataTable.HeroData[FightForManagerForStart.instance.enemyFightCardsDatas[i].cardId][5] == "33"))
+                        (DataTable.Hero[FightForManagerForStart.instance.enemyFightCardsDatas[i].cardId].MilitaryUnitTableId == 32 ||
+                        DataTable.Hero[FightForManagerForStart.instance.enemyFightCardsDatas[i].cardId].MilitaryUnitTableId == 33))
                     {
                         isHadTongShuai = true;
                     }
@@ -4006,9 +4018,9 @@ public class FightControlForStart : MonoBehaviour
                         //羁绊消除
                         FightForManagerForStart.instance.TryToActivatedBond(FightForManagerForStart.instance.playerFightCardsDatas[i], false);
 
-                        switch (DataTable.HeroData[FightForManagerForStart.instance.playerFightCardsDatas[i].cardId][5])
+                        switch (DataTable.Hero[FightForManagerForStart.instance.playerFightCardsDatas[i].cardId].MilitaryUnitTableId)
                         {
-                            case "58": //铁骑阵亡
+                            case 58: //铁骑阵亡
                                 UpdateTieQiStateIconShow(FightForManagerForStart.instance.playerFightCardsDatas[i], false);
                                 break;
                             default:
@@ -4043,9 +4055,9 @@ public class FightControlForStart : MonoBehaviour
                         //羁绊消除
                         FightForManagerForStart.instance.TryToActivatedBond(FightForManagerForStart.instance.enemyFightCardsDatas[i], false);
 
-                        switch (DataTable.HeroData[FightForManagerForStart.instance.enemyFightCardsDatas[i].cardId][5])
+                        switch (DataTable.Hero[FightForManagerForStart.instance.enemyFightCardsDatas[i].cardId].MilitaryUnitTableId)
                         {
-                            case "58": //铁骑阵亡
+                            case 58: //铁骑阵亡
                                 UpdateTieQiStateIconShow(FightForManagerForStart.instance.enemyFightCardsDatas[i], false);
                                 break;
 
@@ -4318,10 +4330,10 @@ public class FightControlForStart : MonoBehaviour
     {
         if (attackUnit.fightState.imprisonedNums <= 0)//攻击者没有禁锢状态
         {
-            switch (DataTable.HeroData[attackUnit.cardId][5])
+            switch (DataTable.Hero[attackUnit.cardId].MilitaryUnitTableId)
             {
                 //刺客
-                case "25":
+                case 25:
                     int chooseIndex = CiKeOpponentChoose(attackUnit);
                     if (chooseIndex != -1)
                         return chooseIndex;
@@ -4464,8 +4476,8 @@ public class FightControlForStart : MonoBehaviour
         }
         else
         {
-            IReadOnlyList<string> heroData = DataTable.HeroData[attackUnit.cardId];
-            int huixinPropNums = int.Parse(heroData[14]) + attackUnit.fightState.langyataiAddtion;
+            var combat = HeroCombatInfo.GetInfo(attackUnit.cardId);
+            int huixinPropNums = combat.RouseRatio + attackUnit.fightState.langyataiAddtion;
             //是否有神助
             if (OffsetShenZhuState(attackUnit))
                 huixinPropNums = 100;
@@ -4478,7 +4490,7 @@ public class FightControlForStart : MonoBehaviour
             }
             else
             {
-                int criPropNums = int.Parse(heroData[12]) + attackUnit.fightState.pilitaiAddtion;
+                int criPropNums = combat.CriticalRatio + attackUnit.fightState.pilitaiAddtion;
                 //是否有内助
                 if (OffsetNeiZhuState(attackUnit))
                     criPropNums = 100;

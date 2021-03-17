@@ -10,34 +10,27 @@ public class CardManager
     public static void ResetJiBan(Dictionary<int, JiBanActivedClass> jiBanMap)
     {
         jiBanMap.Clear();
-        foreach (var map in DataTable.JiBan)
+        foreach (var jiBan in DataTable.JiBan.Values)
         {
-            var enableValue = int.Parse(map.Value[2]);
-            if (enableValue == 0) continue;
+            if (jiBan.IsOpen == 0) continue;
             JiBanActivedClass jiBanActivedClass = new JiBanActivedClass();
-            jiBanActivedClass.jiBanIndex = map.Key;
+            jiBanActivedClass.jiBanId = jiBan.Id;
             jiBanActivedClass.isActived = false;
             jiBanActivedClass.cardTypeLists = new List<JiBanCardTypeClass>();
-            jiBanActivedClass.isHadBossId = !string.IsNullOrWhiteSpace(map.Value[5]);
-            var bossIds = new List<int[]>();
-            if(jiBanActivedClass.isHadBossId) bossIds = map.Value[5].Split(';').Select(s=>s.TableStringToInts().ToArray()).ToList();
+            jiBanActivedClass.isHadBossId = jiBan.BossCards.Length > 0;
 
-            var cards = map.Value[3].Split(';').Where(v=>!string.IsNullOrWhiteSpace(v))
-                .Select(s=>s.TableStringToInts().ToArray())
-                .ToArray();
-
-            for (int i = 0; i < cards.Length; i++)
+            for (int i = 0; i < jiBan.Cards.Length; i++)
             {
-                var card = cards[i];
+                var card = jiBan.Cards[i];
                 jiBanActivedClass.cardTypeLists.Add(new JiBanCardTypeClass
                 {
-                    cardId = card[1],
-                    cardType = card[0],
+                    cardId = card.CardId,
+                    cardType = card.CardType,
                     cardLists = new List<FightCardData>(),
-                    bossId = bossIds.Count == 0 ? 0 : bossIds[i][1]
+                    bossId = jiBan.BossCards.Length == 0 ? 0 : jiBan.BossCards[i].CardId
                 });
             }
-            jiBanMap.Add(map.Key, jiBanActivedClass);
+            jiBanMap.Add(jiBan.Id, jiBanActivedClass);
         }
     }
 }

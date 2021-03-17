@@ -34,10 +34,8 @@ public class TimeSystemControl : MonoBehaviour
 
     public static string NetworkTimestampStr = "NetworkTimestamp";
 
-    //private string fBoxOpenNeedTimes = "fBONT"; //游戏内的计时器记录免费宝箱开启时间
     private string fBoxOpenNeedTimes1 = "fBONT1";
     private string fBoxOpenNeedTimes2 = "fBONT2";
-    //private string freeBoxOpenTime = "fBOT"; //记录免费宝箱网络开启时间
     private string freeBoxOpenTime1 = "fBOT1";
     private string freeBoxOpenTime2 = "fBOT2";
 
@@ -135,7 +133,7 @@ public class TimeSystemControl : MonoBehaviour
         //tiLiHfTimeLong = 0;
         PlayerPrefs.SetInt(tiLiHuiFuNeedTimes, 0);
         PlayerPrefs.SetString(tiLiHuiFuTime, "0");
-        maxStamina = int.Parse(DataTable.AssetData[2][2]);//startValue
+        maxStamina = DataTable.ResourceConfig[2].NewPlayerValue;//startValue
         tiLiHfTimeLong = long.Parse(PlayerPrefs.GetString(tiLiHuiFuTime));
 
         PlayerPrefs.SetInt(openCKTime0_str, 0);
@@ -161,7 +159,7 @@ public class TimeSystemControl : MonoBehaviour
 
         //openJinNangTimeLong = long.Parse(PlayerPrefs.GetString(jinNangOpenTime));
 
-        maxStamina = int.Parse(DataTable.AssetData[2][2]);//startValue
+        maxStamina = DataTable.ResourceConfig[2].NewPlayerValue;//startValue
         long.TryParse(PlayerPrefs.GetString(tiLiHuiFuTime), out tiLiHfTimeLong);
     }
 
@@ -360,7 +358,7 @@ public class TimeSystemControl : MonoBehaviour
         else
         {
             secondsRemaining = totalTimesNums % oneTiLiHfSeconds;
-            int nowStaminaNum = (int.Parse(DataTable.AssetData[2][2]) * oneTiLiHfSeconds - totalTimesNums) / oneTiLiHfSeconds;
+            int nowStaminaNum = (DataTable.ResourceConfig[2].NewPlayerValue * oneTiLiHfSeconds - totalTimesNums) / oneTiLiHfSeconds;
             PlayerDataForGame.instance.SetStamina(nowStaminaNum);
         }
         if (isOpenMainScene)

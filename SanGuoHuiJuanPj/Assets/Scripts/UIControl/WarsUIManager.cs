@@ -170,7 +170,7 @@ public class WarsUIManager : MonoBehaviour
         currentEvent = EventTypes.Generic;
         //尝试展示指引
         ShowOrHideGuideObj(0, true);
-        InitShowParentGuanQia(DataTable.WarData[PlayerDataForGame.instance.selectedWarId][3]);
+        InitShowParentGuanQia(new int[] {DataTable.War[PlayerDataForGame.instance.selectedWarId].BeginPoint});
     }
 
     int selectParentIndex = -1;
@@ -193,47 +193,47 @@ public class WarsUIManager : MonoBehaviour
         }
 
         //最后一关
-        string str = DataTable.PointData[parentGuanQiaId][1];
-        if (nowGuanQiaIndex >= int.Parse(DataTable.WarData[PlayerDataForGame.instance.selectedWarId][4]))
+        var nexPoints = DataTable.Checkpoint[parentGuanQiaId].Next;
+        if (nowGuanQiaIndex >= DataTable.War[PlayerDataForGame.instance.selectedWarId].CheckPoints)
         {
-            str = "";
+            nexPoints = new int[0];
         }
 
         List<Transform> childsTranform = new List<Transform>();
 
-        string[] arrs = str.Split(',');
-        for (int i = 0; i < arrs.Length; i++)
+        for (int i = 0; i < nexPoints.Length; i++)
         {
-            if (arrs[i] != "")
+            int guanQiaId = nexPoints[i];
+            var checkPoint = DataTable.Checkpoint[guanQiaId];
+            GameObject obj = Instantiate(guanQiaPreObj, point0Tran);
+            obj.transform.localScale = new Vector3(0.8f, 0.8f, 1);
+            var eventType = DataTable.Checkpoint[guanQiaId].EventType;
+            if (IsBattle(eventType))
             {
-                int guanQiaId = int.Parse(arrs[i]);
-                int eventId = int.Parse(DataTable.PointData[guanQiaId][4]);
-                GameObject obj = Instantiate(guanQiaPreObj, point0Tran);
-                obj.transform.localScale = new Vector3(0.8f, 0.8f, 1);
-                var eventType = int.Parse(DataTable.PointData[guanQiaId][3]);
-                if (IsBattle(eventType))
+                obj.transform.GetChild(1).GetChild(0).GetComponent<Text>().text = checkPoint.Title;
+                obj.transform.GetChild(1).GetChild(0).gameObject.SetActive(true);
+                if (eventType != 7)
                 {
-                    obj.transform.GetChild(1).GetChild(0).GetComponent<Text>().text = DataTable.PointData[guanQiaId][2];
-                    obj.transform.GetChild(1).GetChild(0).gameObject.SetActive(true);
-                    if (eventType != 7)
-                    {
-                        obj.transform.GetChild(1).GetChild(1).GetComponent<Image>().sprite = GameResources.GuanQiaEventImg[(eventType == 1 ? 0 : 1)];
-                        obj.transform.GetChild(1).GetChild(1).GetChild(0).GetComponent<Text>().text = DataTable.PointData[guanQiaId][9];
-                        obj.transform.GetChild(1).GetChild(1).GetChild(0).GetComponent<Text>().fontSize = (DataTable.PointData[guanQiaId][9].Length > 2 ? 45 : 50);
-                        obj.transform.GetChild(1).GetChild(1).gameObject.SetActive(true);
-                    }
+                    obj.transform.GetChild(1).GetChild(1).GetComponent<Image>().sprite =
+                        GameResources.GuanQiaEventImg[(eventType == 1 ? 0 : 1)];
+                    obj.transform.GetChild(1).GetChild(1).GetChild(0).GetComponent<Text>().text = checkPoint.FlagTitle;
+                    obj.transform.GetChild(1).GetChild(1).GetChild(0).GetComponent<Text>().fontSize = checkPoint.FlagTitle.Length > 2 ? 45 : 50;
+                    obj.transform.GetChild(1).GetChild(1).gameObject.SetActive(true);
                 }
-                obj.transform.GetChild(1).GetComponent<Image>().sprite = GameResources.GuanQiaEventImg[int.Parse(DataTable.PointData[guanQiaId][6])];
-
-                childsTranform.Add(obj.transform);
-                //暂时不能选择后面的子关卡
-                //obj.transform.GetChild(1).GetComponent<Button>().onClick.AddListener(delegate ()
-                //{
-                //    startBtn.SetActive(false);
-                //    SelectOneGuanQia(obj);
-                //    UpdateLevelInfoText(guanQiaId);
-                //});
             }
+
+            obj.transform.GetChild(1).GetComponent<Image>().sprite =
+                GameResources.GuanQiaEventImg[checkPoint.ImageId];
+
+            childsTranform.Add(obj.transform);
+            //暂时不能选择后面的子关卡
+            //obj.transform.GetChild(1).GetComponent<Button>().onClick.AddListener(delegate ()
+            //{
+            //    startBtn.SetActive(false);
+            //    SelectOneGuanQia(obj);
+            //    UpdateLevelInfoText(guanQiaId);
+            //});
+
         }
 
         if (selectParentIndex != parentGuanQiaId)
@@ -272,7 +272,7 @@ public class WarsUIManager : MonoBehaviour
         levelIntroText.text = "";
         levelIntroText.color = new Color(levelIntroText.color.r, levelIntroText.color.g, levelIntroText.color.b, 0);
         levelIntroText.DOFade(1, 3f);
-        levelIntroText.DOText(("\u2000\u2000\u2000\u2000" + DataTable.PointData[guanQiaId][5]), 3f).SetEase(Ease.Linear).SetAutoKill(false);
+        levelIntroText.DOText(("\u2000\u2000\u2000\u2000" + DataTable.Checkpoint[guanQiaId].Intro), 3f).SetEase(Ease.Linear).SetAutoKill(false);
     }
 
     //战役结束
@@ -332,7 +332,6 @@ public class WarsUIManager : MonoBehaviour
             PlayerDataForGame.instance.UpdateWarUnlockProgress(passedGuanQiaNums);
         }
 
-        int guanQiaSum = int.Parse(DataTable.WarData[PlayerDataForGame.instance.selectedWarId][4]);
         if (treasureChestNums > 0) rewardMap.Trade(2, treasureChestNums); //index2是宝箱图
 
         //gameOverWindow.Show(rewardMap);
@@ -344,62 +343,53 @@ public class WarsUIManager : MonoBehaviour
     }
 
     //初始化父级关卡
-    private void InitShowParentGuanQia(string str)
+    private void InitShowParentGuanQia(int[] checkPoints)
     {
         passedGuanQiaNums++;
-        if (passedGuanQiaNums >= int.Parse(DataTable.WarData[PlayerDataForGame.instance.selectedWarId][4]))
-        {//最后一关
-            str = "";
-        }
-        if (str == "")    //通过所有关卡
+        if (passedGuanQiaNums >= DataTable.War[PlayerDataForGame.instance.selectedWarId].CheckPoints)
         {
-            BattleOverShow(true);
+            BattleOverShow(true);//通过所有关卡
+            return;
         }
-        else
-        {
-            selectParentIndex = -1;
 
-            for (int i = 0; i < point1Tran.childCount; i++)
+        selectParentIndex = -1;
+
+        for (int i = 0; i < point1Tran.childCount; i++)
+        {
+            Destroy(point1Tran.GetChild(i).gameObject);
+        }
+        for (int i = 0; i < checkPoints.Length; i++)
+        {
+            var checkPoint = DataTable.Checkpoint[checkPoints[i]];
+            GameObject obj = Instantiate(guanQiaPreObj, point1Tran);
+            obj.transform.GetChild(1).GetComponent<Image>().sprite =
+                GameResources.GuanQiaEventImg[checkPoint.ImageId];
+            if (IsBattle(checkPoint.EventType)) //战斗关卡城池名
             {
-                Destroy(point1Tran.GetChild(i).gameObject);
-            }
-            string[] arrs = str.Split(',');
-            for (int i = 0; i < arrs.Length; i++)
-            {
-                if (arrs[i] != "")
+                obj.transform.GetChild(1).GetChild(0).GetComponent<Text>().text = checkPoint.Title;
+                obj.transform.GetChild(1).GetChild(0).gameObject.SetActive(true);
+                if (checkPoint.EventType != 7)
                 {
-                    int guanQiaId = int.Parse(arrs[i]);
-                    int eventType = int.Parse(DataTable.PointData[guanQiaId][3]);
-                    int eventId = int.Parse(DataTable.PointData[guanQiaId][4]);
-                    GameObject obj = Instantiate(guanQiaPreObj, point1Tran);
-                    obj.transform.GetChild(1).GetComponent<Image>().sprite =
-                        GameResources.GuanQiaEventImg[
-                            int.Parse(DataTable.PointData[guanQiaId][6])];
-                    if (IsBattle(eventType))  //战斗关卡城池名
-                    {
-                        obj.transform.GetChild(1).GetChild(0).GetComponent<Text>().text = DataTable.PointData[guanQiaId][2];
-                        obj.transform.GetChild(1).GetChild(0).gameObject.SetActive(true);
-                        if (eventType != 7)
-                        {
-                            obj.transform.GetChild(1).GetChild(1).GetComponent<Image>().sprite = GameResources.GuanQiaEventImg[(eventType == 1 ? 0 : 1)];
-                            obj.transform.GetChild(1).GetChild(1).GetChild(0).GetComponent<Text>().text = DataTable.PointData[guanQiaId][9];
-                            obj.transform.GetChild(1).GetChild(1).GetChild(0).GetComponent<Text>().fontSize = (DataTable.PointData[guanQiaId][9].Length > 2 ? 45 : 50);
-                            obj.transform.GetChild(1).GetChild(1).gameObject.SetActive(true);
-                        }
-                    }
-                    int randArtImg = Random.Range(0, 25);   //随机艺术图
-                    obj.transform.GetChild(1).GetComponent<Button>().onClick.AddListener(delegate ()
-                    {
-                        startBtn.GetComponentInChildren<Text>().text = IsBattle(eventType) ? DataTable.GetStringText(53) : DataTable.GetStringText(54);
-                        startBtn.SetActive(true);
-                        SelectOneGuanQia(obj);
-                        ChooseParentGuanQia(guanQiaId, randArtImg, obj.transform);
-                        InterToDiffGuanQia(IsBattle(eventType) ? 1 : eventType, eventId, guanQiaId);
-                    });
+                    obj.transform.GetChild(1).GetChild(1).GetComponent<Image>().sprite =
+                        GameResources.GuanQiaEventImg[(checkPoint.EventType == 1 ? 0 : 1)];
+                    obj.transform.GetChild(1).GetChild(1).GetChild(0).GetComponent<Text>().text = checkPoint.FlagTitle;
+                    obj.transform.GetChild(1).GetChild(1).GetChild(0).GetComponent<Text>().fontSize = checkPoint.FlagTitle.Length > 2 ? 45 : 50;
+                    obj.transform.GetChild(1).GetChild(1).gameObject.SetActive(true);
                 }
             }
-            StartCoroutine(LiteInitChooseFirst(0));
+
+            int randArtImg = Random.Range(0, 25); //随机艺术图
+            obj.transform.GetChild(1).GetComponent<Button>().onClick.AddListener(delegate()
+            {
+                startBtn.GetComponentInChildren<Text>().text =
+                    IsBattle(checkPoint.EventType) ? DataTable.GetStringText(53) : DataTable.GetStringText(54);
+                startBtn.SetActive(true);
+                SelectOneGuanQia(obj);
+                ChooseParentGuanQia(checkPoint.Id, randArtImg, obj.transform);
+                InterToDiffGuanQia(IsBattle(checkPoint.EventType) ? 1 : checkPoint.EventType, checkPoint.BattleEventTableId, checkPoint.Id);
+            });
         }
+        StartCoroutine(LiteInitChooseFirst(0));
     }
 
     //判断是否是战斗关卡
@@ -455,15 +445,6 @@ public class WarsUIManager : MonoBehaviour
                     isEnteredLevel = true;
                 });
                 break;
-            //故事关卡
-            case 2:
-                startBtn.GetComponent<Button>().onClick.AddListener(delegate ()
-                {
-                    if (isPointMoveNow || isEnteredLevel) return;
-                    GoToTheStory();
-                    isEnteredLevel = true;
-                });
-                break;
             //答题关卡
             case 3:
                 startBtn.GetComponent<Button>().onClick.AddListener(delegate ()
@@ -502,7 +483,7 @@ public class WarsUIManager : MonoBehaviour
                 break;
             //其他事件
             default:
-                break;
+                throw new ArgumentOutOfRangeException($"event type [{eventType}]");
         }
     }
 
@@ -514,9 +495,9 @@ public class WarsUIManager : MonoBehaviour
     {
         currentEvent = EventTypes.Battle;
         PlayAudioClip(21);
-
-        fightBackImage.sprite = GameResources.BattleBG[int.Parse(DataTable.PointData[guanQiaId][7])];
-        int bgmIndex = int.Parse(DataTable.PointData[guanQiaId][8]);
+        var checkPoint = DataTable.Checkpoint[guanQiaId];
+        fightBackImage.sprite = GameResources.BattleBG[checkPoint.BattleBG];
+        int bgmIndex = checkPoint.BattleBGM;
         AudioController1.instance.isNeedPlayLongMusic = true;
         AudioController1.instance.ChangeAudioClip(audioClipsFightBack[bgmIndex], audioVolumeFightBack[bgmIndex]);
         AudioController1.instance.PlayLongBackMusInit();
@@ -527,23 +508,8 @@ public class WarsUIManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 进入故事
-    /// </summary>
-    /// <param name="storyId"></param>
-    private void GoToTheStory()
-    {
-        currentEvent = EventTypes.Story;
-        PlayAudioClip(19);
-
-        InitializeDianGu();
-
-        eventsWindows[1].SetActive(true);
-    }
-
-    /// <summary>
     /// 进入答题
     /// </summary>
-    /// <param name="testId"></param>
     private void GoToTheTest()
     {
         currentEvent = EventTypes.Quest;
@@ -680,7 +646,7 @@ public class WarsUIManager : MonoBehaviour
     //展示关卡前进的云朵动画
     private void ShowClouds()
     {
-        if (passedGuanQiaNums + 1 < int.Parse(DataTable.WarData[PlayerDataForGame.instance.selectedWarId][4]))
+        if (passedGuanQiaNums + 1 < DataTable.War[PlayerDataForGame.instance.selectedWarId].CheckPoints)
         {
             if (warCityCloudsObj.activeInHierarchy)
             {
@@ -711,7 +677,7 @@ public class WarsUIManager : MonoBehaviour
         PlayAudioClip(13);
 
         UpdateBattleSchedule();
-        InitShowParentGuanQia(DataTable.PointData[indexLastGuanQiaId][1]);
+        InitShowParentGuanQia(DataTable.Checkpoint[indexLastGuanQiaId].Next);
         TongGuanCityPointShow();
         //关闭所有战斗事件的物件
         for (int i = 0; i < eventsWindows.Length; i++)
@@ -744,15 +710,6 @@ public class WarsUIManager : MonoBehaviour
         }
     }
 
-    //根据权重得到随机id
-    private int GetRandomBaseOnWeight(IReadOnlyDictionary<int,IReadOnlyList<string>> data, int weightIndex)
-    {
-        return data.Select(map => new WeightElement
-        {
-            Id = map.Key,
-            Weight = int.Parse(map.Value[weightIndex])
-        }).Pick().Id;
-    }
     private class WeightElement : IWeightElement
     {
         public int Id { get; set; }
@@ -823,82 +780,28 @@ public class WarsUIManager : MonoBehaviour
             for (int i = 0; i < 3; i++)
             {
                 int btnIndex = i;
-                int indexId = GetRandomBaseOnWeight(DataTable.Encounter, 1);
-                var cardType = (GameCardType)int.Parse(DataTable.Encounter[indexId][2]);
-                string cardRarity = DataTable.Encounter[indexId][3];
-                int cardLevel = int.Parse(DataTable.Encounter[indexId][4]);
-                int cardId = 0;
-                switch (cardType)
-                {
-                    case GameCardType.Hero:
-                        cardId = RandomPickFromRareClass(DataTable.Hero, cardRarity);
-                        woodsList.GetChild(i).GetChild(1).GetComponent<Image>().sprite = re.HeroImg[cardId];
-                        ShowNameTextRules(woodsList.GetChild(i).GetChild(3).GetComponent<Text>(), DataTable.Hero[cardId][1]);
-                        //名字颜色
-                        woodsList.GetChild(i).GetChild(3).GetComponent<Text>().color = NameColorChoose(DataTable.Hero[cardId][3]);
-                        woodsList.GetChild(i).GetChild(5).GetComponentInChildren<Text>().text = DataTable.Class[int.Parse(DataTable.Hero[cardId][5])][3];
-                        //兵种框
-                        woodsList.GetChild(i).GetChild(5).GetComponent<Image>().sprite = re.ClassImg[0];
-                        FrameChoose(int.Parse(DataTable.Hero[cardId][3]), woodsList.GetChild(i).GetChild(6).GetComponent<Image>());
+                int pick = DataTable.Mercenary.Values.Select(m => new WeightElement {Id = m.Id, Weight = m.Weight})
+                    .Pick().Id;
+                var mercenary = DataTable.Mercenary[pick];
+                var cardType = (GameCardType)mercenary.Produce.CardType;
+                var cardRarity = mercenary.Produce.Rarity;
+                var cardLevel = mercenary.Produce.Star;
 
-                        woodsList.GetChild(i).GetComponent<Button>().onClick.RemoveAllListeners();
-                        woodsList.GetChild(i).GetComponent<Button>().onClick.AddListener(delegate ()
-                        {
-                            OnClickToShowShopInfo(btnIndex, DataTable.Class[int.Parse(DataTable.Hero[cardId][5])][4]);
-                        });
-                        break;
-                    case GameCardType.Soldier:
-                        cardId = RandomPickFromRareClass(DataTable.Soldier, cardRarity);
-                        woodsList.GetChild(i).GetChild(1).GetComponent<Image>().sprite = re.FuZhuImg[int.Parse(DataTable.Soldier[cardId][13])];
-                        ShowNameTextRules(woodsList.GetChild(i).GetChild(3).GetComponent<Text>(), DataTable.Soldier[cardId][1]);
-                        //名字颜色
-                        woodsList.GetChild(i).GetChild(3).GetComponent<Text>().color = NameColorChoose(DataTable.Soldier[cardId][3]);
-                        woodsList.GetChild(i).GetChild(5).GetComponentInChildren<Text>().text = DataTable.Class[int.Parse(DataTable.Soldier[cardId][5])][3];
-                        //兵种框
-                        woodsList.GetChild(i).GetChild(5).GetComponent<Image>().sprite = re.ClassImg[1];
-                        FrameChoose(int.Parse(DataTable.Soldier[cardId][3]),
-                            woodsList.GetChild(i).GetChild(6).GetComponent<Image>());
-                        woodsList.GetChild(i).GetComponent<Button>().onClick.RemoveAllListeners();
-                        woodsList.GetChild(i).GetComponent<Button>().onClick.AddListener(delegate ()
-                        {
-                            OnClickToShowShopInfo(btnIndex, DataTable.Class[int.Parse(DataTable.Soldier[cardId][5])][4]);
-                        });
-                        break;
-                    case GameCardType.Tower:
-                        cardId = RandomPickFromRareClass(DataTable.Tower, cardRarity);
-                        woodsList.GetChild(i).GetChild(1).GetComponent<Image>().sprite = re.FuZhuImg[int.Parse(DataTable.Tower[cardId][10])];
-                        ShowNameTextRules(woodsList.GetChild(i).GetChild(3).GetComponent<Text>(), DataTable.Tower[cardId][1]);
-                        //名字颜色
-                        woodsList.GetChild(i).GetChild(3).GetComponent<Text>().color = NameColorChoose(DataTable.Tower[cardId][3]);
-                        woodsList.GetChild(i).GetChild(5).GetComponentInChildren<Text>().text = DataTable.Tower[cardId][5];
-                        //兵种框
-                        woodsList.GetChild(i).GetChild(5).GetComponent<Image>().sprite = re.ClassImg[1];
-                        FrameChoose(int.Parse(DataTable.Tower[cardId][3]), woodsList.GetChild(i).GetChild(6).GetComponent<Image>());
-                        woodsList.GetChild(i).GetComponent<Button>().onClick.RemoveAllListeners();
-                        woodsList.GetChild(i).GetComponent<Button>().onClick.AddListener(delegate ()
-                        {
-                            OnClickToShowShopInfo(btnIndex, DataTable.Tower[cardId][13]);
-                        });
-                        break;
-                    case GameCardType.Trap:
-                        cardId = RandomPickFromRareClass(DataTable.Trap, cardRarity);
-                        woodsList.GetChild(i).GetChild(1).GetComponent<Image>().sprite = re.FuZhuImg[int.Parse(DataTable.Trap[cardId][9])];
-                        ShowNameTextRules(woodsList.GetChild(i).GetChild(3).GetComponent<Text>(), DataTable.Trap[cardId][1]);
-                        //名字颜色
-                        woodsList.GetChild(i).GetChild(3).GetComponent<Text>().color = NameColorChoose(DataTable.Trap[cardId][3]);
-                        woodsList.GetChild(i).GetChild(5).GetComponentInChildren<Text>().text = DataTable.Trap[cardId][5];
-                        //兵种框
-                        woodsList.GetChild(i).GetChild(5).GetComponent<Image>().sprite = re.ClassImg[1];
-                        FrameChoose(int.Parse(DataTable.Trap[cardId][3]), woodsList.GetChild(i).GetChild(6).GetComponent<Image>());
-                        woodsList.GetChild(i).GetComponent<Button>().onClick.RemoveAllListeners();
-                        woodsList.GetChild(i).GetComponent<Button>().onClick.AddListener(delegate ()
-                        {
-                            OnClickToShowShopInfo(btnIndex, DataTable.Trap[cardId][12]);
-                        });
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
+                var card = RandomPickFromRareClass(cardType, cardRarity);
+                woodsList.GetChild(i).GetChild(1).GetComponent<Image>().sprite = cardType == GameCardType.Hero
+                    ? re.HeroImg[card.Id]
+                    : re.FuZhuImg[card.ImageId];
+                ShowNameTextRules(woodsList.GetChild(i).GetChild(3).GetComponent<Text>(), card.Name);
+                //名字颜色
+                woodsList.GetChild(i).GetChild(3).GetComponent<Text>().color = NameColorChoose(card.Rare);
+                woodsList.GetChild(i).GetChild(5).GetComponentInChildren<Text>().text = card.Short;
+                //兵种框
+                woodsList.GetChild(i).GetChild(5).GetComponent<Image>().sprite =
+                    cardType == GameCardType.Hero ? re.ClassImg[0] : re.ClassImg[1];
+                FrameChoose(card.Rare, woodsList.GetChild(i).GetChild(6).GetComponent<Image>());
+                woodsList.GetChild(i).GetComponent<Button>().onClick.RemoveAllListeners();
+                woodsList.GetChild(i).GetComponent<Button>().onClick.AddListener(() =>
+                    OnClickToShowShopInfo(btnIndex, card.Intro));
                 woodsList.GetChild(i).GetChild(4).GetComponent<Image>().sprite = re.GradeImg[cardLevel];
 
                 Transform getBtnTran = woodsList.GetChild(i).GetChild(9);
@@ -910,18 +813,18 @@ public class WarsUIManager : MonoBehaviour
                 Button adBtn = getBtnTran.GetComponent<Button>();
                 adBtn.enabled = true;
                 //需要的金币数
-                int needMoney = 0;
+                int mercenaryCost = 0;
                 //广告概率
                 if (Random.Range(0, 100) < 25)
                 {
-                    needMoney = 0;
+                    mercenaryCost = 0;
                     getBtnTran.GetChild(1).gameObject.SetActive(false);
                     getBtnTran.GetChild(2).gameObject.SetActive(true);
                     adBtn.onClick.AddListener(() => AdAgent.instance.BusyRetry(() =>
                     {
                         adBtn.enabled = false;
                         //if (!AdController.instance.ShowVideo(
-                        GetOrBuyCards(true, needMoney, cardType, cardId, cardLevel, btnIndex);
+                        GetOrBuyCards(true, mercenaryCost, cardType, card.Id, cardLevel, btnIndex);
                         getBtnTran.GetChild(2).gameObject.SetActive(false);
                         PlayerDataForGame.instance.ShowStringTips(DataTable.GetStringText(57));
                         adBtn.enabled = true;
@@ -933,15 +836,13 @@ public class WarsUIManager : MonoBehaviour
                 }
                 else
                 {
-                    needMoney = int.Parse(DataTable.EncounterData[indexId][5]);
-                    getBtnTran.GetChild(1).GetComponent<Text>().text = needMoney.ToString();
+                    mercenaryCost = mercenary.Cost;
+                    getBtnTran.GetChild(1).GetComponent<Text>().text = mercenaryCost.ToString();
                     getBtnTran.GetChild(1).gameObject.SetActive(true);
                     getBtnTran.GetChild(2).gameObject.SetActive(false);
 
-                    getBtnTran.GetComponent<Button>().onClick.AddListener(delegate ()
-                    {
-                        GetOrBuyCards(true, needMoney, cardType, cardId, cardLevel, btnIndex);
-                    });
+                    getBtnTran.GetComponent<Button>().onClick.AddListener(() =>
+                        GetOrBuyCards(true, mercenaryCost, cardType, card.Id, cardLevel, btnIndex));
                 }
                 woodsList.GetChild(i).gameObject.SetActive(true);
             }
@@ -953,30 +854,30 @@ public class WarsUIManager : MonoBehaviour
     /// 匹配稀有度的颜色
     /// </summary>
     /// <returns></returns>
-    private Color NameColorChoose(string rarity)
+    private Color NameColorChoose(int rarity)
     {
         Color color = new Color();
         switch (rarity)
         {
-            case "1":
+            case 1:
                 color = ColorDataStatic.name_gray;
                 break;
-            case "2":
+            case 2:
                 color = ColorDataStatic.name_green;
                 break;
-            case "3":
+            case 3:
                 color = ColorDataStatic.name_blue;
                 break;
-            case "4":
+            case 4:
                 color = ColorDataStatic.name_purple;
                 break;
-            case "5":
+            case 5:
                 color = ColorDataStatic.name_orange;
                 break;
-            case "6":
+            case 6:
                 color = ColorDataStatic.name_red;
                 break;
-            case "7":
+            case 7:
                 color = ColorDataStatic.name_black;
                 break;
             default:
@@ -1047,146 +948,41 @@ public class WarsUIManager : MonoBehaviour
     private void UpdateQiYvWoods()
     {
         var resources = GameResources;
-        int indexId = GetRandomBaseOnWeight(DataTable.Encounter, 1);
-        var cardType = (GameCardType)int.Parse(DataTable.Encounter[indexId][2]);
-        string cardRarity = DataTable.Encounter[indexId][3];
-        int cardLevel = int.Parse(DataTable.Encounter[indexId][4]);
+        int randomPick = DataTable.Mercenary.Values.Select(m => new WeightElement {Id = m.Id, Weight = m.Weight}).Pick()
+            .Id;
+        var mercenary = DataTable.Mercenary[randomPick];
+        var cardType = (GameCardType)mercenary.Produce.CardType;
+        var cardRarity = mercenary.Produce.Rarity;
+        int cardLevel = mercenary.Produce.Star;
         Transform woodsList = eventsWindows[3].transform.GetChild(0).GetChild(1);
-        switch (cardType)
+        for (int i = 0; i < 3; i++)
         {
-            case GameCardType.Hero:
-                for (int i = 0; i < 3; i++)
-                {
-                    int cardId = RandomPickFromRareClass(DataTable.Hero, cardRarity);
-                    woodsList.GetChild(i).GetChild(1).GetComponent<Image>().sprite = resources.HeroImg[cardId];
-                    ShowNameTextRules(woodsList.GetChild(i).GetChild(3).GetComponent<Text>(), DataTable.Hero[cardId][1]);
-                    //名字颜色
-                    woodsList.GetChild(i).GetChild(3).GetComponent<Text>().color = NameColorChoose(DataTable.Hero[cardId][3]);
-                    woodsList.GetChild(i).GetChild(4).GetComponent<Image>().sprite = resources.GradeImg[cardLevel];
-                    woodsList.GetChild(i).GetChild(5).GetComponentInChildren<Text>().text = DataTable.ClassData[int.Parse(DataTable.Hero[cardId][5])][3];
-                    //兵种框
-                    woodsList.GetChild(i).GetChild(5).GetComponent<Image>().sprite = resources.ClassImg[0];
-                    FrameChoose(int.Parse(DataTable.Hero[cardId][3]),
-                        woodsList.GetChild(i).GetChild(6).GetComponent<Image>());
-                    Transform getBtnTran = woodsList.GetChild(i).GetChild(9);
-                    getBtnTran.GetChild(0).gameObject.SetActive(true);
-                    getBtnTran.GetChild(1).gameObject.SetActive(false);
-                    getBtnTran.GetChild(2).gameObject.SetActive(false);
-                    getBtnTran.GetComponent<Button>().onClick.RemoveAllListeners();
-                    int btnIndex = i;
-                    getBtnTran.GetComponent<Button>().onClick.AddListener(delegate ()
-                    {
-                        GetOrBuyCards(false, 0, cardType, cardId, cardLevel, btnIndex);
-                    });
-                    woodsList.GetChild(i).gameObject.SetActive(true);
+            var card = RandomPickFromRareClass(cardType, cardRarity);
+            woodsList.GetChild(i).GetChild(1).GetComponent<Image>().sprite = cardType == GameCardType.Hero
+                ? resources.HeroImg[card.Id]
+                : resources.FuZhuImg[card.ImageId];
+            ShowNameTextRules(woodsList.GetChild(i).GetChild(3).GetComponent<Text>(), card.Name);
+            //名字颜色
+            woodsList.GetChild(i).GetChild(3).GetComponent<Text>().color = NameColorChoose(card.Rare);
+            woodsList.GetChild(i).GetChild(4).GetComponent<Image>().sprite = resources.GradeImg[cardLevel];
+            woodsList.GetChild(i).GetChild(5).GetComponentInChildren<Text>().text = card.Short;
+            //兵种框
+            woodsList.GetChild(i).GetChild(5).GetComponent<Image>().sprite =
+                cardType == GameCardType.Hero ? resources.ClassImg[0] : resources.ClassImg[1];
+            FrameChoose(card.Rare, woodsList.GetChild(i).GetChild(6).GetComponent<Image>());
+            Transform getBtnTran = woodsList.GetChild(i).GetChild(9);
+            getBtnTran.GetChild(0).gameObject.SetActive(true);
+            getBtnTran.GetChild(1).gameObject.SetActive(false);
+            getBtnTran.GetChild(2).gameObject.SetActive(false);
+            getBtnTran.GetComponent<Button>().onClick.RemoveAllListeners();
+            int btnIndex = i;
+            getBtnTran.GetComponent<Button>().onClick.AddListener(() =>
+                GetOrBuyCards(false, 0, cardType, card.Id, cardLevel, btnIndex));
+            woodsList.GetChild(i).gameObject.SetActive(true);
 
-                    woodsList.GetChild(i).GetComponent<Button>().onClick.RemoveAllListeners();
-                    woodsList.GetChild(i).GetComponent<Button>().onClick.AddListener(delegate ()
-                    {
-                        OnClickToShowShopInfo(btnIndex, DataTable.ClassData[int.Parse(DataTable.Hero[cardId][5])][4]);
-                    });
-                }
-                break;
-            case GameCardType.Soldier:
-                for (int i = 0; i < 3; i++)
-                {
-                    int cardId = RandomPickFromRareClass(DataTable.Soldier, cardRarity);
-                    woodsList.GetChild(i).GetChild(1).GetComponent<Image>().sprite = resources.FuZhuImg[int.Parse(DataTable.Soldier[cardId][13])];
-                    ShowNameTextRules(woodsList.GetChild(i).GetChild(3).GetComponent<Text>(), DataTable.Soldier[cardId][1]);
-                    //名字颜色
-                    woodsList.GetChild(i).GetChild(3).GetComponent<Text>().color = NameColorChoose(DataTable.Soldier[cardId][3]);
-                    woodsList.GetChild(i).GetChild(4).GetComponent<Image>().sprite = resources.GradeImg[cardLevel];
-                    woodsList.GetChild(i).GetChild(5).GetComponentInChildren<Text>().text = DataTable.ClassData[int.Parse(DataTable.Soldier[cardId][5])][3];
-                    //兵种框
-                    woodsList.GetChild(i).GetChild(5).GetComponent<Image>().sprite = resources.ClassImg[1];
-                    FrameChoose(int.Parse(DataTable.Soldier[cardId][3]), woodsList.GetChild(i).GetChild(6).GetComponent<Image>());
-                    Transform getBtnTran = woodsList.GetChild(i).GetChild(9);
-                    getBtnTran.GetChild(0).gameObject.SetActive(true);
-                    getBtnTran.GetChild(1).gameObject.SetActive(false);
-                    getBtnTran.GetChild(2).gameObject.SetActive(false);
-                    getBtnTran.GetComponent<Button>().onClick.RemoveAllListeners();
-                    int btnIndex = i;
-                    getBtnTran.GetComponent<Button>().onClick.AddListener(delegate ()
-                    {
-                        GetOrBuyCards(false, 0, cardType, cardId, cardLevel, btnIndex);
-                    });
-                    woodsList.GetChild(i).gameObject.SetActive(true);
-
-                    woodsList.GetChild(i).GetComponent<Button>().onClick.RemoveAllListeners();
-                    woodsList.GetChild(i).GetComponent<Button>().onClick.AddListener(delegate ()
-                    {
-                        OnClickToShowShopInfo(btnIndex, DataTable.ClassData[int.Parse(DataTable.Soldier[cardId][5])][4]);
-                    });
-                }
-                break;
-            case GameCardType.Tower:
-                for (int i = 0; i < 3; i++)
-                {
-                    int cardId = RandomPickFromRareClass(DataTable.Tower, cardRarity);
-                    woodsList.GetChild(i).GetChild(1).GetComponent<Image>().sprite =
-                        resources.FuZhuImg[int.Parse(DataTable.Tower[cardId][10])];
-                    ShowNameTextRules(woodsList.GetChild(i).GetChild(3).GetComponent<Text>(), DataTable.Tower[cardId][1]);
-                    //名字颜色
-                    woodsList.GetChild(i).GetChild(3).GetComponent<Text>().color = NameColorChoose(DataTable.Tower[cardId][3]);
-                    woodsList.GetChild(i).GetChild(4).GetComponent<Image>().sprite = resources.GradeImg[cardLevel];
-                    woodsList.GetChild(i).GetChild(5).GetComponentInChildren<Text>().text = DataTable.Tower[cardId][5];
-                    FrameChoose(int.Parse(DataTable.Tower[cardId][3]), woodsList.GetChild(i).GetChild(6).GetComponent<Image>());
-                    //兵种框
-                    woodsList.GetChild(i).GetChild(5).GetComponent<Image>().sprite = resources.ClassImg[1];
-                    Transform getBtnTran = woodsList.GetChild(i).GetChild(9);
-                    getBtnTran.GetChild(0).gameObject.SetActive(true);
-                    getBtnTran.GetChild(1).gameObject.SetActive(false);
-                    getBtnTran.GetChild(2).gameObject.SetActive(false);
-                    getBtnTran.GetComponent<Button>().onClick.RemoveAllListeners();
-                    int btnIndex = i;
-                    getBtnTran.GetComponent<Button>().onClick.AddListener(delegate ()
-                    {
-                        GetOrBuyCards(false, 0, cardType, cardId, cardLevel, btnIndex);
-                    });
-                    woodsList.GetChild(i).gameObject.SetActive(true);
-
-                    woodsList.GetChild(i).GetComponent<Button>().onClick.RemoveAllListeners();
-                    woodsList.GetChild(i).GetComponent<Button>().onClick.AddListener(delegate ()
-                    {
-                        OnClickToShowShopInfo(btnIndex, DataTable.Tower[cardId][13]);
-                    });
-                }
-                break;
-            case GameCardType.Trap:
-                for (int i = 0; i < 3; i++)
-                {
-                    int cardId = RandomPickFromRareClass(DataTable.Trap, cardRarity);
-                    woodsList.GetChild(i).GetChild(1).GetComponent<Image>().sprite = resources.FuZhuImg[int.Parse(DataTable.Trap[cardId][9])];
-                    ShowNameTextRules(woodsList.GetChild(i).GetChild(3).GetComponent<Text>(), DataTable.Trap[cardId][1]);
-                    //名字颜色
-                    woodsList.GetChild(i).GetChild(3).GetComponent<Text>().color = NameColorChoose(DataTable.Trap[cardId][3]);
-                    woodsList.GetChild(i).GetChild(4).GetComponent<Image>().sprite = resources.GradeImg[cardLevel];
-                    woodsList.GetChild(i).GetChild(5).GetComponentInChildren<Text>().text = DataTable.Trap[cardId][5];
-                    //兵种框
-                    woodsList.GetChild(i).GetChild(5).GetComponent<Image>().sprite = resources.ClassImg[1];
-                    FrameChoose(int.Parse(DataTable.Trap[cardId][3]), woodsList.GetChild(i).GetChild(6).GetComponent<Image>());
-                    Transform getBtnTran = woodsList.GetChild(i).GetChild(9);
-                    getBtnTran.GetChild(0).gameObject.SetActive(true);
-                    getBtnTran.GetChild(1).gameObject.SetActive(false);
-                    getBtnTran.GetChild(2).gameObject.SetActive(false);
-                    getBtnTran.GetComponent<Button>().onClick.RemoveAllListeners();
-                    int btnIndex = i;
-                    getBtnTran.GetComponent<Button>().onClick.AddListener(delegate ()
-                    {
-                        GetOrBuyCards(false, 0, cardType, cardId, cardLevel, btnIndex);
-                    });
-                    woodsList.GetChild(i).gameObject.SetActive(true);
-
-                    woodsList.GetChild(i).GetComponent<Button>().onClick.RemoveAllListeners();
-                    woodsList.GetChild(i).GetComponent<Button>().onClick.AddListener(delegate ()
-                    {
-                        OnClickToShowShopInfo(btnIndex, DataTable.Trap[cardId][12]);
-                    });
-                }
-                break;
-            case GameCardType.Spell:
-            default:
-                throw new ArgumentOutOfRangeException();
+            woodsList.GetChild(i).GetComponent<Button>().onClick.RemoveAllListeners();
+            woodsList.GetChild(i).GetComponent<Button>().onClick.AddListener(() =>
+                OnClickToShowShopInfo(btnIndex, card.Intro));
         }
     }
 
@@ -1237,26 +1033,8 @@ public class WarsUIManager : MonoBehaviour
                 eventsWindows[3].transform.GetChild(0).GetChild(1).GetChild(btnIndex).gameObject.SetActive(false);
             }
         }
-        NowLevelAndHadChip nowLevelAndHadChip = new NowLevelAndHadChip();
-        nowLevelAndHadChip.id = cardId;
-        nowLevelAndHadChip.level = cardLevel;
-        switch (cardType)
-        {
-            case GameCardType.Hero:
-                CreateHeroCardToFightList(nowLevelAndHadChip);
-                break;
-            case GameCardType.Soldier:
-                CreateSoldierCardToFightList(nowLevelAndHadChip);
-                break;
-            case GameCardType.Tower:
-                CreateTowerCardToFightList(nowLevelAndHadChip);
-                break;
-            case GameCardType.Trap:
-                CreateTrapCardToFightList(nowLevelAndHadChip);
-                break;
-            default:
-                throw new ArgumentOutOfRangeException(nameof(cardType), cardType, null);
-        }
+        NowLevelAndHadChip nowLevelAndHadChip = new NowLevelAndHadChip().Instance(cardType,cardId,cardLevel);
+        CreateCardToList(nowLevelAndHadChip);
         if (!isBuy)
         {
             PassGuanQia();
@@ -1272,108 +1050,20 @@ public class WarsUIManager : MonoBehaviour
         }
     }
 
-    //典故界面初始化
-    private void InitializeDianGu()
-    {
-        //随机数
-        int rand = Random.Range(0, DataTable.StoryData.Count);
-        //典故名
-        eventsWindows[1].transform.GetChild(0).GetChild(3).GetComponent<Text>().text = DataTable.StoryData[rand][1];
-        //故事
-        eventsWindows[1].transform.GetChild(1).GetComponent<Text>().text = "\u2000\u2000\u2000\u2000" + DataTable.StoryData[rand][2];
-        //选项
-        for (int i = 2; i < 4; i++)
-        {
-            eventsWindows[1].transform.GetChild(i).GetChild(0).GetComponent<Text>().text = DataTable.StoryData[rand][i + 2];
-            int indexI = i + 4;
-            eventsWindows[1].transform.GetChild(i).GetComponent<Button>().onClick.AddListener(delegate ()
-            {
-                OnClickChooseAnsForDianGu(int.Parse(DataTable.StoryData[rand][indexI]));
-            });
-            eventsWindows[1].transform.GetChild(i).gameObject.SetActive(true);
-        }
-        eventsWindows[1].transform.GetChild(4).gameObject.SetActive(false);
-    }
-    //点击典故选项
-    private void OnClickChooseAnsForDianGu(int indexAns)
-    {
-        PlayAudioClip(13);
-
-        eventsWindows[1].transform.GetChild(2).gameObject.SetActive(false);
-        eventsWindows[1].transform.GetChild(3).gameObject.SetActive(false);
-        Text storyEndText = eventsWindows[1].transform.GetChild(1).GetComponent<Text>();
-        storyEndText.DOPause();
-        storyEndText.text = "";
-        storyEndText.color = new Color(storyEndText.color.r, storyEndText.color.g, storyEndText.color.b, 0);
-
-        int goldReward = int.Parse(DataTable.StoryRData[indexAns][6]);
-        if (goldReward < 0)
-        {
-            goldReward = GoldForCity >= Mathf.Abs(goldReward) ? goldReward : -GoldForCity;
-        }
-        if (goldReward != 0)
-        {
-            GoldForCity += goldReward;
-            playerInfoObj.transform.GetChild(1).GetChild(0).GetComponent<Text>().text = GoldForCity.ToString();
-        }
-        int unitType = int.Parse(DataTable.StoryRData[indexAns][2]);
-        if (unitType >= 0)
-        {
-            NowLevelAndHadChip nowLevelAndHadChip = new NowLevelAndHadChip();
-            nowLevelAndHadChip.id = int.Parse(DataTable.StoryRData[indexAns][3]);
-            nowLevelAndHadChip.level = int.Parse(DataTable.StoryRData[indexAns][4]);
-            int getNums = int.Parse(DataTable.StoryRData[indexAns][5]);
-            switch (unitType)
-            {
-                case 0:
-                    for (int i = 0; i < getNums; i++)
-                    {
-                        CreateHeroCardToFightList(nowLevelAndHadChip);
-                    }
-                    break;
-                case 1:
-                    for (int i = 0; i < getNums; i++)
-                    {
-                        CreateSoldierCardToFightList(nowLevelAndHadChip);
-                    }
-                    break;
-                case 2:
-                    for (int i = 0; i < getNums; i++)
-                    {
-                        CreateTowerCardToFightList(nowLevelAndHadChip);
-                    }
-                    break;
-                case 3:
-                    for (int i = 0; i < getNums; i++)
-                    {
-                        CreateTrapCardToFightList(nowLevelAndHadChip);
-                    }
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        storyEndText.DOFade(1, 4f);
-        storyEndText.DOText(("\u2000\u2000\u2000\u2000" + DataTable.StoryRData[indexAns][1]), 4f).OnComplete(delegate ()
-        {
-            eventsWindows[1].transform.GetChild(4).gameObject.SetActive(true);
-        });
-    }
-
     //初始化答题界面
     private void InitializeDaTi()
     {
         eventsWindows[2].transform.GetChild(6).gameObject.SetActive(false);
-        int indexTest = GetRandomBaseOnWeight(DataTable.Test, 6);
-        int truthNum = int.Parse(DataTable.TestData[indexTest][2]);
-        eventsWindows[2].transform.GetChild(2).GetComponent<Text>().text = DataTable.TestData[indexTest][1];
+        var pick = DataTable.Quest.Values.Select(q=>new WeightElement{Id = q.Id,Weight = q.Weight}).Pick();
+        var quest = DataTable.Quest[pick.Id];
+        eventsWindows[2].transform.GetChild(2).GetComponent<Text>().text = quest.Question;
+        var selections = new[] {quest.A, quest.B, quest.C};
         for (int i = 3; i < 6; i++)
         {
-            bool isRight = (i - 2) == truthNum;
+            bool isRight = (i - 2) == quest.Answer;
             int btnIndex = i;
             eventsWindows[2].transform.GetChild(i).GetChild(0).GetComponent<Text>().color = Color.white;
-            eventsWindows[2].transform.GetChild(i).GetChild(0).GetComponent<Text>().text = DataTable.TestData[indexTest][i];
+            eventsWindows[2].transform.GetChild(i).GetChild(0).GetComponent<Text>().text = selections[i - 3];
             eventsWindows[2].transform.GetChild(i).GetComponent<Button>().onClick.AddListener(delegate ()
             {
                 EndDaTiGiveReward(isRight, btnIndex);
@@ -1381,7 +1071,7 @@ public class WarsUIManager : MonoBehaviour
         }
     }
     //答题结束
-    private void EndDaTiGiveReward(bool isRight, int btnIndex)
+    private void EndDaTiGiveReward(bool isCorrect, int btnIndex)
     {
         PlayAudioClip(13);
 
@@ -1391,38 +1081,17 @@ public class WarsUIManager : MonoBehaviour
         }
 
         string rewardStr = "";
-        if (isRight)
+        if (isCorrect)
         {
             rewardStr = DataTable.GetStringText(58);
             eventsWindows[2].transform.GetChild(btnIndex).GetChild(0).GetComponent<Text>().color = Color.green;
-            int indexTest = GetRandomBaseOnWeight(DataTable.TestR, 1);
-            int unitType = int.Parse(DataTable.TestRData[indexTest][2]);
-            if (unitType >= 0)
-            {
-                NowLevelAndHadChip nowLevelAndHadChip = new NowLevelAndHadChip();
-                nowLevelAndHadChip.level = int.Parse(DataTable.TestRData[indexTest][4]);
-                switch (unitType)
-                {
-                    case 0:
-                        nowLevelAndHadChip.id = RandomPickFromRareClass(DataTable.Hero, DataTable.TestRData[indexTest][3]);
-                        CreateHeroCardToFightList(nowLevelAndHadChip);
-                        break;
-                    case 1:
-                        nowLevelAndHadChip.id = RandomPickFromRareClass(DataTable.Soldier, DataTable.TestRData[indexTest][3]);
-                        CreateSoldierCardToFightList(nowLevelAndHadChip);
-                        break;
-                    case 2:
-                        nowLevelAndHadChip.id = RandomPickFromRareClass(DataTable.Tower, DataTable.TestRData[indexTest][3]);
-                        CreateTowerCardToFightList(nowLevelAndHadChip);
-                        break;
-                    case 3:
-                        nowLevelAndHadChip.id = RandomPickFromRareClass(DataTable.Trap, DataTable.TestRData[indexTest][3]);
-                        CreateTrapCardToFightList(nowLevelAndHadChip);
-                        break;
-                    default:
-                        break;
-                }
-            }
+            var pick = DataTable.QuestReward.Values.Select(r => new WeightElement {Id = r.Id, Weight = r.Weight})
+                .Pick().Id;
+            var reward = DataTable.QuestReward[pick].Produce;
+
+            var info = RandomPickFromRareClass((GameCardType)reward.CardType, reward.Rarity);
+            var card = new NowLevelAndHadChip().Instance(info.Type, info.Id, reward.Star);
+            CreateCardToList(card);
         }
         else
         {
@@ -1434,11 +1103,7 @@ public class WarsUIManager : MonoBehaviour
     }
 
     //根据稀有度返回随机id
-    public int RandomPickFromRareClass(IReadOnlyDictionary<int,IReadOnlyList<string>> data, string rarity)
-    {
-        var list = data.Where(map => map.Value[3] == rarity).ToList();
-        return list[Random.Range(0, list.Count)].Key;
-    }
+    public GameCardInfo RandomPickFromRareClass(GameCardType cardType,int rarity) => GameCardInfo.RandomPick(cardType, rarity);
 
     //初始化卡牌列表
     private void InitCardListShow()
@@ -1452,146 +1117,51 @@ public class WarsUIManager : MonoBehaviour
             var hstData = PlayerDataForGame.instance.hstData;
             //临时记录武将存档信息
             hstData.heroSaveData.Enlist(forceId).ToList()
-                .ForEach(CreateHeroCardToFightList);
-            hstData.soldierSaveData.Enlist(forceId).ToList()
-                .ForEach(CreateSoldierCardToFightList);
+                .ForEach(CreateCardToList);
             hstData.towerSaveData.Enlist(forceId).ToList()
-                .ForEach(CreateTowerCardToFightList);
+                .ForEach(CreateCardToList);
             hstData.trapSaveData.Enlist(forceId).ToList()
-                .ForEach(CreateTrapCardToFightList);
+                .ForEach(CreateCardToList);
     }
-    //创建玩家武将卡牌
-    private void CreateHeroCardToFightList(NowLevelAndHadChip cardData)
+
+    //创建玩家卡牌
+    private void CreateCardToList(NowLevelAndHadChip card)
     {
         var re = GameResources;
+        var info = card.GetInfo();
         GameObject obj = Instantiate(cardForWarListPres, heroCardListObj.transform);
         obj.GetComponent<CardForDrag>().posIndex = -1;
-        obj.transform.GetChild(1).GetComponent<Image>().sprite = re.HeroImg[cardData.id];
-        ShowNameTextRules(obj.transform.GetChild(3).GetComponent<Text>(), DataTable.Hero[cardData.id][1]);
+        obj.transform.GetChild(1).GetComponent<Image>().sprite =
+            info.Type == GameCardType.Hero ? re.HeroImg[card.id] : re.FuZhuImg[info.ImageId];
+        ShowNameTextRules(obj.transform.GetChild(3).GetComponent<Text>(), info.Name);
         //名字颜色
-        obj.transform.GetChild(3).GetComponent<Text>().color = NameColorChoose(DataTable.Hero[cardData.id][3]);
-        obj.transform.GetChild(4).GetComponent<Image>().sprite = re.GradeImg[cardData.level];
-        obj.transform.GetChild(5).GetComponentInChildren<Text>().text = DataTable.ClassData[int.Parse(DataTable.Hero[cardData.id][5])][3];
+        obj.transform.GetChild(3).GetComponent<Text>().color = NameColorChoose(info.Rare);
+        obj.transform.GetChild(4).GetComponent<Image>().sprite = re.GradeImg[card.level];
+        obj.transform.GetChild(5).GetComponentInChildren<Text>().text = info.Short;
         //兵种框
-        obj.transform.GetChild(5).GetComponent<Image>().sprite = re.ClassImg[0];
-        FrameChoose(int.Parse(DataTable.Hero[cardData.id][3]), obj.transform.GetChild(6).GetComponent<Image>());
+        obj.transform.GetChild(5).GetComponent<Image>().sprite =
+            info.Type == GameCardType.Hero ? re.ClassImg[0] : re.ClassImg[1];
+        FrameChoose(info.Rare, obj.transform.GetChild(6).GetComponent<Image>());
         //添加按住抬起方法
-        FightForManager.instance.GiveGameObjEventForHoldOn(obj, DataTable.ClassData[int.Parse(DataTable.Hero[cardData.id][5])][4]);
+        FightForManager.instance.GiveGameObjEventForHoldOn(obj, info.Intro);
         FightCardData data = new FightCardData();
         data.unitId = 1;
         data.cardObj = obj;
-        data.cardType = 0;
-        data.cardId = cardData.id;
+        data.cardType = card.typeIndex;
+        data.cardId = card.id;
         data.posIndex = -1;
-        data.cardGrade = cardData.level;
+        data.cardGrade = card.level;
         data.fightState = new FightState();
-        data.damage = int.Parse(DataTable.Hero[data.cardId][7].Split(',')[data.cardGrade - 1]);
-        data.hpr = int.Parse(DataTable.Hero[data.cardId][9]);
-        data.fullHp = data.nowHp = int.Parse(DataTable.Hero[data.cardId][8].Split(',')[data.cardGrade - 1]);
-        data.activeUnit = true;
+        data.damage = info.GetDamage(data.cardGrade);
+        data.hpr = info.GameSetRecovery;
+        data.fullHp = data.nowHp = info.GetHp(data.cardGrade);
+        data.activeUnit = info.Type == GameCardType.Hero || (info.Type == GameCardType.Tower &&
+                                                               (data.cardId == 0 || data.cardId == 1 ||
+                                                                data.cardId == 2 || data.cardId == 3 ||
+                                                                data.cardId == 6));
         data.isPlayerCard = true;
-        data.cardMoveType = int.Parse(DataTable.Hero[data.cardId][17]);
-        data.cardDamageType = int.Parse(DataTable.Hero[data.cardId][18]);
-        playerCardsDatas.Add(data);
-    }
-    //创建玩家士兵卡牌
-    private void CreateSoldierCardToFightList(NowLevelAndHadChip cardData)
-    {
-        var re = GameResources;
-        GameObject obj = Instantiate(cardForWarListPres, heroCardListObj.transform);
-        obj.GetComponent<CardForDrag>().posIndex = -1;
-        obj.transform.GetChild(1).GetComponent<Image>().sprite = re.FuZhuImg[int.Parse(DataTable.Soldier[cardData.id][13])];
-        ShowNameTextRules(obj.transform.GetChild(3).GetComponent<Text>(), DataTable.Soldier[cardData.id][1]);
-        //名字颜色
-        obj.transform.GetChild(3).GetComponent<Text>().color = NameColorChoose(DataTable.Soldier[cardData.id][3]);
-        obj.transform.GetChild(4).GetComponent<Image>().sprite = re.GradeImg[cardData.level];
-        obj.transform.GetChild(5).GetComponentInChildren<Text>().text = DataTable.ClassData[int.Parse(DataTable.Soldier[cardData.id][5])][3];
-        //兵种框
-        obj.transform.GetChild(5).GetComponent<Image>().sprite = re.ClassImg[1];
-        FrameChoose(int.Parse(DataTable.Soldier[cardData.id][3]), obj.transform.GetChild(6).GetComponent<Image>());
-        //添加按住抬起方法
-        FightForManager.instance.GiveGameObjEventForHoldOn(obj, DataTable.ClassData[int.Parse(DataTable.Soldier[cardData.id][5])][4]);
-        FightCardData data = new FightCardData();
-        data.unitId = 1;
-        data.cardObj = obj;
-        data.cardType = 1;
-        data.cardId = cardData.id;
-        data.posIndex = -1;
-        data.cardGrade = cardData.level;
-        data.fightState = new FightState();
-        data.damage = int.Parse(DataTable.Soldier[data.cardId][6].Split(',')[data.cardGrade - 1]);
-        data.hpr = int.Parse(DataTable.Soldier[data.cardId][8]);
-        data.fullHp = data.nowHp = int.Parse(DataTable.Soldier[data.cardId][7].Split(',')[data.cardGrade - 1]);
-        data.activeUnit = true;
-        data.isPlayerCard = true;
-        playerCardsDatas.Add(data);
-    }
-    //创建玩家塔卡牌
-    private void CreateTowerCardToFightList(NowLevelAndHadChip cardData)
-    {
-        var re = GameResources;
-        GameObject obj = Instantiate(cardForWarListPres, heroCardListObj.transform);
-        obj.GetComponent<CardForDrag>().posIndex = -1;
-        obj.transform.GetChild(1).GetComponent<Image>().sprite = re.FuZhuImg[int.Parse(DataTable.Tower[cardData.id][10])];
-        ShowNameTextRules(obj.transform.GetChild(3).GetComponent<Text>(), DataTable.Tower[cardData.id][1]);
-        //名字颜色
-        obj.transform.GetChild(3).GetComponent<Text>().color = NameColorChoose(DataTable.Tower[cardData.id][3]);
-        obj.transform.GetChild(4).GetComponent<Image>().sprite = re.GradeImg[cardData.level];
-        obj.transform.GetChild(5).GetComponentInChildren<Text>().text = DataTable.Tower[cardData.id][5];
-        //兵种框
-        obj.transform.GetChild(5).GetComponent<Image>().sprite = re.ClassImg[1];
-        FrameChoose(int.Parse(DataTable.Tower[cardData.id][3]), obj.transform.GetChild(6).GetComponent<Image>());
-        //添加按住抬起方法
-        FightForManager.instance.GiveGameObjEventForHoldOn(obj, DataTable.Tower[cardData.id][13]);
-        FightCardData data = new FightCardData();
-        data.unitId = 1;
-        data.cardObj = obj;
-        data.cardType = 2;
-        data.cardId = cardData.id;
-        data.posIndex = -1;
-        data.cardGrade = cardData.level;
-        data.fightState = new FightState();
-        data.damage = int.Parse(DataTable.Tower[data.cardId][6].Split(',')[data.cardGrade - 1]);
-        data.hpr = int.Parse(DataTable.Tower[data.cardId][8]);
-        data.fullHp = data.nowHp = int.Parse(DataTable.Tower[data.cardId][7].Split(',')[data.cardGrade - 1]);
-        data.activeUnit = (data.cardId == 0 || data.cardId == 1 || data.cardId == 2 || data.cardId == 3 || data.cardId == 6);
-        data.isPlayerCard = true;
-        data.cardMoveType = 1;
-        data.cardDamageType = 0;
-        playerCardsDatas.Add(data);
-    }
-    //创建玩家陷阱卡牌
-    private void CreateTrapCardToFightList(NowLevelAndHadChip cardData)
-    {
-        var re = GameResources;
-        GameObject obj = Instantiate(cardForWarListPres, heroCardListObj.transform);
-        obj.GetComponent<CardForDrag>().posIndex = -1;
-        obj.transform.GetChild(1).GetComponent<Image>().sprite = re.FuZhuImg[int.Parse(DataTable.Trap[cardData.id][9])];
-        ShowNameTextRules(obj.transform.GetChild(3).GetComponent<Text>(), DataTable.Trap[cardData.id][1]);
-        //名字颜色
-        obj.transform.GetChild(3).GetComponent<Text>().color = NameColorChoose(DataTable.Trap[cardData.id][3]);
-        obj.transform.GetChild(4).GetComponent<Image>().sprite = re.GradeImg[cardData.level];
-        obj.transform.GetChild(5).GetComponentInChildren<Text>().text = DataTable.Trap[cardData.id][5];
-        //兵种框
-        obj.transform.GetChild(5).GetComponent<Image>().sprite = re.ClassImg[1];
-        FrameChoose(int.Parse(DataTable.Trap[cardData.id][3]), obj.transform.GetChild(6).GetComponent<Image>());
-        //添加按住抬起方法
-        FightForManager.instance.GiveGameObjEventForHoldOn(obj, DataTable.Trap[cardData.id][12]);
-        FightCardData data = new FightCardData();
-        data.unitId = 1;
-        data.cardObj = obj;
-        data.cardType = 3;
-        data.cardId = cardData.id;
-        data.posIndex = -1;
-        data.cardGrade = cardData.level;
-        data.fightState = new FightState();
-        data.damage = int.Parse(DataTable.Trap[data.cardId][6].Split(',')[data.cardGrade - 1]);
-        data.hpr = int.Parse(DataTable.Trap[data.cardId][8]);
-        data.fullHp = data.nowHp = int.Parse(DataTable.Trap[data.cardId][7].Split(',')[data.cardGrade - 1]);
-        data.activeUnit = false;
-        data.isPlayerCard = true;
-        data.cardMoveType = 0;
-        data.cardDamageType = 0;
+        data.cardMoveType = info.CombatType;
+        data.cardDamageType = info.DamageType;
         playerCardsDatas.Add(data);
     }
 
@@ -1635,8 +1205,8 @@ public class WarsUIManager : MonoBehaviour
     //初始化场景内容
     private void InitMainUIShow()
     {
-        battleNameText.text = DataTable.WarData[PlayerDataForGame.instance.selectedWarId][1];
-        playerInfoObj.transform.GetChild(0).GetComponent<Text>().text = DataTable.PlayerInitialData[PlayerDataForGame.instance.pyData.ForceId][1];
+        battleNameText.text = DataTable.War[PlayerDataForGame.instance.selectedWarId].Title;
+        playerInfoObj.transform.GetChild(0).GetComponent<Text>().text = DataTable.PlayerInitialConfig[PlayerDataForGame.instance.pyData.ForceId].Force;
         UpdateGoldandBoxNumsShow();
         UpdateLevelInfo();
         UpdateBattleSchedule();
@@ -1646,12 +1216,13 @@ public class WarsUIManager : MonoBehaviour
     private void UpdateBattleSchedule()
     {
         nowGuanQiaIndex++;
-        if (nowGuanQiaIndex >= int.Parse(DataTable.WarData[PlayerDataForGame.instance.selectedWarId][4]))
+        var totalCheckPoints = DataTable.War[PlayerDataForGame.instance.selectedWarId].CheckPoints;
+        if (nowGuanQiaIndex >= totalCheckPoints)
         {
-            nowGuanQiaIndex = int.Parse(DataTable.WarData[PlayerDataForGame.instance.selectedWarId][4]);
+            nowGuanQiaIndex = totalCheckPoints;
         }
 
-        string str = nowGuanQiaIndex + "/" + DataTable.WarData[PlayerDataForGame.instance.selectedWarId][4];
+        string str = nowGuanQiaIndex + "/" + totalCheckPoints;
         battleScheduleText.text = str;
     }
 
@@ -1672,13 +1243,14 @@ public class WarsUIManager : MonoBehaviour
     //更新等级相关显示
     private void UpdateLevelInfo()
     {
+        var baseCfg = DataTable.BaseLevel[cityLevel];
         //等级
         cityLevelObj.transform.GetChild(1).GetChild(0).GetChild(0).GetComponent<Text>().text = cityLevel + "级";
         //武将可上阵
-        maxHeroNums = int.Parse(DataTable.CityLevelData[cityLevel - 1][3]);
-        cityLevelObj.transform.GetChild(2).GetChild(0).GetComponent<Text>().text = DataTable.CityLevelData[cityLevel - 1][3];
+        maxHeroNums = baseCfg.CardMax;
+        cityLevelObj.transform.GetChild(2).GetChild(0).GetComponent<Text>().text = baseCfg.CardMax.ToString();
         //升级金币
-        upLevelBtn.transform.GetChild(0).GetChild(0).GetComponent<Text>().text = DataTable.CityLevelData[cityLevel - 1][1];
+        upLevelBtn.transform.GetChild(0).GetChild(0).GetComponent<Text>().text = baseCfg.Cost.ToString();
     }
 
     /// <summary>
@@ -1687,22 +1259,21 @@ public class WarsUIManager : MonoBehaviour
     public void OnClickUpLevel()
     {
         ShowOrHideGuideObj(2, false);
-
-        int needGold = int.Parse(DataTable.CityLevelData[cityLevel - 1][1]);
-        if (GoldForCity < needGold)
+        var baseCfg = DataTable.BaseLevel[cityLevel];
+        if (GoldForCity < baseCfg.Cost)
         {
             PlayerDataForGame.instance.ShowStringTips(DataTable.GetStringText(56));
             PlayAudioClip(20);
         }
         else
         {
-            GoldForCity -= needGold;
+            GoldForCity -= baseCfg.Cost;
             cityLevel++;
             PlayerDataForGame.instance.ShowStringTips(DataTable.GetStringText(60));
             playerInfoObj.transform.GetChild(1).GetChild(0).GetComponent<Text>().text = GoldForCity.ToString();
             UpdateLevelInfo();
             //满级
-            if (cityLevel >= DataTable.CityLevelData.Count)
+            if (cityLevel >= DataTable.BaseLevel.Count)
             {
                 upLevelBtn.GetComponent<Button>().enabled = false;
                 upLevelBtn.transform.GetChild(0).gameObject.SetActive(false);

@@ -20,9 +20,9 @@ public class SignalRClient : MonoBehaviour
     /// </summary>
     public HubConnectionState Status;
 
-    public event Action<HubConnectionState> OnStatusChanged;
-    public event Action<string> OnSignalRNotify;
-    public event Action<string,string> OnSignalRMessage;
+    public event UnityAction<HubConnectionState> OnStatusChanged;
+    public event UnityAction<string> OnSignalRNotify;
+    public event UnityAction<string> OnSignalRMessage;
     
     public static SignalRClient instance;
     private CancellationTokenSource cancellationTokenSource;
@@ -43,15 +43,10 @@ public class SignalRClient : MonoBehaviour
 
     private void Start()
     {
-        Login();
+        //Login();
         OnStatusChanged += s => DebugLog($"状态更新[{s}]!");
-        OnSignalRNotify += s => DebugLog($"服务器信息：{s}");
-        OnSignalRMessage += ChannelMessage;// (channel, msg) => DebugLog($"频道[{channel}]：{msg}");
-    }
-
-    private void ChannelMessage(string arg1, string arg2)
-    {
-        DebugLog($"频道[{arg1}]：{arg2}");
+        OnSignalRNotify += s => DebugLog($"{nameof(OnSignalRNotify)}：{s}");
+        OnSignalRMessage += s=>DebugLog($"{nameof(OnSignalRMessage)}:{s}");// (channel, msg) => DebugLog($"频道[{channel}]：{msg}");
     }
 
     public async void Login()
@@ -59,7 +54,8 @@ public class SignalRClient : MonoBehaviour
         cancellationTokenSource = new CancellationTokenSource();
         cancellationTokenSource.Token.Register(() => OnConnectionClose(HubConnectionState.Disconnected, XDebug.Throw<SignalRClient>("取消连接！")));
         var client = new HttpClient();
-        var response = await client.PostAsync("http://localhost:7071/api/negotiate", new StringContent(""),cancellationTokenSource.Token);
+        client.DefaultRequestHeaders.Add("UserId","TestId1");
+        var response = await client.PostAsync("http://localhost:7071/api/negotiate", new StringContent(string.Empty),cancellationTokenSource.Token);
         if (!response.IsSuccessStatusCode)
         {
             DebugLog("连接失败！");
@@ -82,9 +78,8 @@ public class SignalRClient : MonoBehaviour
             _connection.Closed += e => OnConnectionClose(_connection.State, e);
             _connection.Reconnected += s => OnReconnected(_connection.State, s);
             _connection.Reconnecting += e => OnReconnecting(_connection.State, e);
-            _connection.On<string>(SignalR.NOTIFY, arg=> OnSignalRNotify?.Invoke(arg));
-            _connection.On<string, string>(SignalR.Message,
-                (channel, message) => OnSignalRMessage?.Invoke(channel, message));
+            _connection.On<string>(EventStrings.Req_JinNang, arg=> OnSignalRNotify?.Invoke(arg));
+            _connection.On<string>(EventStrings.Req_JinNang, arg => OnSignalRMessage?.Invoke(arg));
             await _connection.StartAsync(cancellationToken);
             StatusChanged(_connection.State,$"Host:{connectionInfo.Url},\nToken:{connectionInfo.AccessToken}\n连接成功！");
             cancellationTokenSource = null;
@@ -96,7 +91,12 @@ public class SignalRClient : MonoBehaviour
     }
 
     private async Task InvokeAsync(string method,string arg,CancellationToken cancellationToken = default) => await _connection.SendAsync(method, arg, cancellationToken);
+    public async void Invoke(string method, string arg) => await InvokeAsync(method, arg);
 
+    public void RequestJinNang()
+    {
+        Invoke(EventStrings.Req_JinNang, "198");
+    }
     /// <summary>
     /// 强制离线
     /// </summary>
@@ -174,13 +174,4 @@ public class SignalRClient : MonoBehaviour
         [JsonProperty("url")] public string Url { get; set; }
         [JsonProperty("accessToken")] public string AccessToken { get; set; }
     }
-}
-
-/// <summary>
-/// SignalR互交规范
-/// </summary>
-public static class SignalR
-{
-    public const string NOTIFY = "notify";
-    public const string Message = "message";
 }

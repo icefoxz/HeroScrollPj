@@ -1,359 +1,97 @@
-﻿ using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 using UnityEngine;
 
-public class DataTable : MonoBehaviour
+ public class DataTable : MonoBehaviour
 {
     private const string TableSuffix = "Table";
     private const string DataSuffix = "Data";
+    private static Type IntType = typeof(int);
     private static Type StringType = typeof(string);
     private static Type DataType = typeof(Dictionary<int, IReadOnlyList<string>>);
     private static Type TextAssetType = typeof(TextAsset);
+    private static Type ArrayType = typeof(Array);
+
     public static DataTable instance;
-    private static Dictionary<string, IReadOnlyList<IReadOnlyList<string>>> cache = new Dictionary<string, IReadOnlyList<IReadOnlyList<string>>>();
+    private static TableData Data { get; set; }
 
-    private void ResolverInit()
-    {
-        playerInitialData = SpecificTableResolver(playerInitialData, typeof(PlayerInitialTable));
-        assetData = SpecificTableResolver(assetData, typeof(AssetTable));
-        heroData = SpecificTableResolver(heroData, typeof(HeroTable));
-        playerLevelData = SpecificTableResolver(playerLevelData, typeof(PlayerLevelTable));
-        soldierData = SpecificTableResolver(soldierData, typeof(SoldierTable));
-        towerData = SpecificTableResolver(towerData, typeof(TowerTable));
-        classData = SpecificTableResolver(classData, typeof(ClassTable));
-        upGradeData = SpecificTableResolver(upGradeData, typeof(UpGradeTable));
-        trapData = SpecificTableResolver(trapData, typeof(TrapTable));
-        spellData = SpecificTableResolver(spellData, typeof(SpellTable));
-        warChestData = SpecificTableResolver(warChestData, typeof(WarChestTable));
-        warData = SpecificTableResolver(warData, typeof(WarTable));
-        cityLevelData = SpecificTableResolver(cityLevelData, typeof(CityLevelTable));
-        pointData = SpecificTableResolver(pointData, typeof(PointTable));
-        battleEventData = SpecificTableResolver(battleEventData, typeof(BattleEventTable));
-        enemyData = SpecificTableResolver(enemyData, typeof(EnemyTable));
-        enemyUnitData = SpecificTableResolver(enemyUnitData, typeof(EnemyUnitTable));
-        storyData = SpecificTableResolver(storyData, typeof(StoryTable));
-        storyRData = SpecificTableResolver(storyRData, typeof(StoryRTable));
-        testData = SpecificTableResolver(testData, typeof(TestTable));
-        testRData = SpecificTableResolver(testRData, typeof(TestRTable));
-        encounterData = SpecificTableResolver(encounterData, typeof(EncounterTable));
-        shoppingData = SpecificTableResolver(shoppingData, typeof(ShoppingTable));
-        choseWarData = SpecificTableResolver(choseWarData, typeof(ChoseWarTable));
-        guideData = SpecificTableResolver(guideData, typeof(GuideTable));
-        knowledgeData = SpecificTableResolver(knowledgeData, typeof(KnowledgeTable));
-        rCodeData = SpecificTableResolver(rCodeData, typeof(RCodeTable));
-        tiLiStoreData = SpecificTableResolver(tiLiStoreData, typeof(TiLiStoreTable));
-        enemyBossData = SpecificTableResolver(enemyBossData, typeof(EnemyBOSSTable));
-        stringTextData = SpecificTableResolver(stringTextData, typeof(StringTextTable));
-        numParametersData = SpecificTableResolver(numParametersData, typeof(NumParametersTable));
-        jiBanData = SpecificTableResolver(jiBanData, typeof(JiBanTable));
-        shiLiData = SpecificTableResolver(shiLiData, typeof(ShiLiTable));
-        baYeDiTuData = SpecificTableResolver(baYeDiTuData, typeof(BaYeDiTuTable));
-        baYeShiJianData = SpecificTableResolver(baYeShiJianData, typeof(BaYeShiJianTable));
-        baYeBattleData = SpecificTableResolver(baYeBattleData, typeof(BaYeBattleTable));
-        baYeRenWuData = SpecificTableResolver(baYeRenWuData, typeof(BaYeRenWuTable));
-        storyPoolData = SpecificTableResolver(storyPoolData, typeof(StoryPoolTable));
-        storyIdData = SpecificTableResolver(storyIdData, typeof(StoryIdTable));
-        baYeTvData = SpecificTableResolver(baYeTvData, typeof(BaYeTVTable));
-        baYeNameData = SpecificTableResolver(baYeNameData, typeof(BaYeNameTable));
-    }
+    public static IReadOnlyDictionary<int, PlayerInitialConfigTable> PlayerInitialConfig=>Data.PlayerInitialConfigSet;
+    public static IReadOnlyDictionary<int, ResourceConfigTable> ResourceConfig=>          Data.ResourceConfigSet;
+    public static IReadOnlyDictionary<int, HeroTable> Hero=>                              Data.HeroSet;
+    public static IReadOnlyDictionary<int, PlayerLevelConfigTable> PlayerLevelConfig=>    Data.PlayerLevelConfigSet;
+    public static IReadOnlyDictionary<int, TowerTable> Tower=>                            Data.TowerSet;
+    public static IReadOnlyDictionary<int, MilitaryTable> Military=>                      Data.MilitarySet;
+    public static IReadOnlyDictionary<int, CardLevelTable> CardLevel=>                    Data.CardLevelSet;
+    public static IReadOnlyDictionary<int, TrapTable> Trap=>                              Data.TrapSet;
+    public static IReadOnlyDictionary<int, WarChestTable> WarChest=>                      Data.WarChestSet;
+    public static IReadOnlyDictionary<int, WarTable> War=>                                Data.WarSet;
+    public static IReadOnlyDictionary<int, BaseLevelTable> BaseLevel=>                    Data.BaseLevelSet;
+    public static IReadOnlyDictionary<int, CheckpointTable> Checkpoint=>                  Data.CheckpointSet;
+    public static IReadOnlyDictionary<int, BattleEventTable> BattleEvent=>                Data.BattleEventSet;
+    public static IReadOnlyDictionary<int, EnemyTable> Enemy=>                            Data.EnemySet;
+    public static IReadOnlyDictionary<int, EnemyUnitTable> EnemyUnit=>                    Data.EnemyUnitSet;
+    public static IReadOnlyDictionary<int, QuestTable> Quest=>                            Data.QuestSet;
+    public static IReadOnlyDictionary<int, QuestRewardTable> QuestReward=>                Data.QuestRewardSet;
+    public static IReadOnlyDictionary<int, MercenaryTable> Mercenary=>                    Data.MercenarySet;
+    public static IReadOnlyDictionary<int, GameModeTable> GameMode=>                      Data.GameModeSet;
+    public static IReadOnlyDictionary<int, GuideTable> Guide=>                            Data.GuideSet;
+    public static IReadOnlyDictionary<int, TipsTable> Tips=>                              Data.TipsSet;
+    public static IReadOnlyDictionary<int, RCodeTable> RCode=>                            Data.RCodeSet;
+    public static IReadOnlyDictionary<int, ChickenTable> Chicken=>                        Data.ChickenSet;
+    public static IReadOnlyDictionary<int, StaticArrangementTable> StaticArrangement=>    Data.StaticArrangementSet;
+    public static IReadOnlyDictionary<int, TextTable> Text=>                              Data.TextSet;
+    public static IReadOnlyDictionary<int, NumericalConfigTable> NumericalConfig=>        Data.NumericalConfigSet;
+    public static IReadOnlyDictionary<int, JiBanTable> JiBan=>                            Data.JiBanSet;
+    public static IReadOnlyDictionary<int, ForceTable> Force=>                            Data.ForceSet;
+    public static IReadOnlyDictionary<int, BaYeCityTable> BaYeCity=>                      Data.BaYeCitySet;
+    public static IReadOnlyDictionary<int, BaYeCityEventTable> BaYeCityEvent=>            Data.BaYeCityEventSet;
+    public static IReadOnlyDictionary<int, BaYeLevelMappingTable> BaYeLevelMapping=>      Data.BaYeLevelMappingSet;
+    public static IReadOnlyDictionary<int, BaYeTaskTable> BaYeTask=>                      Data.BaYeTaskSet;
+    public static IReadOnlyDictionary<int, BaYeStoryPoolTable> BaYeStoryPool=>            Data.BaYeStoryPoolSet;
+    public static IReadOnlyDictionary<int, BaYeStoryEventTable> BaYeStoryEvent=>          Data.BaYeStoryEventSet;
+    public static IReadOnlyDictionary<int, BaYeTvTable> BaYeTv=>                          Data.BaYeTvSet;
+    public static IReadOnlyDictionary<int, BaYeNameTable> BaYeName=>                      Data.BaYeNameSet;
 
-    private static Dictionary<int, IReadOnlyList<string>> playerInitialData;
-    private static Dictionary<int, IReadOnlyList<string>> assetData;
-    private static Dictionary<int, IReadOnlyList<string>> heroData;
-    private static Dictionary<int, IReadOnlyList<string>> playerLevelData;
-    private static Dictionary<int, IReadOnlyList<string>> soldierData;
-    private static Dictionary<int, IReadOnlyList<string>> towerData;
-    private static Dictionary<int, IReadOnlyList<string>> classData;
-    private static Dictionary<int, IReadOnlyList<string>> upGradeData;
-    private static Dictionary<int, IReadOnlyList<string>> trapData;
-    private static Dictionary<int, IReadOnlyList<string>> spellData;
-    private static Dictionary<int, IReadOnlyList<string>> warChestData;
-    private static Dictionary<int, IReadOnlyList<string>> warData;
-    private static Dictionary<int, IReadOnlyList<string>> cityLevelData;
-    private static Dictionary<int, IReadOnlyList<string>> pointData;
-    private static Dictionary<int, IReadOnlyList<string>> battleEventData;
-    private static Dictionary<int, IReadOnlyList<string>> enemyData;
-    private static Dictionary<int, IReadOnlyList<string>> enemyUnitData;
-    private static Dictionary<int, IReadOnlyList<string>> storyData;
-    private static Dictionary<int, IReadOnlyList<string>> storyRData;
-    private static Dictionary<int, IReadOnlyList<string>> testData;
-    private static Dictionary<int, IReadOnlyList<string>> testRData;
-    private static Dictionary<int, IReadOnlyList<string>> encounterData;
-    private static Dictionary<int, IReadOnlyList<string>> shoppingData;
-    private static Dictionary<int, IReadOnlyList<string>> choseWarData;
-    private static Dictionary<int, IReadOnlyList<string>> guideData;
-    private static Dictionary<int, IReadOnlyList<string>> knowledgeData;
-    private static Dictionary<int, IReadOnlyList<string>> rCodeData;
-    private static Dictionary<int, IReadOnlyList<string>> tiLiStoreData;
-    private static Dictionary<int, IReadOnlyList<string>> enemyBossData;
-    private static Dictionary<int, IReadOnlyList<string>> stringTextData;
-    private static Dictionary<int, IReadOnlyList<string>> numParametersData;
-    private static Dictionary<int, IReadOnlyList<string>> jiBanData;
-    private static Dictionary<int, IReadOnlyList<string>> shiLiData;
-    private static Dictionary<int, IReadOnlyList<string>> baYeDiTuData;
-    private static Dictionary<int, IReadOnlyList<string>> baYeShiJianData;
-    private static Dictionary<int, IReadOnlyList<string>> baYeBattleData;
-    private static Dictionary<int, IReadOnlyList<string>> baYeRenWuData;
-    private static Dictionary<int, IReadOnlyList<string>> storyPoolData;
-    private static Dictionary<int, IReadOnlyList<string>> storyIdData;
-    private static Dictionary<int, IReadOnlyList<string>> baYeTvData;
-    private static Dictionary<int, IReadOnlyList<string>> baYeNameData;
-
-    public TextAsset playerInitialTable;
-    public TextAsset heroTable;
-    public TextAsset playerLevelTable;
-    public TextAsset assetTable;
-    public TextAsset soldierTable;
-    public TextAsset upGradeTable;
-    public TextAsset warChestTable;
-    public TextAsset pointTable;
-    public TextAsset battleEventTable;
-    public TextAsset enemyTable;
-    public TextAsset enemyUnitTable;
-    public TextAsset storyTable;
-    public TextAsset storyRTable;
-    public TextAsset testTable;
-    public TextAsset testRTable;
-    public TextAsset encounterTable;
-    public TextAsset shoppingTable;
-    public TextAsset choseWarTable;
-    public TextAsset guideTable;
-    public TextAsset knowledgeTable;
-    public TextAsset rCodeTable;
-    public TextAsset tiLiStoreTable;
-    public TextAsset enemyBOSSTable;
-    public TextAsset stringTextTable;
-    public TextAsset numParametersTable;
-    public TextAsset jiBanTable;
-    public TextAsset shiLiTable;
-    public TextAsset baYeDiTuTable;
-    public TextAsset baYeShiJianTable;
-    public TextAsset baYeBattleTable;
-    public TextAsset baYeRenWuTable;
-    public TextAsset storyPoolTable;
-    public TextAsset storyIdTable;
-    public TextAsset baYeTVTable;
-    public TextAsset baYeNameTable;
-    public TextAsset towerTable;
-    public TextAsset classTable;
-    public TextAsset trapTable;
-    public TextAsset spellTable;
-    public TextAsset warTable;
-    public TextAsset cityLevelTable;
-
-    public static IReadOnlyDictionary<int, IReadOnlyList<string>> PlayerInitial => playerInitialData;
-    public static IReadOnlyDictionary<int, IReadOnlyList<string>> Asset         => assetData;
-    public static IReadOnlyDictionary<int, IReadOnlyList<string>> Hero          => heroData;
-    public static IReadOnlyDictionary<int, IReadOnlyList<string>> PlayerLevel   => playerLevelData;
-    public static IReadOnlyDictionary<int, IReadOnlyList<string>> Soldier       => soldierData;
-    public static IReadOnlyDictionary<int, IReadOnlyList<string>> Tower         => towerData;
-    public static IReadOnlyDictionary<int, IReadOnlyList<string>> Class         => classData;
-    public static IReadOnlyDictionary<int, IReadOnlyList<string>> UpGrade       => upGradeData;
-    public static IReadOnlyDictionary<int, IReadOnlyList<string>> Trap          => trapData;
-    public static IReadOnlyDictionary<int, IReadOnlyList<string>> Spell         => spellData;
-    public static IReadOnlyDictionary<int, IReadOnlyList<string>> WarChest      => warChestData;
-    public static IReadOnlyDictionary<int, IReadOnlyList<string>> War           => warData;
-    public static IReadOnlyDictionary<int, IReadOnlyList<string>> CityLevel     => cityLevelData;
-    public static IReadOnlyDictionary<int, IReadOnlyList<string>> Point         => pointData;
-    public static IReadOnlyDictionary<int, IReadOnlyList<string>> BattleEvent   => battleEventData;
-    public static IReadOnlyDictionary<int, IReadOnlyList<string>> Enemy         => enemyData;
-    public static IReadOnlyDictionary<int, IReadOnlyList<string>> EnemyUnit     => enemyUnitData;
-    public static IReadOnlyDictionary<int, IReadOnlyList<string>> Story         => storyData;
-    public static IReadOnlyDictionary<int, IReadOnlyList<string>> StoryR        => storyRData;
-    public static IReadOnlyDictionary<int, IReadOnlyList<string>> Test          => testData;
-    public static IReadOnlyDictionary<int, IReadOnlyList<string>> TestR         => testRData;
-    public static IReadOnlyDictionary<int, IReadOnlyList<string>> Encounter     => encounterData;
-    public static IReadOnlyDictionary<int, IReadOnlyList<string>> Shopping      => shoppingData;
-    public static IReadOnlyDictionary<int, IReadOnlyList<string>> ChoseWar      => choseWarData;
-    public static IReadOnlyDictionary<int, IReadOnlyList<string>> Guide         => guideData;
-    public static IReadOnlyDictionary<int, IReadOnlyList<string>> Knowledge     => knowledgeData;
-    public static IReadOnlyDictionary<int, IReadOnlyList<string>> RCode         => rCodeData;
-    public static IReadOnlyDictionary<int, IReadOnlyList<string>> TiLiStore     => tiLiStoreData;
-    public static IReadOnlyDictionary<int, IReadOnlyList<string>> EnemyBoss     => enemyBossData;
-    public static IReadOnlyDictionary<int, IReadOnlyList<string>> StringText    => stringTextData;
-    public static IReadOnlyDictionary<int, IReadOnlyList<string>> NumParameters => numParametersData;
-    public static IReadOnlyDictionary<int, IReadOnlyList<string>> JiBan         => jiBanData;
-    public static IReadOnlyDictionary<int, IReadOnlyList<string>> ShiLi         => shiLiData;
-    public static IReadOnlyDictionary<int, IReadOnlyList<string>> BaYeDiTu      => baYeDiTuData;
-    public static IReadOnlyDictionary<int, IReadOnlyList<string>> BaYeShiJian   => baYeShiJianData;
-    public static IReadOnlyDictionary<int, IReadOnlyList<string>> BaYeBattle    => baYeBattleData;
-    public static IReadOnlyDictionary<int, IReadOnlyList<string>> BaYeRenWu     => baYeRenWuData;
-    public static IReadOnlyDictionary<int, IReadOnlyList<string>> StoryPool     => storyPoolData;
-    public static IReadOnlyDictionary<int, IReadOnlyList<string>> StoryId       => storyIdData;
-    public static IReadOnlyDictionary<int, IReadOnlyList<string>> BaYeTv        => baYeTvData;
-    public static IReadOnlyDictionary<int, IReadOnlyList<string>> BaYeName      => baYeNameData;
-
-    /// <summary>
-    /// 势力初始数据
-    /// </summary>
-    public static IReadOnlyList<IReadOnlyList<string>> PlayerInitialData => ValueCache();
-
-    /// <summary>                                                  
-    /// 基础资源类型数据                                            
-    /// </summary>                                                 
-    public static IReadOnlyList<IReadOnlyList<string>> AssetData => ValueCache();
-    /// <summary>                                                  
-    /// 武将基础信息表数据                                           
-    /// </summary>                                                 
-    public static IReadOnlyList<IReadOnlyList<string>> HeroData => ValueCache();
-    /// <summary>                                                  
-    /// 玩家等级表数据                                              
-    /// </summary>                                                 
-    public static IReadOnlyList<IReadOnlyList<string>> PlayerLevelData => ValueCache();
-    /// <summary>                                                  
-    /// 士兵基础信息表数据                                           
-    /// </summary>                                                 
-    public static IReadOnlyList<IReadOnlyList<string>> SoldierData => ValueCache();
-    /// <summary>                                                  
-    /// 塔基础信息表数据                                            
-    /// </summary>                                                 
-    public static IReadOnlyList<IReadOnlyList<string>> TowerData => ValueCache();
-    /// <summary>                                                  
-    /// 兵种信息表数据                                              
-    /// </summary>                                                 
-    public static IReadOnlyList<IReadOnlyList<string>> ClassData => ValueCache();
-    /// <summary>                                                  
-    /// 升级碎片表数据                                              
-    /// </summary>                                                 
-    public static IReadOnlyList<IReadOnlyList<string>> UpGradeData => ValueCache();
-    /// <summary>                                                  
-    /// 辅助单位卡牌表数据                                           
-    /// </summary>                                                 
-    public static IReadOnlyList<IReadOnlyList<string>> TrapData => ValueCache();
-    /// <summary>                                                  
-    /// 辅助技能表数据                                              
-    /// </summary>                                                 
-    public static IReadOnlyList<IReadOnlyList<string>> SpellData => ValueCache();
-    /// <summary>                                                  
-    /// 宝箱表数据                                                  
-    /// </summary>                                                 
-    public static IReadOnlyList<IReadOnlyList<string>> WarChestData => ValueCache();
-    /// <summary>                                                  
-    /// 战役表数据                                                  
-    /// </summary>                                                 
-    public static IReadOnlyList<IReadOnlyList<string>> WarData => ValueCache();
-    /// <summary>                                                  
-    /// 城池等级表数据                                              
-    /// </summary>                                                 
-    public static IReadOnlyList<IReadOnlyList<string>> CityLevelData => ValueCache();
-    /// <summary>                                                  
-    /// 关卡表数据                                                  
-    /// </summary>                                                 
-    public static IReadOnlyList<IReadOnlyList<string>> PointData => ValueCache();
-    /// <summary>                                                  
-    /// 战斗事件表数据                                              
-    /// </summary>                                                 
-    public static IReadOnlyList<IReadOnlyList<string>> BattleEventData => ValueCache();
-    /// <summary>                                                  
-    /// 敌方位置表数据                                              
-    /// </summary>                                                 
-    public static IReadOnlyList<IReadOnlyList<string>> EnemyData => ValueCache();
-    /// <summary>                                                  
-    /// 敌方信息表数据                                              
-    /// </summary>                                                 
-    public static IReadOnlyList<IReadOnlyList<string>> EnemyUnitData => ValueCache();
-    /// <summary>                                                  
-    /// 非战斗事件-故事数据                                          
-    /// </summary>                                                 
-    public static IReadOnlyList<IReadOnlyList<string>> StoryData => ValueCache();
-    /// <summary>                                                  
-    /// 非战斗事件-故事奖励数据                                      
-    /// </summary>                                                 
-    public static IReadOnlyList<IReadOnlyList<string>> StoryRData => ValueCache();
-    /// <summary>                                                  
-    /// 非战斗事件-答题数据                                          
-    /// </summary>                                                 
-    public static IReadOnlyList<IReadOnlyList<string>> TestData => ValueCache();
-    /// <summary>                                                  
-    /// 非战斗事件-答题奖励数据                                      
-    /// </summary>                                                 
-    public static IReadOnlyList<IReadOnlyList<string>> TestRData => ValueCache();
-    /// <summary>                                                  
-    /// 非战斗事件-三选单位数据                                      
-    /// </summary>                                                 
-    public static IReadOnlyList<IReadOnlyList<string>> EncounterData => ValueCache();
-    /// <summary>                                                  
-    /// 非战斗事件-购买单位数据                                      
-    /// </summary>                                                 
-    public static IReadOnlyList<IReadOnlyList<string>> ShoppingData => ValueCache();
-    /// <summary>                                                  
-    /// 难度选择表数据                                              
-    /// </summary>                                                 
-    public static IReadOnlyList<IReadOnlyList<string>> ChoseWarData => ValueCache();
-    /// <summary>                                                  
-    /// 新手引导配置表                                              
-    /// </summary>                                                 
-    public static IReadOnlyList<IReadOnlyList<string>> GuideData => ValueCache();
-    /// <summary>                                                  
-    /// 酒馆锦囊表                                                  
-    /// </summary>                                                 
-    public static IReadOnlyList<IReadOnlyList<string>> KnowledgeData => ValueCache();
-    /// <summary>                                                  
-    /// 兑换码表                                                    
-    /// </summary>                                                 
-    public static IReadOnlyList<IReadOnlyList<string>> RCodeData => ValueCache();
-    /// <summary>                                                  
-    /// 体力商店表                                                  
-    /// </summary>                                                 
-    public static IReadOnlyList<IReadOnlyList<string>> TiLiStoreData => ValueCache();
-
-    /// <summary>                                                  
-    /// 敌人BOSS固定布阵表                                          
-    /// </summary>                                                 
-    public static IReadOnlyList<IReadOnlyList<string>> EnemyBossData => ValueCache();
-    /// <summary>                                                  
-    /// 文本内容表                                                  
-    /// </summary>                                                 
-    private static IReadOnlyList<IReadOnlyList<string>> StringTextData => ValueCache();
-    /// <summary>                                                  
-    /// 游戏数值表                                                  
-    /// </summary>                                                 
-    private static IReadOnlyList<IReadOnlyList<string>> NumParametersData => ValueCache();
-    /// <summary>                                                  
-    /// 羁绊数据表                                                  
-    /// </summary>                                                 
-    public static IReadOnlyList<IReadOnlyList<string>> JiBanData => ValueCache();
-    /// <summary>                                                  
-    ///势力表                                                       
-    /// </summary>                                                 
-    public static IReadOnlyList<IReadOnlyList<string>> ShiLiData => ValueCache();
-    /// <summary>                                                  
-    ///霸业地图表                                                   
-    /// </summary>                                                 
-    public static IReadOnlyList<IReadOnlyList<string>> BaYeDiTuData => ValueCache();
-    /// <summary>                                                  
-    ///霸业事件表                                                   
-    /// </summary>                                                 
-    public static IReadOnlyList<IReadOnlyList<string>> BaYeShiJianData => ValueCache();
-    /// <summary>                                                  
-    ///霸业战役难度表                                               
-    /// </summary>                                                 
-    public static IReadOnlyList<IReadOnlyList<string>> BaYeBattleData => ValueCache();
-    /// <summary>                                                  
-    ///霸业任务表                                                   
-    /// </summary>                                                 
-    public static IReadOnlyList<IReadOnlyList<string>> BaYeRenWuData => ValueCache();
-    /// <summary>                                                  
-    /// 霸业故事点表                                                
-    /// </summary>                                                 
-    public static IReadOnlyList<IReadOnlyList<string>> StoryPoolData => ValueCache();
-    /// <summary>                                                  
-    ///霸业故事id表                                                 
-    /// </summary>                                                 
-    public static IReadOnlyList<IReadOnlyList<string>> StoryIdData => ValueCache();
-    /// <summary>                                                  
-    /// 霸业TV表                                                    
-    /// </summary>                                                 
-    public static IReadOnlyList<IReadOnlyList<string>> BaYeTvData => ValueCache();
-    /// <summary>                                                  
-    /// 霸业TV人名表                                                
-    /// </summary>                                                 
-    public static IReadOnlyList<IReadOnlyList<string>> BaYeNameData => ValueCache();
+    public TextAsset PlayerInitialConfigTable;
+    public TextAsset ResourceConfigTable;
+    public TextAsset HeroTable;
+    public TextAsset PlayerLevelConfigTable;
+    public TextAsset TowerTable;
+    public TextAsset MilitaryTable;
+    public TextAsset CardLevelTable;
+    public TextAsset TrapTable;
+    public TextAsset WarChestTable;
+    public TextAsset WarTable;
+    public TextAsset BaseLevelTable;
+    public TextAsset CheckpointTable;
+    public TextAsset BattleEventTable;
+    public TextAsset EnemyTable;
+    public TextAsset EnemyUnitTable;
+    public TextAsset QuestTable;
+    public TextAsset QuestRewardTable;
+    public TextAsset MercenaryTable;
+    public TextAsset GameModeTable;
+    public TextAsset GuideTable;
+    public TextAsset TipsTable;
+    public TextAsset RCodeTable;
+    public TextAsset ChickenTable;
+    public TextAsset StaticArrangementTable;
+    public TextAsset TextTable;
+    public TextAsset NumericalConfigTable;
+    public TextAsset JiBanTable;
+    public TextAsset ForceTable;
+    public TextAsset BaYeCityTable;
+    public TextAsset BaYeCityEventTable;
+    public TextAsset BaYeLevelMappingTable;
+    public TextAsset BaYeTaskTable;
+    public TextAsset BaYeStoryPoolTable;
+    public TextAsset BaYeStoryEventTable;
+    public TextAsset BaYeTvTable;
+    public TextAsset BaYeNameTable;
 
     private void Awake()
     {
@@ -367,38 +105,29 @@ public class DataTable : MonoBehaviour
         }
         DontDestroyOnLoad(gameObject);
         Init();
-        ResolverInit();
     }
 
     private void Init()
     {
         var type = GetType();
-        var textAssets = type.GetFields().Where(f => f.FieldType == TextAssetType)
-            .ToDictionary(p => p.Name.Replace(TableSuffix,string.Empty).ToLower(), p => p);
-        var staticData = type.GetFields(BindingFlags.Static | BindingFlags.NonPublic).Where(f => f.FieldType == DataType)
-            .ToDictionary(p => p.Name.Replace(DataSuffix, string.Empty).ToLower(), p => p);
-        textAssets.Join(staticData,tx=>tx.Key,st=>st.Key, (tx, st) =>new {Asset = tx.Value, Data = st.Value}).ToList().ForEach(
-            map =>
-            {
-                var textAsset = (TextAsset) map.Asset.GetValue(this);
-                map.Data.SetValue(null,ConvertText(textAsset));
-            });
+        var data = type.GetFields().Where(f => f.FieldType == TextAssetType)
+            .ToDictionary(p => p.Name.Replace(TableSuffix,string.Empty).ToLower(), p => ConvertText(p.GetValue(this).ToString()));
+        Data = new TableData(data);
+        //var staticData = type.GetFields(BindingFlags.Static | BindingFlags.NonPublic).Where(f => f.FieldType == DataType)
+        //    .ToDictionary(p => p.Name.Replace(DataSuffix, string.Empty).ToLower(), p => p);
+        //textAssets.Join(staticData,tx=>tx.Key,st=>st.Key, (tx, st) =>new {Asset = tx.Value, Data = st.Value}).ToList().ForEach(
+        //    map =>
+        //    {
+        //        var textAsset = (TextAsset) map.Asset.GetValue(this);
+        //        map.Data.SetValue(null,ConvertText(textAsset));
+        //    });
+        //var tableData = new TableData(new Dictionary<string, Dictionary<int, IReadOnlyList<string>>>());
     }
 
-    private Dictionary<int, IReadOnlyList<string>> ConvertText(TextAsset asset)
+    private Dictionary<int, IReadOnlyList<string>> ConvertText(string text)
     {
-        var text = asset.text.Replace(@"\\", @"\");
+        text = text.Replace(@"\\", @"\");
         return Json.DeserializeList<List<string>>(text).ToDictionary(row => int.Parse(row[0]), row =>row as IReadOnlyList<string>);
-    }
-
-    private static IReadOnlyList<IReadOnlyList<string>> ValueCache([CallerMemberName]string methodName = "")
-    {
-        if (cache.ContainsKey(methodName)) return cache[methodName];
-        var type = typeof(DataTable);
-        var fieldInfo = type.GetField(methodName.FirstCharToLower(), BindingFlags.NonPublic | BindingFlags.Static);
-        var field = (Dictionary<int,IReadOnlyList<string>>)fieldInfo.GetValue(null);
-        cache.Add(methodName,field.OrderBy(m=>m.Key).Select(m=>m.Value).ToList());
-        return cache[methodName];
     }
 
     /// <summary>
@@ -406,58 +135,13 @@ public class DataTable : MonoBehaviour
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    public static string GetStringText(int id) => StringText[id][1];
+    public static string GetStringText(int id) => Text[id].Text;
 
     /// <summary>
     /// 根据id获取游戏数值内容
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    public static int GetGameValue(int id) => int.Parse(NumParameters[id][1]);
+    public static int GetGameValue(int id) => NumericalConfig[id].Value;
 
-    private static Dictionary<int,IReadOnlyList<string>> SpecificTableResolver(Dictionary<int,IReadOnlyList<string>> field, Type type)
-    {
-        var row = field.Values.First();
-        var props = type.GetProperties();
-        if (row.Count != props.Length)
-            throw XDebug.Throw($"表类型[{type.Name}][{props.Length}]与表实例[{row.Count}]长度不一致！",nameof(DataTable));
-        var newMap = field.ToDictionary(kv => kv.Key, kv => kv.Value.ToList());
-        foreach (var map in newMap)
-        {
-            for (var index = 0; index < props.Length; index++)
-            {
-                var info = props[index];
-                var cell = map.Value[index];
-
-                if (info.PropertyType != StringType && string.IsNullOrWhiteSpace(cell))
-                {   //如果类型不是string并且内容为空 将实例一个预设值类型
-                    map.Value[index] = Activator.CreateInstance(info.PropertyType).ToString();
-                }   //如果是string并内容是null值，给个string.Empty
-                else if (cell == null) map.Value[index] = string.Empty;
-            }
-        }
-        return newMap.ToDictionary(kv=>kv.Key,kv=>kv.Value as IReadOnlyList<string>);
-    }
-}
-
-public static class StringConverExtension
-{
-    public static string FirstCharToUpper(this string input)
-    {
-        switch (input)
-        {
-            case null: throw new ArgumentNullException(nameof(input));
-            case "": throw new ArgumentException($"{nameof(input)} cannot be empty", nameof(input));
-            default: return input.First().ToString().ToUpper() + input.Substring(1);
-        }
-    }
-    public static string FirstCharToLower(this string input)
-    {
-        switch (input)
-        {
-            case null: throw new ArgumentNullException(nameof(input));
-            case "": throw new ArgumentException($"{nameof(input)} cannot be empty", nameof(input));
-            default: return input.First().ToString().ToLower() + input.Substring(1);
-        }
-    }
 }

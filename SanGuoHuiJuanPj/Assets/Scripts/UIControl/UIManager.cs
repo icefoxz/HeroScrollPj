@@ -5,7 +5,7 @@ using DG.Tweening;
 using System.Collections;
 using System;
 using System.Linq;
-using System.Threading;
+
 using Beebyte.Obfuscator;
 using UnityEngine.Events;
 
@@ -374,21 +374,20 @@ public class UIManager : MonoBehaviour
         ResetBaYeProgressAndGold();
         //城市点初始化 
         var cityLvlMap = new Dictionary<int,int>();//maxCity, level
-        DataTable.PlayerLevel.Select(map =>
+        DataTable.PlayerLevelConfig.Values.Select(lvl =>
         {
-            var maxCity = map.Value[7].TableStringToInts().Max();
-            return new {level = map.Key, maxCity};
-        }).ToList().ForEach(map =>
+            var maxCity = lvl.BaYeCityPoints.Max();
+            return new {level = lvl.Level, maxCity};
+        }).ToList().ForEach(lvl =>
         {
-            if (!cityLvlMap.ContainsKey(map.maxCity))
+            if (!cityLvlMap.ContainsKey(lvl.maxCity))
             {
-                cityLvlMap.Add(map.maxCity, map.level);
+                cityLvlMap.Add(lvl.maxCity, lvl.level);
                 return;
             }
-
-            cityLvlMap[map.maxCity] = cityLvlMap[map.maxCity] > map.level ? cityLvlMap[map.maxCity] : map.level;
+            cityLvlMap[lvl.maxCity] = cityLvlMap[lvl.maxCity] > lvl.level ? cityLvlMap[lvl.maxCity] : lvl.level;
         });
-        var cityList = DataTable.PlayerLevel[PlayerDataForGame.instance.pyData.Level][7].TableStringToInts().ToArray();
+        var cityList = DataTable.PlayerLevelConfig[PlayerDataForGame.instance.pyData.Level].BaYeCityPoints;
         if (cityFields != null && cityFields.Count > 0)
             cityFields.ForEach(Destroy);
         cityFields = new List<BaYeCityField>();
@@ -403,8 +402,8 @@ public class UIManager : MonoBehaviour
             cityFields.Add(cityField);
             var baYeEvent = BaYeManager.instance.Map.Single(e => e.CityId == cityPoint);
             var baYeRecord = baYe.data.SingleOrDefault(f => f.CityId == cityPoint);
-            var flag = (ForceFlags)int.Parse(DataTable.BaYeShiJian[baYeEvent.EventId][4]);//旗帜id 
-            var flagName = DataTable.BaYeShiJian[baYeEvent.EventId][5];//旗帜文字 
+            var flag = (ForceFlags)DataTable.BaYeCityEvent[baYeEvent.EventId].FlagId;//旗帜id 
+            var flagName = DataTable.BaYeCityEvent[baYeEvent.EventId].FlagText;//旗帜文字 
             ui.button.interactable = cityList.Length > i;
             ui.forceFlag.Set(flag, true, flagName);
             if (cityList.Length > i)
@@ -415,7 +414,7 @@ public class UIManager : MonoBehaviour
                 ui.button.onClick
                     .AddListener(
                         () => BaYeManager.instance.OnBaYeWarEventPointSelected(BaYeManager.EventTypes.City, baYeEvent.CityId));
-                ui.text.text = DataTable.BaYeDiTu[cityPoint][3]; //城市名 
+                ui.text.text = DataTable.BaYeCity[cityPoint].Name; //城市名 
             }
             else
             {
@@ -435,8 +434,8 @@ public class UIManager : MonoBehaviour
     public void ResetBaYeProgressAndGold()
     {
         var baYe = PlayerDataForGame.instance.warsData.baYe;
-        var baYeReward = DataTable.BaYeRenWu
-            .Select(map => new { id = map.Key, exp = int.Parse(map.Value[1]), rewardId = int.Parse(map.Value[2]) })
+        var baYeReward = DataTable.BaYeTask.Values
+            .Select(task => new { id = task.Id, exp = task.Exp, warChestId = task.WarChestTableId })
             .ToList();
         baYeGoldNumText.text = $"{baYe.gold}/{BaYeManager.instance.BaYeMaxGold}";
         baYeProgressUi.Set(baYe.CurrentExp, baYeReward[baYeReward.Count - 1].exp);
@@ -460,17 +459,16 @@ public class UIManager : MonoBehaviour
     //main场景羁绊内容的初始化 
     private void InitJiBanForMainFun()
     {
-        foreach (var map in DataTable.JiBan)
+        foreach (var jiBan in DataTable.JiBan.Values)
         {
-            var enableValue = int.Parse(map.Value[2]);
-            if (enableValue == 0) continue;
-            Transform tran = jibanBtnBoxTran.GetChild(map.Key);
+            if (jiBan.IsOpen == 0) continue;
+            Transform tran = jibanBtnBoxTran.GetChild(jiBan.Id);
             if (tran != null)
             {
                 tran.GetChild(0).GetChild(0).GetComponent<Image>().sprite =
-                    Resources.Load("Image/JiBan/name_v/" + map.Key, typeof(Sprite)) as Sprite;
+                    Resources.Load("Image/JiBan/name_v/" + jiBan.Id, typeof(Sprite)) as Sprite;
                 tran.GetChild(0).GetChild(0).GetComponent<Button>().onClick.AddListener(() =>
-                    ShowJiBanInfoOnClick(map.Key));
+                    ShowJiBanInfoOnClick(jiBan.Id));
                 tran.gameObject.SetActive(true);
             }
         }
@@ -485,34 +483,34 @@ public class UIManager : MonoBehaviour
             jibanHeroBoxTran.transform.GetChild(i).gameObject.SetActive(false);
         }
 
-        string[] arrs = DataTable.JiBan[indexId][3].Split(';');
-        for (int i = 0; i < arrs.Length; i++)
+        var jiBan = DataTable.JiBan[indexId];
+        for (int i = 0; i < jiBan.Cards.Length; i++)
         {
-            if (arrs[i] != "")
+            var card = jiBan.Cards[i];
+            var heroType = (int) GameCardType.Hero;
+            if (card.CardType == heroType)
             {
-                string[] arr = arrs[i].Split(',');
-                if (arr[0] == "0")
-                {
-                    int heroId = int.Parse(arr[1]);
-                    Transform tran = jibanHeroBoxTran.GetChild(i);
-                    GameObject obj = tran.GetChild(0).gameObject;
-                    //名字 
-                    ShowNameTextRules(obj.transform.GetChild(2).GetComponent<Text>(), DataTable.Hero[heroId][1]);
-                    //名字颜色根据稀有度 
-                    obj.transform.GetChild(2).GetComponent<Text>().color = NameColorChoose(DataTable.Hero[heroId][3]);
-                    //卡牌 
-                    obj.transform.GetChild(1).GetComponent<Image>().sprite =
-                        GameResources.HeroImg[heroId];
-                    //兵种名 
-                    obj.transform.GetChild(4).GetComponentInChildren<Text>().text = DataTable.ClassData[int.Parse(DataTable.Hero[heroId][5])][3];
-                    //兵种框 
-                    obj.transform.GetChild(4).GetComponent<Image>().sprite = GameResources.ClassImg[0];
-                    tran.gameObject.SetActive(true);
-                }
+                var hero = DataTable.Hero[card.CardId];
+                Transform tran = jibanHeroBoxTran.GetChild(i);
+                GameObject obj = tran.GetChild(0).gameObject;
+                //名字 
+                ShowNameTextRules(obj.transform.GetChild(2).GetComponent<Text>(), hero.Name);
+                //名字颜色根据稀有度 
+                obj.transform.GetChild(2).GetComponent<Text>().color = NameColorChoose(hero.Rarity);
+                //卡牌 
+                obj.transform.GetChild(1).GetComponent<Image>().sprite =
+                    GameResources.HeroImg[hero.Id];
+                //兵种名 
+                obj.transform.GetChild(4).GetComponentInChildren<Text>().text =
+                    DataTable.Military[hero.MilitaryUnitTableId].Short;
+                //兵种框 
+                obj.transform.GetChild(4).GetComponent<Image>().sprite = GameResources.ClassImg[0];
+                tran.gameObject.SetActive(true);
             }
         }
+
         jiBanInfoConObj.transform.GetChild(0).GetComponent<Image>().sprite = Resources.Load("Image/JiBan/art/" + indexId, typeof(Sprite)) as Sprite;
-        jiBanInfoConObj.transform.GetChild(0).GetChild(0).GetComponent<Text>().text = DataTable.JiBanData[indexId][4];
+        jiBanInfoConObj.transform.GetChild(0).GetChild(0).GetComponent<Text>().text = DataTable.JiBan[indexId].JiBanEffect;
         jiBanInfoConObj.transform.GetChild(0).GetChild(1).GetChild(0).GetComponent<Image>().sprite = Resources.Load("Image/JiBan/name_h/" + indexId, typeof(Sprite)) as Sprite;
 
 
@@ -556,7 +554,7 @@ public class UIManager : MonoBehaviour
             cutTiLiTextObj.GetComponent<Text>().color = ColorDataStatic.deep_green;
             cutTiLiTextObj.GetComponent<Text>().text = "+" + PlayerDataForGame.instance.getBackTiLiNums;
             cutTiLiTextObj.SetActive(true);
-            AddTiLiNums(PlayerDataForGame.instance.getBackTiLiNums);
+            AddStamina(PlayerDataForGame.instance.getBackTiLiNums);
             PlayerDataForGame.instance.ShowStringTips(string.Format(DataTable.GetStringText(25), PlayerDataForGame.instance.getBackTiLiNums));
         }
         PlayerDataForGame.instance.lastSenceIndex = 1;
@@ -566,32 +564,28 @@ public class UIManager : MonoBehaviour
     public void GetBaYeProgressReward(int index)
     {
         var baYe = PlayerDataForGame.instance.warsData.baYe;
-        var baYeRewardList = DataTable.BaYeRenWuData
-            .Select(row =>
-                new { exp = int.Parse(row[1]), rewardId = int.Parse(row[2]) })
-            .ToList();
-        if (baYe.CurrentExp < baYeRewardList[index].exp)
+        if (baYe.CurrentExp < DataTable.BaYeTask[index].Exp)
         {
             PlayerDataForGame.instance.ShowStringTips("当前经验不足以领取！");
             return;
         }
-        baYeChestButtons[index].Opened();
-        var data = DataTable.BaYeRenWu[index].Select(int.Parse).ToList();
-        var isOpen = baYe.openedChest[index];
+        var btnIndex = index - 1;
+        baYeChestButtons[btnIndex].Opened();
+        var isOpen = baYe.openedChest[btnIndex];
         if (isOpen)
         {
             PlayerDataForGame.instance.ShowStringTips("该奖励已经领取了噢！");
             return;
         }
-        var rewardId = data[2];
-        var chestData = DataTable.WarChestData[rewardId];
-        var exp = int.Parse(chestData[3]);
-        var yvQue = RewardManager.instance.GetYvQue(rewardId);
-        var yuanBao = RewardManager.instance.GetYuanBao(rewardId);
+        var rewardId = DataTable.BaYeTask[index].WarChestTableId;
+        var chest = DataTable.WarChest[rewardId];
+        var exp = chest.Exp;
+        var yvQue = RewardManager.instance.GetRandomYvQue(rewardId);
+        var yuanBao = RewardManager.instance.GetRandomYuanBao(rewardId);
         var cards = RewardManager.instance.GetCards(rewardId, false);
         ConsumeManager.instance.AddYuQue(yvQue);
         ConsumeManager.instance.AddYuanBao(yuanBao);
-        PlayerDataForGame.instance.warsData.baYe.openedChest[index] = true;
+        PlayerDataForGame.instance.warsData.baYe.openedChest[btnIndex] = true;
         PlayerDataForGame.instance.isNeedSaveData = true;
         LoadSaveData.instance.SaveGameData(3);
         ShowRewardsThings(yuanBao, yvQue, exp, 0, cards, 0.5f);
@@ -605,38 +599,32 @@ public class UIManager : MonoBehaviour
     {
         var playerUnlockProgress = PlayerDataForGame.instance.warsData.warUnlockSaveData.Single(w => w.warId == warId);
         if (playerUnlockProgress.isTakeReward) PlayerDataForGame.instance.ShowStringTips("首通宝箱已领取！");
-        int yuanBaoNums = int.Parse(DataTable.WarData[warId][8]);
-        int yuQueNums = int.Parse(DataTable.WarData[warId][9]);
-        int tiLiNums = int.Parse(DataTable.WarData[warId][10]);
-        if (yuanBaoNums > 0)
+        var reward = DataTable.War[warId].AchievementReward;
+        if (reward.YuanBao > 0)
         {
-            ConsumeManager.instance.AddYuanBao(yuanBaoNums);
+            ConsumeManager.instance.AddYuanBao(reward.YuanBao);
         }
-        if (yuQueNums > 0)
+        if (reward.YvQue > 0)
         {
-            ConsumeManager.instance.AddYuQue(yuQueNums);
+            ConsumeManager.instance.AddYuQue(reward.YvQue);
         }
-        if (tiLiNums > 0)
+        if (reward.Stamina > 0)
         {
-            AddTiLiNums(tiLiNums);
+            AddStamina(reward.Stamina);
         }
 
-        string rewardsStr = DataTable.WarData[warId][PlayerDataForGame.instance.pyData.ForceId + 5];
+        var card = DataTable.War[warId].AchievementCardProduce;
 
-        List<RewardsCardClass> rewards = new List<RewardsCardClass>();
+        List<RewardsCardClass> cards = new List<RewardsCardClass>();
 
-        if (rewardsStr != "")
+        if (card != null)
         {
-            string[] arrs = rewardsStr.Split(',');
-            int cardType = int.Parse(arrs[0]);
-            int cardId = int.Parse(arrs[1]);
-            int cardChips = int.Parse(arrs[2]);
-            rewardManager.RewardCard((GameCardType)cardType, cardId, cardChips);
-            RewardsCardClass rewardCard = new RewardsCardClass();
-            rewardCard.cardType = cardType;
-            rewardCard.cardId = cardId;
-            rewardCard.cardChips = cardChips;
-            rewards.Add(rewardCard);
+            rewardManager.RewardCard((GameCardType)card.Type, card.CardId, card.Chips);
+            RewardsCardClass rewardCard = new RewardsCardClass
+            {
+                cardType = card.Type, cardId = card.CardId, cardChips = card.Chips
+            };
+            cards.Add(rewardCard);
             PlayerDataForGame.instance.isNeedSaveData = true;
             LoadSaveData.instance.SaveGameData(2);
         }
@@ -645,7 +633,7 @@ public class UIManager : MonoBehaviour
         PlayerDataForGame.instance.isNeedSaveData = true;
         LoadSaveData.instance.SaveGameData(3);
 
-        ShowRewardsThings(yuanBaoNums, yuQueNums, 0, tiLiNums, rewards, 0);
+        ShowRewardsThings(reward.YuanBao, reward.YvQue, 0, reward.Stamina, cards, 0);
     }
 
     int showTiLiNums = 0;
@@ -688,7 +676,7 @@ public class UIManager : MonoBehaviour
         if (!IsJumping)
         {
             var staminaMap = expedition.SelectedWarStaminaCost;
-            int staminaCost = staminaMap[0];
+            int staminaCost = staminaMap.Cost;
             if (PlayerDataForGame.instance.pyData.Stamina >= staminaCost)
             {
                 ShowOrHideGuideObj(3, false);
@@ -704,8 +692,8 @@ public class UIManager : MonoBehaviour
                 cutTiLiTextObj.GetComponent<Text>().text = "-" + staminaCost;
                 cutTiLiTextObj.SetActive(true);
 
-                PlayerDataForGame.instance.getBackTiLiNums = staminaMap[1];
-                PlayerDataForGame.instance.boxForTiLiNums = staminaMap[2];
+                PlayerDataForGame.instance.getBackTiLiNums = staminaMap.MaxReturn;
+                PlayerDataForGame.instance.boxForTiLiNums = staminaMap.CostOfChest;
 
                 StartCoroutine(LateGoToFightScene());
             }
@@ -735,7 +723,7 @@ public class UIManager : MonoBehaviour
     private void UpdateCardNumsShow()
     {
         cardsListTitle.text = "出战";
-        cardsNumsTitle.text = PlayerDataForGame.instance.CalculationFightCount() + "/" + DataTable.PlayerLevelData[PlayerDataForGame.instance.pyData.Level - 1][2];
+        cardsNumsTitle.text = PlayerDataForGame.instance.CalculationFightCount() + "/" + DataTable.PlayerLevelConfig[PlayerDataForGame.instance.pyData.Level].CardLimit;
     }
 
     //是否展示卡牌详情显示 
@@ -758,7 +746,7 @@ public class UIManager : MonoBehaviour
         AudioController0.instance.RandomPlayGuZhengAudio();//播放随机音效 
 
         indexChooseListForceId++;
-        if (indexChooseListForceId > int.Parse(DataTable.PlayerLevelData[PlayerDataForGame.instance.pyData.Level - 1][6]))
+        if (indexChooseListForceId > DataTable.PlayerLevelConfig[PlayerDataForGame.instance.pyData.Level].UnlockForces)
         {
             indexChooseListForceId = 0;
         }
@@ -805,27 +793,28 @@ public class UIManager : MonoBehaviour
     /// <summary> 
     /// 显示单个辅助 
     /// </summary> 
-    private void ShowOneFuZhuRules(IReadOnlyDictionary<int, IReadOnlyList<string>> data, NowLevelAndHadChip card, int indexIcon)
+    private void ShowOneFuZhuRules(NowLevelAndHadChip card)
     {
+        var info = card.GetInfo();
         GameObject obj = GetHeroCardFromPool();
         //名字 
-        ShowNameTextRules(obj.transform.GetChild(3).GetComponent<Text>(), data[card.id][1]);
+        ShowNameTextRules(obj.transform.GetChild(3).GetComponent<Text>(), info.Name);
         //名字颜色根据稀有度 
-        obj.transform.GetChild(3).GetComponent<Text>().color = NameColorChoose(data[card.id][3]);
+        obj.transform.GetChild(3).GetComponent<Text>().color = NameColorChoose(info.Rare);
         //卡牌 
-        obj.transform.GetChild(1).GetComponent<Image>().sprite = GameResources.FuZhuImg[int.Parse(data[card.id][indexIcon])];
+        obj.transform.GetChild(1).GetComponent<Image>().sprite = GameResources.FuZhuImg[info.ImageId];
         //兵种框 
         obj.transform.GetChild(5).GetComponent<Image>().sprite = GameResources.ClassImg[1];
         //兵种名 
-        obj.transform.GetChild(5).GetComponentInChildren<Text>().text = data[card.id][5];
+        obj.transform.GetChild(5).GetComponentInChildren<Text>().text = info.Short;
         //边框 
-        FrameChoose(data[card.id][3], obj.transform.GetChild(6).GetComponent<Image>());
+        FrameChoose(info.Rare, obj.transform.GetChild(6).GetComponent<Image>());
         //碎片 
-        if (card.level < DataTable.UpGradeData.Count)
+        if (card.level < DataTable.CardLevel.Keys.Max())
         {
-            obj.transform.GetChild(2).GetComponent<Text>().text = card.chips + "/" + DataTable.UpGradeData[card.level][1];
-            obj.transform.GetChild(2).GetComponent<Text>().color = card.chips >= int.Parse(DataTable.UpGradeData[card.level][1]) ? ColorDataStatic.deep_green : Color.white;
-
+            var consume = DataTable.CardLevel[card.level + 1].ChipsConsume;
+            obj.transform.GetChild(2).GetComponent<Text>().text = card.chips + "/" + consume;
+            obj.transform.GetChild(2).GetComponent<Text>().color = card.chips >= consume ? ColorDataStatic.deep_green : Color.white;
         }
         else
         {
@@ -857,67 +846,68 @@ public class UIManager : MonoBehaviour
         obj.GetComponent<Button>().onClick.RemoveAllListeners();
         obj.GetComponent<Button>().onClick.AddListener(delegate ()
         {
-            OnClickFuZhuCardFun(data, card, obj.transform.GetChild(9).GetComponent<Image>(), indexIcon);
+            OnClickFuZhuCardFun(info, card, obj.transform.GetChild(9).GetComponent<Image>());
         });
     }
 
     /// <summary> 
     /// 点击辅助卡牌的方法 
     /// </summary> 
-    /// <param name="fuzhuData"></param> 
-    private void OnClickFuZhuCardFun(IReadOnlyDictionary<int, IReadOnlyList<string>> data, NowLevelAndHadChip fuzhuData, Image selectImg, int indexIcon)
+    private void OnClickFuZhuCardFun(GameCardInfo info,NowLevelAndHadChip card, Image selectImg)
     {
         PlayOnClickMusic();
 
         //名字 
-        infoTran.GetChild(0).GetComponent<Text>().text = data[fuzhuData.id][1];
+        infoTran.GetChild(0).GetComponent<Text>().text = info.Name;
         //名字颜色 
-        infoTran.GetChild(0).GetComponent<Text>().color = NameColorChoose(data[fuzhuData.id][3]);
+        infoTran.GetChild(0).GetComponent<Text>().color = NameColorChoose(info.Rare);
         //属性 为空 
         infoTran.GetChild(1).GetComponent<Text>().text = "";
         infoTran.GetChild(2).GetComponent<Text>().text = "";
         //介绍 
-        infoTran.GetChild(3).GetComponent<Text>().text = data[fuzhuData.id][2];
+        infoTran.GetChild(3).GetComponent<Text>().text = info.Intro;
         //名字 
-        ShowNameTextRules(showCardObj.transform.GetChild(3).GetComponent<Text>(), data[fuzhuData.id][1]);
+        ShowNameTextRules(showCardObj.transform.GetChild(3).GetComponent<Text>(), info.Name);
         //名字颜色 
-        showCardObj.transform.GetChild(3).GetComponent<Text>().color = NameColorChoose(data[fuzhuData.id][3]);
+        showCardObj.transform.GetChild(3).GetComponent<Text>().color = NameColorChoose(info.Rare);
         //卡牌 
-        showCardObj.transform.GetChild(1).GetComponent<Image>().sprite = GameResources.FuZhuImg[int.Parse(data[fuzhuData.id][indexIcon])];
+        showCardObj.transform.GetChild(1).GetComponent<Image>().sprite = GameResources.FuZhuImg[info.ImageId];
         //兵种框 
         showCardObj.transform.GetChild(5).GetComponent<Image>().sprite = GameResources.ClassImg[1];
         //兵种名 
-        showCardObj.transform.GetChild(5).GetComponentInChildren<Text>().text = data[fuzhuData.id][5];
+        showCardObj.transform.GetChild(5).GetComponentInChildren<Text>().text = info.Short;
         //边框 
-        FrameChoose(data[fuzhuData.id][3], showCardObj.transform.GetChild(6).GetComponent<Image>());
+        FrameChoose(info.Rare, showCardObj.transform.GetChild(6).GetComponent<Image>());
         //碎片 
-        if (fuzhuData.level < DataTable.UpGradeData.Count)
+        if (card.level < DataTable.CardLevel.Keys.Max())
         {
-            showCardObj.transform.GetChild(2).GetComponent<Text>().text = fuzhuData.chips + "/" + DataTable.UpGradeData[fuzhuData.level][1];
-            showCardObj.transform.GetChild(2).GetComponent<Text>().color = fuzhuData.chips >= int.Parse(DataTable.UpGradeData[fuzhuData.level][1]) ? ColorDataStatic.deep_green : Color.black;
+            var consume = DataTable.CardLevel[card.level + 1].ChipsConsume;
+            showCardObj.transform.GetChild(2).GetComponent<Text>().text = card.chips + "/" + consume;
+            showCardObj.transform.GetChild(2).GetComponent<Text>().color =
+                card.chips >= consume ? ColorDataStatic.deep_green : Color.black;
         }
         else
         {
             showCardObj.transform.GetChild(2).GetComponent<Text>().text = "";
         }
 
-        int getGoldNums = GetGoldNumsForSellCard(fuzhuData);
-        sellCardBtn.transform.GetChild(0).GetComponent<Text>().text = getGoldNums.ToString();
+        int goldPrice = GetGoldPrice(card);
+        sellCardBtn.transform.GetChild(0).GetComponent<Text>().text = goldPrice.ToString();
         sellCardBtn.GetComponent<Button>().onClick.RemoveAllListeners();
         sellCardBtn.GetComponent<Button>().onClick.AddListener(delegate ()
         {
-            OnClickForSellCard(fuzhuData, getGoldNums);
+            OnClickForSellCard(card, goldPrice);
         });
         sellCardBtn.SetActive(true);
 
-        if (fuzhuData.level > 0)
+        if (card.level > 0)
         {
             showCardObj.transform.GetChild(4).GetComponent<Image>().enabled = true;
             //设置星级展示 
-            showCardObj.transform.GetChild(4).GetComponent<Image>().sprite = GameResources.GradeImg[fuzhuData.level];
+            showCardObj.transform.GetChild(4).GetComponent<Image>().sprite = GameResources.GradeImg[card.level];
             //出战相关设置 
             holdOrFightBtn.SetActive(true);
-            if (fuzhuData.isFight > 0)
+            if (card.isFight > 0)
             {
                 showCardObj.transform.GetChild(7).gameObject.SetActive(true);
                 holdOrFightBtn.GetComponentInChildren<Text>().text = DataTable.GetStringText(30);
@@ -942,9 +932,9 @@ public class UIManager : MonoBehaviour
         lastSelectImg = selectImg;
         lastSelectImg.enabled = true;
 
-        selectCardData = fuzhuData;
+        selectCardData = card;
 
-        CalculatedNeedYuanBao(fuzhuData.level);
+        CalculatedNeedYuanBao(card.level);
     }
 
     /// <summary> 
@@ -966,7 +956,7 @@ public class UIManager : MonoBehaviour
         for (int i = 0; i < PlayerDataForGame.instance.hstData.heroSaveData.Count; i++)
         {
             heroDataIndex = PlayerDataForGame.instance.hstData.heroSaveData[i];
-            if (indexChooseListForceId == int.Parse(DataTable.Hero[heroDataIndex.id][6]))
+            if (indexChooseListForceId == DataTable.Hero[heroDataIndex.id].ForceTableId)
             {
                 if (heroDataIndex.level > 0 || heroDataIndex.chips > 0)
                 {
@@ -985,7 +975,7 @@ public class UIManager : MonoBehaviour
         for (int i = 0; i < PlayerDataForGame.instance.hstData.towerSaveData.Count; i++)
         {
             card = PlayerDataForGame.instance.hstData.towerSaveData[i];
-            if (indexChooseListForceId == int.Parse(DataTable.TowerData[card.id][15]))
+            if (indexChooseListForceId == DataTable.Tower[card.id].ForceId)
             {
                 if (card.level > 0 || card.chips > 0)
                 {
@@ -994,7 +984,7 @@ public class UIManager : MonoBehaviour
                         PlayerDataForGame.instance.fightTowerId.Add(card.id);
                     }
                     cardNums++;
-                    ShowOneFuZhuRules(DataTable.Tower, card, 10);
+                    ShowOneFuZhuRules(card);
                 }
             }
         }
@@ -1002,7 +992,7 @@ public class UIManager : MonoBehaviour
         for (int i = 0; i < PlayerDataForGame.instance.hstData.trapSaveData.Count; i++)
         {
             card = PlayerDataForGame.instance.hstData.trapSaveData[i];
-            if (indexChooseListForceId == int.Parse(DataTable.Trap[card.id][14]))
+            if (indexChooseListForceId == DataTable.Trap[card.id].ForceId)
             {
                 if (card.level > 0 || card.chips > 0)
                 {
@@ -1011,7 +1001,7 @@ public class UIManager : MonoBehaviour
                         PlayerDataForGame.instance.fightTrapId.Add(card.id);
                     }
                     cardNums++;
-                    ShowOneFuZhuRules(DataTable.Trap, card, 9);
+                    ShowOneFuZhuRules(card);
                 }
             }
         }
@@ -1062,42 +1052,45 @@ public class UIManager : MonoBehaviour
     /// <summary> 
     /// 显示单个武将 
     /// </summary> 
-    /// <param name="heroData"></param> 
-    private void ShowOneHeroRules(NowLevelAndHadChip heroData)
+    /// <param name="card"></param> 
+    private void ShowOneHeroRules(NowLevelAndHadChip card)
     {
+        var info = card.GetInfo();
         GameObject obj = GetHeroCardFromPool();
         //名字 
-        ShowNameTextRules(obj.transform.GetChild(3).GetComponent<Text>(), DataTable.Hero[heroData.id][1]);
+        ShowNameTextRules(obj.transform.GetChild(3).GetComponent<Text>(), info.Name);
         //名字颜色根据稀有度 
-        obj.transform.GetChild(3).GetComponent<Text>().color = NameColorChoose(DataTable.Hero[heroData.id][3]);
+        obj.transform.GetChild(3).GetComponent<Text>().color = NameColorChoose(info.Rare);
         //卡牌 
-        obj.transform.GetChild(1).GetComponent<Image>().sprite = GameResources.HeroImg[heroData.id];
+        obj.transform.GetChild(1).GetComponent<Image>().sprite = GameResources.HeroImg[info.Id];
         //兵种名 
-        obj.transform.GetChild(5).GetComponentInChildren<Text>().text = DataTable.ClassData[int.Parse(DataTable.Hero[heroData.id][5])][3];
+        obj.transform.GetChild(5).GetComponentInChildren<Text>().text = info.Short;
         //兵种框 
         obj.transform.GetChild(5).GetComponent<Image>().sprite = GameResources.ClassImg[0];
         //边框 
-        FrameChoose(DataTable.Hero[heroData.id][3], obj.transform.GetChild(6).GetComponent<Image>());
+        FrameChoose(info.Rare, obj.transform.GetChild(6).GetComponent<Image>());
         //碎片 
-        if (heroData.level < DataTable.UpGradeData.Count)
+        if (card.level < DataTable.CardLevel.Keys.Max())
         {
-            obj.transform.GetChild(2).GetComponent<Text>().text = heroData.chips + "/" + DataTable.UpGradeData[heroData.level][1];
-            obj.transform.GetChild(2).GetComponent<Text>().color = heroData.chips >= int.Parse(DataTable.UpGradeData[heroData.level][1]) ? ColorDataStatic.deep_green : Color.white;
+            var chipsConsume = DataTable.CardLevel[card.level + 1].ChipsConsume;
+            obj.transform.GetChild(2).GetComponent<Text>().text = card.chips + "/" + chipsConsume;
+            obj.transform.GetChild(2).GetComponent<Text>().color =
+                card.chips >= chipsConsume ? ColorDataStatic.deep_green : Color.white;
         }
         else
         {
             obj.transform.GetChild(2).GetComponent<Text>().text = "";
         }
-        if (heroData.level > 0)
+        if (card.level > 0)
         {
             obj.transform.GetChild(4).GetComponent<Image>().enabled = true;
             obj.transform.GetChild(8).gameObject.SetActive(false);
             //设置星级展示 
-            obj.transform.GetChild(4).GetComponent<Image>().sprite = GameResources.GradeImg[heroData.level];
+            obj.transform.GetChild(4).GetComponent<Image>().sprite = GameResources.GradeImg[card.level];
             obj.transform.GetChild(7).gameObject.SetActive(false);
-            if (heroData.isFight > 0) //出战标记 
+            if (card.isFight > 0) //出战标记 
             {
-                PlayerDataForGame.instance.AddOrCutFightCardId(heroData.typeIndex, heroData.id, true);
+                PlayerDataForGame.instance.AddOrCutFightCardId(card.typeIndex, card.id, true);
                 obj.transform.GetChild(7).gameObject.SetActive(true);
             }
             else
@@ -1114,71 +1107,72 @@ public class UIManager : MonoBehaviour
         obj.GetComponent<Button>().onClick.RemoveAllListeners();
         obj.GetComponent<Button>().onClick.AddListener(delegate ()
         {
-            OnClickHeroCardFun(heroData, obj.transform.GetChild(9).GetComponent<Image>());
+            OnClickHeroCardFun(card, obj.transform.GetChild(9).GetComponent<Image>());
         });
     }
 
     /// <summary> 
     /// 点击武将卡牌的方法 
     /// </summary> 
-    /// <param name="heroData"></param> 
-    private void OnClickHeroCardFun(NowLevelAndHadChip heroData, Image selectImg)
+    /// <param name="card"></param> 
+    private void OnClickHeroCardFun(NowLevelAndHadChip card, Image selectImg)
     {
         PlayOnClickMusic();
-
+        var info = card.GetInfo();
         //Debug.Log("点击的武将id：" + heroData.id); 
         //武将名字 
-        infoTran.GetChild(0).GetComponent<Text>().text = DataTable.Hero[heroData.id][1];
+        infoTran.GetChild(0).GetComponent<Text>().text = info.Name;
         //武将名字颜色 
-        infoTran.GetChild(0).GetComponent<Text>().color = NameColorChoose(DataTable.Hero[heroData.id][3]);
+        infoTran.GetChild(0).GetComponent<Text>().color = NameColorChoose(info.Rare);
         //武将属性 
-        string[] strs_attack = DataTable.Hero[heroData.id][7].Split(',');
-        infoTran.GetChild(1).GetComponent<Text>().text = string.Format(DataTable.GetStringText(32), strs_attack[heroData.level > 0 ? heroData.level - 1 : 0]);
-        string[] strs_health = DataTable.Hero[heroData.id][8].Split(',');
-        infoTran.GetChild(2).GetComponent<Text>().text = string.Format(DataTable.GetStringText(33), strs_health[heroData.level > 0 ? heroData.level - 1 : 0]);
+        var damages = DataTable.Hero[card.id].Damages;
+        infoTran.GetChild(1).GetComponent<Text>().text = string.Format(DataTable.GetStringText(32), damages[card.level > 0 ? card.level - 1 : 0]);
+        var hps = DataTable.Hero[card.id].Hps;
+        infoTran.GetChild(2).GetComponent<Text>().text = string.Format(DataTable.GetStringText(33), hps[card.level > 0 ? card.level - 1 : 0]);
         //武将介绍 
-        infoTran.GetChild(3).GetComponent<Text>().text = DataTable.Hero[heroData.id][2];
+        infoTran.GetChild(3).GetComponent<Text>().text = info.Intro;
 
         //名字 
-        ShowNameTextRules(showCardObj.transform.GetChild(3).GetComponent<Text>(), DataTable.Hero[heroData.id][1]);
+        ShowNameTextRules(showCardObj.transform.GetChild(3).GetComponent<Text>(), info.Name);
         //名字颜色 
-        showCardObj.transform.GetChild(3).GetComponent<Text>().color = NameColorChoose(DataTable.Hero[heroData.id][3]);
+        showCardObj.transform.GetChild(3).GetComponent<Text>().color = NameColorChoose(info.Rare);
         //卡牌 
-        showCardObj.transform.GetChild(1).GetComponent<Image>().sprite = GameResources.HeroImg[heroData.id];
+        showCardObj.transform.GetChild(1).GetComponent<Image>().sprite = GameResources.HeroImg[card.id];
         //兵种名 
-        showCardObj.transform.GetChild(5).GetComponentInChildren<Text>().text = DataTable.ClassData[int.Parse(DataTable.Hero[heroData.id][5])][3];
+        showCardObj.transform.GetChild(5).GetComponentInChildren<Text>().text = info.Short;
         //兵种框 
         showCardObj.transform.GetChild(5).GetComponent<Image>().sprite = GameResources.ClassImg[0];
         //边框 
-        FrameChoose(DataTable.Hero[heroData.id][3], showCardObj.transform.GetChild(6).GetComponent<Image>());
+        FrameChoose(info.Rare, showCardObj.transform.GetChild(6).GetComponent<Image>());
         //碎片 
-        if (heroData.level < DataTable.UpGradeData.Count)
+        if (card.level < DataTable.CardLevel.Keys.Max())
         {
-            showCardObj.transform.GetChild(2).GetComponent<Text>().text = heroData.chips + "/" + DataTable.UpGradeData[heroData.level][1];
-            showCardObj.transform.GetChild(2).GetComponent<Text>().color = heroData.chips >= int.Parse(DataTable.UpGradeData[heroData.level][1]) ? ColorDataStatic.deep_green : Color.black;
+            var consumeChips = DataTable.CardLevel[card.level + 1].ChipsConsume;
+            showCardObj.transform.GetChild(2).GetComponent<Text>().text = card.chips + "/" + consumeChips;
+            showCardObj.transform.GetChild(2).GetComponent<Text>().color = card.chips >= consumeChips ? ColorDataStatic.deep_green : Color.black;
         }
         else
         {
             showCardObj.transform.GetChild(2).GetComponent<Text>().text = "";
         }
 
-        int getGoldNums = GetGoldNumsForSellCard(heroData);
+        int getGoldNums = GetGoldPrice(card);
         sellCardBtn.transform.GetChild(0).GetComponent<Text>().text = getGoldNums.ToString();
         sellCardBtn.GetComponent<Button>().onClick.RemoveAllListeners();
         sellCardBtn.GetComponent<Button>().onClick.AddListener(delegate ()
         {
-            OnClickForSellCard(heroData, getGoldNums);
+            OnClickForSellCard(card, getGoldNums);
         });
         sellCardBtn.SetActive(true);
 
-        if (heroData.level > 0)
+        if (card.level > 0)
         {
             showCardObj.transform.GetChild(4).GetComponent<Image>().enabled = true;
             //设置星级展示 
-            showCardObj.transform.GetChild(4).GetComponent<Image>().sprite = GameResources.GradeImg[heroData.level];
+            showCardObj.transform.GetChild(4).GetComponent<Image>().sprite = GameResources.GradeImg[card.level];
             //出战相关设置 
             holdOrFightBtn.SetActive(true);
-            if (heroData.isFight > 0)
+            if (card.isFight > 0)
             {
                 showCardObj.transform.GetChild(7).gameObject.SetActive(true);
                 holdOrFightBtn.GetComponentInChildren<Text>().text = DataTable.GetStringText(30);
@@ -1204,48 +1198,18 @@ public class UIManager : MonoBehaviour
         lastSelectImg = selectImg;
         lastSelectImg.enabled = true;
 
-        selectCardData = heroData;
+        selectCardData = card;
 
-        CalculatedNeedYuanBao(heroData.level);
-    }
-
-    //根据卡牌类型和id得到其稀有度 
-    private int GetIdBackCardRarity(int cardType, int cardId)
-    {
-        string rarityStr = string.Empty;
-        switch (cardType)
-        {
-            case 0:
-                rarityStr = DataTable.Hero[cardId][3];
-                break;
-            case 1:
-                rarityStr = DataTable.SoldierData[cardId][3];
-                break;
-            case 2:
-                rarityStr = DataTable.TowerData[cardId][3];
-                break;
-            case 3:
-                rarityStr = DataTable.Trap[cardId][3];
-                break;
-            case 4:
-                rarityStr = DataTable.SpellData[cardId][3];
-                break;
-            default:
-                break;
-        }
-        return int.Parse(rarityStr);
+        CalculatedNeedYuanBao(card.level);
     }
 
     //出售卡牌可得金币 
-    private int GetGoldNumsForSellCard(NowLevelAndHadChip heroData)
+    private int GetGoldPrice(NowLevelAndHadChip heroData)
     {
-        int chips = heroData.chips;
-        for (int i = 0; i < heroData.level; i++)
-        {
-            chips += int.Parse(DataTable.UpGradeData[i][1]);
-        }
+        var info = heroData.GetInfo();
+        int chips = heroData.chips + DataTable.CardLevel.Where(lv => lv.Key < heroData.level).Sum(kv => kv.Value.ChipsConsume);
         int golds = 0;
-        switch (GetIdBackCardRarity(heroData.typeIndex, heroData.id))
+        switch (info.Rare)
         {
             case 1:
                 golds = 10;
@@ -1327,30 +1291,30 @@ public class UIManager : MonoBehaviour
     /// 匹配稀有度的颜色 
     /// </summary> 
     /// <returns></returns> 
-    public Color NameColorChoose(string rarity)
+    public Color NameColorChoose(int rarity)
     {
         Color color = new Color();
         switch (rarity)
         {
-            case "1":
+            case 1:
                 color = ColorDataStatic.name_gray;
                 break;
-            case "2":
+            case 2:
                 color = ColorDataStatic.name_green;
                 break;
-            case "3":
+            case 3:
                 color = ColorDataStatic.name_blue;
                 break;
-            case "4":
+            case 4:
                 color = ColorDataStatic.name_purple;
                 break;
-            case "5":
+            case 5:
                 color = ColorDataStatic.name_orange;
                 break;
-            case "6":
+            case 6:
                 color = ColorDataStatic.name_red;
                 break;
-            case "7":
+            case 7:
                 color = ColorDataStatic.name_black;
                 break;
             default:
@@ -1363,20 +1327,20 @@ public class UIManager : MonoBehaviour
     // <summary> 
     /// 匹配稀有度边框 
     /// </summary> 
-    public void FrameChoose(string rarity, Image img)
+    public void FrameChoose(int rarity, Image img)
     {
         img.enabled = false;//暂时不提供边框 
         return;
         img.enabled = true;
         switch (rarity)
         {
-            case "4":
+            case 4:
                 img.sprite = GameResources.FrameImg[3];
                 break;
-            case "5":
+            case 5:
                 img.sprite = GameResources.FrameImg[2];
                 break;
-            case "6":
+            case 6:
                 img.sprite = GameResources.FrameImg[1];
                 break;
             default:
@@ -1390,7 +1354,6 @@ public class UIManager : MonoBehaviour
     /// </summary> 
     private void SortHSTData(List<NowLevelAndHadChip> dataList)
     {
-        //dataList.Sort((NowLevelAndHadChip n1, NowLevelAndHadChip n2) => n2.Level.CompareTo(n1.Level)); 
         dataList.Sort((c1, c2) =>
         {
             if (c2.isFight.CompareTo(c1.isFight) != 0)
@@ -1403,8 +1366,23 @@ public class UIManager : MonoBehaviour
                 return c2.level.CompareTo(c1.level);
             }
 
-            return GetIdBackCardRarity(c2.typeIndex, c2.id).CompareTo(GetIdBackCardRarity(c1.typeIndex, c1.id));
+            return GetRare(c2).CompareTo(GetRare(c1));
         });
+
+        int GetRare(NowLevelAndHadChip c)
+        {
+            switch ((GameCardType)c.typeIndex)
+            {
+                case GameCardType.Hero:
+                    return DataTable.Hero[c.id].Rarity;
+                case GameCardType.Tower:
+                    return DataTable.Tower[c.id].Rarity;
+                case GameCardType.Trap:
+                    return DataTable.Trap[c.id].Rarity;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
     }
 
     /// <summary> 
@@ -1413,8 +1391,8 @@ public class UIManager : MonoBehaviour
     public void InitializationPlayerInfo()
     {
         //player`s name 
-        playerInfoObj.transform.GetChild(1).GetChild(1).GetComponent<Text>().text = DataTable.PlayerInitialData[PlayerDataForGame.instance.pyData.ForceId][1];
-        if (PlayerDataForGame.instance.pyData.Level >= DataTable.PlayerLevelData.Count)
+        playerInfoObj.transform.GetChild(1).GetChild(1).GetComponent<Text>().text = DataTable.PlayerInitialConfig[PlayerDataForGame.instance.pyData.ForceId].Force;
+        if (PlayerDataForGame.instance.pyData.Level >= DataTable.PlayerLevelConfig.Count)
         {
             playerInfoObj.transform.GetChild(0).GetComponent<Slider>().value = 1;
             playerInfoObj.transform.GetChild(2).GetChild(1).GetComponent<Text>().text = DataTable.GetStringText(34);
@@ -1423,10 +1401,12 @@ public class UIManager : MonoBehaviour
         else
         {
             //Exp 
-            playerInfoObj.transform.GetChild(0).GetComponent<Slider>().value = PlayerDataForGame.instance.pyData.Exp / float.Parse(DataTable.PlayerLevelData[PlayerDataForGame.instance.pyData.Level][1]);
+            playerInfoObj.transform.GetChild(0).GetComponent<Slider>().value = 1f * PlayerDataForGame.instance.pyData.Exp / DataTable.PlayerLevelConfig[PlayerDataForGame.instance.pyData.Level].Exp;
             //Level 
             playerInfoObj.transform.GetChild(2).GetChild(1).GetComponent<Text>().text = string.Format(DataTable.GetStringText(35), PlayerDataForGame.instance.pyData.Level);//玩家等级 
-            playerInfoObj.transform.GetChild(0).GetChild(2).GetComponent<Text>().text = PlayerDataForGame.instance.pyData.Exp + "/" + DataTable.PlayerLevelData[PlayerDataForGame.instance.pyData.Level][1];
+            playerInfoObj.transform.GetChild(0).GetChild(2).GetComponent<Text>().text =
+                PlayerDataForGame.instance.pyData.Exp + "/" +
+                DataTable.PlayerLevelConfig[PlayerDataForGame.instance.pyData.Level].Exp;
         }
         //货币 
         yuanBaoNumText.text = PlayerDataForGame.instance.pyData.YuanBao.ToString();
@@ -1443,19 +1423,11 @@ public class UIManager : MonoBehaviour
     //得到合成所需元宝 
     private void CalculatedNeedYuanBao(int nowLevel)
     {
-        if (nowLevel == 0)
-        {
-            heImgObj.SetActive(true);
-            ShowOrHideGuideObj(2, true);
-        }
-        else
-        {
-            heImgObj.SetActive(false);
-        }
+        if (nowLevel == 0) ShowOrHideGuideObj(2, true);
         heImgObj.SetActive(nowLevel == 0);
-        if (nowLevel < DataTable.UpGradeData.Count)
+        if (nowLevel < DataTable.CardLevel.Keys.Max())
         {
-            needYuanBaoNums = int.Parse(DataTable.UpGradeData[nowLevel][2]);
+            needYuanBaoNums = DataTable.CardLevel[nowLevel + 1].YuanBaoConsume;
             heChengBtn.transform.GetComponentInChildren<Text>().text = "" + needYuanBaoNums;
             heChengBtn.SetActive(true);
         }
@@ -1470,11 +1442,12 @@ public class UIManager : MonoBehaviour
     /// </summary> 
     public void SynthesizeCard()
     {
-        if (selectCardData.chips >= int.Parse(DataTable.UpGradeData[selectCardData.level][1]))
+        var nextLevel = DataTable.CardLevel[selectCardData.level + 1];
+        if (selectCardData.chips >= nextLevel.ChipsConsume)
         {
-            if (ConsumeManager.instance.DeductYuanBao(needYuanBaoNums))
+            if (ConsumeManager.instance.DeductYuanBao(nextLevel.ChipsConsume))
             {
-                selectCardData.chips -= int.Parse(DataTable.UpGradeData[selectCardData.level][1]);
+                selectCardData.chips -= nextLevel.ChipsConsume;
 
                 selectCardData.level++;
                 if (!selectCardData.isHad)
@@ -1574,10 +1547,12 @@ public class UIManager : MonoBehaviour
     {
         //Debug.Log("selectCardData.Level: " + selectCardData.Level); 
         Transform listCard = lastSelectImg.transform.parent;
-        if (selectCardData.level < DataTable.UpGradeData.Count)
+        if (selectCardData.level < DataTable.CardLevel.Keys.Max())
         {
-            listCard.GetChild(2).GetComponent<Text>().text = selectCardData.chips + "/" + DataTable.UpGradeData[selectCardData.level][1];
-            listCard.GetChild(2).GetComponent<Text>().color = selectCardData.chips >= int.Parse(DataTable.UpGradeData[selectCardData.level][1]) ? ColorDataStatic.deep_green : Color.white;
+            var consume = DataTable.CardLevel[selectCardData.level + 1].ChipsConsume;
+            listCard.GetChild(2).GetComponent<Text>().text = selectCardData.chips + "/" + consume;
+            listCard.GetChild(2).GetComponent<Text>().color =
+                selectCardData.chips >= consume ? ColorDataStatic.deep_green : Color.white;
         }
         else
         {
@@ -1593,13 +1568,13 @@ public class UIManager : MonoBehaviour
     /// <summary> 
     /// 展示奖励 
     /// </summary> 
-    /// <param name="yuanBaoNums">元宝</param> 
-    /// <param name="yuQueNums">玉阙</param> 
-    /// <param name="expNums">经验</param> 
-    /// <param name="tiLiNums">体力</param> 
+    /// <param name="yuanBao">元宝</param> 
+    /// <param name="yvQue">玉阙</param> 
+    /// <param name="exp">经验</param> 
+    /// <param name="stamina">体力</param> 
     /// <param name="rewardsCards">卡牌奖励</param> 
     /// <param name="waitTime">展示等待时间</param> 
-    public void ShowRewardsThings(int yuanBaoNums, int yuQueNums, int expNums, int tiLiNums, List<RewardsCardClass> rewardsCards, float waitTime)
+    public void ShowRewardsThings(int yuanBao, int yvQue, int exp, int stamina, List<RewardsCardClass> rewardsCards, float waitTime)
     {
         for (int i = 0; i < rewardsParent.childCount; i++)
         {
@@ -1617,21 +1592,21 @@ public class UIManager : MonoBehaviour
         }
 
         //rewardsShowObj.transform.GetChild(0).GetChild(0).GetComponent<Text>().text = str; 
-        if (yuanBaoNums > 0)
+        if (yuanBao > 0)
         {
-            ShowOneReward(0, new RewardsCardClass() { cardChips = yuanBaoNums });
+            ShowOneReward(0, new RewardsCardClass() { cardChips = yuanBao });
         }
-        if (yuQueNums > 0)
+        if (yvQue > 0)
         {
-            ShowOneReward(1, new RewardsCardClass() { cardChips = yuQueNums });
+            ShowOneReward(1, new RewardsCardClass() { cardChips = yvQue });
         }
-        if (expNums > 0)
+        if (exp > 0)
         {
-            ShowOneReward(2, new RewardsCardClass() { cardChips = expNums });
+            ShowOneReward(2, new RewardsCardClass() { cardChips = exp });
         }
-        if (tiLiNums > 0)
+        if (stamina > 0)
         {
-            ShowOneReward(3, new RewardsCardClass() { cardChips = tiLiNums });
+            ShowOneReward(3, new RewardsCardClass() { cardChips = stamina });
         }
         for (int i = 0; i < rewardsCards.Count; i++)
         {
@@ -1678,7 +1653,7 @@ public class UIManager : MonoBehaviour
     /// <summary> 
     /// 展示单个奖品 
     /// </summary> 
-    /// <param name="rewardType">0元宝1玉阙2经验3卡牌</param> 
+    /// <param name="rewardType">0元宝,1玉阙,2经验,3体力,4卡牌</param> 
     /// <param name="rewardsCard"></param> 
     private void ShowOneReward(int rewardType, RewardsCardClass rewardsCard)
     {
@@ -1688,47 +1663,19 @@ public class UIManager : MonoBehaviour
         }
 
         GameObject obj = FindShowRewardsBox();
-
+        var info = new NowLevelAndHadChip().Instance((GameCardType)rewardsCard.cardType,rewardsCard.cardId).GetInfo();
         obj.transform.GetChild(rewardType).gameObject.SetActive(true);
         if (rewardType == 4)
         {
             Transform cardTran = obj.transform.GetChild(4);
-            switch (rewardsCard.cardType)
-            {
-                case 0:
-                    cardTran.GetComponent<Image>().sprite = GameResources.HeroImg[rewardsCard.cardId];
-                    ShowNameTextRules(cardTran.GetChild(0).GetComponent<Text>(), DataTable.Hero[rewardsCard.cardId][1]);
-                    cardTran.GetChild(0).GetComponent<Text>().color = NameColorChoose(DataTable.Hero[rewardsCard.cardId][3]);
-                    cardTran.GetChild(1).GetComponent<Image>().sprite = GameResources.ClassImg[0];
-                    cardTran.GetChild(1).GetChild(0).GetComponentInChildren<Text>().text = DataTable.ClassData[int.Parse(DataTable.Hero[rewardsCard.cardId][5])][3];
-                    FrameChoose(DataTable.Hero[rewardsCard.cardId][3], cardTran.GetChild(2).GetComponent<Image>());
-                    break;
-                case 1:
-                    //cardTran.GetChild(0).GetComponent<Text>().text = LoadJsonFile.soldierTableDatas[rewardsCard.cardId][1]; 
-                    break;
-                case 2:
-                    cardTran.GetComponent<Image>().sprite = GameResources.FuZhuImg[int.Parse(DataTable.TowerData[rewardsCard.cardId][10])];
-                    ShowNameTextRules(cardTran.GetChild(0).GetComponent<Text>(), DataTable.TowerData[rewardsCard.cardId][1]);
-                    cardTran.GetChild(0).GetComponent<Text>().color = NameColorChoose(DataTable.TowerData[rewardsCard.cardId][3]);
-                    cardTran.GetChild(1).GetComponent<Image>().sprite = GameResources.ClassImg[1];
-                    cardTran.GetChild(1).GetChild(0).GetComponentInChildren<Text>().text = DataTable.TowerData[rewardsCard.cardId][5];
-                    FrameChoose(DataTable.TowerData[rewardsCard.cardId][3], cardTran.GetChild(2).GetComponent<Image>());
-                    break;
-                case 3:
-                    cardTran.GetComponent<Image>().sprite = GameResources.FuZhuImg[int.Parse(DataTable.TrapData[rewardsCard.cardId][9])];
-                    ShowNameTextRules(cardTran.GetChild(0).GetComponent<Text>(), DataTable.Trap[rewardsCard.cardId][1]);
-                    cardTran.GetChild(0).GetComponent<Text>().color = NameColorChoose(DataTable.Trap[rewardsCard.cardId][3]);
-                    cardTran.GetChild(1).GetComponent<Image>().sprite = GameResources.ClassImg[1];
-                    cardTran.GetChild(1).GetChild(0).GetComponentInChildren<Text>().text = DataTable.Trap[rewardsCard.cardId][5];
-                    FrameChoose(DataTable.Trap[rewardsCard.cardId][3], cardTran.GetChild(2).GetComponent<Image>());
-                    break;
-                case 4:
-                    //cardTran.GetChild(0).GetComponent<Text>().text = LoadJsonFile.spellTableDatas[rewardsCard.cardId][1]; 
-                    break;
-                default:
-                    break;
-            }
+            cardTran.GetComponent<Image>().sprite = GameResources.HeroImg[info.Id];
+            ShowNameTextRules(cardTran.GetChild(0).GetComponent<Text>(), info.Name);
+            cardTran.GetChild(0).GetComponent<Text>().color = NameColorChoose(info.Rare);
+            cardTran.GetChild(1).GetComponent<Image>().sprite = GameResources.ClassImg[0];
+            cardTran.GetChild(1).GetChild(0).GetComponentInChildren<Text>().text = info.Short;
+            FrameChoose(info.Rare, cardTran.GetChild(2).GetComponent<Image>());
         }
+
         obj.transform.GetChild(5).GetComponent<Text>().text = "×" + rewardsCard.cardChips;
     }
 
@@ -1842,7 +1789,7 @@ public class UIManager : MonoBehaviour
     /// <param name="expNums"></param> 
     public void GetPlayerExp(int expNums)
     {
-        if (PlayerDataForGame.instance.pyData.Level >= DataTable.PlayerLevelData.Count)
+        if (PlayerDataForGame.instance.pyData.Level >= DataTable.PlayerLevelConfig.Count)
         {
             PlayerDataForGame.instance.pyData.Exp += expNums;
             playerInfoObj.transform.GetChild(0).GetChild(2).GetComponent<Text>().text = PlayerDataForGame.instance.pyData.Exp + "/" + 99999;
@@ -1850,18 +1797,18 @@ public class UIManager : MonoBehaviour
         else
         {
             PlayerDataForGame.instance.pyData.Exp += expNums;
-            while (int.Parse(DataTable.PlayerLevelData[PlayerDataForGame.instance.pyData.Level][1]) <= PlayerDataForGame.instance.pyData.Exp)
+            while (DataTable.PlayerLevelConfig[PlayerDataForGame.instance.pyData.Level].Exp <= PlayerDataForGame.instance.pyData.Exp)
             {
-                PlayerDataForGame.instance.pyData.Exp -= int.Parse(DataTable.PlayerLevelData[PlayerDataForGame.instance.pyData.Level][1]);
+                PlayerDataForGame.instance.pyData.Exp -= DataTable.PlayerLevelConfig[PlayerDataForGame.instance.pyData.Level].Exp;
                 PlayerDataForGame.instance.pyData.Level++;
                 PlayerDataForGame.instance.ShowStringTips(DataTable.GetStringText(39));
-                if (PlayerDataForGame.instance.pyData.Level >= DataTable.PlayerLevelData.Count)
+                if (PlayerDataForGame.instance.pyData.Level >= DataTable.PlayerLevelConfig.Count)
                 {
                     PlayerDataForGame.instance.ShowStringTips(DataTable.GetStringText(40));
                     break;
                 }
             }
-            if (PlayerDataForGame.instance.pyData.Level >= DataTable.PlayerLevelData.Count)
+            if (PlayerDataForGame.instance.pyData.Level >= DataTable.PlayerLevelConfig.Count)
             {
                 playerInfoObj.transform.GetChild(0).GetComponent<Slider>().value = 1;
                 playerInfoObj.transform.GetChild(2).GetChild(1).GetComponent<Text>().text = DataTable.GetStringText(34);
@@ -1869,9 +1816,9 @@ public class UIManager : MonoBehaviour
             }
             else
             {
-                playerInfoObj.transform.GetChild(0).GetComponent<Slider>().value = PlayerDataForGame.instance.pyData.Exp / float.Parse(DataTable.PlayerLevelData[PlayerDataForGame.instance.pyData.Level][1]);
+                playerInfoObj.transform.GetChild(0).GetComponent<Slider>().value = 1f * PlayerDataForGame.instance.pyData.Exp / DataTable.PlayerLevelConfig[PlayerDataForGame.instance.pyData.Level].Exp;
                 playerInfoObj.transform.GetChild(2).GetChild(1).GetComponent<Text>().text = string.Format(DataTable.GetStringText(35), PlayerDataForGame.instance.pyData.Level);
-                playerInfoObj.transform.GetChild(0).GetChild(2).GetComponent<Text>().text = PlayerDataForGame.instance.pyData.Exp + "/" + DataTable.PlayerLevelData[PlayerDataForGame.instance.pyData.Level][1];
+                playerInfoObj.transform.GetChild(0).GetChild(2).GetComponent<Text>().text = PlayerDataForGame.instance.pyData.Exp + "/" + DataTable.PlayerLevelConfig[PlayerDataForGame.instance.pyData.Level].Exp;
             }
             UpdateCardNumsShow();
         }
@@ -1927,7 +1874,7 @@ public class UIManager : MonoBehaviour
     }
 
     //添加体力 
-    public void AddTiLiNums(int addNums)
+    public void AddStamina(int addNums)
     {
         TimeSystemControl.instance.AddTiLiNums(addNums);
     }
@@ -2008,9 +1955,9 @@ public class UIManager : MonoBehaviour
         else
         {
             int indexId = -1;
-            for (int i = 0; i < DataTable.RCodeData.Count; i++)
+            for (int i = 0; i < DataTable.RCode.Count; i++)
             {
-                if (str == DataTable.RCodeData[i][1])
+                if (str == DataTable.RCode[i].Code)
                 {
                     indexId = i;
                     break;
@@ -2018,12 +1965,8 @@ public class UIManager : MonoBehaviour
             }
             if (indexId != -1)
             {
-                string[] arr = DataTable.RCodeData[indexId][2].Split('-');
-                DateTime startTime = DateTime.ParseExact(arr[0], "yyyyMMdd", System.Globalization.CultureInfo.CurrentCulture);
-                DateTime endTime = DateTime.ParseExact(arr[1], "yyyyMMdd", System.Globalization.CultureInfo.CurrentCulture);
-                DateTime nowTime = TimeSystemControl.instance.SystemTimer.Now.LocalDateTime;
-
-                if (nowTime < startTime || nowTime > endTime)
+                var now = TimeSystemControl.instance.SystemTimer.Now.LocalDateTime;
+                if(!DataTable.RCode[indexId].Lasting.IsTableTimeInRange(now))
                 {
                     rtInputField.text = "";
                     PlayerDataForGame.instance.ShowStringTips(DataTable.GetStringText(47));
@@ -2034,40 +1977,35 @@ public class UIManager : MonoBehaviour
                     if (!PlayerDataForGame.instance.gbocData.redemptionCodeGotList[indexId].isGot)
                     {
                         //获得奖励 
-                        int addYvQueNums = int.Parse(DataTable.RCodeData[indexId][4]);
-                        ConsumeManager.instance.AddYuQue(addYvQueNums);
-                        int addYuanBaoNums = int.Parse(DataTable.RCodeData[indexId][5]);
-                        ConsumeManager.instance.AddYuanBao(addYuanBaoNums);
-                        int tiLiNums = int.Parse(DataTable.RCodeData[indexId][6]);
-                        AddTiLiNums(tiLiNums);
-                        string[] arrRewards = DataTable.RCodeData[indexId][7].Split(';');
+                        var yuQue = DataTable.RCode[indexId].YuQue;
+                        ConsumeManager.instance.AddYuQue(yuQue);
+                        var yuanBao = DataTable.RCode[indexId].YuanBao;
+                        ConsumeManager.instance.AddYuanBao(yuanBao);
+                        var stamina = DataTable.RCode[indexId].TiLi;
+                        AddStamina(stamina);
+                        var cards = DataTable.RCode[indexId].Cards;
                         List<RewardsCardClass> rewards = new List<RewardsCardClass>();
-                        for (int i = 0; i < arrRewards.Length; i++)
+                        for (int i = 0; i < cards.Length; i++)
                         {
-                            if (arrRewards[i] != "")
+                            var card = cards[i];
+                            rewardManager.RewardCard((GameCardType) card.Type, card.CardId, card.Chips);
+                            var rewardCard = new RewardsCardClass
                             {
-                                string[] arrs = arrRewards[i].Split(',');
-                                var cardType = int.Parse(arrs[0]);
-                                var cardId = int.Parse(arrs[1]);
-                                var chips = int.Parse(arrs[2]);
-                                rewardManager.RewardCard((GameCardType)cardType, cardId, chips);
-                                RewardsCardClass rewardCard = new RewardsCardClass();
-                                rewardCard.cardType = cardType;
-                                rewardCard.cardId = cardId;
-                                rewardCard.cardChips = chips;
-                                rewards.Add(rewardCard);
-                            }
+                                cardType = card.Type, cardId = card.CardId, cardChips = card.Chips
+                            };
+                            rewards.Add(rewardCard);
                         }
+
                         PlayerDataForGame.instance.isNeedSaveData = true;
                         LoadSaveData.instance.SaveGameData(2);
-                        ShowRewardsThings(addYuanBaoNums, addYvQueNums, 0, tiLiNums, rewards, 0);
+                        ShowRewardsThings(yuanBao, yuQue, 0, stamina, rewards, 0);
 
                         PlayerDataForGame.instance.gbocData.redemptionCodeGotList[indexId].isGot = true;
                         PlayerDataForGame.instance.isNeedSaveData = true;
                         LoadSaveData.instance.SaveGameData(4);
 
                         rtInputField.text = "";
-                        PlayerDataForGame.instance.ShowStringTips(DataTable.RCodeData[indexId][3]);
+                        PlayerDataForGame.instance.ShowStringTips(DataTable.RCode[indexId].Info);
                         rtCloseBtn.onClick.Invoke();
                         AudioController0.instance.ChangeAudioClip(0);
                         AudioController0.instance.PlayAudioSource(0);
@@ -2094,19 +2032,21 @@ public class UIManager : MonoBehaviour
     //给体力商店按钮添加方法 
     private void InitChickenBtnFun()
     {
+        var list = DataTable.Chicken.Values.ToList();
         for (int i = 0; i < chickenShopBtns.Length; i++)
         {
+            var chicken = list[i];
             int index = i;
             chickenShopBtns[i].onClick.AddListener(delegate ()
             {
                 ChickenShoppingGetTiLi(index);
             });
             //显示体力的数量 
-            chickenShopBtns[i].transform.parent.GetChild(1).GetComponent<Text>().text = "×" + DataTable.TiLiStoreData[i][1];
+            chickenShopBtns[i].transform.parent.GetChild(1).GetComponent<Text>().text = "×" + chicken.Stamina;
             //显示消耗玉阙的数量 
             if (i != 0)
             {
-                chickenShopBtns[i].transform.GetChild(0).GetComponent<Text>().text = "×" + DataTable.TiLiStoreData[i][2];
+                chickenShopBtns[i].transform.GetChild(0).GetComponent<Text>().text = "×" + chicken.YuQueCost;
             }
         }
 
@@ -2132,7 +2072,7 @@ public class UIManager : MonoBehaviour
     {
         if (ConsumeManager.instance.DeductYuQue(quQueNums))
         {
-            AddTiLiNums(tiLiNums);
+            AddStamina(tiLiNums);
             return true;
         }
         else
@@ -2147,17 +2087,17 @@ public class UIManager : MonoBehaviour
     {
         AudioController0.instance.ChangeAudioClip(13);
         OpenOrCloseChickenBtn(false);
-        int getTiLiNums = int.Parse(DataTable.TiLiStoreData[indexBtn][1]);
-        int needYvQueNums = int.Parse(DataTable.TiLiStoreData[indexBtn][2]);
+        var stamina = DataTable.Chicken[indexBtn].Stamina;
+        var yuQueCost = DataTable.Chicken[indexBtn].YuQueCost;
         switch (indexBtn)
         {
             case 0:
                 AdAgent.instance.BusyRetry(() =>
                 {
 
-                    GetTiLiForChicken(needYvQueNums, getTiLiNums);
+                    GetTiLiForChicken(yuQueCost, stamina);
                     PlayerDataForGame.instance.ShowStringTips(string.Format(DataTable.GetStringText(50),
-                        getTiLiNums));
+                        stamina));
                     GetCkChangeTimeAndWindow();
                     AudioController0.instance.ChangeAudioClip(25);
                     AudioController0.instance.PlayAudioSource(0);
@@ -2169,9 +2109,9 @@ public class UIManager : MonoBehaviour
                 break;
             case 1:
             case 2:
-                if (GetTiLiForChicken(needYvQueNums, getTiLiNums))
+                if (GetTiLiForChicken(yuQueCost, stamina))
                 {
-                    PlayerDataForGame.instance.ShowStringTips(string.Format(DataTable.GetStringText(51), getTiLiNums));
+                    PlayerDataForGame.instance.ShowStringTips(string.Format(DataTable.GetStringText(51), stamina));
                     GetCkChangeTimeAndWindow();
                     AudioController0.instance.ChangeAudioClip(25);
                 }
