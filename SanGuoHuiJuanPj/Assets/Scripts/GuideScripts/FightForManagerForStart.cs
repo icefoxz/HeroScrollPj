@@ -66,8 +66,8 @@ public class FightForManagerForStart : MonoBehaviour
     [HideInInspector]
     public bool _isDragItem;    //记录是否有卡牌在拖动
 
-    private int indexNowStoryId;    //当前剧情故事编号
-    private int storyNums;          //剧情故事数量
+    private int storyIndex;    //当前剧情故事编号
+    private GuideTable[] guides;          //剧情故事数量
 
     [SerializeField]
     GameObject[] guideObjs;     //指引obj
@@ -123,8 +123,8 @@ public class FightForManagerForStart : MonoBehaviour
         oneDisY = Screen.height / (1920 / gridLayoutGroup.cellSize.y) / 9;
         float xFlo = (1920f / 1080f) / ((float)Screen.height / Screen.width);
         floDisY = 2 * oneDisY * xFlo;
-        indexNowStoryId = 0;
-        storyNums = DataTable.Guide.Count;
+        storyIndex = 0;
+        guides = DataTable.Guide.Values.ToArray();
 
         barragesList = new List<string[]>();
         barragesList.Add(pTBarrages_1);
@@ -314,30 +314,7 @@ public class FightForManagerForStart : MonoBehaviour
         "首抽出了吕布",
     };
 
-
-    [SerializeField]
-    GameObject[] barrageObjs;   //弹幕objs
-
-    //获取可用弹幕框
-    private GameObject GetBarrageObjFun()
-    {
-        for (int i = 0; i < barrageObjs.Length; i++)
-        {
-            if (!barrageObjs[i].activeSelf)
-            {
-                StartCoroutine(GetBackBarrageObjFun(barrageObjs[i]));
-                return barrageObjs[i];
-            }
-        }
-        return null;
-    }
-
-    //回收弹幕框
-    IEnumerator GetBackBarrageObjFun(GameObject obj)
-    {
-        yield return new WaitForSeconds(7.5f);
-        obj.SetActive(false);
-    }
+    public BarrageUiController barragesController;
 
     //播放固定弹幕
     IEnumerator ShowBarrageForStory(int storyIndex)
@@ -346,13 +323,7 @@ public class FightForManagerForStart : MonoBehaviour
         {
             int randTime = Random.Range(2, 5);  //间隔时间
             yield return new WaitForSeconds(randTime);
-            GameObject barrageObj = GetBarrageObjFun();
-            if (barrageObj != null)
-            {
-                barrageObj.transform.localPosition = new Vector2(barrageObj.transform.position.x, Random.Range(-400, 600));
-                barrageObj.GetComponentInChildren<Text>().text = barragesList[storyIndex][i];
-                barrageObj.SetActive(true);
-            }
+            barragesController.PlayBarrage(barragesList[storyIndex][i]);
         }
     }
 
@@ -364,13 +335,7 @@ public class FightForManagerForStart : MonoBehaviour
         {
             int randTime = Random.Range(3, 7);  //间隔时间
             yield return new WaitForSeconds(randTime);
-            GameObject barrageObj = GetBarrageObjFun();
-            if (barrageObj != null)
-            {
-                barrageObj.transform.localPosition = new Vector2(barrageObj.transform.position.x, Random.Range(-400, 600));
-                barrageObj.GetComponentInChildren<Text>().text = barragesList[7][Random.Range(0, barragesList[7].Length)];
-                barrageObj.SetActive(true);
-            }
+            barragesController.PlayBarrage(barragesList[7][Random.Range(0, barragesList[7].Length)]);
         }
     }
 
@@ -381,7 +346,7 @@ public class FightForManagerForStart : MonoBehaviour
         if (!isShowedZZDM)
         {
             isShowedZZDM = true;
-            StartCoroutine(ShowBarrageForStory(indexNowStoryId == 1 ? 3 : 6));
+            StartCoroutine(ShowBarrageForStory(storyIndex == 1 ? 3 : 6));
         }
     }
     ///////////////////////////////////////////
@@ -427,7 +392,7 @@ public class FightForManagerForStart : MonoBehaviour
         playerHomeData.activeUnit = false;
         playerHomeData.fightState = new FightState();
         playerFightCardsDatas[17] = playerHomeData;
-        playerFightCardsDatas[17].fullHp = playerFightCardsDatas[17].nowHp = DataTable.Guide[indexNowStoryId].BaseHp;  //我方血量
+        playerFightCardsDatas[17].fullHp = playerFightCardsDatas[17].nowHp = guides[storyIndex].BaseHp;  //我方血量
 
         FightCardData enemyHomeData = new FightCardData();
         enemyHomeData.cardObj = Instantiate(homeCardObj, enemyCardsBox);
@@ -439,7 +404,7 @@ public class FightForManagerForStart : MonoBehaviour
         enemyHomeData.activeUnit = false;
         enemyHomeData.fightState = new FightState();
         enemyFightCardsDatas[17] = enemyHomeData;
-        enemyFightCardsDatas[17].fullHp = enemyFightCardsDatas[17].nowHp = DataTable.Guide[indexNowStoryId].EnemyBaseHp;    //敌方血量
+        enemyFightCardsDatas[17].fullHp = enemyFightCardsDatas[17].nowHp = guides[storyIndex].EnemyBaseHp;    //敌方血量
     }
 
     //隐藏故事界面
@@ -452,19 +417,19 @@ public class FightForManagerForStart : MonoBehaviour
         storyObj.GetComponent<Button>().enabled = false;
         Image bottonImg = storyObj.GetChild(0).GetChild(3).GetComponent<Image>();
 
-        if (indexNowStoryId < storyNums)
+        if (storyIndex < guides.Length)
         {
             AudioController1.instance.isNeedPlayLongMusic = true;
-            AudioController1.instance.ChangeAudioClip(audioClipsFightBack[indexNowStoryId], audioVolumeFightBack[indexNowStoryId]);
+            AudioController1.instance.ChangeAudioClip(audioClipsFightBack[storyIndex], audioVolumeFightBack[storyIndex]);
             AudioController1.instance.PlayLongBackMusInit();
 
-            fightBackImage.sprite = Resources.Load("Image/battleBG/" + DataTable.Guide[indexNowStoryId].MapBg, typeof(Sprite)) as Sprite;
+            fightBackImage.sprite = Resources.Load("Image/battleBG/" + guides[storyIndex].MapBg, typeof(Sprite)) as Sprite;
 
-            bottonImg.sprite = Resources.Load("Image/startFightImg/Image/" + (indexNowStoryId + 1), typeof(Sprite)) as Sprite;
+            bottonImg.sprite = Resources.Load("Image/startFightImg/Image/" + (storyIndex + 1), typeof(Sprite)) as Sprite;
             storyObj.GetComponent<Image>().DOFade(0, 1f).OnComplete(delegate ()
             {
                 //播放战前弹幕
-                StartCoroutine(ShowBarrageForStory(indexNowStoryId == 1 ? 2 : 5));
+                StartCoroutine(ShowBarrageForStory(storyIndex == 1 ? 2 : 5));
                 storyObj.gameObject.SetActive(false);
                 isShowedZZDM = false;
             });
@@ -498,7 +463,7 @@ public class FightForManagerForStart : MonoBehaviour
         Transform storyObj = guideStoryObj.transform.GetChild(3);
         storyObj.GetChild(0).gameObject.SetActive(true);
 
-        storyObj.GetChild(1).GetChild(0).GetComponent<Image>().sprite = Resources.Load("Image/startFightImg/Title/" + (indexNowStoryId + 1), typeof(Sprite)) as Sprite;
+        storyObj.GetChild(1).GetChild(0).GetComponent<Image>().sprite = Resources.Load("Image/startFightImg/Title/" + (storyIndex + 1), typeof(Sprite)) as Sprite;
         storyObj.GetChild(1).gameObject.SetActive(true);
         Text storyText = storyObj.GetChild(0).GetChild(2).GetComponent<Text>();
         storyText.text = "";
@@ -506,21 +471,21 @@ public class FightForManagerForStart : MonoBehaviour
         storyObj.GetComponent<Image>().DOFade(1, 1.5f).OnComplete(delegate ()
         {
             //播放片头弹幕
-            StartCoroutine(ShowBarrageForStory(indexNowStoryId));
+            StartCoroutine(ShowBarrageForStory(storyIndex));
             if (!isShowFHDM)
             {
                 StartCoroutine(ShowFeiHuaBarrage());
                 isShowFHDM = true;
             }
 
-            if (indexNowStoryId < storyNums - 1)
+            if (storyIndex < guides.Length)
             {
                 FightControlForStart.instance.InitStartFight();
                 UpdateCardDataForStory();
             }
             storyText.color = new Color(storyText.color.r, storyText.color.g, storyText.color.b, 0);
             storyText.DOFade(1, 5f);
-            storyText.DOText(DataTable.Guide[indexNowStoryId].Intro, 8f).OnComplete(delegate ()
+            storyText.DOText(guides[storyIndex].Intro, 8f).OnComplete(delegate ()
             {
                 guideStoryObj.transform.GetChild(1).gameObject.SetActive(true);
                 guideStoryObj.transform.GetChild(2).gameObject.SetActive(true);
@@ -528,7 +493,7 @@ public class FightForManagerForStart : MonoBehaviour
                 storyObj.GetChild(2).gameObject.SetActive(true);
             }).SetEase(Ease.Linear);
 
-            indexNowStoryId++;
+            storyIndex++;
         });
     }
 
@@ -548,9 +513,9 @@ public class FightForManagerForStart : MonoBehaviour
             enemyFightCardsDatas[17].cardObj.transform.GetChild(4).gameObject.SetActive(false);
 
             playerFightCardsDatas[17].fullHp =
-                playerFightCardsDatas[17].nowHp = DataTable.Guide[indexNowStoryId].BaseHp; //我方血量
+                playerFightCardsDatas[17].nowHp = guides[storyIndex].BaseHp; //我方血量
             enemyFightCardsDatas[17].fullHp =
-                enemyFightCardsDatas[17].nowHp = DataTable.Guide[indexNowStoryId].EnemyBaseHp; //敌方血量
+                enemyFightCardsDatas[17].nowHp = guides[storyIndex].EnemyBaseHp; //敌方血量
 
             playerFightCardsDatas[17].cardObj.transform.GetChild(2).GetComponent<Image>().fillAmount = 0;
             enemyFightCardsDatas[17].cardObj.transform.GetChild(2).GetComponent<Image>().fillAmount = 0;
@@ -583,10 +548,11 @@ public class FightForManagerForStart : MonoBehaviour
         }
 
         FightControlForStart.instance.ClearEmTieQiCardList();
-        var guide = DataTable.Guide[indexNowStoryId];
+        var guide = guides[storyIndex];
         //创建玩家备战单位
         foreach (var card in guide.Poses(GuideProps.Card))
         {
+            if(card == null)continue;
             FightCardData data = CreateFightUnit(card, herosCardListTran, true);
             data.cardObj.GetComponent<CardDragForStart>().posIndex = -1;
             data.cardObj.GetComponent<CardDragForStart>().isFightCard = false;
@@ -599,7 +565,9 @@ public class FightForManagerForStart : MonoBehaviour
         var playerChessmen = guide.Poses(GuideProps.Player);
         for (var i = 0; i < playerChessmen.Length; i++)
         {
-            FightCardData data = CreateFightUnit(playerChessmen[i], playerCardsBox, true);
+            var card = playerChessmen[i];
+            if(card == null)continue;
+            FightCardData data = CreateFightUnit(card, playerCardsBox, true);
             data.cardObj.GetComponent<CardDragForStart>().posIndex = i;
             data.cardObj.GetComponent<CardDragForStart>().isFightCard = true;
             data.posIndex = i;
@@ -613,7 +581,9 @@ public class FightForManagerForStart : MonoBehaviour
         var enemyChessmen = guide.Poses(GuideProps.Enemy);
         for (int i = 0; i < 20; i++)
         {
-            FightCardData data = CreateFightUnit(enemyChessmen[i], enemyCardsBox, false);
+            var card = enemyChessmen[i];
+            if(card == null)continue;
+            FightCardData data = CreateFightUnit(card, enemyCardsBox, false);
             data.posIndex = i;
             data.isPlayerCard = false;
             data.cardObj.transform.position = enemyCardsPos[i].transform.position;
