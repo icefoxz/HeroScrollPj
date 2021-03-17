@@ -81,25 +81,7 @@ ServerPj/yx_server/_yx_db_/je.info.0.lck
 ServerPj/yx_server/_yx_db_/je.lck
 ServerPj/yx_server/logs/bi.log
 ServerPj/yx_server/logs/gs.log
-SanGuoHuiJuanPj/SanGuoHuiJuanPj.sln
-SanGuoHuiJuanPj/ProjectSettings/XRSettings.asset
-SanGuoHuiJuanPj/ProjectSettings/VFXManager.asset
-SanGuoHuiJuanPj/ProjectSettings/UnityConnectSettings.asset
-SanGuoHuiJuanPj/ProjectSettings/TimeManager.asset
-SanGuoHuiJuanPj/ProjectSettings/TagManager.asset
-SanGuoHuiJuanPj/ProjectSettings/QualitySettings.asset
-SanGuoHuiJuanPj/ProjectSettings/ProjectVersion.txt
-SanGuoHuiJuanPj/ProjectSettings/ProjectSettings.asset
-SanGuoHuiJuanPj/ProjectSettings/PresetManager.asset
-SanGuoHuiJuanPj/ProjectSettings/Physics2DSettings.asset
-SanGuoHuiJuanPj/ProjectSettings/NavMeshAreas.asset
-SanGuoHuiJuanPj/ProjectSettings/InputManager.asset
-SanGuoHuiJuanPj/ProjectSettings/GraphicsSettings.asset
-SanGuoHuiJuanPj/ProjectSettings/EditorSettings.asset
-SanGuoHuiJuanPj/ProjectSettings/EditorBuildSettings.asset
-SanGuoHuiJuanPj/ProjectSettings/DynamicsManager.asset
-SanGuoHuiJuanPj/ProjectSettings/ClusterInputManager.asset
-SanGuoHuiJuanPj/ProjectSettings/AudioManager.asset
+
 Conversion/AutoChangeJson/datasrc/~$Hero.xlsx
 Conversion/AutoChangeJson/gamedb/Jsons/BaYeBattleTable.json
 Conversion/AutoChangeJson/gamedb/Jsons/BaYeDiTuTable.json
@@ -357,8 +339,6 @@ SanGuoHuiJuanPj/Assets/ExternalDependencyManager/Editor/Google.VersionHandlerImp
 
 SanGuoHuiJuanPj/Packages/packages-lock.json
 
-SanGuoHuiJuanPj/ProjectSettings/PackageManagerSettings.asset
-
 SanGuoHuiJuanPj/Assets/StreamingAssets/DebugFileV1.89.txt
 
 SanGuoHuiJuanPj/Assets/StreamingAssets/WarUnlockDataSave_old
@@ -366,3 +346,5 @@ SanGuoHuiJuanPj/Assets/StreamingAssets/WarUnlockDataSave_old
 SanGuoHuiJuanPj/Assets/StreamingAssets/WarUnlockDataSave.json
 
 SanGuoHuiJuanPj/Assets/StreamingAssets/
+
+SanGuoHuiJuanPj/.vsconfig
