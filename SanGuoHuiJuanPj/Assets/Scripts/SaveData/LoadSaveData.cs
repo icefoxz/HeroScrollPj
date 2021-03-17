@@ -25,6 +25,7 @@ public class LoadSaveData : MonoBehaviour
 
     private void Awake()
     {
+        XDebug.Init();
         if (instance != null)
         {
             Destroy(gameObject);
@@ -49,12 +50,8 @@ public class LoadSaveData : MonoBehaviour
             }
         }
 
-        //打印log附加代码 
-        Application.logMessageReceived += AppDebugClass.LogForUnityLog;
-
         isEncrypted = float.Parse(Application.version) < 1.9f ? PlayerPrefs.GetInt(ISNEEDENCRYPT) : 1;
 
-        AppDebugClass.DeleteOldAppLog();   //删除原先DebugFile 
     }
 
     /// <summary> 

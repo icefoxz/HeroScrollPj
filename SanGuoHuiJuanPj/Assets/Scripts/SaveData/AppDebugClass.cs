@@ -3,9 +3,9 @@ using UnityEngine;
 
 public class AppDebugClass
 {
-#if UNITY_ANDROID  && !UNITY_EDITOR
+#if UNITY_ANDROID && !UNITY_EDITOR
 
-    private static readonly string logFileUrl = Application.persistentDataPath + "/DebugFileV1.89.txt";
+    private static readonly string logFileUrl = Application.persistentDataPath + $"/DebugFileV{Application.version}.txt";
     private static readonly string logFileUrlOld = Application.persistentDataPath + "/DebugFileV1.86.txt";
 
     public static readonly string playerDataString = Application.persistentDataPath + "/PlayerDataSave.json";
@@ -23,8 +23,8 @@ public class AppDebugClass
     public static readonly string warUnlockDataString1 = Application.persistentDataPath + "/WarUnlockDataSave_old";
 #else
 
-    private static readonly string logFileUrl = Application.dataPath + "/StreamingAssets/DebugFileV1.89.txt";
-    private static readonly string logFileUrlOld = Application.dataPath + "/StreamingAssets/DebugFileV1.86.txt";
+    private static readonly string logFileUrl = Application.dataPath + $"/StreamingAssets/DebugFileV{Application.version}.txt";
+    private static readonly string logFileUrlOld = Application.dataPath + "/StreamingAssets/DebugFileV1.89.txt";
 
     //现有存档
     public static readonly string playerDataString = Application.dataPath + "/StreamingAssets/PlayerDataSave.json";
