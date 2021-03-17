@@ -314,30 +314,7 @@ public class FightForManagerForStart : MonoBehaviour
         "首抽出了吕布",
     };
 
-
-    [SerializeField]
-    GameObject[] barrageObjs;   //弹幕objs
-
-    //获取可用弹幕框
-    private GameObject GetBarrageObjFun()
-    {
-        for (int i = 0; i < barrageObjs.Length; i++)
-        {
-            if (!barrageObjs[i].activeSelf)
-            {
-                StartCoroutine(GetBackBarrageObjFun(barrageObjs[i]));
-                return barrageObjs[i];
-            }
-        }
-        return null;
-    }
-
-    //回收弹幕框
-    IEnumerator GetBackBarrageObjFun(GameObject obj)
-    {
-        yield return new WaitForSeconds(7.5f);
-        obj.SetActive(false);
-    }
+    public BarrageUiController barragesController;
 
     //播放固定弹幕
     IEnumerator ShowBarrageForStory(int storyIndex)
@@ -346,13 +323,7 @@ public class FightForManagerForStart : MonoBehaviour
         {
             int randTime = Random.Range(2, 5);  //间隔时间
             yield return new WaitForSeconds(randTime);
-            GameObject barrageObj = GetBarrageObjFun();
-            if (barrageObj != null)
-            {
-                barrageObj.transform.localPosition = new Vector2(barrageObj.transform.position.x, Random.Range(-400, 600));
-                barrageObj.GetComponentInChildren<Text>().text = barragesList[storyIndex][i];
-                barrageObj.SetActive(true);
-            }
+            barragesController.PlayBarrage(barragesList[storyIndex][i]);
         }
     }
 
@@ -364,13 +335,7 @@ public class FightForManagerForStart : MonoBehaviour
         {
             int randTime = Random.Range(3, 7);  //间隔时间
             yield return new WaitForSeconds(randTime);
-            GameObject barrageObj = GetBarrageObjFun();
-            if (barrageObj != null)
-            {
-                barrageObj.transform.localPosition = new Vector2(barrageObj.transform.position.x, Random.Range(-400, 600));
-                barrageObj.GetComponentInChildren<Text>().text = barragesList[7][Random.Range(0, barragesList[7].Length)];
-                barrageObj.SetActive(true);
-            }
+            barragesController.PlayBarrage(barragesList[7][Random.Range(0, barragesList[7].Length)]);
         }
     }
 
