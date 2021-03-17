@@ -475,22 +475,30 @@ public class LoadSaveData : MonoBehaviour
     private HSTDataClass ArchiveCorrection(HSTDataClass save)
     {
         var isNeedSaveDate = true;
-        save.heroSaveData = ResolveData(save.heroSaveData, 21, DataTable.Hero);
-        save.towerSaveData = ResolveData(save.towerSaveData, 14, DataTable.Tower);
-        save.trapSaveData = ResolveData(save.trapSaveData, 13, DataTable.Trap);
+        save.heroSaveData = ResolveData(save.heroSaveData, GameCardType.Hero);
+        save.towerSaveData = ResolveData(save.towerSaveData, GameCardType.Tower);
+        save.trapSaveData = ResolveData(save.trapSaveData, GameCardType.Trap);
         if (isNeedSaveDate)
         {
             SaveByJson(save);
         }
         return save;
 
-        List<NowLevelAndHadChip> ResolveData(List<NowLevelAndHadChip> data,int isPutOnIndex,IReadOnlyDictionary<int,IReadOnlyList<string>> map)
+        List<NowLevelAndHadChip> ResolveData(List<NowLevelAndHadChip> data,GameCardType cardType)
         {
             return data.Where(card =>
             {
-                var row = map[card.id];
-                if (row == null) return false;
-                return int.Parse(row[isPutOnIndex]) != 0;//是否投放索引
+                switch (cardType)
+                {
+                    case GameCardType.Hero:
+                        return DataTable.Hero[card.id].IsProduce > 0;
+                    case GameCardType.Tower:
+                        return DataTable.Tower[card.id].IsProduce > 0;
+                    case GameCardType.Trap:
+                        return DataTable.Trap[card.id].IsProduce > 0;
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(cardType), cardType, null);
+                }
             }).ToList();
         }
     }
@@ -500,7 +508,7 @@ public class LoadSaveData : MonoBehaviour
         bool isNeedSaveDate = false;
         //战役存档修正 
         int nowDataCount = save.warUnlockSaveData.Count;
-        int jsonDataCount = DataTable.WarData.Count;
+        int jsonDataCount = DataTable.War.Count;
         if (nowDataCount < jsonDataCount)
         {
             isNeedSaveDate = true;
@@ -526,7 +534,7 @@ public class LoadSaveData : MonoBehaviour
         bool isNeedSaveDate = false;
         //兑换码存档 
         int nowDataCount = save.redemptionCodeGotList.Count;
-        int jsonDataCount = DataTable.RCodeData.Count;
+        int jsonDataCount = DataTable.RCode.Count;
         if (nowDataCount < jsonDataCount)
         {
             isNeedSaveDate = true;
@@ -556,9 +564,9 @@ public class LoadSaveData : MonoBehaviour
         PlayerData pySaveData = new PlayerData();
         pySaveData.Level = 1;
         pySaveData.Exp = 0;
-        pySaveData.YvQue = int.Parse(DataTable.AssetData[0][2]);//startValue
-        pySaveData.YuanBao = int.Parse(DataTable.AssetData[1][2]);//startValue
-        pySaveData.Stamina = int.Parse(DataTable.Asset[2][2]);
+        pySaveData.YvQue = DataTable.ResourceConfig[0].NewPlayerValue;
+        pySaveData.YuanBao = DataTable.ResourceConfig[1].NewPlayerValue;
+        pySaveData.Stamina = DataTable.ResourceConfig[2].NewPlayerValue;
         pySaveData.ForceId = firstForceId;   //暂给初始势力
         pySaveData.LastGameVersion = float.Parse(Application.version);
         SaveByJson(pySaveData);
@@ -566,7 +574,7 @@ public class LoadSaveData : MonoBehaviour
         GetBoxOrCodeData gbocSaveData = new GetBoxOrCodeData();
         gbocSaveData.fightBoxs = new List<int>();
         gbocSaveData.redemptionCodeGotList = new List<RedemptionCodeGot>();
-        for (int i = 0; i < DataTable.RCodeData.Count; i++)
+        for (int i = 0; i < DataTable.RCode.Count; i++)
         {
             RedemptionCodeGot redemptionCodeGot = new RedemptionCodeGot();
             redemptionCodeGot.id = i;
@@ -575,101 +583,27 @@ public class LoadSaveData : MonoBehaviour
         }
         SaveByJson(gbocSaveData);
         //////////////////////////////////////////////////////////////////////////////////////// 
-        HSTDataClass hstSaveData = new HSTDataClass();
-        hstSaveData.heroSaveData = new List<NowLevelAndHadChip>();
-        for (int i = 0; i < DataTable.HeroData.Count; i++)
+        HSTDataClass hstSaveData = new HSTDataClass
         {
-            NowLevelAndHadChip nlahc = new NowLevelAndHadChip();
-            nlahc.id = i;
-            nlahc.level = 0;
-            nlahc.chips = 0;
-            nlahc.isFight = 0;
-            nlahc.typeIndex = 0;
-            nlahc.isHad = false;
-            nlahc.maxLevel = 0;
-            hstSaveData.heroSaveData.Add(nlahc);
-        }
-        string[] strs0 = DataTable.PlayerInitialData[pySaveData.ForceId][2].Split(',');
-        for (int i = 0; i < strs0.Length; i++)
+            heroSaveData = new List<NowLevelAndHadChip>(),
+            towerSaveData = new List<NowLevelAndHadChip>(),
+            trapSaveData = new List<NowLevelAndHadChip>()
+        };
+        DataTable.PlayerInitialConfig[pySaveData.ForceId].InitialHero.ToList().ForEach(id=>
         {
-            if (strs0[i] != "")
-            {
-                hstSaveData.heroSaveData[int.Parse(strs0[i])].level = 1; //设置等级为1，初始武将 
-                hstSaveData.heroSaveData[int.Parse(strs0[i])].isHad = true;
-                hstSaveData.heroSaveData[int.Parse(strs0[i])].maxLevel = 1;
-                if (i == 0 || i == 1)
-                    hstSaveData.heroSaveData[int.Parse(strs0[i])].isFight = 1;
-            }
-        }
-        hstSaveData.soldierSaveData = new List<NowLevelAndHadChip>();
-        for (int i = 0; i < DataTable.SoldierData.Count; i++)
+            var card = hstSaveData.heroSaveData.GetOrInstance(id);
+            card.isFight = id == 0 || id == 1 ? 1 : 0;
+        });
+        DataTable.PlayerInitialConfig[pySaveData.ForceId].InitialTower.ToList().ForEach(id =>
         {
-            NowLevelAndHadChip nlahc = new NowLevelAndHadChip();
-            nlahc.id = i;
-            nlahc.level = 0;
-            nlahc.chips = 0;
-            nlahc.isFight = 0;
-            nlahc.typeIndex = 1;
-            nlahc.isHad = false;
-            nlahc.maxLevel = 0;
-            hstSaveData.soldierSaveData.Add(nlahc);
-        }
-        hstSaveData.towerSaveData = new List<NowLevelAndHadChip>();
-        for (int i = 0; i < DataTable.TowerData.Count; i++)
-        {
-            NowLevelAndHadChip nlahc = new NowLevelAndHadChip();
-            nlahc.id = i;
-            nlahc.level = 0;
-            nlahc.chips = 0;
-            nlahc.isFight = 0;
-            nlahc.typeIndex = 2;
-            nlahc.isHad = false;
-            nlahc.maxLevel = 0;
-            hstSaveData.towerSaveData.Add(nlahc);
-        }
-        string[] strs2 = DataTable.PlayerInitialData[pySaveData.ForceId][4].Split(',');
-        for (int i = 0; i < strs2.Length; i++)
-        {
-            if (strs2[i] != "")
-            {
-                hstSaveData.towerSaveData[int.Parse(strs2[i])].level = 1; //设置等级为1，初始塔 
-                hstSaveData.towerSaveData[int.Parse(strs2[i])].isHad = true;
-                hstSaveData.towerSaveData[int.Parse(strs2[i])].maxLevel = 1;
-                if (i == 0)
-                    hstSaveData.towerSaveData[int.Parse(strs2[i])].isFight = 1;
-            }
-        }
-        hstSaveData.trapSaveData = new List<NowLevelAndHadChip>();
-        for (int i = 0; i < DataTable.Trap.Count; i++)
-        {
-            NowLevelAndHadChip nlahc = new NowLevelAndHadChip();
-            nlahc.id = i;
-            nlahc.level = 0;
-            nlahc.chips = 0;
-            nlahc.isFight = 0;
-            nlahc.typeIndex = 3;
-            nlahc.isHad = false;
-            nlahc.maxLevel = 0;
-            hstSaveData.trapSaveData.Add(nlahc);
-        }
-        hstSaveData.spellSaveData = new List<NowLevelAndHadChip>();
-        for (int i = 0; i < DataTable.SpellData.Count; i++)
-        {
-            NowLevelAndHadChip nlahc = new NowLevelAndHadChip();
-            nlahc.id = i;
-            nlahc.level = 0;
-            nlahc.chips = 0;
-            nlahc.isFight = 0;
-            nlahc.typeIndex = 4;
-            nlahc.isHad = false;
-            nlahc.maxLevel = 0;
-            hstSaveData.spellSaveData.Add(nlahc);
-        }
-        SaveByJson(hstSaveData);
+            var card = hstSaveData.towerSaveData.GetOrInstance(id);
+            card.isFight = id == 0 ? 1 : 0;
+        });
+
         /////////////////////////////////////////////////////////////////////////////////////////// 
         WarsDataClass warsSaveData = new WarsDataClass();
         warsSaveData.warUnlockSaveData = new List<UnlockWarCount>();
-        for (int i = 0; i < DataTable.WarData.Count; i++)
+        for (int i = 0; i < DataTable.War.Count; i++)
         {
             UnlockWarCount unlock = new UnlockWarCount();
             unlock.warId = i;

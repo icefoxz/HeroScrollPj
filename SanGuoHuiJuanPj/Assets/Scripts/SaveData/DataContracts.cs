@@ -6,19 +6,6 @@ using Newtonsoft.Json;
 
 #region 玩家数据相关类
 
-public enum SignalRDataType
-{
-    Message,
-    Generic
-}
-
-public interface ISignalRField
-{
-    SignalRDataType DataTypes { get; }
-    string Method { get; }
-    string JData { get; }
-}
-
 /// <summary>
 /// 玩家账户信息存档
 /// </summary>
@@ -27,25 +14,24 @@ public interface IUserInfo
     /// <summary>
     /// 账号
     /// </summary>
-    [SkipRename]string Username { get; set; }
+    string Username { get; set; }
     /// <summary>
     /// 密码
     /// </summary>
-    [SkipRename]string Password { get; set; }
+    string Password { get; set; }
     /// <summary>
     /// 手机号
     /// </summary>
-    [SkipRename]string Phone { get; set; }
+    string Phone { get; set; }
     /// <summary>
     /// 硬件唯一标识id
     /// </summary>
-    [SkipRename]string DeviceId { get; set; }
+    string DeviceId { get; set; }
     /// <summary>
     /// 与服务器最后一次互交的时间
     /// </summary>
-    [SkipRename]long LastUpdate { get; set; }
+    long LastUpdate { get; set; }
 }
-
 
 /// <summary>
 /// 玩家基本信息存档数据类
@@ -53,28 +39,31 @@ public interface IUserInfo
 public interface IPlayerData
 {
     //等级
-    [SkipRename]int Level { get; set; }
+    int Level { get; set; }
     //经验
-    [SkipRename]int Exp { get; set; }
+    int Exp { get; set; }
     //元宝
-    [SkipRename]int YuanBao { get; set; }
+    int YuanBao { get; set; }
     //玉阙
-    [SkipRename]int YvQue { get; set; }
+    int YvQue { get; set; }
     //体力
-    [SkipRename]int Stamina { get; set; }
+    int Stamina { get; set; }
     //玩家初始势力id
-    [SkipRename]int ForceId { get; set; }
+    int ForceId { get; set; }
     //上次锦囊获取时间
-    [SkipRename]long LastJinNangRedeemTime { get; set; }
+    long LastJinNangRedeemTime { get; set; }
     //锦囊每天的获取次数
-    [SkipRename]int DailyJinNangRedemptionCount { get; set; }
+    int DailyJinNangRedemptionCount { get; set; }
     //上次酒坛获取时间
-    [SkipRename]long LastJiuTanRedeemTime { get; set; }
+    long LastJiuTanRedeemTime { get; set; }
     //酒坛每天的获取次数
-    [SkipRename]int DailyJiuTanRedemptionCount { get; set; }
+    int DailyJiuTanRedemptionCount { get; set; }
+    //上次无双宝箱获取时间
+    long LastFourDaysChestRedeemTime { get; set; }
+    //上次史诗宝箱获取时间
+    long LastWeekChestRedeemTime { get; set; }
     //上一个游戏版本号
-    [SkipRename]float LastGameVersion { get; set; }
-
+    float LastGameVersion { get; set; }
 }
 
 /// <summary>
@@ -83,29 +72,29 @@ public interface IPlayerData
 public interface IUserSaveArchive
 {
     // 账号
-    [SkipRename]string Username { get; set; }
+    string Username { get; set; }
     // 密码
-    [SkipRename]string Password { get; set; }
+    string Password { get; set; }
     // 手机号
-    [SkipRename]string Phone { get; set; }
+    string Phone { get; set; }
     // 硬件唯一标识id
-    [SkipRename]string DeviceId { get; set; }
+    string DeviceId { get; set; }
     // 与服务器最后一次互交的时间
-    [SkipRename]long LastUpdate { get; set; }
+    long LastUpdate { get; set; }
     //玩家信息
-    [SkipRename]string PlayerInfo { get; set; }
+    string PlayerInfo { get; set; }
     /// <summary>
     ///卡牌数据 HSTDataClass
     /// </summary>
-    [SkipRename]string CardsData { get; set; }
+    string CardsData { get; set; }
     /// <summary>
     /// 征战记录 WarsDataClass
     /// </summary>
-    [SkipRename]string Expedition { get; set; }
+    string Expedition { get; set; }
     /// <summary>
     ///奖励或兑换码记录 GetBoxOrCodeData
     /// </summary>
-    [SkipRename]string RewardsRecord { get; set; }
+    string RewardsRecord { get; set; }
 }
 [Skip]
 public class GetBoxOrCodeData
@@ -122,15 +111,15 @@ public class RedemptionCodeGot
     public bool isGot;  //是否领取过
 }
 [Skip]
-public class NowLevelAndHadChip
+public class NowLevelAndHadChip//card
 {
     public int id;          //id
-    public int level;       //当前等级
+    public int level = 1;       //当前等级
     public int chips;       //拥有碎片
     public int isFight;     //是否出战
     public int typeIndex;   //单位类型0武将1士兵2塔3陷阱4技能
     public bool isHad;      //是否拥有过
-    public int maxLevel;    //历史最高星级
+    public int maxLevel = 1;    //历史最高星级
 
     public bool IsOwned => chips > 0 || level > 0;//是否拥有
 }

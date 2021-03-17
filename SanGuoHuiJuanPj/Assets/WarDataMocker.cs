@@ -45,10 +45,10 @@ public class WarDataMocker : MonoBehaviour
     {
         var forceId = (int) force;
         var hst = PlayerDataForGame.instance.hstData;
-        var hfMap = DataTable.Hero.Select(map =>
+        var hfMap = DataTable.Hero.Values.Select(card =>
         {
-            var id = map.Key;
-            var origin = int.Parse(map.Value[6]);
+            var id = card.Id;
+            var origin = card.ForceTableId;
             return new {id, origin};
         }).ToDictionary(c => c.id, c => c.origin);
         Dictionary<int, List<int>> cards;

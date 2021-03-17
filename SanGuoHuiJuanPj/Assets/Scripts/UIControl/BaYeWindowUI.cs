@@ -37,19 +37,21 @@ public class BaYeWindowUI : MiniWindowUI
         DisplayViewChange(DisplayViews.Reward);
     }
 
-    public void ShowQuest(string quest, string[] answerStrings, int answerIndex, Action onCorrectAction, Action onFaultyAction)
+    public void ShowQuest(QuestTable quest, Action onCorrectAction, Action onFaultyAction)
     {
-        question.text = quest;
+        question.text = quest.Question;
+        var answers = new[] {quest.A, quest.B, quest.C};
         for (int i = 0; i < answer.Length; i++)
         {
             var btn = answer[i];
-            btn.GetComponentInChildren<Text>().text = answerStrings[i];
+            btn.GetComponentInChildren<Text>().text = answers[i];
             btn.onClick.RemoveAllListeners();
             btn.onClick.AddListener(Close);
-            if(answerIndex==i)
+            if (quest.Answer == i)
                 btn.onClick.AddListener(onCorrectAction.Invoke);
             else btn.onClick.AddListener(onFaultyAction.Invoke);
         }
+
         DisplayViewChange(DisplayViews.Quest);
     }
 

@@ -57,14 +57,11 @@ using UnityEngine.UI;
     {
         if (TimeSystemControl.instance.OnClickToGetJinNang())
         {
-            var randId = UnityEngine.Random.Range(0, DataTable.KnowledgeData.Count);
-            var arrs = DataTable.KnowledgeData[randId][4].Split(',');
-            var yuanBao = UnityEngine.Random.Range(int.Parse(arrs[0]), int.Parse(arrs[1]));
-            var text = DataTable.KnowledgeData[randId][2];
-            var textColor = DataTable.KnowledgeData[randId][1] == "1" ? ColorDataStatic.name_deepRed : ColorDataStatic.name_brown;
-            var characterName = DataTable.KnowledgeData[randId][5];
-            var stamina = int.Parse(DataTable.KnowledgeData[randId][3]);
-            jinNangUi.OnReward(text, textColor, characterName, stamina, yuanBao);
+            var randId = UnityEngine.Random.Range(0, DataTable.Tips.Count);
+            var tips = DataTable.Tips[randId];
+            var yuanBao = UnityEngine.Random.Range(tips.YuanBaoReward.Min, tips.YuanBaoReward.ExcMax);
+            var textColor = tips.Color == 1 ? ColorDataStatic.name_deepRed : ColorDataStatic.name_brown;
+            jinNangUi.OnReward(tips.Text, textColor, tips.Sign, tips.Stamina, yuanBao);
             return;
         }
         UIManager.instance.PlayOnClickMusic();
@@ -187,10 +184,10 @@ using UnityEngine.UI;
 
         if (isSuccessSpend)
         {
-            var exp = int.Parse(DataTable.WarChestData[chestId][3]); //获取经验
+            var exp = DataTable.WarChest[chestId].Exp; //获取经验
             UIManager.instance.GetPlayerExp(exp); //增加经验
-            var yuanBao = RewardManager.instance.GetYuanBao(chestId); //获取元宝
-            var yvQue = RewardManager.instance.GetYvQue(chestId); //获取玉阙
+            var yuanBao = RewardManager.instance.GetRandomYuanBao(chestId); //获取元宝
+            var yvQue = RewardManager.instance.GetRandomYvQue(chestId); //获取玉阙
             ConsumeManager.instance.AddYuQue(yvQue); //增加玉阙
             ConsumeManager.instance.AddYuanBao(yuanBao); //增加元宝
             var isZhanYiChest = chest == zhanYiChest;

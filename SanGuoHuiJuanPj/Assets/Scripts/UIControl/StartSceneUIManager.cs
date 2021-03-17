@@ -131,6 +131,6 @@ public class StartSceneUIManager : MonoBehaviour
         powerIntroText.text = "";
         powerIntroText.color = new Color(powerIntroText.color.r, powerIntroText.color.g, powerIntroText.color.b, 0);
         powerIntroText.DOFade(1, 2.5f);
-        powerIntroText.DOText(("\u2000\u2000\u2000\u2000" + DataTable.PlayerInitialData[forceId][5]), 2.5f).SetEase(Ease.Linear).SetAutoKill(false);
+        powerIntroText.DOText(("\u2000\u2000\u2000\u2000" + DataTable.PlayerInitialConfig[forceId].ForceIntro), 2.5f).SetEase(Ease.Linear).SetAutoKill(false);
     }
 }

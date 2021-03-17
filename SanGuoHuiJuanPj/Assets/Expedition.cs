@@ -27,14 +27,14 @@ public class Expedition : MonoBehaviour
     /// <summary>
     /// key = btn index, value = warStageId
     /// </summary>
-    private Dictionary<int, WarMode> indexWarModeMap; //按键和难度的映射
-    private WarMode currentMode;//当前选择的难度
-    public int[] SelectedWarStaminaCost => currentMode.tili;
+    private Dictionary<int, GameModeTable> indexWarModeMap; //按键和难度的映射
+    private GameModeTable currentMode;//当前选择的难度
+    public StaminaCost SelectedWarStaminaCost => currentMode.StaminaCost;
 
     public void Init()
     {
         warForceSelectorUi.Init(PlayerDataForGame.WarTypes.Expedition);
-        indexWarModeMap = new Dictionary<int, WarMode>();
+        indexWarModeMap = new Dictionary<int, GameModeTable>();
         stages = new List<WarStageBtnUi>();
         InitWarModes();
     }
@@ -42,8 +42,7 @@ public class Expedition : MonoBehaviour
     private void InitWarModes()
     {
         lastAvailableStageIndex = 0;
-        var warModes = DataTable.ChoseWar.Where(map => !string.IsNullOrWhiteSpace(map.Value[2]))
-            .Select(map => new WarMode(map.Value)).ToList();
+        var warModes = DataTable.GameMode.Values.Where(m => m.WarList != null).ToList();
         //新手-困难关卡入口初始化
         for (int i = 0; i < difficultyButtons.Length; i++)
         {
@@ -56,7 +55,7 @@ public class Expedition : MonoBehaviour
             var warMode = warModes[i];
             indexWarModeMap.Add(i, warMode);
             var textUi = uiBtn.GetComponentInChildren<Text>();
-            textUi.text = warMode.title;
+            textUi.text = warMode.Title;
             var isUnlock = IsWarUnlock(warMode);
             textUi.color = isUnlock ? Color.white : Color.gray;
             if (isUnlock)
@@ -74,7 +73,7 @@ public class Expedition : MonoBehaviour
             {
                 uiBtn.onClick.AddListener(() =>
                 {
-                    PlayerDataForGame.instance.ShowStringTips(warMode.intro);
+                    PlayerDataForGame.instance.ShowStringTips(warMode.Intro);
                     UIManager.instance.PlayOnClickMusic();
                 });
             }
@@ -84,14 +83,14 @@ public class Expedition : MonoBehaviour
 
         //远征关卡
         
-        var yuanZhengMode = new WarMode(DataTable.ChoseWar[YuanZhengIndex]);
+        var yuanZhengMode = DataTable.GameMode[YuanZhengIndex];
         indexWarModeMap.Add(YuanZhengIndex, yuanZhengMode);
         var isYuanZhengUnlock = IsWarUnlock(yuanZhengMode);
         yuanZhengButton.gameObject.SetActive(isYuanZhengUnlock);
         if (isYuanZhengUnlock)
         {
             var textUi = yuanZhengButton.GetComponentInChildren<Text>();
-            textUi.text = yuanZhengMode.title;
+            textUi.text = yuanZhengMode.Title;
             textUi.color = Color.white;
             yuanZhengButton.GetComponent<Button>().onClick.AddListener(() =>
             {
@@ -100,11 +99,11 @@ public class Expedition : MonoBehaviour
             });
         }
 
-        bool IsWarUnlock(WarMode warMode)
+        bool IsWarUnlock(GameModeTable warMode)
         {
-            if (warMode.unlockWarId == default) return true;//解锁关卡为(id = 0)初始关卡
-            var theWarBeforeUnlockWar = warMode.unlockWarId - 1;//当前需要解锁关卡的前一个关卡id
-            var lastWarTotalStages = int.Parse(DataTable.War[theWarBeforeUnlockWar][4]);//上一个war的总关卡
+            if (warMode.Unlock == default) return true;//解锁关卡为(id = 0)初始关卡
+            var theWarBeforeUnlockWar = warMode.Unlock - 1;//当前需要解锁关卡的前一个关卡id
+            var lastWarTotalStages = DataTable.War[theWarBeforeUnlockWar].CheckPoints;//上一个war的总关卡
             return PlayerDataForGame.instance.warsData.warUnlockSaveData
                 .Single(w => w.warId == theWarBeforeUnlockWar).unLockCount >= lastWarTotalStages;//是否上一关已经完成
         }
@@ -131,21 +130,21 @@ public class Expedition : MonoBehaviour
         stages.Clear();
 
         int startWarId,lastWarId = 0;
-        if (warMode.id == 6)
+        if (warMode.Id == 6)
         {
-            startWarId = lastWarId = int.Parse(DataTable.PlayerLevelData[PlayerDataForGame.instance.pyData.Level - 1][5]);
+            startWarId = lastWarId = DataTable.PlayerLevelConfig[PlayerDataForGame.instance.pyData.Level].YuanZhengWarTableId;
         }
         else
         {
-            startWarId = warMode.warList[0];
-            lastWarId = warMode.warList[1];
+            startWarId = warMode.WarList.Min;
+            lastWarId = warMode.WarList.IncMax;
         }
 
         int index = startWarId;
         for (; index <= lastWarId; index++)
         {
             var warId = PlayerDataForGame.instance.warsData.warUnlockSaveData[index].warId;
-            var warsCount = int.Parse(DataTable.WarData[warId][4]);
+            var warsCount = DataTable.War[warId].CheckPoints;
             var warStageUi = Instantiate(warStageBtnPrefab, warStageScrollRect.content);
             warStageUi.boundWarId = warId;
             stages.Add(warStageUi);
@@ -175,7 +174,7 @@ public class Expedition : MonoBehaviour
                 }
             }
             //战役列拼接
-            warStageUi.title.text = DataTable.WarData[index][1] + "\u2000\u2000\u2000\u2000"
+            warStageUi.title.text = DataTable.War[index].Title + "\u2000\u2000\u2000\u2000"
                 + Mathf.Min(PlayerDataForGame.instance.warsData.warUnlockSaveData[index].unLockCount, warsCount) + "/" +
                 warsCount;
             warStageUi.button.onClick.AddListener(() =>
@@ -209,15 +208,14 @@ public class Expedition : MonoBehaviour
             var boundWarId = stages[i].boundWarId;
             stages[i].selectedImage.enabled = warId == boundWarId;
         }
-        var limitedForce = DataTable.War[warId][11];
-        var isLimitedForce = !string.IsNullOrWhiteSpace(limitedForce);
+        var isLimitedForce = DataTable.War[warId].ForceLimit.Length > 0;
         stageTipUi.gameObject.SetActive(isLimitedForce);
         stageTipForceName.text = string.Empty;
         warForceSelectorUi.Init(PlayerDataForGame.WarTypes.Expedition);
 
         if (isLimitedForce)
         {
-            var forces = limitedForce.TableStringToInts().ToArray();
+            var forces = DataTable.War[warId].ForceLimit.ToArray();
             foreach (var flagUi in warForceSelectorUi.Data)
             {
                 var ui = flagUi.Value;
@@ -227,7 +225,7 @@ public class Expedition : MonoBehaviour
                 if(!enable) warForceSelectorUi.BtnData[flagUi.Key].onClick.RemoveAllListeners();
             }
 
-            stageTipForceName.text = forces.Length > 0 ? DataTable.War[warId][12] : string.Empty;
+            stageTipForceName.text = forces.Length > 0 ? DataTable.War[warId].ForceIntro : string.Empty;
             warForceSelectorUi.OnSelected(PlayerDataForGame.WarTypes.Expedition);
         }
 
@@ -239,28 +237,28 @@ public class Expedition : MonoBehaviour
         warIntroText.text = string.Empty;
         warIntroText.color = new Color(warIntroText.color.r, warIntroText.color.g, warIntroText.color.b, 0);
         warIntroText.DOFade(1, 3f);
-        warIntroText.DOText(("\u2000\u2000\u2000\u2000" + DataTable.War[warId][2]), 3f).SetEase(Ease.Linear)
+        warIntroText.DOText(("\u2000\u2000\u2000\u2000" + DataTable.War[warId].Intro), 3f).SetEase(Ease.Linear)
             .SetAutoKill(false);
     }
 
-    private class WarMode
-    {
-        public int id;
-        public string title;
-        public int[] warList;
-        public int unlockWarId;
-        public int[] tili;
-        public string intro;
+    //private class WarMode
+    //{
+    //    public int id;
+    //    public string title;
+    //    public int[] warList;
+    //    public int unlockWarId;
+    //    public int[] tili;
+    //    public string intro;
 
-        public WarMode(IReadOnlyList<string> map)
-        {
-            id = int.Parse(map[0]);
-            title = map[1];
-            warList = string.IsNullOrWhiteSpace(map[2]) ? new int[0] : map[2].TableStringToInts().ToArray();
-            unlockWarId = int.Parse(map[3]);
-            tili = map[4].TableStringToInts().ToArray();
-            intro = map[5];
-        }
-    }
+    //    public WarMode(IReadOnlyList<string> map)
+    //    {
+    //        id = int.Parse(map[0]);
+    //        title = map[1];
+    //        warList = string.IsNullOrWhiteSpace(map[2]) ? new int[0] : map[2].TableStringToInts().ToArray();
+    //        unlockWarId = int.Parse(map[3]);
+    //        tili = map[4].TableStringToInts().ToArray();
+    //        intro = map[5];
+    //    }
+    //}
 
 }
