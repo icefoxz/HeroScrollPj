@@ -366,7 +366,7 @@ public class WarsUIManager : MonoBehaviour
                 GameResources.GuanQiaEventImg[checkPoint.ImageId];
             if (IsBattle(checkPoint.EventType)) //战斗关卡城池名
             {
-                obj.transform.GetChild(1).GetChild(0).GetComponent<Text>().text = checkPoint.Intro;
+                obj.transform.GetChild(1).GetChild(0).GetComponent<Text>().text = checkPoint.Title;
                 obj.transform.GetChild(1).GetChild(0).gameObject.SetActive(true);
                 if (checkPoint.EventType != 7)
                 {
@@ -496,7 +496,7 @@ public class WarsUIManager : MonoBehaviour
         currentEvent = EventTypes.Battle;
         PlayAudioClip(21);
         var checkPoint = DataTable.Checkpoint[guanQiaId];
-        fightBackImage.sprite = GameResources.BattleBG[checkPoint.ImageId];
+        fightBackImage.sprite = GameResources.BattleBG[checkPoint.BattleBG];
         int bgmIndex = checkPoint.BattleBGM;
         AudioController1.instance.isNeedPlayLongMusic = true;
         AudioController1.instance.ChangeAudioClip(audioClipsFightBack[bgmIndex], audioVolumeFightBack[bgmIndex]);
@@ -510,7 +510,6 @@ public class WarsUIManager : MonoBehaviour
     /// <summary>
     /// 进入答题
     /// </summary>
-    /// <param name="testId"></param>
     private void GoToTheTest()
     {
         currentEvent = EventTypes.Quest;
@@ -842,10 +841,8 @@ public class WarsUIManager : MonoBehaviour
                     getBtnTran.GetChild(1).gameObject.SetActive(true);
                     getBtnTran.GetChild(2).gameObject.SetActive(false);
 
-                    getBtnTran.GetComponent<Button>().onClick.AddListener(delegate ()
-                    {
-                        GetOrBuyCards(true, mercenaryCost, cardType, card.Id, cardLevel, btnIndex);
-                    });
+                    getBtnTran.GetComponent<Button>().onClick.AddListener(() =>
+                        GetOrBuyCards(true, mercenaryCost, cardType, card.Id, cardLevel, btnIndex));
                 }
                 woodsList.GetChild(i).gameObject.SetActive(true);
             }
@@ -1036,9 +1033,7 @@ public class WarsUIManager : MonoBehaviour
                 eventsWindows[3].transform.GetChild(0).GetChild(1).GetChild(btnIndex).gameObject.SetActive(false);
             }
         }
-        NowLevelAndHadChip nowLevelAndHadChip = new NowLevelAndHadChip();
-        nowLevelAndHadChip.id = cardId;
-        nowLevelAndHadChip.level = cardLevel;
+        NowLevelAndHadChip nowLevelAndHadChip = new NowLevelAndHadChip().Instance(cardType,cardId,cardLevel);
         CreateCardToList(nowLevelAndHadChip);
         if (!isBuy)
         {

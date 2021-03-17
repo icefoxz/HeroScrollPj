@@ -810,9 +810,9 @@ public class UIManager : MonoBehaviour
         //边框 
         FrameChoose(info.Rare, obj.transform.GetChild(6).GetComponent<Image>());
         //碎片 
-        if (card.level < DataTable.CardLevel.Count)
+        if (card.level < DataTable.CardLevel.Keys.Max())
         {
-            var consume = card.level == 0 ? 0 : DataTable.CardLevel[card.level].ChipsConsume;
+            var consume = DataTable.CardLevel[card.level + 1].ChipsConsume;
             obj.transform.GetChild(2).GetComponent<Text>().text = card.chips + "/" + consume;
             obj.transform.GetChild(2).GetComponent<Text>().color = card.chips >= consume ? ColorDataStatic.deep_green : Color.white;
         }
@@ -879,10 +879,12 @@ public class UIManager : MonoBehaviour
         //边框 
         FrameChoose(info.Rare, showCardObj.transform.GetChild(6).GetComponent<Image>());
         //碎片 
-        if (card.level < DataTable.CardLevel.Count)
+        if (card.level < DataTable.CardLevel.Keys.Max())
         {
-            showCardObj.transform.GetChild(2).GetComponent<Text>().text = card.chips + "/" + DataTable.CardLevel[card.level].ChipsConsume;
-            showCardObj.transform.GetChild(2).GetComponent<Text>().color = card.chips >= DataTable.CardLevel[card.level].ChipsConsume ? ColorDataStatic.deep_green : Color.black;
+            var consume = DataTable.CardLevel[card.level + 1].ChipsConsume;
+            showCardObj.transform.GetChild(2).GetComponent<Text>().text = card.chips + "/" + consume;
+            showCardObj.transform.GetChild(2).GetComponent<Text>().color =
+                card.chips >= consume ? ColorDataStatic.deep_green : Color.black;
         }
         else
         {
@@ -1068,9 +1070,9 @@ public class UIManager : MonoBehaviour
         //边框 
         FrameChoose(info.Rare, obj.transform.GetChild(6).GetComponent<Image>());
         //碎片 
-        if (card.level < DataTable.CardLevel.Count)
+        if (card.level < DataTable.CardLevel.Keys.Max())
         {
-            var chipsConsume = card.level == 0 ? 0 : DataTable.CardLevel[card.level].ChipsConsume;
+            var chipsConsume = DataTable.CardLevel[card.level + 1].ChipsConsume;
             obj.transform.GetChild(2).GetComponent<Text>().text = card.chips + "/" + chipsConsume;
             obj.transform.GetChild(2).GetComponent<Text>().color =
                 card.chips >= chipsConsume ? ColorDataStatic.deep_green : Color.white;
@@ -1143,9 +1145,9 @@ public class UIManager : MonoBehaviour
         //边框 
         FrameChoose(info.Rare, showCardObj.transform.GetChild(6).GetComponent<Image>());
         //碎片 
-        if (card.level < DataTable.CardLevel.Count)
+        if (card.level < DataTable.CardLevel.Keys.Max())
         {
-            var consumeChips = card.level == 0 ? 0 : DataTable.CardLevel[card.level].ChipsConsume;
+            var consumeChips = DataTable.CardLevel[card.level + 1].ChipsConsume;
             showCardObj.transform.GetChild(2).GetComponent<Text>().text = card.chips + "/" + consumeChips;
             showCardObj.transform.GetChild(2).GetComponent<Text>().color = card.chips >= consumeChips ? ColorDataStatic.deep_green : Color.black;
         }
@@ -1205,11 +1207,7 @@ public class UIManager : MonoBehaviour
     private int GetGoldPrice(NowLevelAndHadChip heroData)
     {
         var info = heroData.GetInfo();
-        int chips = heroData.chips;
-        for (int i = 1; i <= heroData.level; i++)
-        {
-            chips += DataTable.CardLevel[i].ChipsConsume;
-        }
+        int chips = heroData.chips + DataTable.CardLevel.Where(lv => lv.Key < heroData.level).Sum(kv => kv.Value.ChipsConsume);
         int golds = 0;
         switch (info.Rare)
         {
@@ -1425,19 +1423,11 @@ public class UIManager : MonoBehaviour
     //得到合成所需元宝 
     private void CalculatedNeedYuanBao(int nowLevel)
     {
-        if (nowLevel == 0)
-        {
-            heImgObj.SetActive(true);
-            ShowOrHideGuideObj(2, true);
-        }
-        else
-        {
-            heImgObj.SetActive(false);
-        }
+        if (nowLevel == 0) ShowOrHideGuideObj(2, true);
         heImgObj.SetActive(nowLevel == 0);
-        if (nowLevel < DataTable.CardLevel.Count)
+        if (nowLevel < DataTable.CardLevel.Keys.Max())
         {
-            needYuanBaoNums = DataTable.CardLevel[nowLevel].YuanBaoConsume;
+            needYuanBaoNums = DataTable.CardLevel[nowLevel + 1].YuanBaoConsume;
             heChengBtn.transform.GetComponentInChildren<Text>().text = "" + needYuanBaoNums;
             heChengBtn.SetActive(true);
         }
@@ -1452,11 +1442,12 @@ public class UIManager : MonoBehaviour
     /// </summary> 
     public void SynthesizeCard()
     {
-        if (selectCardData.chips >= DataTable.CardLevel[selectCardData.level].ChipsConsume)
+        var nextLevel = DataTable.CardLevel[selectCardData.level + 1];
+        if (selectCardData.chips >= nextLevel.ChipsConsume)
         {
-            if (ConsumeManager.instance.DeductYuanBao(needYuanBaoNums))
+            if (ConsumeManager.instance.DeductYuanBao(nextLevel.ChipsConsume))
             {
-                selectCardData.chips -= DataTable.CardLevel[selectCardData.level].ChipsConsume;
+                selectCardData.chips -= nextLevel.ChipsConsume;
 
                 selectCardData.level++;
                 if (!selectCardData.isHad)
@@ -1556,10 +1547,12 @@ public class UIManager : MonoBehaviour
     {
         //Debug.Log("selectCardData.Level: " + selectCardData.Level); 
         Transform listCard = lastSelectImg.transform.parent;
-        if (selectCardData.level < DataTable.CardLevel.Count)
+        if (selectCardData.level < DataTable.CardLevel.Keys.Max())
         {
-            listCard.GetChild(2).GetComponent<Text>().text = selectCardData.chips + "/" + DataTable.CardLevel[selectCardData.level].ChipsConsume;
-            listCard.GetChild(2).GetComponent<Text>().color = selectCardData.chips >= DataTable.CardLevel[selectCardData.level].ChipsConsume ? ColorDataStatic.deep_green : Color.white;
+            var consume = DataTable.CardLevel[selectCardData.level + 1].ChipsConsume;
+            listCard.GetChild(2).GetComponent<Text>().text = selectCardData.chips + "/" + consume;
+            listCard.GetChild(2).GetComponent<Text>().color =
+                selectCardData.chips >= consume ? ColorDataStatic.deep_green : Color.white;
         }
         else
         {

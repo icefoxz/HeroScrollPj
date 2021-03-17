@@ -2578,8 +2578,6 @@ public class FightControlForStart : MonoBehaviour
     {
         attackedUnit.attackedBehavior = 0;
         int finalDamage = damage;
-        var attInfo = GameCardInfo.GetInfo((GameCardType)attackUnit.cardType, attackUnit.cardId);
-        var defInfo = GameCardInfo.GetInfo((GameCardType) attackedUnit.cardType, attackedUnit.cardId);
         if (attackedUnit.cardType == 0)
         {
             var attUnit = HeroCombatInfo.GetInfo(attackUnit.cardId);
@@ -2673,7 +2671,7 @@ public class FightControlForStart : MonoBehaviour
                                 defPropNums = defPropNums > DataTable.GetGameValue(116) ? DataTable.GetGameValue(116) : defPropNums;
                                 finalDamage = (int)((100f - defPropNums) / 100f * finalDamage);
                                 //判断攻击者的伤害类型，获得被攻击者的物理或法术免伤百分比
-                                defPropNums = attInfo.DamageType == 0 ? defUnit.PhysicalResist : defUnit.MagicResist;
+                                defPropNums = GameCardInfo.GetInfo((GameCardType)attackUnit.cardType, attackUnit.cardId).DamageType == 0 ? defUnit.PhysicalResist : defUnit.MagicResist;
                                 finalDamage = (int)((100f - defPropNums) / 100f * finalDamage);
                             }
 
@@ -2696,6 +2694,7 @@ public class FightControlForStart : MonoBehaviour
             }
             if (attackedUnit.cardType == 0)
             {
+                var defInfo = GameCardInfo.GetInfo((GameCardType) attackedUnit.cardType, attackedUnit.cardId);
                 switch (DataTable.Hero[defInfo.Id].MilitaryUnitTableId)
                 {
                     case 1:

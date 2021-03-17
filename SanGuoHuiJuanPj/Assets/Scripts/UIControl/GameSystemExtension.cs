@@ -75,7 +75,7 @@ public static class GameSystemExtension
                     c.EPos12, c.EPos13, c.EPos14, c.EPos15, c.EPos16, c.EPos17, c.EPos18, c.EPos19, c.EPos20
                 };
             default:
-                throw new ArgumentOutOfRangeException(nameof(prop), prop, null);
+                throw new ArgumentOutOfRangeException($"{c.GetType().Name}.{nameof(prop)}", prop, null);
         }
     }
     public static int[] Poses(this EnemyTable c)
@@ -122,7 +122,8 @@ public class GameCardInfo
                 var c = DataTable.Hero[id];
                 var militaryShort = DataTable.Military[c.MilitaryUnitTableId].Short;
                 return new GameCardInfo(c.Id, GameCardType.Hero, c.Name, c.Intro, c.Rarity, c.ForceTableId,
-                    c.ImageId, c.IsProduce > 0, militaryShort, c.GameSetRecovery,c.Damages,c.Hps,c.CombatType,c.DamageType);
+                    c.ImageId, c.IsProduce > 0, militaryShort, c.GameSetRecovery, c.Damages, c.Hps, c.CombatType,
+                    c.DamageType);
             }
             case GameCardType.Tower:
             {
@@ -137,7 +138,7 @@ public class GameCardInfo
                     c.IsProduce > 0, c.Short, c.GameSetRecovery, c.Damages, c.Hps, 0, 0);
             }
             default:
-                throw new ArgumentOutOfRangeException();
+                throw new ArgumentOutOfRangeException($"type = {type}, id = {id}", type, null);
         }
     }
 
@@ -156,7 +157,7 @@ public class GameCardInfo
                 ids = DataTable.Trap.Values.Where(c => c.Rarity == rare).Select(c=>c.Id).ToList();
                 break;
             default:
-                throw new ArgumentOutOfRangeException(nameof(type), type, null);
+                throw new ArgumentOutOfRangeException($"type = {type}, rare = {rare}", type, null);
         }
         var pick = Random.Range(0, ids.Count);
         var id = ids[pick];

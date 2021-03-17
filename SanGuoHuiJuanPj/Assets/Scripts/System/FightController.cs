@@ -2692,8 +2692,6 @@ public class FightController : MonoBehaviour
     {
         attackedUnit.attackedBehavior = 0;
         int finalDamage = damage;
-        var attInfo = GameCardInfo.GetInfo((GameCardType)attackUnit.cardType, attackUnit.cardId);
-        var defInfo = GameCardInfo.GetInfo((GameCardType) attackedUnit.cardType, attackedUnit.cardId);
         if (attackedUnit.cardType == 0)
         {
             var attUnit = HeroCombatInfo.GetInfo(attackUnit.cardId);
