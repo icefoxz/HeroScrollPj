@@ -1293,7 +1293,7 @@ public class FightForManager : MonoBehaviour
         //名字颜色
         data.cardObj.transform.GetChild(3).GetComponent<Text>().color = NameColorChoose(info.Rare);
         //星级
-        data.cardObj.transform.GetChild(4).GetComponent<Image>().sprite = GameResources.GradeImg[info.Rare];
+        data.cardObj.transform.GetChild(4).GetComponent<Image>().sprite = GameResources.GradeImg[data.cardGrade];
         //兵种
         data.cardObj.transform.GetChild(5).GetComponentInChildren<Text>().text = info.Short;
         //边框
@@ -1307,7 +1307,7 @@ public class FightForManager : MonoBehaviour
                                                              info.Id == 3 || info.Id == 6));
         data.cardMoveType = info.CombatType;
         data.cardDamageType = info.DamageType;
-        GiveGameObjEventForHoldOn(data.cardObj, info.Intro);
+        GiveGameObjEventForHoldOn(data.cardObj, info.About);
         return data;
     }
     /// <summary>

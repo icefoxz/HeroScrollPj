@@ -616,7 +616,7 @@ public class FightForManagerForStart : MonoBehaviour
         //名字颜色
         data.cardObj.transform.GetChild(3).GetComponent<Text>().color = NameColorChoose(info.Rare);
         //星级
-        data.cardObj.transform.GetChild(4).GetComponent<Image>().sprite = GameResources.GradeImg[info.Rare];
+        data.cardObj.transform.GetChild(4).GetComponent<Image>().sprite = GameResources.GradeImg[card.level];
         //兵种
         data.cardObj.transform.GetChild(5).GetComponentInChildren<Text>().text = info.Short;
         //边框

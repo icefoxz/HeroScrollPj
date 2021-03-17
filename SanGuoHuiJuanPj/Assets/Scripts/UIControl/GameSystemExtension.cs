@@ -120,22 +120,22 @@ public class GameCardInfo
             case GameCardType.Hero:
             {
                 var c = DataTable.Hero[id];
-                var militaryShort = DataTable.Military[c.MilitaryUnitTableId].Short;
+                var military = DataTable.Military[c.MilitaryUnitTableId];
                 return new GameCardInfo(c.Id, GameCardType.Hero, c.Name, c.Intro, c.Rarity, c.ForceTableId,
-                    c.ImageId, c.IsProduce > 0, militaryShort, c.GameSetRecovery, c.Damages, c.Hps, c.CombatType,
-                    c.DamageType);
+                    c.ImageId, c.IsProduce > 0, military.Short, c.GameSetRecovery, c.Damages, c.Hps, c.CombatType,
+                    c.DamageType, military.Info);
             }
             case GameCardType.Tower:
             {
                 var c = DataTable.Tower[id];
                 return new GameCardInfo(c.Id, GameCardType.Tower, c.Name, c.Intro, c.Rarity, c.ForceId,
-                    c.ImageId, c.IsProduce > 0, c.Short, c.GameSetRecovery, c.Damages, c.Hps, 1, 0);
+                    c.ImageId, c.IsProduce > 0, c.Short, c.GameSetRecovery, c.Damages, c.Hps, 1, 0, c.About);
             }
             case GameCardType.Trap:
             {
                 var c = DataTable.Trap[id];
                 return new GameCardInfo(c.Id, GameCardType.Trap, c.Name, c.Intro, c.Rarity, c.ForceId, c.ImageId,
-                    c.IsProduce > 0, c.Short, c.GameSetRecovery, c.Damages, c.Hps, 0, 0);
+                    c.IsProduce > 0, c.Short, c.GameSetRecovery, c.Damages, c.Hps, 0, 0, c.About);
             }
             default:
                 throw new ArgumentOutOfRangeException($"type = {type}, id = {id}", type, null);
@@ -168,6 +168,7 @@ public class GameCardInfo
     public GameCardType Type { get; }
     public string Name { get; }
     public string Intro { get; }
+    public string About { get; }
     public int Rare { get; }
     public int ForceId { get; }
     public int ImageId { get; }
@@ -182,7 +183,7 @@ public class GameCardInfo
     public IReadOnlyDictionary<int, int> HpMap => hpsMap;
 
     private GameCardInfo(int id, GameCardType type, string name, string intro, int rare, int forceId, int imageId,
-        bool isProduce, string @short, int gameSetRecovery, int[] damages, int[] hps, int combatType, int damageType)
+        bool isProduce, string @short, int gameSetRecovery, int[] damages, int[] hps, int combatType, int damageType, string about)
     {
         Id = id;
         Name = name;
@@ -195,6 +196,7 @@ public class GameCardInfo
         GameSetRecovery = gameSetRecovery;
         CombatType = combatType;
         DamageType = damageType;
+        About = about;
         Type = type;
         damageMap = new Dictionary<int, int>();
         hpsMap = new Dictionary<int, int>();

@@ -801,7 +801,7 @@ public class WarsUIManager : MonoBehaviour
                 FrameChoose(card.Rare, woodsList.GetChild(i).GetChild(6).GetComponent<Image>());
                 woodsList.GetChild(i).GetComponent<Button>().onClick.RemoveAllListeners();
                 woodsList.GetChild(i).GetComponent<Button>().onClick.AddListener(() =>
-                    OnClickToShowShopInfo(btnIndex, card.Intro));
+                    OnClickToShowShopInfo(btnIndex, card.About));
                 woodsList.GetChild(i).GetChild(4).GetComponent<Image>().sprite = re.GradeImg[cardLevel];
 
                 Transform getBtnTran = woodsList.GetChild(i).GetChild(9);
@@ -982,7 +982,7 @@ public class WarsUIManager : MonoBehaviour
 
             woodsList.GetChild(i).GetComponent<Button>().onClick.RemoveAllListeners();
             woodsList.GetChild(i).GetComponent<Button>().onClick.AddListener(() =>
-                OnClickToShowShopInfo(btnIndex, card.Intro));
+                OnClickToShowShopInfo(btnIndex, card.About));
         }
     }
 
@@ -1143,7 +1143,7 @@ public class WarsUIManager : MonoBehaviour
             info.Type == GameCardType.Hero ? re.ClassImg[0] : re.ClassImg[1];
         FrameChoose(info.Rare, obj.transform.GetChild(6).GetComponent<Image>());
         //添加按住抬起方法
-        FightForManager.instance.GiveGameObjEventForHoldOn(obj, info.Intro);
+        FightForManager.instance.GiveGameObjEventForHoldOn(obj, info.About);
         FightCardData data = new FightCardData();
         data.unitId = 1;
         data.cardObj = obj;
