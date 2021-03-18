@@ -128,6 +128,7 @@ public class UIManager : MonoBehaviour
     private List<BaYeForceField> forceFields; //可选势力物件 
     [HideInInspector] public RewardManager rewardManager;
     private GameResources GameResources => PlayerDataForGame.instance.gameResources;
+    public bool IsInit { get; private set; }
 
     [SerializeField]
     GameObject InfoWindowObj; //说明窗口 
@@ -182,6 +183,7 @@ public class UIManager : MonoBehaviour
 
         OnStartMainScene();
         PlayerDataForGame.instance.selectedWarId = -1;
+        IsInit = true;
     }
 
     //时间管理 
@@ -1708,8 +1710,8 @@ public class UIManager : MonoBehaviour
                 break;
             case 2://战役 
                 ShowOrHideGuideObj(3, true);
-                warsChooseListObj.transform.parent.parent.GetComponent<ScrollRect>().DOVerticalNormalizedPos(0f, 0.3f);
                 expedition.OnClickChangeWarsFun(expedition.RecordedExpeditionWarId);
+                warsChooseListObj.transform.parent.parent.GetComponent<ScrollRect>().DOVerticalNormalizedPos(0f, 0.3f);
                 break;
             case 4://霸业 
                 bayeBelowLevelPanel.gameObject.SetActive(PlayerDataForGame.instance.pyData.Level < 5);
@@ -2032,14 +2034,14 @@ public class UIManager : MonoBehaviour
     //给体力商店按钮添加方法 
     private void InitChickenBtnFun()
     {
-        var list = DataTable.Chicken.Values.ToList();
+        var chickenTables = DataTable.Chicken.Values.ToList();
         for (int i = 0; i < chickenShopBtns.Length; i++)
         {
-            var chicken = list[i];
+            var chicken = chickenTables[i];
             int index = i;
             chickenShopBtns[i].onClick.AddListener(delegate ()
             {
-                ChickenShoppingGetTiLi(index);
+                ChickenShoppingGetTiLi(chicken.Id);
             });
             //显示体力的数量 
             chickenShopBtns[i].transform.parent.GetChild(1).GetComponent<Text>().text = "×" + chicken.Stamina;
@@ -2083,13 +2085,13 @@ public class UIManager : MonoBehaviour
 
     //商店购买体力 
     [Skip]
-    private void ChickenShoppingGetTiLi(int indexBtn)
+    private void ChickenShoppingGetTiLi(int chickenId)
     {
         AudioController0.instance.ChangeAudioClip(13);
         OpenOrCloseChickenBtn(false);
-        var stamina = DataTable.Chicken[indexBtn].Stamina;
-        var yuQueCost = DataTable.Chicken[indexBtn].YuQueCost;
-        switch (indexBtn)
+        var stamina = DataTable.Chicken[chickenId].Stamina;
+        var yuQueCost = DataTable.Chicken[chickenId].YuQueCost;
+        switch (chickenId)
         {
             case 0:
                 AdAgent.instance.BusyRetry(() =>
