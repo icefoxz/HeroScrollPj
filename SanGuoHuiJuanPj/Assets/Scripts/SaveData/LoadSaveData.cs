@@ -25,7 +25,6 @@ public class LoadSaveData : MonoBehaviour
 
     private void Awake()
     {
-        XDebug.Init();
         if (instance != null)
         {
             Destroy(gameObject);
@@ -34,6 +33,7 @@ public class LoadSaveData : MonoBehaviour
         {
             instance = this;
         }
+        XDebug.Init();
         DontDestroyOnLoad(gameObject);
         isLoadingSaveData = true;
         isHadSaveData = IsSaveFilesExist();
@@ -586,14 +586,14 @@ public class LoadSaveData : MonoBehaviour
             towerSaveData = new List<NowLevelAndHadChip>(),
             trapSaveData = new List<NowLevelAndHadChip>()
         };
-        DataTable.PlayerInitialConfig[pySaveData.ForceId].InitialHero.ToList().ForEach(id=>
+        DataTable.PlayerInitialConfig[pySaveData.ForceId].InitialHero.ToList().ForEach(id =>
         {
-            var card = hstSaveData.heroSaveData.GetOrInstance(id);
+            var card = hstSaveData.heroSaveData.GetOrInstance(id, GameCardType.Hero);
             card.isFight = id == 0 || id == 1 ? 1 : 0;
         });
         DataTable.PlayerInitialConfig[pySaveData.ForceId].InitialTower.ToList().ForEach(id =>
         {
-            var card = hstSaveData.towerSaveData.GetOrInstance(id);
+            var card = hstSaveData.towerSaveData.GetOrInstance(id, GameCardType.Tower);
             card.isFight = id == 0 ? 1 : 0;
         });
 

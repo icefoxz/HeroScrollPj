@@ -38,15 +38,14 @@ public static class GameSystemExtension
         return force == forceId && (card.level > 0 || card.chips > 0) && card.isFight > 0;
     });
 
-    public static NowLevelAndHadChip GetOrInstance(this List<NowLevelAndHadChip> cards, int cardId)
+    public static NowLevelAndHadChip GetOrInstance(this List<NowLevelAndHadChip> cards, int cardId, int cardType) =>
+        cards.GetOrInstance(cardId, (GameCardType) cardType);
+    public static NowLevelAndHadChip GetOrInstance(this List<NowLevelAndHadChip> cards, int cardId, GameCardType cardType)
     {
         var card = cards.SingleOrDefault(c => c.id == cardId);
-        if (card == null)
-        {
-            card = new NowLevelAndHadChip().Instance((GameCardType) cards.First().typeIndex, cardId);
-            cards.Add(card);
-            cards.Sort((o1, o2) => o1.id.CompareTo(o2.id));
-        }
+        if (card != null) return card;
+        card = new NowLevelAndHadChip().Instance(cardType, cardId);
+        cards.Add(card);
         return card;
     }
 
