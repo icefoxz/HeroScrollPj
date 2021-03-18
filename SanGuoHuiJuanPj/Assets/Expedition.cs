@@ -189,6 +189,7 @@ public class Expedition : MonoBehaviour
             .warId;
         //默认选择最后一个关卡
         OnClickChangeWarsFun(lastStageWarId);
+        //如果UIManager在初始化，代表是场景转跳，不需要动画显示
         warStageScrollRect.DOVerticalNormalizedPos(0f, 0.3f);
     }
 

@@ -114,30 +114,7 @@ public class RewardManager : MonoBehaviour
     /// <param name="cardId">具体id</param>
     /// <param name="chips">碎片数量</param>
     /// <returns></returns>
-    public void RewardCard(GameCardType cardType, int cardId, int chips)
-    {
-        //Debug.Log("cardId:" + cardId);
-        switch (cardType)
-        {
-            case GameCardType.Hero:
-                PlayerDataForGame.instance.hstData.heroSaveData.GetOrInstance(cardId).chips += chips;
-                break;
-            case GameCardType.Soldier:
-                PlayerDataForGame.instance.hstData.soldierSaveData.GetOrInstance(cardId).chips += chips;
-                break;
-            case GameCardType.Tower:
-                PlayerDataForGame.instance.hstData.towerSaveData.GetOrInstance(cardId).chips+=chips;
-                break;
-            case GameCardType.Trap:
-                PlayerDataForGame.instance.hstData.trapSaveData.GetOrInstance(cardId).chips += chips;
-                break;
-            case GameCardType.Spell:
-                PlayerDataForGame.instance.hstData.spellSaveData.GetOrInstance(cardId).chips += chips;
-                break;
-            default:
-                throw new ArgumentOutOfRangeException();
-        }
-    }
+    public void RewardCard(GameCardType cardType, int cardId, int chips) => PlayerDataForGame.instance.hstData.heroSaveData.GetOrInstance(cardId, cardType).chips += chips;
 
 
     //卡牌和权重类
