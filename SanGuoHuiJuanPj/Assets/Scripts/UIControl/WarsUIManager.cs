@@ -103,7 +103,7 @@ public class WarsUIManager : MonoBehaviour
 
     bool isEnteredLevel;    //记录是否进入了关卡
 
-    private GameResources GameResources => PlayerDataForGame.instance.gameResources;
+    private GameResources GameResources => PlayerDataForGame.instance.GameResources;
 
     private void Awake()
     {
@@ -308,7 +308,7 @@ public class WarsUIManager : MonoBehaviour
                     {
                         var exp = cityEvent.ExpList[warIndex]; //获取相应经验值
                         cityEvent.PassedStages[warIndex] = true;
-                        PlayerDataForGame.instance.baYeManager.AddExp(cityEvent.CityId, exp); //给玩家加经验值
+                        PlayerDataForGame.instance.BaYeManager.AddExp(cityEvent.CityId, exp); //给玩家加经验值
                         PlayerDataForGame.instance.mainSceneTips = $"获得经验值：{exp}";
                         rewardMap.Trade(1, exp);
                     }
