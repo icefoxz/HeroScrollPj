@@ -2,6 +2,7 @@
 using System.Net;
 using System.Net.Http;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using UnityEngine;
@@ -34,12 +35,12 @@ public static class Http
         return response.IsSuccess() ? Json.Deserialize<T>(await response.Content.ReadAsStringAsync()) : null;
     }
 
-    public static async Task<HttpResponseMessage> PostAsync(string url, string content)
+    public static async Task<HttpResponseMessage> PostAsync(string url, string content, CancellationToken token = default)
     {
         try
         {
             var client = Server.InstanceClient();
-            return await client.PostAsync(url, new StringContent(content));
+            return await client.PostAsync(url, new StringContent(content), token);
         }
         catch (Exception)
         {

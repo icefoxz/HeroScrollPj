@@ -21,7 +21,7 @@ public class EffectsPoolingControl : MonoBehaviour
 
     List<List<GameObject>> iconPoolingList = new List<List<GameObject>>();   //状态特效池
 
-    private GameResources GameResources => PlayerDataForGame.instance.gameResources;
+    private GameResources GameResources => PlayerDataForGame.instance.GameResources;
 
     private void Awake()
     {
