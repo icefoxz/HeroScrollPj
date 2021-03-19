@@ -19,15 +19,11 @@ public class SignalRClient : MonoBehaviour
     /// SignalR 网络状态
     /// </summary>
     public HubConnectionState Status;
-
     public event UnityAction<HubConnectionState> OnStatusChanged;
-    public event UnityAction<string> OnSignalRNotify;
-    public event UnityAction<string> OnSignalRMessage;
-    
     public static SignalRClient instance;
     private CancellationTokenSource cancellationTokenSource;
     private static HubConnection _connection;
-
+    private Dictionary<string, UnityAction<string>> _actions;
     private void Awake()
     {
         if (instance != null)
@@ -44,30 +40,40 @@ public class SignalRClient : MonoBehaviour
     private void Start()
     {
         //Login();
+        _actions = new Dictionary<string, UnityAction<string>>();
         OnStatusChanged += s => DebugLog($"状态更新[{s}]!");
-        OnSignalRNotify += s => DebugLog($"{nameof(OnSignalRNotify)}：{s}");
-        OnSignalRMessage += s=>DebugLog($"{nameof(OnSignalRMessage)}:{s}");// (channel, msg) => DebugLog($"频道[{channel}]：{msg}");
     }
 
-    public async void Login()
+    public async void Login(Action<bool> recallAction)
     {
         cancellationTokenSource = new CancellationTokenSource();
         cancellationTokenSource.Token.Register(() => OnConnectionClose(HubConnectionState.Disconnected, XDebug.Throw<SignalRClient>("取消连接！")));
-        var client = new HttpClient();
-        client.DefaultRequestHeaders.Add("UserId","TestId1");
-        var response = await client.PostAsync("http://localhost:7071/api/negotiate", new StringContent(string.Empty),cancellationTokenSource.Token);
+        var response = await Http.PostAsync(Server.SIGNALR_LOGIN_API,Json.Serialize(GetUserInfo()), cancellationTokenSource.Token);
         if (!response.IsSuccessStatusCode)
         {
             DebugLog("连接失败！");
+            recallAction.Invoke(false);
             return;
         }
 
         var jsonString = await response.Content.ReadAsStringAsync();
         var connectionInfo = JsonConvert.DeserializeObject<SignalRConnectionInfo>(jsonString);
-        await ConnectSignalRAsync(connectionInfo, cancellationTokenSource.Token);
+        var result = await ConnectSignalRAsync(connectionInfo, cancellationTokenSource.Token);
+        recallAction?.Invoke(result);
+    }
+
+    private UserInfo GetUserInfo()
+    {
+        return new UserInfo
+        {
+            DeviceId = SystemInfo.deviceUniqueIdentifier,
+            Password = PlayerDataForGame.instance.acData.Password,
+            Phone = PlayerDataForGame.instance.acData.Phone,
+            Username = PlayerDataForGame.instance.acData.Username
+        };
     }
     
-    private async Task ConnectSignalRAsync(SignalRConnectionInfo connectionInfo,CancellationToken cancellationToken)
+    private async Task<bool> ConnectSignalRAsync(SignalRConnectionInfo connectionInfo,CancellationToken cancellationToken)
     {
         try
         {
@@ -78,8 +84,7 @@ public class SignalRClient : MonoBehaviour
             _connection.Closed += e => OnConnectionClose(_connection.State, e);
             _connection.Reconnected += s => OnReconnected(_connection.State, s);
             _connection.Reconnecting += e => OnReconnecting(_connection.State, e);
-            _connection.On<string>(EventStrings.Req_JinNang, arg=> OnSignalRNotify?.Invoke(arg));
-            _connection.On<string>(EventStrings.Req_JinNang, arg => OnSignalRMessage?.Invoke(arg));
+            _connection.On<string, string>(EventStrings.Server_Call, OnServerCall);
             await _connection.StartAsync(cancellationToken);
             StatusChanged(_connection.State,$"Host:{connectionInfo.Url},\nToken:{connectionInfo.AccessToken}\n连接成功！");
             cancellationTokenSource = null;
@@ -87,16 +92,34 @@ public class SignalRClient : MonoBehaviour
         catch (Exception e)
         {
             StatusChanged(_connection.State,$"连接失败！{e}");
+            return false;
         }
+        return true;
+    }
+
+    public void SubscribeAction(string method, UnityAction<string> action)
+    {
+        if (!_actions.ContainsKey(method))
+            _actions.Add(method, default);
+        _actions[method] += action;
+    }
+
+    public void UnSubscribeAction(string method, UnityAction<string> action)
+    {
+        if (!_actions.ContainsKey(method))
+            throw XDebug.Throw<SignalRClient>($"Method[{method}] not registered!");
+        _actions[method] -= action;
+    }
+
+    private void OnServerCall(string method, string content)
+    {
+        if(! _actions.TryGetValue(method,out var action))return;
+        action?.Invoke(content);
     }
 
     private async Task InvokeAsync(string method,string arg,CancellationToken cancellationToken = default) => await _connection.SendAsync(method, arg, cancellationToken);
     public async void Invoke(string method, string arg) => await InvokeAsync(method, arg);
 
-    public void RequestJinNang()
-    {
-        Invoke(EventStrings.Req_JinNang, "198");
-    }
     /// <summary>
     /// 强制离线
     /// </summary>

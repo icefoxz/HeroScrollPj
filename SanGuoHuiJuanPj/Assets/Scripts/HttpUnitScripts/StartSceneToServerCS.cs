@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 public class StartSceneToServerCS : MonoBehaviour
@@ -22,8 +23,6 @@ public class StartSceneToServerCS : MonoBehaviour
     //删除所有
     public void ClearAllData()
     {
-        PlayerDataForGame.instance.acData.Username = string.Empty;
-        PlayerDataForGame.instance.acData.LastUpdate = default;
         PlayerPrefs.DeleteAll();
         LoadSaveData.instance.DeleteAllSaveData();
     }
@@ -35,6 +34,8 @@ public class StartSceneToServerCS : MonoBehaviour
     {
         PlayerDataForGame.instance.acData.Username = string.Empty;
         PlayerDataForGame.instance.acData.LastUpdate = default;
+        PlayerDataForGame.instance.isNeedSaveData = true;
+        LoadSaveData.instance.SaveGameData(1);
         PlayerPrefs.DeleteAll();
 #if UNITY_EDITOR
         throw new Exception("清除账号完成,请重启游戏！");
@@ -102,8 +103,8 @@ public class StartSceneToServerCS : MonoBehaviour
     [SerializeField]
     GameObject registerAccountObj;  //创建账号密码输入窗口 
 
-    [SerializeField]
-    GameObject loginInfoObj;    //账号登录信息框 
+    //[SerializeField]
+    //GameObject loginInfoObj;    //账号登录信息框 
 
     [SerializeField]
     GameObject accountBtn;  //查看账号按钮obj 
@@ -111,13 +112,18 @@ public class StartSceneToServerCS : MonoBehaviour
     [SerializeField]
     GameObject bindPhoneBtnObj;  //绑定手机按钮obj 
 
+    public SignInUi signInUi;
+
     public GameObject busyPanel; //等待网络的挡板
+
+    public SignalRClient signalRClient;
 
     /// <summary> 
     /// 游戏登陆方法初始化 
     /// </summary> 
     public async void LoginGameInfoFun()
     {
+        signInUi.Hide();
         loginBtn.onClick.RemoveAllListeners();
         loginBtn.gameObject.SetActive(false);
         beginningWarBtn.gameObject.SetActive(false);
@@ -132,6 +138,7 @@ public class StartSceneToServerCS : MonoBehaviour
         {
             busyPanel.SetActive(true);
             LoadSaveData.instance.LoadByJson();
+            signInUi.SetValue(PlayerDataForGame.instance.acData.Username,PlayerDataForGame.instance.acData.Password);
 #if UNITY_EDITOR
             if (!isSkipLogin)
 #endif
@@ -181,14 +188,29 @@ public class StartSceneToServerCS : MonoBehaviour
 #endif
         if (busyPanel) busyPanel.SetActive(true);
         BugHotFix.OnFixStaminaV2_05();
+        if(isSkipLogin)
+        {
+            LoadMainScene(true);
+            return;
+        }
+        LoginTask(LoadMainScene);
+        //signalRClient.Login(LoadMainScene);
+    }
+    private void LoadMainScene(bool isSuccess)
+    {
+        if(isSuccess) StartSceneUIManager.instance.LoadingScene(1, true);
+        else busyPanel.gameObject.SetActive(false);
+    }
+
+    private async void LoginTask(UnityAction<bool> action)
+    {
         //尝试登录并获取登录信息 
         var response =
             await Http.PostAsync(Server.USER_LOGIN_API,
                 Json.Serialize(PlayerDataForGame.instance.acData));
-        //如果服务器获取信息 
-        if(busyPanel) busyPanel.SetActive(false);
         if (!response.IsSuccess())
         {
+            action?.Invoke(false);
             var code = (ServerBackCode)response.StatusCode;
             if (code == ServerBackCode.ERR_PW_ERROR) //如果密码错误
             {
@@ -207,34 +229,35 @@ public class StartSceneToServerCS : MonoBehaviour
 
             PlayerDataForGame.instance.acData.Username = ac.Username;
             PlayerDataForGame.instance.acData.LastUpdate = ac.LastUpdate;
-            StartSceneUIManager.instance.LoadingScene(1, true);
+            action?.Invoke(true);
             return;
         }
         PlayerDataForGame.instance.ShowStringTips($"请求异常[{(int)response.StatusCode}]，请联系管理人！");
         loginBtn.gameObject.SetActive(true);
+        action?.Invoke(true);
     }
-
-
 
     /// <summary> 
     /// 点击查看账号按钮方法 
     /// </summary> 
     private void TakeChackAccountBtnFun()
     {
-        accountText.text = PlayerDataForGame.instance.acData.Username;
-        accountTextObj.SetActive(true);
-        if (PlayerDataForGame.instance.acData.Phone != "")
-        {
-            phoneNumberObj.transform.GetChild(0).GetChild(0).GetComponent<Text>().text = PlayerDataForGame.instance.acData.Phone;
-            bindPhoneBtnObj.SetActive(false);
-        }
-        else
-        {
-            bindPhoneBtnObj.SetActive(true);
-        }
-        phoneNumberObj.SetActive(true);
-        chackAccountObj.SetActive(true);
-        loginInfoObj.SetActive(true);
+        //accountText.text = PlayerDataForGame.instance.acData.Username;
+        //accountTextObj.SetActive(true);
+        //if (PlayerDataForGame.instance.acData.Phone != "")
+        //{
+        //    phoneNumberObj.transform.GetChild(0).GetChild(0).GetComponent<Text>().text = PlayerDataForGame.instance.acData.Phone;
+        //    bindPhoneBtnObj.SetActive(false);
+        //}
+        //else
+        //{
+        //    bindPhoneBtnObj.SetActive(true);
+        //}
+        //phoneNumberObj.SetActive(true);
+        //chackAccountObj.SetActive(true);
+        var ac = PlayerDataForGame.instance.acData;
+        signInUi.SetMode(SignInUi.Modes.Login, LoginAndLoadMainScene);
+        signInUi.SetValue(ac.Username,ac.Password);
     }
 
     /// <summary> 
@@ -254,22 +277,18 @@ public class StartSceneToServerCS : MonoBehaviour
             return;
         }
 
+        //accountText.text = ac.Username;
+        //accountTextObj.SetActive(true);
+        //passwordInput.text = "";
+        //passwordInput1.text = "";
         loginBtn.interactable = true;
-        accountText.text = ac.Username;
-        accountTextObj.SetActive(true);
-        passwordInput.text = "";
-        passwordInput1.text = "";
         registerAccountObj.SetActive(true);
-        loginInfoObj.SetActive(true);
+        signInUi.SetMode(SignInUi.Modes.SignUp, CreateAccountFun);
+        signInUi.SetValue(ac.Username, string.Empty);
     }
 
     [SerializeField]
     Button createAccountBtn;    //创建账号按钮 
-
-    [SerializeField]
-    InputField passwordInput;   //密码输入框 
-    [SerializeField]
-    InputField passwordInput1;  //密码输入框1 
 
     [SerializeField]
     GameObject chackAccountObj;  //查看账户修改密码obj 
@@ -279,52 +298,39 @@ public class StartSceneToServerCS : MonoBehaviour
     /// </summary> 
     private async void CreateAccountFun()
     {
-        if (string.IsNullOrWhiteSpace(passwordInput.text))
-        {
-            PlayerDataForGame.instance.ShowStringTips("请输入密码");
-            return;
-        }
-
-        if (passwordInput1.text != passwordInput.text)
-        {
-            passwordInput1.text = string.Empty;
-            PlayerDataForGame.instance.ShowStringTips("请确认密码");
-            return;
-        }
-
-        createAccountBtn.interactable = false;
+        if(!signInUi.IsReadyAction())return;
         //提交账号密码，申请注册账号 
         busyPanel.SetActive(true);
         var ac = await Http.PostAsync<UserInfo>(Server.PLAYER_REG_ACCOUNT_API,
             JsonConvert.SerializeObject(new UserInfo
             {
-                Username = accountText.text,
-                Password = passwordInput.text,
+                Username = signInUi.UsernameField.text,
+                Password = signInUi.UsernameField.text,
                 DeviceId = SystemInfo.deviceUniqueIdentifier
             }));
         busyPanel.SetActive(false);
         if (ac == null)
         {
             Debug.Log("服务器响应错误");
-            PlayerDataForGame.instance.ShowStringTips("服务器响应错误");
-            createAccountBtn.interactable = true;
+            //createAccountBtn.interactable = true;
+            signInUi.ShowMessage("服务器响应错误,请检查网络状态。");
             return;
         }
 
         //给游戏中存放账户名和密码 
         PlayerDataForGame.instance.acData.Username = ac.Username;
-        PlayerDataForGame.instance.acData.Password = passwordInput.text;
+        PlayerDataForGame.instance.acData.Password = signInUi.PasswordField.text;
         PlayerDataForGame.instance.acData.LastUpdate = ac.LastUpdate;
         PlayerPrefs.SetString(AccountId, PlayerDataForGame.instance.acData.Username);
         PlayerPrefs.SetString(Password, PlayerDataForGame.instance.acData.Password);
-        registerAccountObj.SetActive(false);
-        passwordInput.text = string.Empty;
-        passwordInput1.text = string.Empty;
-        PlayerDataForGame.instance.ShowStringTips("注册成功");
-
+        //registerAccountObj.SetActive(false);
+        //passwordInput.text = string.Empty;
+        //passwordInput1.text = string.Empty;
+        PlayerDataForGame.instance.ShowStringTips("注册成功！");
+        signInUi.ShowMessage("注册成功！");
         LoadSaveData.instance.CreatePlayerDataSave();//初始化玩家存档数据
         accountBtn.SetActive(true);
-        loginInfoObj.SetActive(false);
+        signInUi.SetMode(SignInUi.Modes.Disable);
         //phoneNumberObj.SetActive(true);
         //chackAccountObj.SetActive(true);
         StartSceneUIManager.instance.EndStoryToChooseForce();
@@ -452,7 +458,7 @@ public class StartSceneToServerCS : MonoBehaviour
         registerAccountObj.SetActive(false);
         chackAccountObj.SetActive(false);
         changeAccountObj.SetActive(false);
-        loginInfoObj.SetActive(false);
+        signInUi.Hide();
         LoginGameInfoFun();
     }
 

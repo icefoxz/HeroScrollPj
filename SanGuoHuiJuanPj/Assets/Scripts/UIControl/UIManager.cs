@@ -127,7 +127,7 @@ public class UIManager : MonoBehaviour
     private List<BaYeCityField> cityFields; //霸业的地图物件 
     private List<BaYeForceField> forceFields; //可选势力物件 
     [HideInInspector] public RewardManager rewardManager;
-    private GameResources GameResources => PlayerDataForGame.instance.gameResources;
+    private GameResources GameResources => PlayerDataForGame.instance.GameResources;
     public bool IsInit { get; private set; }
 
     [SerializeField]
@@ -164,10 +164,10 @@ public class UIManager : MonoBehaviour
                                                     TimeSystemControl.instance.MaxStamina);
 
         //第一次进入主场景的时候初始化霸业管理器 
-        if (PlayerDataForGame.instance.baYeManager == null)
+        if (PlayerDataForGame.instance.BaYeManager == null)
         {
-            PlayerDataForGame.instance.baYeManager = PlayerDataForGame.instance.gameObject.AddComponent<BaYeManager>();
-            PlayerDataForGame.instance.baYeManager.Init();
+            PlayerDataForGame.instance.BaYeManager = PlayerDataForGame.instance.gameObject.AddComponent<BaYeManager>();
+            PlayerDataForGame.instance.BaYeManager.Init();
         }
 
         InitHeroCardPooling();

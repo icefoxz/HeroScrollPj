@@ -112,8 +112,8 @@ public class PlayerDataForGame : MonoBehaviour
     [HideInInspector]
     public int boxForTiLiNums;  //返还体力单个宝箱扣除体力数 
 
-    public GameResources gameResources;
-    public BaYeManager baYeManager;
+    public GameResources GameResources { get; set; }
+    public BaYeManager BaYeManager { get; set; }
 
     private void Awake()
     {
@@ -145,8 +145,8 @@ public class PlayerDataForGame : MonoBehaviour
 
     private void Start()
     {
-        gameResources = new GameResources();
-        gameResources.Init();
+        GameResources = new GameResources();
+        GameResources.Init();
     }
 
     private void SceneManagerOnsceneLoaded(Scene scene, LoadSceneMode mode) => CurrentScene = (GameScene) scene.buildIndex;
