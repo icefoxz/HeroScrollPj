@@ -87,7 +87,7 @@ public class SignalRClient : MonoBehaviour
             _connection.Closed += e => OnConnectionClose(_connection.State, e);
             _connection.Reconnected += s => OnReconnected(_connection.State, s);
             _connection.Reconnecting += e => OnReconnecting(_connection.State, e);
-            _connection.On<string, string>(EventStrings.Server_Call, OnServerCall);
+            _connection.On<object, object>(EventStrings.Server_Call, OnServerCall);
             await _connection.StartAsync(cancellationToken);
             StatusChanged(_connection.State,$"Host:{connectionInfo.Url},\nToken:{connectionInfo.AccessToken}\n连接成功！");
             cancellationTokenSource = null;
@@ -114,10 +114,13 @@ public class SignalRClient : MonoBehaviour
         _actions[method] -= action;
     }
 
-    private void OnServerCall(string method, string content)
+    private void OnServerCall(object method, object content)
     {
-        if(! _actions.TryGetValue(method,out var action))return;
-        action?.Invoke(content);
+#if UNITY_EDITOR
+        DebugLog($"{method}: {content}");
+#endif
+        if(! _actions.TryGetValue(method.ToString(),out var action))return;
+        action?.Invoke(content.ToString());
     }
 
     private async Task InvokeAsync(string method,string arg,CancellationToken cancellationToken = default) => await _connection.SendAsync(method, arg, cancellationToken);

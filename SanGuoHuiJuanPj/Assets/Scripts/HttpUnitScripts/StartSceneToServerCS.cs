@@ -193,8 +193,8 @@ public class StartSceneToServerCS : MonoBehaviour
             return;
         }
 
-        OldLoginTask(LoadMainScene);
-        //signalRClient.Login(LoadMainScene, username, password);
+        //OldLoginTask(LoadMainScene);
+        signalRClient.Login(LoadMainScene, username, password);
     }
 
     private void LoadMainScene(bool isSuccess, HttpStatusCode code)
