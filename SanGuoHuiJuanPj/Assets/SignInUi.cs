@@ -79,6 +79,7 @@ public class SignInUi : MonoBehaviour
 
     public void ShowMessage(string message)
     {
+        if(!gameObject.activeSelf)return;
         StopAllCoroutines();
         StartCoroutine(MessagingInSecs(message));
     }
