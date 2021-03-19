@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -44,32 +45,34 @@ public class SignalRClient : MonoBehaviour
         OnStatusChanged += s => DebugLog($"状态更新[{s}]!");
     }
 
-    public async void Login(Action<bool> recallAction)
+    public async void Login(Action<bool,HttpStatusCode> recallAction,string username = null,string password = null)
     {
+        if (username == null) username = PlayerDataForGame.instance.acData.Username;
+        if (password == null) password = PlayerDataForGame.instance.acData.Password;
         cancellationTokenSource = new CancellationTokenSource();
         cancellationTokenSource.Token.Register(() => OnConnectionClose(HubConnectionState.Disconnected, XDebug.Throw<SignalRClient>("取消连接！")));
-        var response = await Http.PostAsync(Server.SIGNALR_LOGIN_API,Json.Serialize(GetUserInfo()), cancellationTokenSource.Token);
+        var response = await Http.PostAsync(Server.SIGNALR_LOGIN_API,Json.Serialize(GetUserInfo(username,password)), cancellationTokenSource.Token);
         if (!response.IsSuccessStatusCode)
         {
             DebugLog("连接失败！");
-            recallAction.Invoke(false);
+            recallAction.Invoke(false,response.StatusCode);
             return;
         }
 
         var jsonString = await response.Content.ReadAsStringAsync();
         var connectionInfo = JsonConvert.DeserializeObject<SignalRConnectionInfo>(jsonString);
         var result = await ConnectSignalRAsync(connectionInfo, cancellationTokenSource.Token);
-        recallAction?.Invoke(result);
+        recallAction?.Invoke(result, response.StatusCode);
     }
 
-    private UserInfo GetUserInfo()
+    private UserInfo GetUserInfo(string username,string password)
     {
         return new UserInfo
         {
             DeviceId = SystemInfo.deviceUniqueIdentifier,
-            Password = PlayerDataForGame.instance.acData.Password,
-            Phone = PlayerDataForGame.instance.acData.Phone,
-            Username = PlayerDataForGame.instance.acData.Username
+            Password = password,
+            Phone = PlayerDataForGame.instance?.acData?.Phone,
+            Username = username
         };
     }
     

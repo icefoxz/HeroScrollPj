@@ -57,8 +57,9 @@ using UnityEngine.UI;
     {
         if (TimeSystemControl.instance.OnClickToGetJinNang())
         {
-            var randId = UnityEngine.Random.Range(0, DataTable.Tips.Count);
-            var tips = DataTable.Tips[randId];
+            var list = DataTable.Tips.Values.ToList();
+            var randId = UnityEngine.Random.Range(0, list.Count);
+            var tips = list[randId];
             var yuanBao = UnityEngine.Random.Range(tips.YuanBaoReward.Min, tips.YuanBaoReward.ExcMax);
             var textColor = tips.Color == 1 ? ColorDataStatic.name_deepRed : ColorDataStatic.name_brown;
             jinNangUi.OnReward(tips.Text, textColor, tips.Sign, tips.Stamina, yuanBao);
