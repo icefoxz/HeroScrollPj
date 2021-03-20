@@ -619,6 +619,9 @@ public class FightForManagerForStart : MonoBehaviour
         data.cardObj.transform.GetChild(4).GetComponent<Image>().sprite = GameResources.GradeImg[card.level];
         //兵种
         data.cardObj.transform.GetChild(5).GetComponentInChildren<Text>().text = info.Short;
+        data.cardObj.transform.GetChild(5).GetComponentInChildren<Image>().sprite = cardType == GameCardType.Hero
+            ? GameResources.ClassImg[0]
+            : GameResources.ClassImg[1];
         //边框
         FrameChoose(info.Rare, data.cardObj.transform.GetChild(6).GetComponent<Image>());
         data.damage = info.GetDamage(card.level);

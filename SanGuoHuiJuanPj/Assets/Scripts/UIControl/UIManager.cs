@@ -1670,10 +1670,10 @@ public class UIManager : MonoBehaviour
         if (rewardType == 4)
         {
             Transform cardTran = obj.transform.GetChild(4);
-            cardTran.GetComponent<Image>().sprite = GameResources.HeroImg[info.Id];
+            cardTran.GetComponent<Image>().sprite = info.Type == GameCardType.Hero ? GameResources.HeroImg[info.Id] : GameResources.FuZhuImg[info.ImageId];
             ShowNameTextRules(cardTran.GetChild(0).GetComponent<Text>(), info.Name);
             cardTran.GetChild(0).GetComponent<Text>().color = NameColorChoose(info.Rare);
-            cardTran.GetChild(1).GetComponent<Image>().sprite = GameResources.ClassImg[0];
+            cardTran.GetChild(1).GetComponent<Image>().sprite = info.Type == GameCardType.Hero ? GameResources.ClassImg[0] : GameResources.ClassImg[1];
             cardTran.GetChild(1).GetChild(0).GetComponentInChildren<Text>().text = info.Short;
             FrameChoose(info.Rare, cardTran.GetChild(2).GetComponent<Image>());
         }

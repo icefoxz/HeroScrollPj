@@ -72,6 +72,10 @@ public class UserInfo : IUserInfo
     /// 与服务器最后一次互交的时间
     /// </summary>
     public long LastUpdate { get; set; }
+    /// <summary>
+    /// 游戏版本号
+    /// </summary>
+    public float GameVersion { get; set; }
 }
 /// <summary>
 /// 旧玩家基本信息存档数据类2

@@ -76,7 +76,8 @@ public class SignalRClient : MonoBehaviour
             DeviceId = SystemInfo.deviceUniqueIdentifier,
             Password = password,
             Phone = PlayerDataForGame.instance?.acData?.Phone,
-            Username = username
+            Username = username,
+            GameVersion = float.Parse(Application.version)
         };
     }
     
