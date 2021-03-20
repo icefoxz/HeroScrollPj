@@ -334,53 +334,57 @@ public class StartSceneToServerCS : MonoBehaviour
 
     private string ServerResponseError(int code)
     {
-        string errorText;
+        var message = string.Empty;
         switch ((ServerBackCode)code)
         {
             case ServerBackCode.SUCCESS:
-                errorText = "SUCCESS";
+                message = "SUCCESS";
                 break;
             case ServerBackCode.ERR_NAME_EXIST:
-                errorText = "ERR_NAME_EXIST";
+                message = "ERR_NAME_EXIST";
                 break;
             case ServerBackCode.ERR_NAME_SHORT:
-                errorText = "ERR_NAME_SHORT";
+                message = "ERR_NAME_SHORT";
                 break;
             case ServerBackCode.ERR_PASS_SHORT:
-                errorText = "密码长度过短";
+                message = "密码长度过短";
                 break;
             case ServerBackCode.ERR_NAME_NOT_EXIST:
-                errorText = "账号不存在";
+                message = "账号不存在";
                 break;
             case ServerBackCode.ERR_DATA_NOT_EXIST:
-                errorText = "ERR_DATA_NOT_EXIST";
+                message = "ERR_DATA_NOT_EXIST";
                 break;
             case ServerBackCode.ERR_PHONE_SHORT:
-                errorText = "ERR_PHONE_SHORT";
+                message = "ERR_PHONE_SHORT";
                 break;
             case ServerBackCode.ERR_ACCOUNT_BIND_OTHER_PHONE:
-                errorText = "重复绑定手机";
+                message = "重复绑定手机";
                 break;
             case ServerBackCode.ERR_NAME_ILLEGAL:
-                errorText = "ERR_NAME_ILLEGAL";
+                message = "ERR_NAME_ILLEGAL";
                 break;
             case ServerBackCode.ERR_PHONE_ILLEGAL:
-                errorText = "手机号错误";
+                message = "手机号错误";
                 break;
             case ServerBackCode.ERR_PW_ERROR:
-                errorText = "密码错误";
+                message = "密码错误";
                 break;
             case ServerBackCode.ERR_PHONE_BIND_OTHER_ACCOUNT:
-                errorText = "该手机号绑定了其他账号";
+                message = "该手机号绑定了其他账号";
                 break;
             case ServerBackCode.ERR_PHONE_ALREADY_BINDED:
-                errorText = "已经绑定过了";
+                message = "已经绑定过了";
                 break;
+            case ServerBackCode.ERR_SERVERSTATE_ZERO:
+                message = "服务器正维护中";
+                break;
+            case ServerBackCode.ERR_INVALIDOPERATION:
             default:
-                errorText = "服务器响应错误";
+                message = "服务器响应错误";
                 break;
         }
-        return errorText;
+        return message;
     }
 
     private void CloseLoginInfoObjFun()

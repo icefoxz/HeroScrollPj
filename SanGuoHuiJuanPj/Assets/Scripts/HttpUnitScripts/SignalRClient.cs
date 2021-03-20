@@ -10,6 +10,8 @@ using Newtonsoft.Json;
 using Unity.Collections;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 /// <summary>
 /// Signal客户端
@@ -20,6 +22,7 @@ public class SignalRClient : MonoBehaviour
     /// SignalR 网络状态
     /// </summary>
     public HubConnectionState Status;
+    public ServerPanel ServerPanel;
     public event UnityAction<HubConnectionState> OnStatusChanged;
     public static SignalRClient instance;
     private CancellationTokenSource cancellationTokenSource;
@@ -43,6 +46,7 @@ public class SignalRClient : MonoBehaviour
         //Login();
         _actions = new Dictionary<string, UnityAction<string>>();
         OnStatusChanged += s => DebugLog($"状态更新[{s}]!");
+        ServerPanel.Init(this);
     }
 
     public async void Login(Action<bool,HttpStatusCode> recallAction,string username = null,string password = null)
@@ -87,7 +91,7 @@ public class SignalRClient : MonoBehaviour
             _connection.Closed += e => OnConnectionClose(_connection.State, e);
             _connection.Reconnected += s => OnReconnected(_connection.State, s);
             _connection.Reconnecting += e => OnReconnecting(_connection.State, e);
-            _connection.On<object, object>(EventStrings.Server_Call, OnServerCall);
+            _connection.On<string, string>(EventStrings.Server_Call, OnServerCall);
             await _connection.StartAsync(cancellationToken);
             StatusChanged(_connection.State,$"Host:{connectionInfo.Url},\nToken:{connectionInfo.AccessToken}\n连接成功！");
             cancellationTokenSource = null;
@@ -114,13 +118,13 @@ public class SignalRClient : MonoBehaviour
         _actions[method] -= action;
     }
 
-    private void OnServerCall(object method, object content)
+    private void OnServerCall(string method, string content)
     {
 #if UNITY_EDITOR
         DebugLog($"{method}: {content}");
 #endif
         if(! _actions.TryGetValue(method.ToString(),out var action))return;
-        action?.Invoke(content.ToString());
+        action?.Invoke(content);
     }
 
     private async Task InvokeAsync(string method,string arg,CancellationToken cancellationToken = default) => await _connection.SendAsync(method, arg, cancellationToken);

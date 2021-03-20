@@ -123,10 +123,10 @@ public class NowLevelAndHadChip//card
 
     public bool IsOwned => chips > 0 || level > 0;//是否拥有
 }
-[Skip]
 /// <summary>
 /// 武将，士兵，塔等 信息存档数据类
 /// </summary>
+[Skip]
 public class HSTDataClass
 {
     //武将
@@ -147,10 +147,10 @@ public class UnlockWarCount
     public int unLockCount;     //解锁关卡数
     public bool isTakeReward;   //是否领过首通宝箱
 }
-[Skip]
 /// <summary>
 /// 霸业管理类
 /// </summary>
+[Skip]
 public class BaYeDataClass
 {
     public long lastBaYeActivityTime;
@@ -226,128 +226,6 @@ public class RewardsCardClass
     public int cardType;
     public int cardId;
     public int cardChips;
-}
-
-#endregion
-
-#region 服务器返回数据类
-
-public class ErrorBackClass
-{
-    /// <summary>
-    /// 查错码
-    /// </summary>
-    public int error { get; set; }
-}
-
-
-/// <summary>
-/// 短信验证码类
-/// </summary>
-public class SMSBackContentClass
-{
-    /// <summary>
-    /// 前置号
-    /// </summary>
-    public string country { get; set; }
-    /// <summary>
-    /// 手机号
-    /// </summary>
-    public string phone { get; set; }
-}
-
-
-/// <summary>
-/// 返回账号类
-/// </summary>
-public class BackAccountClass
-{
-    /// <summary>
-    /// 账户名
-    /// </summary>
-    public string username { get; set; }
-    public string phone { get; set; }
-    public long lastUpdate { get; set; }
-    /// <summary>
-    /// 查错码
-    /// </summary>
-    public int error { get; set; }
-}
-
-/// <summary>
-/// 返回手机绑定账号类
-/// </summary>
-public class BackPhoneToAccountClass
-{
-    /// <summary>
-    /// 手机号
-    /// </summary>
-    public string phone { get; set; }
-    /// <summary>
-    /// 账户名
-    /// </summary>
-    public string name { get; set; }
-    /// <summary>
-    /// 查错码
-    /// </summary>
-    public int error { get; set; }
-}
-
-/// <summary>
-/// 上传存档返回数据类
-/// </summary>
-public class BackForUploadArchiveClass
-{
-    /// <summary>
-    /// 时间戳
-    /// </summary>
-    public string lastUpdate { get; set; }
-    /// <summary>
-    /// 查错码
-    /// </summary>
-    public int error { get; set; }
-}
-
-/// <summary>
-/// 服务器返回的状态码
-/// </summary>
-public enum ServerBackCode
-{
-    SUCCESS = 200,
-    ERR_INVALIDOPERATION = 555,
-    ERR_NAME_EXIST = 1001,
-    ERR_NAME_SHORT = 1002,
-    /// <summary>
-    /// 密码过短
-    /// </summary>
-    ERR_PASS_SHORT = 1003,
-    /// <summary>
-    /// 账号不存在
-    /// </summary>
-    ERR_NAME_NOT_EXIST = 1004,
-    ERR_DATA_NOT_EXIST = 1005,
-    ERR_PHONE_SHORT = 1006,
-    /// <summary>
-    /// 重复绑定手机
-    /// </summary>
-    ERR_ACCOUNT_BIND_OTHER_PHONE = 1007,
-    ERR_NAME_ILLEGAL = 1008,
-    /// <summary>
-    /// 手机号错误 
-    /// </summary>
-    ERR_PHONE_ILLEGAL = 1009,
-    /// <summary>
-    /// 密码错误
-    /// </summary>
-    ERR_PW_ERROR = 1010,
-    /// <summary>
-    /// 该手机号绑定了其他账号
-    /// </summary>
-    ERR_PHONE_BIND_OTHER_ACCOUNT = 1011,
-    /// <summary>
-    /// 已经绑定过
-    /// </summary>
-    ERR_PHONE_ALREADY_BINDED = 1012
 }
 
 #endregion
