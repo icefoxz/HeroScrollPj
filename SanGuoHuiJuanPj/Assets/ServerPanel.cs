@@ -10,7 +10,9 @@ public class ServerPanel : MonoBehaviour
 {
     private int count;
     public Button reconnectButton;
-    public Text message;
+    public Text serverMaintenance;
+    public Text requestTimeOut;
+    public Text exceptionMsg;
     private SignalRClient SignalR;
     public void Init(SignalRClient signalR)
     {
@@ -18,14 +20,16 @@ public class ServerPanel : MonoBehaviour
         SignalR.SubscribeAction(EventStrings.SC_Disconnect,OnDisconnect);
         SignalR.OnStatusChanged += Instance_OnStatusChanged;
         reconnectButton.onClick.AddListener(()=>SignalRClient.instance.Login(OnConnectAction));
-        Debug.Log($"{nameof(ServerPanel)}:Start!");
         gameObject.SetActive(false);
+        requestTimeOut.gameObject.SetActive(true);
     }
+
+    public void ApplicationQuit() => Application.Quit();
 
     private void OnConnectAction(bool isConnected, HttpStatusCode code)
     {
         gameObject.SetActive(!isConnected);
-        message.text = code.ToString();
+        exceptionMsg.text = code.ToString();
     }
 
     private void Instance_OnStatusChanged(HubConnectionState state)
@@ -37,9 +41,17 @@ public class ServerPanel : MonoBehaviour
             StartCoroutine(Counting(state));
     }
 
+    private void ShowServerMaintenance()
+    {
+        serverMaintenance.gameObject.SetActive(true);
+        requestTimeOut.gameObject.SetActive(false);
+        reconnectButton.gameObject.SetActive(false);
+    }
+
     private void OnDisconnect(string arg)
     {
         SignalR.Disconnect();
+        ShowServerMaintenance();
         Instance_OnStatusChanged(HubConnectionState.Disconnected);
     }
 

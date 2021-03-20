@@ -136,9 +136,7 @@ public class SignalRClient : MonoBehaviour
     public async void Disconnect()
     {
         if (_connection.State == HubConnectionState.Disconnected)
-        {
-            throw new InvalidOperationException(DebugMsg("客户端当前离线。"));
-        }
+            return;
 
         if (cancellationTokenSource?.IsCancellationRequested == false)
             cancellationTokenSource.Cancel();
