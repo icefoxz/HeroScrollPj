@@ -37,5 +37,6 @@ namespace Assets.Editor
         public string PLAYER_REG_ACCOUNT_API;
         public string PLAYER_UPLOAD_COUNT_API;
         public string USER_LOGIN_API;
+        public string SIGNALR_LOGIN_API;
     }
 }

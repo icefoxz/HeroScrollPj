@@ -10,6 +10,8 @@ using Newtonsoft.Json;
 using Unity.Collections;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 /// <summary>
 /// Signal客户端
@@ -20,6 +22,7 @@ public class SignalRClient : MonoBehaviour
     /// SignalR 网络状态
     /// </summary>
     public HubConnectionState Status;
+    public ServerPanel ServerPanel;
     public event UnityAction<HubConnectionState> OnStatusChanged;
     public static SignalRClient instance;
     private CancellationTokenSource cancellationTokenSource;
@@ -43,6 +46,7 @@ public class SignalRClient : MonoBehaviour
         //Login();
         _actions = new Dictionary<string, UnityAction<string>>();
         OnStatusChanged += s => DebugLog($"状态更新[{s}]!");
+        ServerPanel.Init(this);
     }
 
     public async void Login(Action<bool,HttpStatusCode> recallAction,string username = null,string password = null)
@@ -116,7 +120,10 @@ public class SignalRClient : MonoBehaviour
 
     private void OnServerCall(string method, string content)
     {
-        if(! _actions.TryGetValue(method,out var action))return;
+#if UNITY_EDITOR
+        DebugLog($"{method}: {content}");
+#endif
+        if(! _actions.TryGetValue(method.ToString(),out var action))return;
         action?.Invoke(content);
     }
 
@@ -129,9 +136,7 @@ public class SignalRClient : MonoBehaviour
     public async void Disconnect()
     {
         if (_connection.State == HubConnectionState.Disconnected)
-        {
-            throw new InvalidOperationException(DebugMsg("客户端当前离线。"));
-        }
+            return;
 
         if (cancellationTokenSource?.IsCancellationRequested == false)
             cancellationTokenSource.Cancel();

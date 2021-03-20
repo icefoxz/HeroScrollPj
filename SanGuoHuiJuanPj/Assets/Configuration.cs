@@ -27,4 +27,5 @@ public class ServerFields
     public string PLAYER_REG_ACCOUNT_API { get; set; }
     public string PLAYER_UPLOAD_COUNT_API { get; set; }
     public string USER_LOGIN_API { get; set; }
+    public string SIGNALR_LOGIN_API { get; set; }
 }
