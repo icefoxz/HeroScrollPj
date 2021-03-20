@@ -74,21 +74,15 @@ public class BaYeManager : MonoBehaviour
     private void InitBaYeMap()
     {
         //初始化城池
-        var events = DataTable.BaYeCity.Values.Select(city =>
+        map = DataTable.BaYeCity.Values.Select(city =>
             {
                 var cityId = city.EventPoint;
                 var baYeEventId = city.BaYeCityEventTableIds.Select(id =>
                     new BaYeEventWeightElement(id, DataTable.BaYeCityEvent[id].Weight)).Pick().Id;
                  //根据地图获取对应的事件id列表，并根据权重随机获取一个事件id
                 var baYeEvent = GetBaYeEvent(baYeEventId, cityId);
-                return (cityId, baYeEventId, baYeEvent.ExpList, WarIds: baYeEvent.WarIds);
-            })
-            .OrderBy(e => e.cityId)
-            .ToList(); //根据权重随机战役id
-        map = events.Select(e => new BaYeCityEvent
-                {CityId = e.cityId, EventId = e.baYeEventId, WarIds = e.WarIds, ExpList = e.ExpList})
-            .ToList();
-
+                return new BaYeCityEvent { CityId = cityId, EventId = baYeEventId, ExpList = baYeEvent.ExpList, WarIds = baYeEvent.WarIds};
+            }).ToList();//根据权重随机战役id
         var baYe = PlayerDataForGame.instance.warsData.baYe;
         foreach (var baYeEvent in baYe.data)
             map[baYeEvent.CityId] = baYeEvent;
@@ -174,13 +168,10 @@ public class BaYeManager : MonoBehaviour
         {
             var forceList = DataTable.Force.Keys.ToList();
             var zhanLingSelection = new Dictionary<int, int>();
-            for (int i = 0; i < 2; i++)
-            {
-                var index = Random.Range(0, forceList.Count);
-                var pick = forceList[index];
-                zhanLingSelection.Add(pick,Random.Range(min, max + 1));
-                forceList.Remove(pick);
-            }
+            var index = Random.Range(0, forceList.Count);
+            var pick = forceList[index];
+            zhanLingSelection.Add(pick, Random.Range(min, max + 1));
+            forceList.Remove(pick);
             return zhanLingSelection;
         }
     }

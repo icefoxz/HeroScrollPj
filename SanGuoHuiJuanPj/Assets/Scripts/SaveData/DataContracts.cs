@@ -31,6 +31,10 @@ public interface IUserInfo
     /// 与服务器最后一次互交的时间
     /// </summary>
     long LastUpdate { get; set; }
+    /// <summary>
+    /// 游戏版本号
+    /// </summary>
+    float GameVersion { get; set; }
 }
 
 /// <summary>
@@ -114,7 +118,7 @@ public class RedemptionCodeGot
 public class NowLevelAndHadChip//card
 {
     public int id;          //id
-    public int level = 1;       //当前等级
+    public int level = 1;   //当前等级
     public int chips;       //拥有碎片
     public int isFight;     //是否出战
     public int typeIndex;   //单位类型0武将1士兵2塔3陷阱4技能

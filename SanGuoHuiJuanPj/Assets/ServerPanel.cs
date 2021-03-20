@@ -51,8 +51,8 @@ public class ServerPanel : MonoBehaviour
     private void OnDisconnect(string arg)
     {
         SignalR.Disconnect();
-        ShowServerMaintenance();
         Instance_OnStatusChanged(HubConnectionState.Disconnected);
+        ShowServerMaintenance();
     }
 
     private void UpdateReconnectBtn(HubConnectionState status)
