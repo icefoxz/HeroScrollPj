@@ -180,6 +180,8 @@ public class SignalRClient : MonoBehaviour
     private Task OnConnectionClose(HubConnectionState state,Exception e)
     {
         StatusChanged(state, e.ToString());
+        if (state == HubConnectionState.Disconnected)
+            ServerPanel.OnSignalRDisconnected();
         return Task.CompletedTask;
     }
     private void StatusChanged(HubConnectionState status, string message)

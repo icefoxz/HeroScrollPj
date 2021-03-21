@@ -17,19 +17,25 @@ public class ServerPanel : MonoBehaviour
     public void Init(SignalRClient signalR)
     {
         SignalR = signalR;
-        SignalR.SubscribeAction(EventStrings.SC_Disconnect,OnDisconnect);
+        SignalR.SubscribeAction(EventStrings.SC_Disconnect,ServerCallDisconnect);
         SignalR.OnStatusChanged += Instance_OnStatusChanged;
         reconnectButton.onClick.AddListener(()=>SignalRClient.instance.Login(OnConnectAction));
         gameObject.SetActive(false);
         requestTimeOut.gameObject.SetActive(true);
+        SetException();
     }
 
+    public void SetException(string exception = null)
+    {
+        exceptionMsg.gameObject.SetActive(!string.IsNullOrWhiteSpace(exception));
+        exceptionMsg.text = exception;
+    }
     public void ApplicationQuit() => Application.Quit();
 
     private void OnConnectAction(bool isConnected, HttpStatusCode code)
     {
         gameObject.SetActive(!isConnected);
-        exceptionMsg.text = code.ToString();
+        SetException(code.ToString());
     }
 
     private void Instance_OnStatusChanged(HubConnectionState state)
@@ -47,8 +53,11 @@ public class ServerPanel : MonoBehaviour
         requestTimeOut.gameObject.SetActive(false);
         reconnectButton.gameObject.SetActive(false);
     }
+    //当因为各种原因断线
+    public void OnSignalRDisconnected() => Instance_OnStatusChanged(HubConnectionState.Disconnected);
 
-    private void OnDisconnect(string arg)
+    //当服务器强制离线
+    private void ServerCallDisconnect(string arg)
     {
         SignalR.Disconnect();
         Instance_OnStatusChanged(HubConnectionState.Disconnected);
