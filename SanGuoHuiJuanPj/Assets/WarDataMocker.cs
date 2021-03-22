@@ -26,7 +26,7 @@ public class WarDataMocker : MonoBehaviour
 #if UNITY_EDITOR
     private void Awake()
     {
-        DataTable.instance = new GameObject("loadJason").AddComponent<DataTable>();
+        DataTable.instance = gameObject.GetComponent<DataTable>();
         var player = Instantiate(playerDataPrefab);
         Instantiate(audioController0Prefab);
         Instantiate(audioController1Prefab);
