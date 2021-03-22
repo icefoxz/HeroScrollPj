@@ -84,6 +84,13 @@ public class StartSceneToServerCS : MonoBehaviour
         PlayerDataForGame.instance.acData.Phone = PlayerPrefs.GetString(PhoneNumber);
     }
 
+    private void SetAccountInfo()
+    {
+        PlayerPrefs.SetString(AccountId, PlayerDataForGame.instance.acData.Username);
+        PlayerPrefs.SetString(Password, PlayerDataForGame.instance.acData.Password);
+        PlayerPrefs.SetString(PhoneNumber, PlayerDataForGame.instance.acData.Phone);
+    }
+
     [SerializeField]
     Button closeBtn;    //关闭按钮 
 
@@ -181,7 +188,7 @@ public class StartSceneToServerCS : MonoBehaviour
 #if UNITY_EDITOR
         if (isSkipLogin)
         {
-            LoadMainScene(true,HttpStatusCode.OK);
+            LoadMainScene(true, (int) HttpStatusCode.OK);
             return;
         }
 #endif
@@ -189,7 +196,7 @@ public class StartSceneToServerCS : MonoBehaviour
         BugHotFix.OnFixStaminaV2_05();
         if (isSkipLogin)
         {
-            LoadMainScene(true, HttpStatusCode.OK);
+            LoadMainScene(true, (int) HttpStatusCode.OK);
             return;
         }
 
@@ -197,21 +204,25 @@ public class StartSceneToServerCS : MonoBehaviour
         signalRClient.Login(LoadMainScene, username, password);
     }
 
-    private void LoadMainScene(bool isSuccess, HttpStatusCode code)
+    private void LoadMainScene(bool isSuccess, int code)
     {
         if (isSuccess)
         {
+            PlayerDataForGame.instance.acData.Password = signInUi.PasswordField.text;
+            PlayerDataForGame.instance.isNeedSaveData = true;
+            LoadSaveData.instance.SaveGameData(1);
+            SetAccountInfo();
             StartSceneUIManager.instance.LoadingScene(1, true);
             return;
         }
 
-        var serverResponseError = ServerResponseError((int) code);
+        var serverResponseError = ServerResponseError(code);
         signInUi.ShowMessage(serverResponseError);
         PlayerDataForGame.instance.ShowStringTips(serverResponseError);
         busyPanel.gameObject.SetActive(false);
     }
 
-    private async void OldLoginTask(UnityAction<bool,HttpStatusCode> action)
+    private async void OldLoginTask(UnityAction<bool,int> action)
     {
         //尝试登录并获取登录信息 
         var response =
@@ -219,7 +230,7 @@ public class StartSceneToServerCS : MonoBehaviour
                 Json.Serialize(PlayerDataForGame.instance.acData));
         if (!response.IsSuccess())
         {
-            action?.Invoke(false, response.StatusCode);
+            action?.Invoke(false, (int)response.StatusCode);
             var code = (ServerBackCode)response.StatusCode;
             if (code == ServerBackCode.ERR_PW_ERROR) //如果密码错误
             {
@@ -238,12 +249,12 @@ public class StartSceneToServerCS : MonoBehaviour
 
             PlayerDataForGame.instance.acData.Username = ac.Username;
             PlayerDataForGame.instance.acData.LastUpdate = ac.LastUpdate;
-            action?.Invoke(true, response.StatusCode);
+            action?.Invoke(true, (int)response.StatusCode);
             return;
         }
         PlayerDataForGame.instance.ShowStringTips($"请求异常[{(int)response.StatusCode}]，请联系管理人！");
         loginBtn.gameObject.SetActive(true);
-        action?.Invoke(true, response.StatusCode);
+        action?.Invoke(true, (int)response.StatusCode);
     }
 
     /// <summary> 

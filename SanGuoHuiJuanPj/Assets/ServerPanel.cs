@@ -32,7 +32,7 @@ public class ServerPanel : MonoBehaviour
     }
     public void ApplicationQuit() => Application.Quit();
 
-    private void OnConnectAction(bool isConnected, HttpStatusCode code)
+    private void OnConnectAction(bool isConnected, int code)
     {
         gameObject.SetActive(!isConnected);
         SetException(code.ToString());

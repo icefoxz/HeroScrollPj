@@ -49,7 +49,7 @@ public class SignalRClient : MonoBehaviour
         ServerPanel.Init(this);
     }
 
-    public async void Login(Action<bool,HttpStatusCode> recallAction,string username = null,string password = null)
+    public async void Login(Action<bool,int> recallAction,string username = null,string password = null)
     {
         if (username == null) username = PlayerDataForGame.instance.acData.Username;
         if (password == null) password = PlayerDataForGame.instance.acData.Password;
@@ -58,15 +58,25 @@ public class SignalRClient : MonoBehaviour
         var response = await Http.PostAsync(Server.SIGNALR_LOGIN_API,Json.Serialize(GetUserInfo(username,password)), cancellationTokenSource.Token);
         if (!response.IsSuccessStatusCode)
         {
-            DebugLog("连接失败！");
-            recallAction.Invoke(false,response.StatusCode);
+            DebugLog($"连接失败！[{response.StatusCode}]");
+            var severBackCode = ServerBackCode.ERR_INVALIDOPERATION;
+            switch (response.StatusCode)
+            {
+                case HttpStatusCode.Unauthorized:
+                    severBackCode = ServerBackCode.ERR_PW_ERROR;
+                    break;
+                case HttpStatusCode.ServiceUnavailable:
+                    severBackCode = ServerBackCode.ERR_SERVERSTATE_ZERO;
+                    break;
+            }
+            recallAction.Invoke(false, (int) severBackCode);
             return;
         }
 
         var jsonString = await response.Content.ReadAsStringAsync();
         var connectionInfo = JsonConvert.DeserializeObject<SignalRConnectionInfo>(jsonString);
         var result = await ConnectSignalRAsync(connectionInfo, cancellationTokenSource.Token);
-        recallAction?.Invoke(result, response.StatusCode);
+        recallAction?.Invoke(result, (int) response.StatusCode);
     }
 
     private UserInfo GetUserInfo(string username,string password)

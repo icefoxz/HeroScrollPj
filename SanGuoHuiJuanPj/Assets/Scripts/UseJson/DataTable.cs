@@ -113,15 +113,6 @@ using UnityEngine;
         var data = type.GetFields().Where(f => f.FieldType == TextAssetType)
             .ToDictionary(p => p.Name.Replace(TableSuffix,string.Empty).ToLower(), p => ConvertText(p.GetValue(this).ToString()));
         Data = new TableData(data);
-        //var staticData = type.GetFields(BindingFlags.Static | BindingFlags.NonPublic).Where(f => f.FieldType == DataType)
-        //    .ToDictionary(p => p.Name.Replace(DataSuffix, string.Empty).ToLower(), p => p);
-        //textAssets.Join(staticData,tx=>tx.Key,st=>st.Key, (tx, st) =>new {Asset = tx.Value, Data = st.Value}).ToList().ForEach(
-        //    map =>
-        //    {
-        //        var textAsset = (TextAsset) map.Asset.GetValue(this);
-        //        map.Data.SetValue(null,ConvertText(textAsset));
-        //    });
-        //var tableData = new TableData(new Dictionary<string, Dictionary<int, IReadOnlyList<string>>>());
     }
 
     private Dictionary<int, IReadOnlyList<string>> ConvertText(string text)
