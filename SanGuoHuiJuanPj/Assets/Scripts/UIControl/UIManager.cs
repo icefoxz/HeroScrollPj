@@ -720,7 +720,7 @@ public class UIManager : MonoBehaviour
     private void UpdateCardNumsShow()
     {
         cardsListTitle.text = "出战";
-        cardsNumsTitle.text = PlayerDataForGame.instance.CalculationFightCount() + "/" + DataTable.PlayerLevelConfig[PlayerDataForGame.instance.pyData.Level].CardLimit;
+        cardsNumsTitle.text = PlayerDataForGame.instance.TotalCardsEnlisted + "/" + DataTable.PlayerLevelConfig[PlayerDataForGame.instance.pyData.Level].CardLimit;
     }
 
     //是否展示卡牌详情显示 
@@ -826,7 +826,7 @@ public class UIManager : MonoBehaviour
             //出战标记 
             if (card.isFight > 0)
             {
-                PlayerDataForGame.instance.AddOrCutFightCardId(card.typeIndex, card.id, true);
+                PlayerDataForGame.instance.EnlistCard(card, true);
                 obj.transform.GetChild(7).gameObject.SetActive(true);
             }
             else
@@ -1087,7 +1087,7 @@ public class UIManager : MonoBehaviour
             obj.transform.GetChild(7).gameObject.SetActive(false);
             if (card.isFight > 0) //出战标记 
             {
-                PlayerDataForGame.instance.AddOrCutFightCardId(card.typeIndex, card.id, true);
+                PlayerDataForGame.instance.EnlistCard(card, true);
                 obj.transform.GetChild(7).gameObject.SetActive(true);
             }
             else
@@ -1276,7 +1276,7 @@ public class UIManager : MonoBehaviour
                 AudioController0.instance.PlayAudioSource(0);
                 //刷新主城列表 
                 ChangeScrollView();
-                PlayerDataForGame.instance.AddOrCutFightCardId(heroData.typeIndex, heroData.id, false);
+                PlayerDataForGame.instance.EnlistCard(heroData, false);
                 UpdateCardNumsShow();
                 queRenWindows.SetActive(false);
             });
@@ -1501,7 +1501,7 @@ public class UIManager : MonoBehaviour
         Transform listCard = lastSelectImg.transform.parent;
         if (selectCardData.isFight > 0)
         {
-            if (PlayerDataForGame.instance.AddOrCutFightCardId(selectCardData.typeIndex, selectCardData.id, false))
+            if (PlayerDataForGame.instance.EnlistCard(selectCardData, false))
             {
                 listCard.GetChild(7).gameObject.SetActive(false);
                 showCardObj.transform.GetChild(7).gameObject.SetActive(false);
@@ -1517,7 +1517,7 @@ public class UIManager : MonoBehaviour
         }
         else
         {
-            if (PlayerDataForGame.instance.AddOrCutFightCardId(selectCardData.typeIndex, selectCardData.id, true))
+            if (PlayerDataForGame.instance.EnlistCard(selectCardData, true))
             {
                 listCard.GetChild(7).gameObject.SetActive(true);
                 showCardObj.transform.GetChild(7).gameObject.SetActive(true);

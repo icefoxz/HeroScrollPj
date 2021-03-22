@@ -112,6 +112,9 @@ public class PlayerDataForGame : MonoBehaviour
     [HideInInspector]
     public int boxForTiLiNums;  //返还体力单个宝箱扣除体力数 
 
+    //计算出战总数量 
+    public int TotalCardsEnlisted => fightHeroId.Count + fightTowerId.Count + fightTrapId.Count;
+
     public GameResources GameResources { get; set; }
     public BaYeManager BaYeManager { get; set; }
 
@@ -276,189 +279,41 @@ public class PlayerDataForGame : MonoBehaviour
         }
     }
 
-    //计算出战总数量 
-    public int CalculationFightCount()
-    {
-        int count = 0;
-        count = fightHeroId.Count + fightTowerId.Count + fightTrapId.Count;
-        return count;
-    }
-
+    
 
     /// <summary> 
     /// 添加或删除卡牌id到出战列表 
     /// </summary> 
-    public bool AddOrCutFightCardId(int typeIndex, int cardId, bool isAdd)
+    public bool EnlistCard(NowLevelAndHadChip card, bool isAdd)
     {
-        switch (typeIndex)
+        var cardType = (GameCardType) card.typeIndex;
+        var cardLimit = DataTable.PlayerLevelConfig[pyData.Level].CardLimit;
+        if (TotalCardsEnlisted >= cardLimit) return false;
+        List<int> cardList = null;
+        switch (cardType)
         {
-            case 0:
-                if (isAdd)
-                {
-                    if (CalculationFightCount() < DataTable.PlayerLevelConfig[pyData.Level].CardLimit)
-                    {
-                        if (!fightHeroId.Contains(cardId))
-                        {
-                            fightHeroId.Add(cardId);
-                        }
-                        else
-                        {
-                            //Debug.Log("fightHeroId出战列表已有" + cardId); 
-                        }
-                    }
-                    else
-                    {
-                        return false;
-                    }
-                }
-                else
-                {
-                    if (fightHeroId.Contains(cardId))
-                    {
-                        fightHeroId.Remove(cardId);
-                    }
-                    else
-                    {
-                        //Debug.Log("回城错误，出战列表无此单位"); 
-                        return false;
-                    }
-                }
+            case GameCardType.Hero:
+                cardList = fightHeroId;
                 break;
-            case 1:
-                if (isAdd)
-                {
-                    if (CalculationFightCount() < DataTable.PlayerLevelConfig[pyData.Level].CardLimit)
-                    {
-                        if (!fightSoLdierId.Contains(cardId))
-                        {
-                            fightSoLdierId.Add(cardId);
-                        }
-                        else
-                        {
-                            //Debug.Log("fightSoLdierId出战列表已有" + cardId); 
-                        }
-                    }
-                    else
-                    {
-                        //Debug.Log("出战列表已满"); 
-                        return false;
-                    }
-                }
-                else
-                {
-                    if (fightSoLdierId.Contains(cardId))
-                    {
-                        fightSoLdierId.Remove(cardId);
-                    }
-                    else
-                    {
-                        //Debug.Log("回城错误，出战列表无此单位"); 
-                        return false;
-                    }
-                }
+            case GameCardType.Tower:
+                cardList = fightTowerId;
                 break;
-            case 2:
-                if (isAdd)
-                {
-                    if (CalculationFightCount() < DataTable.PlayerLevelConfig[pyData.Level - 1].CardLimit)
-                    {
-                        if (!fightTowerId.Contains(cardId))
-                        {
-                            fightTowerId.Add(cardId);
-                        }
-                        else
-                        {
-                            //Debug.Log("fightTowerId出战列表已有" + cardId); 
-                        }
-                    }
-                    else
-                    {
-                        //Debug.Log("出战列表已满"); 
-                        return false;
-                    }
-                }
-                else
-                {
-                    if (fightTowerId.Contains(cardId))
-                    {
-                        fightTowerId.Remove(cardId);
-                    }
-                    else
-                    {
-                        //Debug.Log("回城错误，出战列表无此单位"); 
-                        return false;
-                    }
-                }
-                break;
-            case 3:
-                if (isAdd)
-                {
-                    if (CalculationFightCount() < DataTable.PlayerLevelConfig[pyData.Level].CardLimit)
-                    {
-                        if (!fightTrapId.Contains(cardId))
-                        {
-                            fightTrapId.Add(cardId);
-                        }
-                        else
-                        {
-                            //Debug.Log("fightTrapId出战列表已有" + cardId); 
-                        }
-                    }
-                    else
-                    {
-                        //Debug.Log("出战列表已满"); 
-                        return false;
-                    }
-                }
-                else
-                {
-                    if (fightTrapId.Contains(cardId))
-                    {
-                        fightTrapId.Remove(cardId);
-                    }
-                    else
-                    {
-                        //Debug.Log("回城错误，出战列表无此单位"); 
-                        return false;
-                    }
-                }
-                break;
-            case 4:
-                if (isAdd)
-                {
-                    if (CalculationFightCount() < DataTable.PlayerLevelConfig[pyData.Level].CardLimit)
-                    {
-                        if (!fightSpellId.Contains(cardId))
-                        {
-                            fightSpellId.Add(cardId);
-                        }
-                        else
-                        {
-                            //Debug.Log("fightSpellId出战列表已有" + cardId); 
-                        }
-                    }
-                    else
-                    {
-                        //Debug.Log("出战列表已满"); 
-                        return false;
-                    }
-                }
-                else
-                {
-                    if (fightSpellId.Contains(cardId))
-                    {
-                        fightSpellId.Remove(cardId);
-                    }
-                    else
-                    {
-                        //Debug.Log("回城错误，出战列表无此单位"); 
-                        return false;
-                    }
-                }
+            case GameCardType.Trap:
+                cardList = fightTrapId;
                 break;
             default:
-                return false;
+                throw new ArgumentOutOfRangeException();
         }
+
+        if(isAdd)
+        {
+            if (!cardList.Contains(card.id))
+                cardList.Add(card.id);
+            return true;
+        }
+
+        if (cardList.Contains(card.id))
+            cardList.Remove(card.id);
         return true;
     }
 
