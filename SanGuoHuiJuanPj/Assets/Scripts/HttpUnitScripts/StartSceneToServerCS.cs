@@ -312,7 +312,7 @@ public class StartSceneToServerCS : MonoBehaviour
             JsonConvert.SerializeObject(new UserInfo
             {
                 Username = signInUi.UsernameField.text,
-                Password = signInUi.UsernameField.text,
+                Password = signInUi.PasswordField.text,
                 DeviceId = SystemInfo.deviceUniqueIdentifier
             }));
         busyPanel.SetActive(false);
