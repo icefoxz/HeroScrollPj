@@ -1,0 +1,6 @@
+DnAdSdk.unitypackage 是接入包，可以直接导入到工程目录中
+
+DnAdSdk_Example.unitypackage 是Demo包，导入到工程后可以看到接入方法以及对应Demo
+
+
+如果有不明白的地方，可以联系我方技术，可以帮助你快速接入SDK。

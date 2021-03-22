@@ -1,6 +1,7 @@
 ﻿using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -28,7 +29,7 @@ public class MainWuBeiUIManager : MonoBehaviour
     GameObject detailsObj;  //详细信息显示栏
 
     List<GameObject> wuBeiCardList = new List<GameObject>();
-
+    private GameResources GameResources = new GameResources();
     private void Awake()
     {
         if (instance == null)
@@ -39,6 +40,7 @@ public class MainWuBeiUIManager : MonoBehaviour
 
     private void Start()
     {
+        GameResources.Init();
         InitializedCardsContentTran();
         InitArmsBtnListFun();
     }
@@ -88,7 +90,7 @@ public class MainWuBeiUIManager : MonoBehaviour
     //初始化武将分类列表
     private void InitArmsBtnListFun()
     {
-        for (int i = 0; i < LoadJsonFile.classTableDatas.Count; i++)
+        for (int i = 0; i < DataTable.Military.Count; i++)
         {
             GameObject btnObj = Instantiate(armsBtnObj, armsBtnListObj.transform).transform.GetChild(0).gameObject;
             string classType = i.ToString();
@@ -103,43 +105,46 @@ public class MainWuBeiUIManager : MonoBehaviour
     //点击兵种按钮显示内容
     private void OnClickToShowArmsCards(string classType)
     {
-        cardContentObj.transform.GetChild(0).GetChild(0).GetComponent<Text>().text = LoadJsonFile.classTableDatas[int.Parse(classType)][1];
+        var militaryId = int.Parse(classType);
+        cardContentObj.transform.GetChild(0).GetChild(0).GetComponent<Text>().text = DataTable.Military[militaryId].Type;
         cardContentObj.transform.GetChild(0).GetComponent<Button>().onClick.RemoveAllListeners();
         cardContentObj.transform.GetChild(0).GetComponent<Button>().onClick.AddListener(delegate ()
         {
             GoOrBackToArmsBtnList(true);
         });
-        GiveGameObjEventForHoldOn(cardContentObj.transform.GetChild(0).GetChild(1).gameObject, LoadJsonFile.classTableDatas[int.Parse(classType)][4]);
+        GiveGameObjEventForHoldOn(cardContentObj.transform.GetChild(0).GetChild(1).gameObject, DataTable.Military[militaryId].Info);
 
 
         for (int i = 0; i < PlayerDataForGame.instance.hstData.heroSaveData.Count; i++)
         {
-            if (LoadJsonFile.heroTableDatas[PlayerDataForGame.instance.hstData.heroSaveData[i].id][5] == classType)
+            var card = PlayerDataForGame.instance.hstData.heroSaveData[i];
+            var info = GameCardInfo.GetInfo((GameCardType)card.typeIndex,card.id);
+            if (DataTable.Hero[card.id].MilitaryUnitTableId == militaryId)
             {
-                GameObject obj = GetCardFromPooing(rarityCardsContentTrans[GetIdBackCardRarity(PlayerDataForGame.instance.hstData.heroSaveData[i].typeIndex, PlayerDataForGame.instance.hstData.heroSaveData[i].id) - 1]);
+                GameObject obj = GetCardFromPooing(rarityCardsContentTrans[info.Rare]);
                 //Debug.Log("---CardId: " + PlayerDataForGame.instance.hstData.heroSaveData[i].id);
                 obj.transform.GetChild(0).GetChild(3).gameObject.SetActive(!PlayerDataForGame.instance.hstData.heroSaveData[i].isHad);
-                if (PlayerDataForGame.instance.hstData.heroSaveData[i].isHad)
+                if (card.isHad)
                 {
                     //卡牌
-                    obj.transform.GetChild(0).GetComponent<Image>().sprite = Resources.Load("Image/Cards/Hero/" + LoadJsonFile.heroTableDatas[PlayerDataForGame.instance.hstData.heroSaveData[i].id][16], typeof(Sprite)) as Sprite;
+                    obj.transform.GetChild(0).GetComponent<Image>().sprite = GameResources.HeroImg[card.id];
                     GiveGameObjEventForHoldOn(obj.transform.GetChild(0).gameObject,
-                        LoadJsonFile.heroTableDatas[PlayerDataForGame.instance.hstData.heroSaveData[i].id][1] + ":\n" + LoadJsonFile.heroTableDatas[PlayerDataForGame.instance.hstData.heroSaveData[i].id][2]);
+                        info.Name + ":\n" + info.Intro);
                     //名字
-                    UIManager.instance.ShowNameTextRules(obj.transform.GetChild(0).GetChild(0).GetComponent<Text>(), LoadJsonFile.heroTableDatas[PlayerDataForGame.instance.hstData.heroSaveData[i].id][1]);
-                    obj.transform.GetChild(0).GetChild(0).GetComponent<Text>().color = UIManager.instance.NameColorChoose(GetIdBackCardRarity(PlayerDataForGame.instance.hstData.heroSaveData[i].typeIndex, PlayerDataForGame.instance.hstData.heroSaveData[i].id).ToString());
+                    UIManager.instance.ShowNameTextRules(obj.transform.GetChild(0).GetChild(0).GetComponent<Text>(), info.Name);
+                    obj.transform.GetChild(0).GetChild(0).GetComponent<Text>().color = UIManager.instance.NameColorChoose(info.Rare);
                     //星级
                     obj.transform.GetChild(0).GetChild(1).GetComponent<Image>().sprite = Resources.Load("Image/gradeImage/" + PlayerDataForGame.instance.hstData.heroSaveData[i].maxLevel, typeof(Sprite)) as Sprite;
                     //兵种
                     obj.transform.GetChild(0).GetChild(2).GetComponent<Image>().sprite = Resources.Load("Image/classImage/" + 0, typeof(Sprite)) as Sprite;
-                    obj.transform.GetChild(0).GetChild(2).GetComponentInChildren<Text>().text = LoadJsonFile.classTableDatas[int.Parse(classType)][3];
+                    obj.transform.GetChild(0).GetChild(2).GetComponentInChildren<Text>().text = info.Short;
                 }
                 else
                 {
                     GiveGameObjEventForHoldOn(obj.transform.GetChild(0).gameObject, "???");
                 }
                 //边框
-                UIManager.instance.FrameChoose(GetIdBackCardRarity(PlayerDataForGame.instance.hstData.heroSaveData[i].typeIndex, PlayerDataForGame.instance.hstData.heroSaveData[i].id).ToString(), obj.transform.GetChild(0).GetChild(4).GetComponent<Image>());
+                UIManager.instance.FrameChoose(info.Rare, obj.transform.GetChild(0).GetChild(4).GetComponent<Image>());
             }
         }
         GoOrBackToArmsBtnList(false);
@@ -161,17 +166,19 @@ public class MainWuBeiUIManager : MonoBehaviour
     {
         for (int i = 0; i < armsBtnListObj.transform.childCount; i++)
         {
-            armsBtnListObj.transform.GetChild(i).GetComponentInChildren<Text>().text = LoadJsonFile.classTableDatas[i][1] + "  " + GetClassHeroHadCount(i.ToString()) + "/" + GetClassHeroCount(i.ToString());
+            armsBtnListObj.transform.GetChild(i).GetComponentInChildren<Text>().text = DataTable.Military[i].Type + "  " + GetClassHeroHadCount(i) + "/" + GetClassHeroCount(i);
         }
     }
 
     //查找已拥有过的数量
-    private int GetClassHeroHadCount(string classType)
+    private int GetClassHeroHadCount(int classType)
     {
         int count = 0;
         for (int i = 0; i < PlayerDataForGame.instance.hstData.heroSaveData.Count; i++)
         {
-            if (PlayerDataForGame.instance.hstData.heroSaveData[i].isHad && LoadJsonFile.heroTableDatas[PlayerDataForGame.instance.hstData.heroSaveData[i].id][5] == classType)
+            var card = PlayerDataForGame.instance.hstData.heroSaveData[i];
+            var military = MilitaryInfo.GetInfo(card.id);
+            if (card.isHad && military.Id == classType)
             {
                 count++;
             }
@@ -191,16 +198,7 @@ public class MainWuBeiUIManager : MonoBehaviour
     }
 
     //获取职业武将数量
-    private int GetClassHeroCount(string classType)
-    {
-        int count = 0;
-        for (int i = 0; i < LoadJsonFile.heroTableDatas.Count; i++)
-        {
-            if (LoadJsonFile.heroTableDatas[i][5] == classType)
-                count++;
-        }
-        return count;
-    }
+    private int GetClassHeroCount(int classType) => DataTable.Hero.Values.Count(h => h.MilitaryUnitTableId == classType);
 
 
     //点击塔按钮显示内容
@@ -218,33 +216,33 @@ public class MainWuBeiUIManager : MonoBehaviour
 
         for (int i = 0; i < PlayerDataForGame.instance.hstData.towerSaveData.Count; i++)
         {
-            GameObject obj = GetCardFromPooing(rarityCardsContentTrans[GetIdBackCardRarity(PlayerDataForGame.instance.hstData.towerSaveData[i].typeIndex, PlayerDataForGame.instance.hstData.towerSaveData[i].id) - 1]);
+            var card = PlayerDataForGame.instance.hstData.towerSaveData[i];
+            var info = GameCardInfo.GetInfo((GameCardType) card.typeIndex, card.id);
+            GameObject obj = GetCardFromPooing(rarityCardsContentTrans[info.Rare]);
             //Debug.Log("---CardId: " + PlayerDataForGame.instance.hstData.towerSaveData[i].id);
-            obj.transform.GetChild(0).GetChild(3).gameObject.SetActive(!PlayerDataForGame.instance.hstData.towerSaveData[i].isHad);
-            if (PlayerDataForGame.instance.hstData.towerSaveData[i].isHad)
+            obj.transform.GetChild(0).GetChild(3).gameObject.SetActive(!card.isHad);
+            if (card.isHad)
             {
                 //卡牌
-                obj.transform.GetChild(0).GetComponent<Image>().sprite = Resources.Load("Image/Cards/FuZhu/" + LoadJsonFile.towerTableDatas[PlayerDataForGame.instance.hstData.towerSaveData[i].id][10], typeof(Sprite)) as Sprite;
+                obj.transform.GetChild(0).GetComponent<Image>().sprite = GameResources.FuZhuImg[info.ImageId];
                 GiveGameObjEventForHoldOn(obj.transform.GetChild(0).gameObject,
-                    LoadJsonFile.towerTableDatas[PlayerDataForGame.instance.hstData.towerSaveData[i].id][1] + ":\n" + LoadJsonFile.towerTableDatas[PlayerDataForGame.instance.hstData.towerSaveData[i].id][2]);
+                    info.Name + ":\n" + info.Intro);
                 //名字
-                UIManager.instance.ShowNameTextRules(obj.transform.GetChild(0).GetChild(0).GetComponent<Text>(), LoadJsonFile.towerTableDatas[PlayerDataForGame.instance.hstData.towerSaveData[i].id][1]);
-                obj.transform.GetChild(0).GetChild(0).GetComponent<Text>().color = UIManager.instance.NameColorChoose(GetIdBackCardRarity(PlayerDataForGame.instance.hstData.towerSaveData[i].typeIndex, PlayerDataForGame.instance.hstData.towerSaveData[i].id).ToString());
+                UIManager.instance.ShowNameTextRules(obj.transform.GetChild(0).GetChild(0).GetComponent<Text>(), info.Name);
+                obj.transform.GetChild(0).GetChild(0).GetComponent<Text>().color = UIManager.instance.NameColorChoose(info.Rare);
                 //星级
-                obj.transform.GetChild(0).GetChild(1).GetComponent<Image>().sprite = Resources.Load("Image/gradeImage/" + PlayerDataForGame.instance.hstData.towerSaveData[i].maxLevel, typeof(Sprite)) as Sprite;
+                obj.transform.GetChild(0).GetChild(1).GetComponent<Image>().sprite = GameResources.GradeImg[card.maxLevel];
                 //兵种
-                obj.transform.GetChild(0).GetChild(2).GetComponent<Image>().sprite = Resources.Load("Image/classImage/" + 1, typeof(Sprite)) as Sprite;
-                obj.transform.GetChild(0).GetChild(2).GetComponentInChildren<Text>().text = LoadJsonFile.towerTableDatas[PlayerDataForGame.instance.hstData.towerSaveData[i].id][5];
+                obj.transform.GetChild(0).GetChild(2).GetComponent<Image>().sprite = GameResources.ClassImg[1];
+                obj.transform.GetChild(0).GetChild(2).GetComponentInChildren<Text>().text = info.Short;
             }
             else
             {
                 GiveGameObjEventForHoldOn(obj.transform.GetChild(0).gameObject, "???");
             }
             //边框
-            UIManager.instance.FrameChoose(
-                GetIdBackCardRarity(PlayerDataForGame.instance.hstData.towerSaveData[i].typeIndex, PlayerDataForGame.instance.hstData.towerSaveData[i].id).ToString(),
-                obj.transform.GetChild(0).GetChild(4).GetComponent<Image>()
-                );
+            UIManager.instance.FrameChoose(info.Rare,
+                obj.transform.GetChild(0).GetChild(4).GetComponent<Image>());
         }
         cardContentObj.SetActive(true);
         wuBeiZongBtnObj.SetActive(false);
@@ -265,33 +263,31 @@ public class MainWuBeiUIManager : MonoBehaviour
 
         for (int i = 0; i < PlayerDataForGame.instance.hstData.trapSaveData.Count; i++)
         {
-            GameObject obj = GetCardFromPooing(rarityCardsContentTrans[GetIdBackCardRarity(PlayerDataForGame.instance.hstData.trapSaveData[i].typeIndex, PlayerDataForGame.instance.hstData.trapSaveData[i].id) - 1]);
+            var card = PlayerDataForGame.instance.hstData.trapSaveData[i];
+            var info = GameCardInfo.GetInfo((GameCardType) card.typeIndex, card.id);
+            GameObject obj = GetCardFromPooing(rarityCardsContentTrans[info.Rare]);
             //Debug.Log("---CardId: " + PlayerDataForGame.instance.hstData.trapSaveData[i].id);
             obj.transform.GetChild(0).GetChild(3).gameObject.SetActive(!PlayerDataForGame.instance.hstData.trapSaveData[i].isHad);
             if (PlayerDataForGame.instance.hstData.trapSaveData[i].isHad)
             {
                 //卡牌
-                obj.transform.GetChild(0).GetComponent<Image>().sprite = Resources.Load("Image/Cards/FuZhu/" + LoadJsonFile.trapTableDatas[PlayerDataForGame.instance.hstData.trapSaveData[i].id][8], typeof(Sprite)) as Sprite;
-                GiveGameObjEventForHoldOn(obj.transform.GetChild(0).gameObject,
-                    LoadJsonFile.trapTableDatas[PlayerDataForGame.instance.hstData.trapSaveData[i].id][1] + ":\n" + LoadJsonFile.trapTableDatas[PlayerDataForGame.instance.hstData.trapSaveData[i].id][2]);
+                obj.transform.GetChild(0).GetComponent<Image>().sprite = GameResources.FuZhuImg[info.ImageId];
+                GiveGameObjEventForHoldOn(obj.transform.GetChild(0).gameObject, info.Name + ":\n" + info.Intro);
                 //名字
-                UIManager.instance.ShowNameTextRules(obj.transform.GetChild(0).GetChild(0).GetComponent<Text>(), LoadJsonFile.trapTableDatas[PlayerDataForGame.instance.hstData.trapSaveData[i].id][1]);
-                obj.transform.GetChild(0).GetChild(0).GetComponent<Text>().color = UIManager.instance.NameColorChoose(GetIdBackCardRarity(PlayerDataForGame.instance.hstData.trapSaveData[i].typeIndex, PlayerDataForGame.instance.hstData.trapSaveData[i].id).ToString());
+                UIManager.instance.ShowNameTextRules(obj.transform.GetChild(0).GetChild(0).GetComponent<Text>(), info.Name);
+                obj.transform.GetChild(0).GetChild(0).GetComponent<Text>().color = UIManager.instance.NameColorChoose(info.Rare);
                 //星级
-                obj.transform.GetChild(0).GetChild(1).GetComponent<Image>().sprite = Resources.Load("Image/gradeImage/" + PlayerDataForGame.instance.hstData.trapSaveData[i].maxLevel, typeof(Sprite)) as Sprite;
+                obj.transform.GetChild(0).GetChild(1).GetComponent<Image>().sprite = GameResources.GradeImg[card.maxLevel];
                 //兵种
-                obj.transform.GetChild(0).GetChild(2).GetComponent<Image>().sprite = Resources.Load("Image/classImage/" + 1, typeof(Sprite)) as Sprite;
-                obj.transform.GetChild(0).GetChild(2).GetComponentInChildren<Text>().text = LoadJsonFile.trapTableDatas[PlayerDataForGame.instance.hstData.trapSaveData[i].id][5];
+                obj.transform.GetChild(0).GetChild(2).GetComponent<Image>().sprite = GameResources.ClassImg[1];
+                obj.transform.GetChild(0).GetChild(2).GetComponentInChildren<Text>().text = info.Short;
             }
             else
             {
                 GiveGameObjEventForHoldOn(obj.transform.GetChild(0).gameObject, "???");
             }
             //边框
-            UIManager.instance.FrameChoose(
-                GetIdBackCardRarity(PlayerDataForGame.instance.hstData.trapSaveData[i].typeIndex, PlayerDataForGame.instance.hstData.trapSaveData[i].id).ToString(),
-                obj.transform.GetChild(0).GetChild(4).GetComponent<Image>()
-                );
+            UIManager.instance.FrameChoose(info.Rare, obj.transform.GetChild(0).GetChild(4).GetComponent<Image>());
         }
         cardContentObj.SetActive(true);
         wuBeiZongBtnObj.SetActive(false);
@@ -315,32 +311,5 @@ public class MainWuBeiUIManager : MonoBehaviour
         {
             detailsObj.SetActive(false);
         };
-    }
-
-    //根据卡牌类型和id得到其稀有度
-    private int GetIdBackCardRarity(int cardType, int cardId)
-    {
-        string rarityStr = string.Empty;
-        switch (cardType)
-        {
-            case 0:
-                rarityStr = LoadJsonFile.heroTableDatas[cardId][3];
-                break;
-            case 1:
-                rarityStr = LoadJsonFile.soldierTableDatas[cardId][3];
-                break;
-            case 2:
-                rarityStr = LoadJsonFile.towerTableDatas[cardId][3];
-                break;
-            case 3:
-                rarityStr = LoadJsonFile.trapTableDatas[cardId][3];
-                break;
-            case 4:
-                rarityStr = LoadJsonFile.spellTableDatas[cardId][3];
-                break;
-            default:
-                break;
-        }
-        return int.Parse(rarityStr);
     }
 }

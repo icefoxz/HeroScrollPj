@@ -1,0 +1,60 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &7322335858056159363
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7322335858056159361}
+  - component: {fileID: 7322335858056159362}
+  m_Layer: 0
+  m_Name: "\u6218\u6597\u6A21\u62DF\u5668-\u8BF7\u6CE8\u610F\uFF0C\u53EA\u80FD\u5728\u7F16\u8F91\u5668\u4E2D\u4F7F\u7528"
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7322335858056159361
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7322335858056159363}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7322335858056159362
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7322335858056159363}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d14e7cc1960c4654da65c83b66f7fb4d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  warId: 4
+  gold: 0
+  isCustomCard: 0
+  force: 0
+  playerDataPrefab: {fileID: 6259037072117834582, guid: f628345de1c784c43bbfdfe9f957d6bd,
+    type: 3}
+  audioController0Prefab: {fileID: 3780831523384837510, guid: a72a52cc76b340c449ae0dd14e9d154e,
+    type: 3}
+  audioController1Prefab: {fileID: 8510239564119083610, guid: c2fb2cef42adf4b408ef0446428db80f,
+    type: 3}
+  adControllerPrefab: {fileID: 4771974302255863824, guid: f061466a0566c0f4f9e00e62193e3a32,
+    type: 3}
+  heroes: []
+  towers: []
+  traps: []

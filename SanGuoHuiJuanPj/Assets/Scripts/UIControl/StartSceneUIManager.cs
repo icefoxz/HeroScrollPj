@@ -23,6 +23,7 @@ public class StartSceneUIManager : MonoBehaviour
     [SerializeField]
     GameObject EffectPoolManagerObj;   //特效组
     bool isJumping; //是否在跳转
+    [HideInInspector]public bool isPlayedStory;//是否已播放了剧情
 
     private void Awake()
     {
@@ -55,33 +56,18 @@ public class StartSceneUIManager : MonoBehaviour
         AudioController1.instance.PlayLongBackMusInit();
     }
 
-    /// <summary>
-    /// 没有存档开始按钮播放剧情
-    /// </summary>
-    /// <param name="startBtn"></param>
-    public void DontHaveSaveDataPlayStory(Button startBtn)
+    public void DontHaveSaveDataPlayStory()
     {
         EffectPoolManagerObj.SetActive(true);
 
         //chooseForceCityObj.transform.GetChild(0).GetComponent<Button>().onClick.Invoke();
         for (int i = 0; i < chooseForceCityObj.transform.childCount; i++)
         {
-            chooseForceCityObj.transform.GetChild(i).GetComponent<Button>().onClick.AddListener(delegate ()
-            {
-                AudioController0.instance.RandomPlayGuZhengAudio();
-            });
+            chooseForceCityObj.transform.GetChild(i).GetComponent<Button>().onClick.AddListener(() =>
+                AudioController0.instance.RandomPlayGuZhengAudio());
         }
-        startBtn.onClick.AddListener(delegate ()
-        {
-            if (isJumping)
-                return;
-            isJumping = true;
-            FightForManagerForStart.instance.InitEnemyCardForFight();
-        });
+        FightForManagerForStart.instance.InitEnemyCardForFight();
     }
-
-    [HideInInspector]
-    public bool isPlayedStory;
 
     //结束剧情选择势力
     public void EndStoryToChooseForce()
@@ -128,7 +114,7 @@ public class StartSceneUIManager : MonoBehaviour
         if (isJumping)
             return;
         isJumping = true;
-        AudioController0.instance.ChangeAudioClip(AudioController0.instance.audioClips[12], AudioController0.instance.audioVolumes[12]);
+        AudioController0.instance.ChangeAudioClip(12);
         AudioController0.instance.PlayAudioSource(0);
         TimeSystemControl.instance.InitIsTodayFirstLoadingGame();
         PlayerDataForGame.instance.JumpSceneFun(sceneBuildIndex, isNeedLoadSave);
@@ -145,6 +131,6 @@ public class StartSceneUIManager : MonoBehaviour
         powerIntroText.text = "";
         powerIntroText.color = new Color(powerIntroText.color.r, powerIntroText.color.g, powerIntroText.color.b, 0);
         powerIntroText.DOFade(1, 2.5f);
-        powerIntroText.DOText(("\u2000\u2000\u2000\u2000" + LoadJsonFile.playerInitialTableDatas[forceId][5]), 2.5f).SetEase(Ease.Linear).SetAutoKill(false);
+        powerIntroText.DOText(("\u2000\u2000\u2000\u2000" + DataTable.PlayerInitialConfig[forceId].ForceIntro), 2.5f).SetEase(Ease.Linear).SetAutoKill(false);
     }
 }

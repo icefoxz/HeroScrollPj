@@ -4,100 +4,141 @@ using UnityEngine.UI;
 using DG.Tweening;
 using System.Collections;
 using System;
+using System.Linq;
+
+using Beebyte.Obfuscator;
+using UnityEngine.Events;
 
 public class UIManager : MonoBehaviour
 {
+
     public static UIManager instance;
+    //玩家势力 
+    public enum Pages
+    {
+        桃园,
+        主城,
+        战役,
+        对决,
+        霸业
+    }
+
+    public Pages currentPage;
+    public Image waitWhileImpress;//敬请期待 
+    [SerializeField]
+    GameObject zhuChengHeroContentObj;  //主城卡牌集合框 
+    [SerializeField]
+    GameObject heroCardCityPre; //主城武将卡牌prefab 
+    [SerializeField]
+    GameObject playerInfoObj;   //玩家信息obj 
+    [SerializeField]
+    public Text yuanBaoNumText;        //元宝数量Text 
+    [SerializeField]
+    public Text yvQueNumText;          //玉阙数量Text 
+    [SerializeField]
+    Text tiLiNumText;           //体力数量Text 
+    [SerializeField]
+    Text cardsListTitle;         //主城卡牌列表标题 
+    [SerializeField]
+    Text cardsNumsTitle;         //主城卡牌列表中的单位数量 
+    [SerializeField]
+    Image changeCardsListBtn;         //主城卡牌列表切换按钮势力图片 
+    [SerializeField]
+    Image changeCardsListNameImg;     //主城卡牌列表切换按钮势力文字图片 
+    [SerializeField]
+    GameObject showCardObj;     //上部展示的卡牌 
+    [SerializeField]
+    Transform infoTran;         //上部展示的信息栏 
+    [SerializeField]
+    GameObject heChengBtn;      //合成按钮obj 
+    [SerializeField]
+    GameObject heImgObj;        //合成文字图片 
+    [SerializeField]
+    GameObject rewardsShowObj;  //奖品展示UI 
+    [SerializeField]
+    GameObject[] zhuChengInterFaces;    //主城切换页面0桃园1主城2战役3霸业4对战 
+    [SerializeField]
+    GameObject[] particlesForInterface;    //主城页面对应粒子效果0桃园1主城2战役 
+    [SerializeField]
+    GameObject warsChooseListObj;   //战役选择列表obj 
+    [SerializeField]
+    GameObject warsChooseBtnPreObj;   //战役选择按钮obj 
 
     [SerializeField]
-    GameObject zhuChengHeroContentObj;  //主城卡牌集合框
+    GameObject holdOrFightBtn;      //出战或回城切换按钮obj 
     [SerializeField]
-    GameObject heroCardCityPre; //主城武将卡牌prefab
+    GameObject sellCardBtn;      //出售按钮obj 
     [SerializeField]
-    GameObject playerInfoObj;   //玩家信息obj
+    Text tiLiRecordTimer;   //体力恢复倒计时 
     [SerializeField]
-    public Text yuanBaoNumText;        //元宝数量Text
-    [SerializeField]
-    public Text yvQueNumText;          //玉阙数量Text
-    [SerializeField]
-    Text tiLiNumText;           //体力数量Text
-    [SerializeField]
-    Text cardsListTitle;         //主城卡牌列表标题
-    [SerializeField]
-    Text cardsNumsTitle;         //主城卡牌列表中的单位数量
-    [SerializeField]
-    Image changeCardsListBtn;         //主城卡牌列表切换按钮势力图片
-    [SerializeField]
-    Image changeCardsListNameImg;     //主城卡牌列表切换按钮势力文字图片
-    [SerializeField]
-    GameObject showCardObj;     //上部展示的卡牌
-    [SerializeField]
-    Transform infoTran;         //上部展示的信息栏
-    [SerializeField]
-    GameObject heChengBtn;      //合成按钮obj
-    [SerializeField]
-    GameObject heImgObj;        //合成文字图片
-    [SerializeField]
-    GameObject rewardsShowObj;  //奖品展示UI
-    [SerializeField]
-    GameObject[] zhuChengInterFaces;    //主城切换页面0桃园1主城2战役3霸业4对战
-    [SerializeField]
-    GameObject[] particlesForInterface;    //主城页面对应粒子效果0桃园1主城2战役
-    [SerializeField]
-    GameObject warsChooseListObj;   //战役选择列表obj
-    [SerializeField]
-    GameObject warsChooseBtnPreObj;   //战役选择按钮obj
-    [SerializeField]
-    Text warIntroText;   //战役介绍文本obj
-    [SerializeField]
-    GameObject holdOrFightBtn;      //出战或回城切换按钮obj
-    [SerializeField]
-    GameObject sellCardBtn;      //出售按钮obj
-    [SerializeField]
-    Text tiLiRecordTimer;   //体力恢复倒计时
-    [SerializeField]
-    GameObject queRenWindows;   //操作确认窗口
-    [SerializeField]
-    public GameObject[] boxBtnObjs;    //宝箱obj
-    [SerializeField]
-    Transform rewardsParent;    //奖品父级
-    [SerializeField]
-    GameObject rewardObj;       //奖品预制件
-
-    private int needYuanBaoNums;    //记录所需元宝数
-
-    Image lastSelectImg;    //对上一个选择的卡牌selectImg的标记
-    NowLevelAndHadChip selectCardData;  //记录选择的卡牌存档数据
-
-    bool isJumping; //记录界面是否进行跳转
-
-    private int minInitCardCount = 20;  //卡牌池基础数量
-    private List<GameObject> heroCardPoolList = new List<GameObject>();     //卡牌池
-
-    private int tiLiCostIndex; //记录难度对应索引-获取单场消耗体力数量
+    GameObject queRenWindows;   //操作确认窗口 
+    //[SerializeField] 
+    public GameObject[] boxBtnObjs;    //宝箱obj 
+    public Expedition expedition;//战役 
+    public TaoYuan taoYuan;//桃园 
+    public Text JinNangQuota;    //锦囊配额文本 
 
     [SerializeField]
-    Transform chonseWarDifTran; //难度选择父级
+    Transform rewardsParent;    //奖品父级 
+    [SerializeField]
+    GameObject rewardObj;       //奖品预制件 
+
+    private int needYuanBaoNums;    //记录所需元宝数 
+
+    Image lastSelectImg;    //对上一个选择的卡牌selectImg的标记 
+    NowLevelAndHadChip selectCardData;  //记录选择的卡牌存档数据 
+
+    public bool IsJumping { get; private set; } //记录界面是否进行跳转 
+
+    private int minInitCardCount = 20;  //卡牌池基础数量 
+    private List<GameObject> heroCardPoolList = new List<GameObject>();     //卡牌池 
 
     [SerializeField]
-    GameObject upStarEffectObj; //升星特效
+    Transform chonseWarDifTran; //难度选择父级 
 
     [SerializeField]
-    GameObject[] guideObjs; // 指引objs 0:桃园宝箱 1:战役宝箱 2:合成 3:开始战役
-
-    public Button adBtnForFreeBox; //免费开启酒坛广告按钮
+    GameObject upStarEffectObj; //升星特效 
 
     [SerializeField]
-    GameObject chickenEntObj;   //体力入口
-    [SerializeField]
-    GameObject chickenShopWindowObj;    //烧鸡商店窗口
-    [SerializeField]
-    Button[] chickenShopBtns;   //体力商店购买按钮
-    [SerializeField]
-    Text chickenCloseText;  //烧鸡关闭时间Text
+    GameObject[] guideObjs; // 指引objs 0:桃园宝箱 1:战役宝箱 2:合成 3:开始战役 
 
     [SerializeField]
-    GameObject cutTiLiTextObj;  //扣除体力动画Obj
+    GameObject chickenEntObj;   //体力入口 
+    [SerializeField]
+    GameObject chickenShopWindowObj;    //烧鸡商店窗口 
+    [SerializeField]
+    Button[] chickenShopBtns;   //体力商店购买按钮 
+    [SerializeField]
+    Text chickenCloseText;  //烧鸡关闭时间Text 
+
+    [SerializeField]
+    GameObject cutTiLiTextObj;  //扣除体力动画Obj 
+
+    //public ForceSelectorUi warForceSelectorUi;//战役势力选择器 
+    //private int lastAvailableStageIndex;//最远可战的战役索引 
+    public BaYeForceSelectorUi baYeForceSelectorUi;//战役势力选择器 
+    public BaYeProgressUI baYeProgressUi; //霸业经验条 
+    public ChestUI[] baYeChestButtons; //霸业宝箱 
+    public StoryEventUIController storyEventUiController;//霸业的故事事件控制器 
+    public BaYeWindowUI baYeWindowUi;//霸业地图小弹窗 
+    public Button baYeWarButton;//霸业开始战斗按键 
+    public Image bayeBelowLevelPanel;//霸业等级不足挡板 
+
+    private List<BaYeCityField> cityFields; //霸业的地图物件 
+    private List<BaYeForceField> forceFields; //可选势力物件 
+    [HideInInspector] public RewardManager rewardManager;
+    private GameResources GameResources => PlayerDataForGame.instance.GameResources;
+    public bool IsInit { get; private set; }
+
+    [SerializeField]
+    GameObject InfoWindowObj; //说明窗口 
+    [SerializeField]
+    Text InfoTitle;
+    [SerializeField]
+    Text InfoText;
+
+    bool isShowInfo;//说明窗口是否开启 
+
 
     private void Awake()
     {
@@ -105,28 +146,47 @@ public class UIManager : MonoBehaviour
         {
             instance = this;
         }
-        isJumping = false;
+        IsJumping = false;
         needYuanBaoNums = 0;
         indexChooseListForceId = 0;
         selectCardData = new NowLevelAndHadChip();
+        rewardManager = gameObject.AddComponent<RewardManager>();
+        ItemsRedemptionFunc();
     }
 
-    // Start is called before the first frame update
+    // Start is called before the first frame update 
     void Start()
     {
+        //版本修正 
+        BugHotFix.OnFixYvQueV1_90();
+        BugHotFix.OnFixLianYuV2_02();
+        TimeSystemControl.instance.InitStaminaCount(PlayerDataForGame.instance.pyData.Stamina <
+                                                    TimeSystemControl.instance.MaxStamina);
+
+        //第一次进入主场景的时候初始化霸业管理器 
+        if (PlayerDataForGame.instance.BaYeManager == null)
+        {
+            PlayerDataForGame.instance.BaYeManager = PlayerDataForGame.instance.gameObject.AddComponent<BaYeManager>();
+            PlayerDataForGame.instance.BaYeManager.Init();
+        }
+
         InitHeroCardPooling();
 
         InitializationPlayerInfo();
-        InitWarDifBtnShow();
+        expedition.Init();
 
         InitChickenOpenTs();
         InitChickenBtnFun();
         InitJiBanForMainFun();
         InitBaYeFun();
         PlayerDataForGame.instance.ClearGarbageStationObj();
+
+        OnStartMainScene();
+        PlayerDataForGame.instance.selectedWarId = -1;
+        IsInit = true;
     }
 
-    //时间管理
+    //时间管理 
     private void OnEnable()
     {
         AudioController1.instance.ChangeBackMusic();
@@ -140,238 +200,284 @@ public class UIManager : MonoBehaviour
     }
 
     [SerializeField]
-    GameObject huiJuanWinObj;   //绘卷窗口obj
+    GameObject huiJuanWinObj;   //绘卷窗口obj 
 
     [SerializeField]
-    GameObject jiBanBtnsConObj;  //羁绊按钮集合窗口obj
+    GameObject jiBanBtnsConObj;  //羁绊按钮集合窗口obj 
 
     [SerializeField]
-    GameObject jiBanInfoConObj; //羁绊详情窗口obj
+    GameObject jiBanInfoConObj; //羁绊详情窗口obj 
 
     [SerializeField]
-    Transform jibanBtnBoxTran;  //羁绊按钮集合
+    Transform jibanBtnBoxTran;  //羁绊按钮集合 
 
     [SerializeField]
-    Transform jibanHeroBoxTran; //羁绊详情武将集合
+    Transform jibanHeroBoxTran; //羁绊详情武将集合 
 
     [SerializeField]
-    Button jiBanWinCloseBtn;    //羁绊界面关闭按钮
+    Button jiBanWinCloseBtn;    //羁绊界面关闭按钮 
 
     [SerializeField]
-    GameObject baYeEventsObj;   //霸业事件点父级
+    public BaYeEventUIController baYeBattleEventController;   //霸业事件点父级 
     [SerializeField]
-    GameObject chooseBaYeEventImg;  //选择霸业地点的Img
+    public GameObject chooseBaYeEventImg;  //选择霸业地点的Img 
     [SerializeField]
-    GameObject baYeForceObj;    //霸业势力选择父级
-    [SerializeField]
-    Text baYeGoldNumText;   //霸业金币数量
+    Text baYeGoldNumText;   //霸业金币数量 
 
-    //开始霸业战斗
+    /// <summary> 
+    /// 游戏物品获取次数计算函数 
+    /// </summary> 
+    public void ItemsRedemptionFunc()
+    {
+        if (!SystemTimer.IsToday(PlayerDataForGame.instance.pyData.LastJinNangRedeemTime))
+            PlayerDataForGame.instance.SetRedeemCount(PlayerDataForGame.RedeemTypes.JinNang, 0);
+        if (!SystemTimer.IsToday(PlayerDataForGame.instance.pyData.LastJiuTanRedeemTime))
+            PlayerDataForGame.instance.SetRedeemCount(PlayerDataForGame.RedeemTypes.JiuTan, 0);
+        //根据系统时间计算本地的天数是否是同一天 
+    }
+
+    /// <summary> 
+    /// Main场景(切换)初始化 
+    /// </summary> 
+    private void OnStartMainScene()
+    {
+        switch (PlayerDataForGame.instance.WarType)
+        {
+            case PlayerDataForGame.WarTypes.None:
+            case PlayerDataForGame.WarTypes.Expedition:
+                MainPageSwitching(1);
+                break;
+            case PlayerDataForGame.WarTypes.Baye:
+                MainPageSwitching(4);
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+
+        PlayerDataForGame.instance.WarType = PlayerDataForGame.WarTypes.None;
+        var tips = PlayerDataForGame.instance.mainSceneTips;
+        if (!string.IsNullOrWhiteSpace(tips))
+        {
+            PlayerDataForGame.instance.ShowStringTips(tips);
+            PlayerDataForGame.instance.mainSceneTips = string.Empty;
+        }
+    }
+    //显示霸业玩法说明 
+    public void ShowInfoBaYe()
+    {
+        string title = DataTable.GetStringText(68);
+        string text = DataTable.GetStringText(69);
+        ShowInfo(title, text);
+    }
+
+    /// <summary> 
+    /// 打开说明窗口 
+    /// </summary> 
+    public void ShowInfo(string infoTitle, string infoText)
+    {
+        if (!isShowInfo)
+        {
+            InfoWindowObj.SetActive(true);
+            //标题 
+            InfoTitle.text = infoTitle;
+            //文本 
+            InfoText.text = infoText;
+        }
+        isShowInfo = true;
+    }
+    /// <summary> 
+    /// 关闭说明窗口 
+    /// </summary> 
+    public void HideInfo()
+    {
+        if (isShowInfo)
+        {
+            InfoWindowObj.SetActive(false);
+        }
+        isShowInfo = false;
+    }
+    //开始霸业战斗 
     public void StartBaYeFight()
     {
-        if (baYeFoeceChooseImgObj != null && baYeEventChooseIndex != -1)
+        PlayerDataForGame.instance.WarType = PlayerDataForGame.WarTypes.Baye;
+        var selectedForce = PlayerDataForGame.instance.CurrentWarForceId;
+        switch (BaYeManager.instance.CurrentEventType)
         {
-            print("可以开始战斗");
-            if (!isJumping)
-            {
-                isJumping = true;
-                AudioController0.instance.ChangeAudioClip(AudioController0.instance.audioClips[12], AudioController0.instance.audioVolumes[12]);
-                AudioController0.instance.PlayAudioSource(0);
+            case BaYeManager.EventTypes.Story:
+                {
+                    var map = PlayerDataForGame.instance.warsData.baYe.storyMap;
+                    if (!map.TryGetValue(BaYeManager.instance.CurrentEventPoint, out var storyEvent))
+                    {
+                        PlayerDataForGame.instance.ShowStringTips("请选择有效的战斗点。");
+                        return;
+                    }
+                    if (selectedForce < 0) break;
+                    if (!PlayerDataForGame.instance.ConsumeZhanLing()) return;//消费战令 
+                    BaYeManager.instance.CacheCurrentStoryEvent();
+                    PlayerDataForGame.instance.warsData.baYe.storyMap.Remove(BaYeManager.instance.CurrentEventPoint);
+                    PlayerDataForGame.instance.isNeedSaveData = true;
+                    LoadSaveData.instance.SaveGameData(3);
+                    StartBattle(storyEvent.WarId);
+                    return;
+                }
+            case BaYeManager.EventTypes.City:
+                {
+                    var city = BaYeManager.instance.Map.SingleOrDefault(e =>
+                        e.CityId == PlayerDataForGame.instance.selectedCity);
+                    if (city == null || selectedForce < 0) break;
+                    var savedEvent =
+                        PlayerDataForGame.instance.warsData.baYe.data.SingleOrDefault(e => e.CityId == city.CityId);
+                    var passes = 0;
+                    if (savedEvent != null)
+                        passes = savedEvent.PassedStages.Count(pass => pass);
+                    if (passes == city.WarIds.Count)
+                    {
+                        PlayerDataForGame.instance.ShowStringTips("该地区已经平定了噢。");
+                        return;
+                    }
+                    if (!PlayerDataForGame.instance.ConsumeZhanLing()) return;//消费战令 
+                    PlayerDataForGame.instance.SaveBaYeWarEvent();
+                    StartBattle(city.WarIds[passes]);
+                    return;
+                }
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
 
-                StartCoroutine(LateGoToFightScene());
+        print("请选择");
+        //提示选择势力后进行战斗 
+        PlayerDataForGame.instance.ShowStringTips(DataTable.GetStringText(65));
+
+        void StartBattle(int warId)
+        {
+            if (IsJumping) return;
+            IsJumping = true;
+            AudioController0.instance.ForcePlayAudio(12);
+            AudioController0.instance.ChangeAudioClip(12);
+            AudioController0.instance.PlayAudioSource(0);
+            PlayerDataForGame.instance.selectedWarId = warId;
+            print($"开始战斗 WarId[{warId}]");
+            StartCoroutine(LateGoToFightScene());
+        }
+    }
+
+    //初始化霸业界面内容 
+    private void InitBaYeFun()
+    {
+        baYeForceSelectorUi.Init(PlayerDataForGame.WarTypes.Baye);
+        baYeWarButton.onClick.RemoveAllListeners();
+        baYeWarButton.onClick.AddListener(StartBaYeFight);
+        storyEventUiController.ResetUi();
+        baYeWindowUi.Init();
+        var baYe = PlayerDataForGame.instance.warsData.baYe;
+        PlayerDataForGame.instance.selectedBaYeEventId = -1;
+        PlayerDataForGame.instance.selectedCity = -1;
+        //霸业经验条和宝箱初始化 
+        ResetBaYeProgressAndGold();
+        //城市点初始化 
+        var cityLvlMap = new Dictionary<int,int>();//maxCity, level
+        DataTable.PlayerLevelConfig.Values.Select(lvl =>
+        {
+            var maxCity = lvl.BaYeCityPoints.Max();
+            return new {level = lvl.Level, maxCity};
+        }).ToList().ForEach(lvl =>
+        {
+            if (!cityLvlMap.ContainsKey(lvl.maxCity))
+            {
+                cityLvlMap.Add(lvl.maxCity, lvl.level);
+                return;
+            }
+            cityLvlMap[lvl.maxCity] = cityLvlMap[lvl.maxCity] > lvl.level ? cityLvlMap[lvl.maxCity] : lvl.level;
+        });
+        var cityList = DataTable.PlayerLevelConfig[PlayerDataForGame.instance.pyData.Level].BaYeCityPoints;
+        if (cityFields != null && cityFields.Count > 0)
+            cityFields.ForEach(Destroy);
+        cityFields = new List<BaYeCityField>();
+        for (int i = 0; i < baYeBattleEventController.eventList.Length; i++)
+        {
+            int cityPoint = i;
+            //得到战役id 
+            var ui = baYeBattleEventController.eventList[i];
+            var cityField = ui.gameObject.AddComponent<BaYeCityField>();
+            cityField.id = cityPoint;
+            cityField.button = ui.button;
+            cityFields.Add(cityField);
+            var baYeEvent = BaYeManager.instance.Map.Single(e => e.CityId == cityPoint);
+            var baYeRecord = baYe.data.SingleOrDefault(f => f.CityId == cityPoint);
+            var flag = (ForceFlags)DataTable.BaYeCityEvent[baYeEvent.EventId].FlagId;//旗帜id 
+            var flagName = DataTable.BaYeCityEvent[baYeEvent.EventId].FlagText;//旗帜文字 
+            ui.button.interactable = cityList.Length > i;
+            ui.forceFlag.Set(flag, true, flagName);
+            if (cityList.Length > i)
+            {
+                var city = BaYeManager.instance.Map.Single(c => c.CityId == i);
+                ui.Init(city.WarIds.Count);
+                ui.button.onClick.RemoveAllListeners();
+                ui.button.onClick
+                    .AddListener(
+                        () => BaYeManager.instance.OnBaYeWarEventPointSelected(BaYeManager.EventTypes.City, baYeEvent.CityId));
+                ui.text.text = DataTable.BaYeCity[cityPoint].Name; //城市名 
             }
             else
             {
-                PlayOnClickMusic();
+                ui.text.text = $"{cityLvlMap[i]}级开启";
+                ui.InactiveCityColor();
             }
-        }
-        else
-        {
-            print("请选择");
+
+            if (baYeRecord == null) continue;
+            cityField.boundWars = baYeRecord.WarIds;
+            var passCount = baYeRecord.PassedStages.Count(isPass => isPass);
+            ui.SetValue(passCount);
+            if (baYeRecord.PassedStages.Length == passCount)//如果玩家已经过关 
+                ui.forceFlag.Hide();
         }
     }
 
-    //初始化霸业界面内容
-    private void InitBaYeFun()
+    public void ResetBaYeProgressAndGold()
     {
-        baYeEventChooseIndex = -1;
-        //城市点初始化
-        for (int i = 0; i < baYeEventsObj.transform.childCount; i++)
+        var baYe = PlayerDataForGame.instance.warsData.baYe;
+        var baYeReward = DataTable.BaYeTask.Values
+            .Select(task => new { id = task.Id, exp = task.Exp, warChestId = task.WarChestTableId })
+            .ToList();
+        baYeGoldNumText.text = $"{baYe.gold}/{BaYeManager.instance.BaYeMaxGold}";
+        baYeProgressUi.Set(baYe.CurrentExp, baYeReward[baYeReward.Count - 1].exp);
+        for (int i = 0; i < baYeReward.Count; i++)
         {
-            baYeEventsObj.transform.GetChild(i).gameObject.SetActive(false);
-        }
-        string[] eventCitys = LoadJsonFile.playerLevelTableDatas[PlayerDataForGame.instance.pyData.level - 1][7].Split(',');
-        for (int i = 0; i < eventCitys.Length; i++)
-        {
-            if (eventCitys[i] != "")
+            baYeChestButtons[i].Text.text = baYeReward[i].exp.ToString();
+            //如果玩家霸业的经验值大于宝箱经验值并宝箱未被开过 
+            if (baYe.CurrentExp < baYeReward[i].exp)
             {
-                int indexId = i;
-                //得到战役id
-                int indexWarId = GetChooseEventsWarId(indexId);
-                baYeEventsObj.transform.GetChild(i).GetComponentInChildren<Button>().onClick.AddListener(delegate ()
-                {
-                    ChooseBaYeEventOnClick(indexId, indexWarId);
-                });
-                baYeEventsObj.transform.GetChild(i).GetComponentInChildren<Text>().text = LoadJsonFile.baYeDiTuTableDatas[i][3];    //城市名
-                baYeEventsObj.transform.GetChild(i).gameObject.SetActive(true);
+                baYeChestButtons[i].Disabled();
+                continue;
             }
-        }
 
-        //势力选择
-        int forceUnlockId = int.Parse(LoadJsonFile.playerLevelTableDatas[PlayerDataForGame.instance.pyData.level - 1][6]);
-        for (int i = 0; i < forceUnlockId + 1; i++)
-        {
-            int index = i;
-            GameObject obj = baYeForceObj.transform.GetChild(index).gameObject;
-            obj.transform.GetChild(0).GetComponent<Image>().sprite = Resources.Load("Image/shiLi/Flag/" + index, typeof(Sprite)) as Sprite;
-            obj.transform.GetChild(1).GetComponent<Image>().sprite = Resources.Load("Image/shiLi/Name/" + index, typeof(Sprite)) as Sprite;
-            obj.GetComponent<Button>().onClick.AddListener(delegate() {
-                ChooseBaYeForceOnClick(index, obj.transform.GetChild(2).gameObject);
-            });
-            obj.SetActive(true);
-        }
-        baYeGoldNumText.text = PlayerDataForGame.instance.baYeGoldNums.ToString();
-    }
-
-    //标记选择霸业势力的ChooseImg
-    GameObject baYeFoeceChooseImgObj;
-    //标记选择霸业城池id
-    int baYeEventChooseIndex; 
-
-    //选择霸业的势力方法
-    private void ChooseBaYeForceOnClick(int forceId, GameObject chooseImgObj)
-    {
-        if (baYeFoeceChooseImgObj != null)
-        {
-            baYeFoeceChooseImgObj.SetActive(false);
-        }
-        baYeFoeceChooseImgObj = chooseImgObj;
-        baYeFoeceChooseImgObj.SetActive(true);
-        SeleceBaYeForceCards(forceId);
-    }
-
-    //刷新霸业的势力武将选择（派去战斗）
-    private void SeleceBaYeForceCards(int forceId)
-    {
-        PlayerDataForGame.instance.fightHeroId.Clear();
-        PlayerDataForGame.instance.fightTowerId.Clear();
-        PlayerDataForGame.instance.fightTrapId.Clear();
-
-        NowLevelAndHadChip heroDataIndex = new NowLevelAndHadChip();    //临时记录武将存档信息
-        for (int i = 0; i < PlayerDataForGame.instance.hstData.heroSaveData.Count; i++)
-        {
-            heroDataIndex = PlayerDataForGame.instance.hstData.heroSaveData[i];
-            if (forceId == int.Parse(LoadJsonFile.heroTableDatas[heroDataIndex.id][6]))
-            {
-                if (heroDataIndex.level > 0 || heroDataIndex.chips > 0)
-                {
-                    if (heroDataIndex.isFight > 0)
-                    {
-                        PlayerDataForGame.instance.fightHeroId.Add(heroDataIndex.id);
-                    }
-                }
-            }
-        }
-        NowLevelAndHadChip fuzhuDataIndex = new NowLevelAndHadChip();
-        for (int i = 0; i < PlayerDataForGame.instance.hstData.towerSaveData.Count; i++)
-        {
-            fuzhuDataIndex = PlayerDataForGame.instance.hstData.towerSaveData[i];
-            if (forceId == int.Parse(LoadJsonFile.towerTableDatas[fuzhuDataIndex.id][15]))
-            {
-                if (fuzhuDataIndex.level > 0 || fuzhuDataIndex.chips > 0)
-                {
-                    if (fuzhuDataIndex.isFight > 0)
-                    {
-                        PlayerDataForGame.instance.fightTowerId.Add(fuzhuDataIndex.id);
-                    }
-                }
-            }
-        }
-        for (int i = 0; i < PlayerDataForGame.instance.hstData.trapSaveData.Count; i++)
-        {
-            fuzhuDataIndex = PlayerDataForGame.instance.hstData.trapSaveData[i];
-            if (forceId == int.Parse(LoadJsonFile.trapTableDatas[fuzhuDataIndex.id][14]))
-            {
-                if (fuzhuDataIndex.level > 0 || fuzhuDataIndex.chips > 0)
-                {
-                    if (fuzhuDataIndex.isFight > 0)
-                    {
-                        PlayerDataForGame.instance.fightTrapId.Add(fuzhuDataIndex.id);
-                    }
-                }
-            }
+            //如果宝箱未被开过 
+            if (!baYe.openedChest[i])
+                baYeChestButtons[i].Ready();
+            else baYeChestButtons[i].Opened();
         }
     }
 
-    //选择某个霸业城池点的方法
-    private void ChooseBaYeEventOnClick(int eventIndex, int warId)
-    {
-        PlayerDataForGame.instance.chooseWarsId = warId;
-        chooseBaYeEventImg.transform.position = baYeEventsObj.transform.GetChild(eventIndex).transform.position;
-        chooseBaYeEventImg.SetActive(true);
-        baYeEventChooseIndex = warId;
-        print(warId);
-    }
-
-    //获取霸业城池的战役id
-    private int GetChooseEventsWarId(int eventIndex)
-    {
-        string[] eventsStr = LoadJsonFile.baYeDiTuTableDatas[eventIndex][2].Split(',');
-        List<int> shiJianIdList = new List<int>();
-        for (int i = 0; i < eventsStr.Length; i++)
-        {
-            if (eventsStr[i] != "")
-            {
-                shiJianIdList.Add(int.Parse(eventsStr[i]));
-            }
-        }
-        //得到随机的霸业事件id
-        int baYeBattleId = int.Parse(LoadJsonFile.baYeShiJianTableDatas[BackShiJianIdByWeightValue(shiJianIdList)][3]);
-        return int.Parse(LoadJsonFile.baYeBattleTableDatas[baYeBattleId][int.Parse(LoadJsonFile.playerLevelTableDatas[PlayerDataForGame.instance.pyData.level - 1][9]) + 1]);
-    }
-
-    //根据权重得到随机id
-    private int BackShiJianIdByWeightValue(List<int> datas)
-    {
-        int weightValueSum = 0;
-        for (int i = 0; i < datas.Count; i++)
-        {
-            weightValueSum += int.Parse(LoadJsonFile.baYeShiJianTableDatas[datas[i]][1]);
-        }
-        int randNum = UnityEngine.Random.Range(0, weightValueSum);
-        int indexTest = 0;
-        while (randNum >= 0)
-        {
-            randNum -= int.Parse(LoadJsonFile.baYeShiJianTableDatas[datas[indexTest]][1]);
-            indexTest++;
-        }
-        indexTest -= 1;
-        return datas[indexTest];
-    }
-
-    //main场景羁绊内容的初始化
+    //main场景羁绊内容的初始化 
     private void InitJiBanForMainFun()
     {
-        for (int i = 0; i < LoadJsonFile.jiBanTableDatas.Count; i++)
+        foreach (var jiBan in DataTable.JiBan.Values)
         {
-            if (LoadJsonFile.jiBanTableDatas[i][2] == "1")
+            if (jiBan.IsOpen == 0) continue;
+            Transform tran = jibanBtnBoxTran.GetChild(jiBan.Id);
+            if (tran != null)
             {
-                Transform tran = jibanBtnBoxTran.GetChild(i);
-                if (tran != null)
-                {
-                    int index = i;
-                    tran.GetChild(0).GetChild(0).GetComponent<Image>().sprite = Resources.Load("Image/JiBan/name_v/" + i, typeof(Sprite)) as Sprite;
-                    tran.GetChild(0).GetChild(0).GetComponent<Button>().onClick.AddListener(delegate() {
-                        ShowJiBanInfoOnClick(index);
-                    });
-                    tran.gameObject.SetActive(true);
-                }
+                tran.GetChild(0).GetChild(0).GetComponent<Image>().sprite =
+                    Resources.Load("Image/JiBan/name_v/" + jiBan.Id, typeof(Sprite)) as Sprite;
+                tran.GetChild(0).GetChild(0).GetComponent<Button>().onClick.AddListener(() =>
+                    ShowJiBanInfoOnClick(jiBan.Id));
+                tran.gameObject.SetActive(true);
             }
         }
         jiBanWinCloseBtn.onClick.AddListener(CloseHuiJuanWinObjFun);
     }
 
-    //点击单个羁绊按钮展示详细信息
+    //点击单个羁绊按钮展示详细信息 
     private void ShowJiBanInfoOnClick(int indexId)
     {
         for (int i = 0; i < jibanHeroBoxTran.childCount; i++)
@@ -379,40 +485,42 @@ public class UIManager : MonoBehaviour
             jibanHeroBoxTran.transform.GetChild(i).gameObject.SetActive(false);
         }
 
-        string[] arrs = LoadJsonFile.jiBanTableDatas[indexId][3].Split(';');
-        for (int i = 0; i < arrs.Length; i++)
+        var jiBan = DataTable.JiBan[indexId];
+        for (int i = 0; i < jiBan.Cards.Length; i++)
         {
-            if (arrs[i] != "")
+            var card = jiBan.Cards[i];
+            var heroType = (int) GameCardType.Hero;
+            if (card.CardType == heroType)
             {
-                string[] arr = arrs[i].Split(',');
-                if (arr[0] == "0")
-                {
-                    int heroId = int.Parse(arr[1]);
-                    Transform tran = jibanHeroBoxTran.GetChild(i);
-                    GameObject obj = tran.GetChild(0).gameObject;
-                    //名字
-                    ShowNameTextRules(obj.transform.GetChild(2).GetComponent<Text>(), LoadJsonFile.heroTableDatas[heroId][1]);
-                    //名字颜色根据稀有度
-                    obj.transform.GetChild(2).GetComponent<Text>().color = NameColorChoose(LoadJsonFile.heroTableDatas[heroId][3]);
-                    //卡牌
-                    obj.transform.GetChild(1).GetComponent<Image>().sprite = Resources.Load("Image/Cards/Hero/" + LoadJsonFile.heroTableDatas[heroId][16], typeof(Sprite)) as Sprite;
-                    //兵种名
-                    obj.transform.GetChild(4).GetComponentInChildren<Text>().text = LoadJsonFile.classTableDatas[int.Parse(LoadJsonFile.heroTableDatas[heroId][5])][3];
-                    //兵种框
-                    obj.transform.GetChild(4).GetComponent<Image>().sprite = Resources.Load("Image/classImage/" + 0, typeof(Sprite)) as Sprite;
-                    tran.gameObject.SetActive(true);
-                }
+                var hero = DataTable.Hero[card.CardId];
+                Transform tran = jibanHeroBoxTran.GetChild(i);
+                GameObject obj = tran.GetChild(0).gameObject;
+                //名字 
+                ShowNameTextRules(obj.transform.GetChild(2).GetComponent<Text>(), hero.Name);
+                //名字颜色根据稀有度 
+                obj.transform.GetChild(2).GetComponent<Text>().color = NameColorChoose(hero.Rarity);
+                //卡牌 
+                obj.transform.GetChild(1).GetComponent<Image>().sprite =
+                    GameResources.HeroImg[hero.Id];
+                //兵种名 
+                obj.transform.GetChild(4).GetComponentInChildren<Text>().text =
+                    DataTable.Military[hero.MilitaryUnitTableId].Short;
+                //兵种框 
+                obj.transform.GetChild(4).GetComponent<Image>().sprite = GameResources.ClassImg[0];
+                tran.gameObject.SetActive(true);
             }
         }
+
         jiBanInfoConObj.transform.GetChild(0).GetComponent<Image>().sprite = Resources.Load("Image/JiBan/art/" + indexId, typeof(Sprite)) as Sprite;
-        jiBanInfoConObj.transform.GetChild(0).GetChild(0).GetComponent<Text>().text = LoadJsonFile.jiBanTableDatas[indexId][4];
+        jiBanInfoConObj.transform.GetChild(0).GetChild(0).GetComponent<Text>().text = DataTable.JiBan[indexId].JiBanEffect;
         jiBanInfoConObj.transform.GetChild(0).GetChild(1).GetChild(0).GetComponent<Image>().sprite = Resources.Load("Image/JiBan/name_h/" + indexId, typeof(Sprite)) as Sprite;
 
 
         jiBanBtnsConObj.SetActive(false);
         jiBanInfoConObj.SetActive(true);
         jiBanWinCloseBtn.onClick.RemoveAllListeners();
-        jiBanWinCloseBtn.onClick.AddListener(delegate() {
+        jiBanWinCloseBtn.onClick.AddListener(delegate ()
+        {
             jiBanInfoConObj.SetActive(false);
             jiBanBtnsConObj.SetActive(true);
             jiBanWinCloseBtn.onClick.RemoveAllListeners();
@@ -420,18 +528,18 @@ public class UIManager : MonoBehaviour
         });
     }
 
-    /// <summary>
-    /// 打开绘卷界面
-    /// </summary>
+    /// <summary> 
+    /// 打开绘卷界面 
+    /// </summary> 
     public void OpenHuiJuanWinObjFun()
     {
         jiBanBtnsConObj.SetActive(true);
         huiJuanWinObj.SetActive(true);
     }
 
-    /// <summary>
-    /// 关闭绘卷界面
-    /// </summary>
+    /// <summary> 
+    /// 关闭绘卷界面 
+    /// </summary> 
     private void CloseHuiJuanWinObjFun()
     {
         huiJuanWinObj.SetActive(false);
@@ -439,7 +547,7 @@ public class UIManager : MonoBehaviour
         jiBanInfoConObj.SetActive(false);
     }
 
-    //获取战役返还的体力
+    //获取战役返还的体力 
     private void GetBackTiLiForFight()
     {
         if (PlayerDataForGame.instance.lastSenceIndex == 2 && PlayerDataForGame.instance.getBackTiLiNums > 0)
@@ -448,387 +556,94 @@ public class UIManager : MonoBehaviour
             cutTiLiTextObj.GetComponent<Text>().color = ColorDataStatic.deep_green;
             cutTiLiTextObj.GetComponent<Text>().text = "+" + PlayerDataForGame.instance.getBackTiLiNums;
             cutTiLiTextObj.SetActive(true);
-            AddTiLiNums(PlayerDataForGame.instance.getBackTiLiNums);
-            PlayerDataForGame.instance.ShowStringTips(string.Format(LoadJsonFile.GetStringText(25), PlayerDataForGame.instance.getBackTiLiNums));
+            AddStamina(PlayerDataForGame.instance.getBackTiLiNums);
+            PlayerDataForGame.instance.ShowStringTips(string.Format(DataTable.GetStringText(25), PlayerDataForGame.instance.getBackTiLiNums));
         }
         PlayerDataForGame.instance.lastSenceIndex = 1;
         PlayerDataForGame.instance.getBackTiLiNums = 0;
     }
 
-    //初始化战役难度
-    private void InitWarDifBtnShow()
+    public void GetBaYeProgressReward(int index)
     {
-        int indexLastDifCanChoose = 0;
-        //新手-困难关卡入口初始化
-        for (int i = 0; i < 5; i++)
+        var baYe = PlayerDataForGame.instance.warsData.baYe;
+        if (baYe.CurrentExp < DataTable.BaYeTask[index].Exp)
         {
-            int index = i;
-            chonseWarDifTran.GetChild(i).gameObject.SetActive(true);
-            chonseWarDifTran.GetChild(i).GetComponentInChildren<Text>().text = LoadJsonFile.choseWarTableDatas[i][1];
-            int unlockWarId = int.Parse(LoadJsonFile.choseWarTableDatas[i][3]);
-            if (unlockWarId == 0 || PlayerDataForGame.instance.warsData.warUnlockSaveData[unlockWarId].unLockCount >= int.Parse(LoadJsonFile.warTableDatas[unlockWarId][4]))
-            {
-                indexLastDifCanChoose = index;
-                chonseWarDifTran.GetChild(i).GetComponentInChildren<Text>().color = Color.white;
-                chonseWarDifTran.GetChild(i).GetComponent<Button>().onClick.AddListener(delegate ()
-                {
-                    InitWarsListInfo(index);
-                    PlayOnClickMusic();
-                });
-            }
-            else
-            {
-                chonseWarDifTran.GetChild(i).GetComponentInChildren<Text>().color = Color.gray;
-                chonseWarDifTran.GetChild(i).GetComponent<Button>().onClick.AddListener(delegate ()
-                {
-                    PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.choseWarTableDatas[index][5]);
-                    PlayOnClickMusic();
-                });
-                break;
-            }
-        }
-        InitWarsListInfo(indexLastDifCanChoose);
-
-        //远征关卡
-        int unlockWarId_Yz = int.Parse(LoadJsonFile.choseWarTableDatas[6][3]);
-        if (unlockWarId_Yz == 0 || PlayerDataForGame.instance.warsData.warUnlockSaveData[unlockWarId_Yz].unLockCount >= int.Parse(LoadJsonFile.warTableDatas[unlockWarId_Yz][4]))
-        {
-            chonseWarDifTran.GetChild(6).gameObject.SetActive(true);
-            chonseWarDifTran.GetChild(6).GetComponentInChildren<Text>().text = LoadJsonFile.choseWarTableDatas[6][1];
-            chonseWarDifTran.GetChild(6).GetComponentInChildren<Text>().color = Color.white;
-            chonseWarDifTran.GetChild(6).GetComponent<Button>().onClick.AddListener(delegate ()
-            {
-                InitWarsListInfo(6);
-                PlayOnClickMusic();
-            });
-        }
-
-        ////炼狱关卡
-        //int unlockWarId_Ly = int.Parse(LoadJsonFile.choseWarTableDatas[5][3]);
-        //if (unlockWarId_Ly == 0 || PlayerDataForGame.instance.warsData.warUnlockSaveData[unlockWarId_Ly].unLockCount >= int.Parse(LoadJsonFile.warTableDatas[unlockWarId_Ly][4]))
-        //{
-        //    chonseWarDifTran.GetChild(5).gameObject.SetActive(true);
-        //    //chonseWarDifTran.GetChild(5).GetComponentInChildren<Text>().text = LoadJsonFile.choseWarTableDatas[5][1];
-        //    chonseWarDifTran.GetChild(5).GetComponentInChildren<Text>().color = Color.white;
-        //    chonseWarDifTran.GetChild(5).GetComponent<Button>().onClick.AddListener(delegate ()
-        //    {
-        //        InitWarsListInfoOfLy(5);
-        //        PlayOnClickMusic();
-        //    });
-        //}
-    }
-
-    /// <summary>
-    /// 初始化炼狱关卡列表
-    /// </summary>
-    private void InitWarsListInfoOfLy(int indexBtn)
-    {
-        //防止跳转界面时切换关卡
-        if (isJumping)
+            PlayerDataForGame.instance.ShowStringTips("当前经验不足以领取！");
             return;
-
-        //右侧难度选择按钮刷新大小
-        for (int i = 0; i < chonseWarDifTran.childCount; i++)
-        {
-            if (indexBtn == i)
-            {
-                chonseWarDifTran.GetChild(i).transform.localScale = new Vector3(1.2f, 1.2f);
-            }
-            else
-            {
-                chonseWarDifTran.GetChild(i).transform.localScale = new Vector3(1f, 1f);
-            }
         }
-
-        tiLiCostIndex = indexBtn;
-
-        //删除战役列表
-        for (int i = 0; i < warsChooseListObj.transform.childCount; i++)
+        var btnIndex = index - 1;
+        baYeChestButtons[btnIndex].Opened();
+        var isOpen = baYe.openedChest[btnIndex];
+        if (isOpen)
         {
-            Destroy(warsChooseListObj.transform.GetChild(i).gameObject);
+            PlayerDataForGame.instance.ShowStringTips("该奖励已经领取了噢！");
+            return;
         }
-
-        int firstChooseWarId = -1;
-        GameObject lastObj = new GameObject();
-        PlayerDataForGame.garbageStationObjs.Add(lastObj);
-
-        //展示炼狱战役列表
-        for (int i = 5; i < LoadJsonFile.choseWarTableDatas.Count; i++)
-        {
-            int unlockWarId_Ly = int.Parse(LoadJsonFile.choseWarTableDatas[i][3]);
-            if (PlayerDataForGame.instance.warsData.warUnlockSaveData[unlockWarId_Ly].unLockCount >= int.Parse(LoadJsonFile.warTableDatas[unlockWarId_Ly][4]))
-            {
-                //具体炼狱关的始末关卡
-                int startId, endId;
-                string[] arr = LoadJsonFile.choseWarTableDatas[i][2].Split(',');
-                if (arr.Length != 2)
-                {
-                    continue;
-                }
-                startId = int.Parse(arr[0]);
-                endId = int.Parse(arr[1]);
-
-                int index = startId;
-                for (; index <= endId; index++)
-                {
-                    int specificId = index;
-                    //没有领过首通奖励
-                    if (!PlayerDataForGame.instance.warsData.warUnlockSaveData[specificId].isTakeReward)
-                    {
-                        //战役的起始关卡id
-                        int warIdIndex = PlayerDataForGame.instance.warsData.warUnlockSaveData[specificId].warId;
-                        //战役总关卡数
-                        int warTotalNums = int.Parse(LoadJsonFile.warTableDatas[warIdIndex][4]);
-                        //创建具体战役选择obj
-                        GameObject obj = Instantiate(warsChooseBtnPreObj, warsChooseListObj.transform);
-                        Transform box = obj.transform.GetChild(2);
-
-                        obj.GetComponentInChildren<Text>().text = LoadJsonFile.warTableDatas[warIdIndex][1] + "\u2000\u2000\u2000\u2000" + Mathf.Min(PlayerDataForGame.instance.warsData.warUnlockSaveData[specificId].unLockCount, warTotalNums) + "/" + warTotalNums;
-
-                        if (PlayerDataForGame.instance.warsData.warUnlockSaveData[specificId].unLockCount < warTotalNums)
-                        {
-                            if (firstChooseWarId==-1)
-                            {
-                                firstChooseWarId = specificId;
-                                lastObj = obj;
-                            }
-                            obj.GetComponent<Button>().onClick.AddListener(delegate ()
-                            {
-                                OnClickChangeWarsFun(warIdIndex, obj);
-                                PlayOnClickMusic();
-                            });
-                            break;
-                        }
-                        else
-                        {
-                            //首通宝箱可领取
-                            box.GetChild(1).gameObject.SetActive(false);
-                            box.GetChild(0).gameObject.SetActive(true);
-                            box.GetChild(0).GetComponent<Button>().onClick.AddListener(delegate ()
-                            {
-                                GetWarFirstRewards(specificId);
-                                box.gameObject.SetActive(false);
-                            });
-                        }
-                    }
-                }
-            }
-            else
-            {
-                continue;
-            }
-        }
-        OnClickChangeWarsFun(firstChooseWarId, lastObj);
-        warsChooseListObj.transform.parent.parent.GetComponent<ScrollRect>().DOVerticalNormalizedPos(0f, 0.3f);
+        var rewardId = DataTable.BaYeTask[index].WarChestTableId;
+        var chest = DataTable.WarChest[rewardId];
+        var exp = chest.Exp;
+        var yvQue = RewardManager.instance.GetRandomYvQue(rewardId);
+        var yuanBao = RewardManager.instance.GetRandomYuanBao(rewardId);
+        var cards = RewardManager.instance.GetCards(rewardId, false);
+        ConsumeManager.instance.AddYuQue(yvQue);
+        ConsumeManager.instance.AddYuanBao(yuanBao);
+        PlayerDataForGame.instance.warsData.baYe.openedChest[btnIndex] = true;
+        PlayerDataForGame.instance.isNeedSaveData = true;
+        LoadSaveData.instance.SaveGameData(3);
+        ShowRewardsThings(yuanBao, yvQue, exp, 0, cards, 0.5f);
+        AudioController0.instance.ForcePlayAudio(0);
     }
 
-    /// <summary>
-    /// 领取战役首通宝箱
-    /// </summary>
-    /// <param name="jb"></param>
-    private void GetWarFirstRewards(int jb)
+    /// <summary> 
+    /// 领取战役首通宝箱 
+    /// </summary> 
+    public void GetWarFirstRewards(int warId)
     {
-        int warId = PlayerDataForGame.instance.warsData.warUnlockSaveData[jb].warId;
-
-        int yuanBaoNums = int.Parse(LoadJsonFile.warTableDatas[warId][8]);
-        int yuQueNums = int.Parse(LoadJsonFile.warTableDatas[warId][9]);
-        int tiLiNums = int.Parse(LoadJsonFile.warTableDatas[warId][10]);
-        if (yuanBaoNums > 0)
+        var playerUnlockProgress = PlayerDataForGame.instance.warsData.warUnlockSaveData.Single(w => w.warId == warId);
+        if (playerUnlockProgress.isTakeReward) PlayerDataForGame.instance.ShowStringTips("首通宝箱已领取！");
+        var reward = DataTable.War[warId].AchievementReward;
+        if (reward != null)
         {
-            ConsumeManager.instance.AddYuanBao(yuanBaoNums);
+            if (reward.YuanBao > 0) ConsumeManager.instance.AddYuanBao(reward.YuanBao);
+            if (reward.YvQue > 0) ConsumeManager.instance.AddYuQue(reward.YvQue);
+            if (reward.Stamina > 0) AddStamina(reward.Stamina);
         }
-        if (yuQueNums > 0)
-        {
-            ConsumeManager.instance.AddYuQue(yuQueNums);
-        }
-        if (tiLiNums > 0)
-        {
-            AddTiLiNums(tiLiNums);
-        }
-        
-        string rewardsStr = LoadJsonFile.warTableDatas[warId][PlayerDataForGame.instance.pyData.forceId + 5];
+        else reward = new ConsumeResources();
 
-        List<RewardsCardClass> rewards = new List<RewardsCardClass>();
+        var card = DataTable.War[warId].AchievementCardProduce;
 
-        if (rewardsStr != "")
+        var cards = new List<RewardsCardClass>();
+
+        if (card != null)
         {
-            string[] arrs = rewardsStr.Split(',');
-            int cardType = int.Parse(arrs[0]);
-            int cardId = int.Parse(arrs[1]);
-            int cardChips = int.Parse(arrs[2]);
-
-            switch (cardType)
+            rewardManager.RewardCard((GameCardType)card.Type, card.CardId, card.Chips);
+            var rewardCard = new RewardsCardClass
             {
-                case 0:
-                    PlayerDataForGame.instance.hstData.heroSaveData[FindIndexFromData(PlayerDataForGame.instance.hstData.heroSaveData, cardId)].chips += cardChips;
-                    break;
-                case 2:
-                    PlayerDataForGame.instance.hstData.towerSaveData[FindIndexFromData(PlayerDataForGame.instance.hstData.towerSaveData, cardId)].chips += cardChips;
-                    break;
-                case 3:
-                    PlayerDataForGame.instance.hstData.trapSaveData[FindIndexFromData(PlayerDataForGame.instance.hstData.trapSaveData, cardId)].chips += cardChips;
-                    break;
-                default:
-                    break;
-            }
-            RewardsCardClass rewardCard = new RewardsCardClass();
-            rewardCard.cardType = cardType;
-            rewardCard.cardId = cardId;
-            rewardCard.cardChips = cardChips;
-            rewards.Add(rewardCard);
+                cardType = card.Type, cardId = card.CardId, cardChips = card.Chips
+            };
+            cards.Add(rewardCard);
             PlayerDataForGame.instance.isNeedSaveData = true;
             LoadSaveData.instance.SaveGameData(2);
         }
 
-        PlayerDataForGame.instance.warsData.warUnlockSaveData[jb].isTakeReward = true;
+        playerUnlockProgress.isTakeReward = true;
         PlayerDataForGame.instance.isNeedSaveData = true;
         LoadSaveData.instance.SaveGameData(3);
 
-        ShowRewardsThings(yuanBaoNums, yuQueNums, 0, tiLiNums, rewards, 0);
-    }
-
-    /// <summary>
-    /// 选择难度按钮以改变战役列表
-    /// </summary>
-    private void InitWarsListInfo(int indexBtn)
-    {
-        //防止跳转界面时切换关卡
-        if (isJumping)
-            return;
-
-        //右侧难度选择按钮刷新大小
-        for (int i = 0; i < chonseWarDifTran.childCount; i++)
-        {
-            if (indexBtn == i)
-            {
-                chonseWarDifTran.GetChild(i).transform.localScale = new Vector3(1.2f, 1.2f);
-            }
-            else
-            {
-                chonseWarDifTran.GetChild(i).transform.localScale = new Vector3(1f, 1f);
-            }
-        }
-
-        tiLiCostIndex = indexBtn;
-
-        //删除战役列表
-        for (int i = 0; i < warsChooseListObj.transform.childCount; i++)
-        {
-            Destroy(warsChooseListObj.transform.GetChild(i).gameObject);
-        }
-
-        int startId, endId;
-
-        switch (indexBtn)
-        {
-            //远征特殊
-            case 6:
-                startId = endId = int.Parse(LoadJsonFile.playerLevelTableDatas[PlayerDataForGame.instance.pyData.level - 1][5]);
-                break;
-            //炼狱特殊
-            //case 5:
-
-            //    break;
-            default:
-                string[] arr = LoadJsonFile.choseWarTableDatas[indexBtn][2].Split(',');
-                if (arr.Length != 2)
-                {
-                    return;
-                }
-                startId = int.Parse(arr[0]);
-                endId = int.Parse(arr[1]);
-                break;
-        }
-
-        int index = startId;
-        GameObject lastObj = new GameObject();
-        PlayerDataForGame.garbageStationObjs.Add(lastObj);
-
-        for (; index <= endId; index++)
-        {
-            int jb = index; //delegate特需临时变量
-            int warIdIndex = PlayerDataForGame.instance.warsData.warUnlockSaveData[jb].warId;
-            GameObject obj = Instantiate(warsChooseBtnPreObj, warsChooseListObj.transform);
-            Transform box = obj.transform.GetChild(2);
-            int warTotalNums = int.Parse(LoadJsonFile.warTableDatas[warIdIndex][4]);
-            if (PlayerDataForGame.instance.warsData.warUnlockSaveData[jb].isTakeReward)
-            {
-                box.gameObject.SetActive(false);
-            }
-            else
-            {
-                if (PlayerDataForGame.instance.warsData.warUnlockSaveData[jb].unLockCount >= warTotalNums)
-                {
-                    box.GetChild(1).gameObject.SetActive(false);
-                    box.GetChild(0).gameObject.SetActive(true);
-                    box.GetChild(0).GetComponent<Button>().onClick.AddListener(delegate ()
-                    {
-                        GetWarFirstRewards(jb);
-                        box.gameObject.SetActive(false);
-                    });
-                }
-                else
-                {
-                    box.GetChild(0).GetComponent<Button>().onClick.AddListener(delegate ()
-                    {
-                        PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(26));
-                    });
-                }
-            }
-            //战役列拼接
-            obj.GetComponentInChildren<Text>().text = LoadJsonFile.warTableDatas[warIdIndex][1] + "\u2000\u2000\u2000\u2000"
-                + Mathf.Min(PlayerDataForGame.instance.warsData.warUnlockSaveData[jb].unLockCount, warTotalNums) + "/" + warTotalNums;
-            obj.GetComponent<Button>().onClick.AddListener(delegate ()
-            {
-                OnClickChangeWarsFun(warIdIndex, obj);
-
-                PlayOnClickMusic();
-
-            });
-            lastObj = obj;
-            if (PlayerDataForGame.instance.warsData.warUnlockSaveData[jb].unLockCount >=
-                int.Parse(LoadJsonFile.warTableDatas[warIdIndex][4]))
-            { }
-            else
-            {
-                break;
-            }
-        }
-        //默认选择最后一个关卡
-        OnClickChangeWarsFun(PlayerDataForGame.instance.warsData.warUnlockSaveData[index > endId ? endId : index].warId, lastObj);
-        warsChooseListObj.transform.parent.parent.GetComponent<ScrollRect>().DOVerticalNormalizedPos(0f, 0.3f);
-    }
-
-    //选择战役的改变
-    private void OnClickChangeWarsFun(int warsId, GameObject obj)
-    {
-        for (int i = 0; i < warsChooseListObj.transform.childCount; i++)
-        {
-            warsChooseListObj.transform.GetChild(i).GetComponentInChildren<Image>().enabled = false;
-        }
-        //选中状态显示
-        obj.GetComponentInChildren<Image>().enabled = true;
-
-        PlayerDataForGame.instance.zhanYiColdNums = 10;
-        PlayerDataForGame.instance.chooseWarsId = warsId;
-        //战役介绍
-        warIntroText.DOPause();
-        warIntroText.text = "";
-        warIntroText.color = new Color(warIntroText.color.r, warIntroText.color.g, warIntroText.color.b, 0);
-        warIntroText.DOFade(1, 3f);
-        warIntroText.DOText(("\u2000\u2000\u2000\u2000" + LoadJsonFile.warTableDatas[warsId][2]), 3f).SetEase(Ease.Linear).SetAutoKill(false);
+        ShowRewardsThings(reward.YuanBao, reward.YvQue, 0, reward.Stamina, cards, 0);
     }
 
     int showTiLiNums = 0;
 
-    //刷新体力相关的内容显示
+    //刷新体力相关的内容显示 
     public void UpdateShowTiLiInfo(string recordStr)
     {
         if (recordStr != tiLiRecordTimer.text)
         {
             tiLiRecordTimer.text = recordStr;
         }
-        int nowStaminaNums = PlayerPrefs.GetInt(TimeSystemControl.staminaStr);
+
+        int nowStaminaNums = PlayerDataForGame.instance.pyData.Stamina;
         if (showTiLiNums != nowStaminaNums)
         {
             showTiLiNums = nowStaminaNums;
@@ -836,40 +651,54 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// 开始对战
-    /// </summary>
-    public void OnClickStartWars()
+    /// <summary> 
+    /// 开始对战 
+    /// </summary> 
+    [SkipRename]public void OnClickStartExpedition()
     {
-        if (!isJumping)
+        if (PlayerDataForGame.instance.selectedWarId < 0 || expedition.RecordedExpeditionWarId < 0)
         {
-            string[] tiLiCostArr = LoadJsonFile.choseWarTableDatas[tiLiCostIndex][4].Split(',');
-            int cutStaminaNums = int.Parse(tiLiCostArr[0]);
-            if (PlayerPrefs.GetInt(TimeSystemControl.staminaStr) >= cutStaminaNums)
+            PlayerDataForGame.instance.ShowStringTips("请选择战役！");
+            PlayOnClickMusic();
+            return;
+        }
+
+        if (expedition.warForceSelectorUi.Data.Values.All(ui => !ui.Selected))
+        {
+            PlayerDataForGame.instance.ShowStringTips("请选择军团！");
+            PlayOnClickMusic();
+            return;
+        }
+        PlayerDataForGame.instance.WarType = PlayerDataForGame.WarTypes.Expedition;
+        if (!IsJumping)
+        {
+            var staminaMap = expedition.SelectedWarStaminaCost;
+            int staminaCost = staminaMap.Cost;
+            if (PlayerDataForGame.instance.pyData.Stamina >= staminaCost)
             {
                 ShowOrHideGuideObj(3, false);
-                isJumping = true;
-                AudioController0.instance.ChangeAudioClip(AudioController0.instance.audioClips[12], AudioController0.instance.audioVolumes[12]);
+                IsJumping = true;
+                AudioController0.instance.ChangeAudioClip(12);
                 AudioController0.instance.PlayAudioSource(0);
-                TimeSystemControl.instance.LetTiLiTimerTake(cutStaminaNums);
-                PlayerPrefs.SetInt(TimeSystemControl.staminaStr, (PlayerPrefs.GetInt(TimeSystemControl.staminaStr) - cutStaminaNums));
-                showTiLiNums = PlayerPrefs.GetInt(TimeSystemControl.staminaStr);
+                TimeSystemControl.instance.LetTiLiTimerTake(staminaCost);
+                PlayerDataForGame.instance.AddStamina(-staminaCost);
+                showTiLiNums = PlayerDataForGame.instance.pyData.Stamina;
                 tiLiNumText.text = showTiLiNums + "/90";
                 cutTiLiTextObj.SetActive(false);
                 cutTiLiTextObj.GetComponent<Text>().color = ColorDataStatic.name_red;
-                cutTiLiTextObj.GetComponent<Text>().text = "-"+ cutStaminaNums;
+                cutTiLiTextObj.GetComponent<Text>().text = "-" + staminaCost;
                 cutTiLiTextObj.SetActive(true);
 
-                PlayerDataForGame.instance.getBackTiLiNums = int.Parse(tiLiCostArr[1]);
-                PlayerDataForGame.instance.boxForTiLiNums = int.Parse(tiLiCostArr[2]);
+                PlayerDataForGame.instance.getBackTiLiNums = staminaMap.MaxReturn;
+                PlayerDataForGame.instance.boxForTiLiNums = staminaMap.CostOfChest;
 
                 StartCoroutine(LateGoToFightScene());
             }
             else
             {
                 PlayOnClickMusic();
-                PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(27));
-                //Debug.Log("体力不足，无法战斗");
+                PlayerDataForGame.instance.ShowStringTips(DataTable.GetStringText(27));
+                //Debug.Log("体力不足，无法战斗"); 
             }
         }
         else
@@ -887,14 +716,14 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    //刷新上阵数量的显示
+    //刷新上阵数量的显示 
     private void UpdateCardNumsShow()
     {
         cardsListTitle.text = "出战";
-        cardsNumsTitle.text = PlayerDataForGame.instance.CalculationFightCount() + "/" + LoadJsonFile.playerLevelTableDatas[PlayerDataForGame.instance.pyData.level - 1][2];
+        cardsNumsTitle.text = PlayerDataForGame.instance.TotalCardsEnlisted + "/" + DataTable.PlayerLevelConfig[PlayerDataForGame.instance.pyData.Level].CardLimit;
     }
 
-    //是否展示卡牌详情显示
+    //是否展示卡牌详情显示 
     private void ShowOrHideInfo(bool isShow)
     {
         showCardObj.SetActive(isShow);
@@ -904,17 +733,17 @@ public class UIManager : MonoBehaviour
         sellCardBtn.SetActive(isShow);
     }
 
-    public int indexChooseListForceId = 0; //标记主城展示哪个势力的id
+    public int indexChooseListForceId = 0; //标记主城展示哪个势力的id 
 
-    /// <summary>
-    /// 改变武将列表和辅助列表显示
-    /// </summary>
+    /// <summary> 
+    /// 改变武将列表和辅助列表显示 
+    /// </summary> 
     public void ChangeScrollView()
     {
-        AudioController0.instance.RandomPlayGuZhengAudio();
+        AudioController0.instance.RandomPlayGuZhengAudio();//播放随机音效 
 
         indexChooseListForceId++;
-        if (indexChooseListForceId > int.Parse(LoadJsonFile.playerLevelTableDatas[PlayerDataForGame.instance.pyData.level - 1][6]))
+        if (indexChooseListForceId > DataTable.PlayerLevelConfig[PlayerDataForGame.instance.pyData.Level].UnlockForces)
         {
             indexChooseListForceId = 0;
         }
@@ -922,17 +751,17 @@ public class UIManager : MonoBehaviour
         changeCardsListNameImg.sprite = Resources.Load("Image/shiLi/Name/" + indexChooseListForceId, typeof(Sprite)) as Sprite;
         CreateHeroAndTowerContent();
         UpdateCardNumsShow();
-        StartCoroutine(LiteToChangeViewShow(0));
+        StartCoroutine(LateToChangeViewShow(0));
     }
 
-    /// <summary>
-    /// 延时刷新列表置顶
-    /// </summary>
-    IEnumerator LiteToChangeViewShow(float startTime)
+    /// <summary> 
+    /// 延时刷新列表置顶 
+    /// </summary> 
+    IEnumerator LateToChangeViewShow(float startTime)
     {
         yield return new WaitForSeconds(startTime);
 
-        //Debug.Log("----列表大小控制");
+        //Debug.Log("----列表大小控制"); 
 
         int showCardCount = 0;
         for (int i = 0; i < zhuChengHeroContentObj.transform.childCount; i++)
@@ -941,7 +770,7 @@ public class UIManager : MonoBehaviour
                 showCardCount++;
         }
 
-        //列表大小控制
+        //列表大小控制 
         if (showCardCount >= 16)
         {
             zhuChengHeroContentObj.GetComponent<ContentSizeFitter>().verticalFit = ContentSizeFitter.FitMode.MinSize;
@@ -949,54 +778,55 @@ public class UIManager : MonoBehaviour
         else
         {
             zhuChengHeroContentObj.GetComponent<ContentSizeFitter>().verticalFit = ContentSizeFitter.FitMode.Unconstrained;
-            //zhuChengHeroContentObj.GetComponent<RectTransform>().anchorMin = new Vector2(0, 0);
-            //zhuChengHeroContentObj.GetComponent<RectTransform>().anchorMax = new Vector2(1, 1);
+            //zhuChengHeroContentObj.GetComponent<RectTransform>().anchorMin = new Vector2(0, 0); 
+            //zhuChengHeroContentObj.GetComponent<RectTransform>().anchorMax = new Vector2(1, 1); 
             zhuChengHeroContentObj.GetComponent<RectTransform>().offsetMin = new Vector2(0, 0);
             zhuChengHeroContentObj.GetComponent<RectTransform>().offsetMax = new Vector2(1, 1);
         }
         zhuChengHeroContentObj.transform.parent.parent.GetComponent<ScrollRect>().DOVerticalNormalizedPos(1f, 0.2f);
-        //zhuChengHeroContentObj.transform.parent.parent.GetComponent<ScrollRect>().content.localPosition = Vector2.left;
+        //zhuChengHeroContentObj.transform.parent.parent.GetComponent<ScrollRect>().listView.localPosition = Vector2.left; 
     }
 
-    /// <summary>
-    /// 显示单个辅助
-    /// </summary>
-    private void ShowOneFuZhuRules(List<List<string>> jsonDatas, NowLevelAndHadChip fuzhuData, int indexIcon)
+    /// <summary> 
+    /// 显示单个辅助 
+    /// </summary> 
+    private void ShowOneFuZhuRules(NowLevelAndHadChip card)
     {
-        GameObject obj = GetHeroCardToShow();
-        //名字
-        ShowNameTextRules(obj.transform.GetChild(3).GetComponent<Text>(), jsonDatas[fuzhuData.id][1]);
-        //名字颜色根据稀有度
-        obj.transform.GetChild(3).GetComponent<Text>().color = NameColorChoose(jsonDatas[fuzhuData.id][3]);
-        //卡牌
-        obj.transform.GetChild(1).GetComponent<Image>().sprite = Resources.Load("Image/Cards/FuZhu/" + jsonDatas[fuzhuData.id][indexIcon], typeof(Sprite)) as Sprite;
-        //兵种框
-        obj.transform.GetChild(5).GetComponent<Image>().sprite = Resources.Load("Image/classImage/" + 1, typeof(Sprite)) as Sprite;
-        //兵种名
-        obj.transform.GetChild(5).GetComponentInChildren<Text>().text = jsonDatas[fuzhuData.id][5];
-        //边框
-        FrameChoose(jsonDatas[fuzhuData.id][3], obj.transform.GetChild(6).GetComponent<Image>());
-        //碎片
-        if (fuzhuData.level < LoadJsonFile.upGradeTableDatas.Count)
+        var info = card.GetInfo();
+        GameObject obj = GetHeroCardFromPool();
+        //名字 
+        ShowNameTextRules(obj.transform.GetChild(3).GetComponent<Text>(), info.Name);
+        //名字颜色根据稀有度 
+        obj.transform.GetChild(3).GetComponent<Text>().color = NameColorChoose(info.Rare);
+        //卡牌 
+        obj.transform.GetChild(1).GetComponent<Image>().sprite = GameResources.FuZhuImg[info.ImageId];
+        //兵种框 
+        obj.transform.GetChild(5).GetComponent<Image>().sprite = GameResources.ClassImg[1];
+        //兵种名 
+        obj.transform.GetChild(5).GetComponentInChildren<Text>().text = info.Short;
+        //边框 
+        FrameChoose(info.Rare, obj.transform.GetChild(6).GetComponent<Image>());
+        //碎片 
+        if (card.level < DataTable.CardLevel.Keys.Max())
         {
-            obj.transform.GetChild(2).GetComponent<Text>().text = fuzhuData.chips + "/" + LoadJsonFile.upGradeTableDatas[fuzhuData.level][1];
-            obj.transform.GetChild(2).GetComponent<Text>().color = fuzhuData.chips >= int.Parse(LoadJsonFile.upGradeTableDatas[fuzhuData.level][1]) ? ColorDataStatic.deep_green : Color.black;
-
+            var consume = DataTable.CardLevel[card.level + 1].ChipsConsume;
+            obj.transform.GetChild(2).GetComponent<Text>().text = card.chips + "/" + consume;
+            obj.transform.GetChild(2).GetComponent<Text>().color = card.chips >= consume ? ColorDataStatic.deep_green : Color.white;
         }
         else
         {
             obj.transform.GetChild(2).GetComponent<Text>().text = "";
         }
-        if (fuzhuData.level > 0)
+        if (card.level > 0)
         {
             obj.transform.GetChild(4).GetComponent<Image>().enabled = true;
-            //设置星级展示
-            obj.transform.GetChild(4).GetComponent<Image>().sprite = Resources.Load("Image/gradeImage/" + fuzhuData.level, typeof(Sprite)) as Sprite;
+            //设置星级展示 
+            obj.transform.GetChild(4).GetComponent<Image>().sprite = GameResources.GradeImg[card.level];
             obj.transform.GetChild(8).gameObject.SetActive(false);
-            //出战标记
-            if (fuzhuData.isFight > 0)
+            //出战标记 
+            if (card.isFight > 0)
             {
-                PlayerDataForGame.instance.AddOrCutFightCardId(fuzhuData.typeIndex, fuzhuData.id, true);
+                PlayerDataForGame.instance.EnlistCard(card, true);
                 obj.transform.GetChild(7).gameObject.SetActive(true);
             }
             else
@@ -1013,75 +843,76 @@ public class UIManager : MonoBehaviour
         obj.GetComponent<Button>().onClick.RemoveAllListeners();
         obj.GetComponent<Button>().onClick.AddListener(delegate ()
         {
-            OnClickFuZhuCardFun(jsonDatas, fuzhuData, obj.transform.GetChild(9).GetComponent<Image>(), indexIcon);
+            OnClickFuZhuCardFun(info, card, obj.transform.GetChild(9).GetComponent<Image>());
         });
     }
 
-    /// <summary>
-    /// 点击辅助卡牌的方法
-    /// </summary>
-    /// <param name="fuzhuData"></param>
-    private void OnClickFuZhuCardFun(List<List<string>> jsonDatas, NowLevelAndHadChip fuzhuData, Image selectImg, int indexIcon)
+    /// <summary> 
+    /// 点击辅助卡牌的方法 
+    /// </summary> 
+    private void OnClickFuZhuCardFun(GameCardInfo info,NowLevelAndHadChip card, Image selectImg)
     {
         PlayOnClickMusic();
 
-        //名字
-        infoTran.GetChild(0).GetComponent<Text>().text = jsonDatas[fuzhuData.id][1];
-        //名字颜色
-        infoTran.GetChild(0).GetComponent<Text>().color = NameColorChoose(jsonDatas[fuzhuData.id][3]);
-        //属性 为空
+        //名字 
+        infoTran.GetChild(0).GetComponent<Text>().text = info.Name;
+        //名字颜色 
+        infoTran.GetChild(0).GetComponent<Text>().color = NameColorChoose(info.Rare);
+        //属性 为空 
         infoTran.GetChild(1).GetComponent<Text>().text = "";
         infoTran.GetChild(2).GetComponent<Text>().text = "";
-        //介绍
-        infoTran.GetChild(3).GetComponent<Text>().text = jsonDatas[fuzhuData.id][2];
-        //名字
-        ShowNameTextRules(showCardObj.transform.GetChild(3).GetComponent<Text>(), jsonDatas[fuzhuData.id][1]);
-        //名字颜色
-        showCardObj.transform.GetChild(3).GetComponent<Text>().color = NameColorChoose(jsonDatas[fuzhuData.id][3]);
-        //卡牌
-        showCardObj.transform.GetChild(1).GetComponent<Image>().sprite = Resources.Load("Image/Cards/FuZhu/" + jsonDatas[fuzhuData.id][indexIcon], typeof(Sprite)) as Sprite;
-        //兵种框
-        showCardObj.transform.GetChild(5).GetComponent<Image>().sprite = Resources.Load("Image/classImage/" + 1, typeof(Sprite)) as Sprite;
-        //兵种名
-        showCardObj.transform.GetChild(5).GetComponentInChildren<Text>().text = jsonDatas[fuzhuData.id][5];
-        //边框
-        FrameChoose(jsonDatas[fuzhuData.id][3], showCardObj.transform.GetChild(6).GetComponent<Image>());
-        //碎片
-        if (fuzhuData.level < LoadJsonFile.upGradeTableDatas.Count)
+        //介绍 
+        infoTran.GetChild(3).GetComponent<Text>().text = info.Intro;
+        //名字 
+        ShowNameTextRules(showCardObj.transform.GetChild(3).GetComponent<Text>(), info.Name);
+        //名字颜色 
+        showCardObj.transform.GetChild(3).GetComponent<Text>().color = NameColorChoose(info.Rare);
+        //卡牌 
+        showCardObj.transform.GetChild(1).GetComponent<Image>().sprite = GameResources.FuZhuImg[info.ImageId];
+        //兵种框 
+        showCardObj.transform.GetChild(5).GetComponent<Image>().sprite = GameResources.ClassImg[1];
+        //兵种名 
+        showCardObj.transform.GetChild(5).GetComponentInChildren<Text>().text = info.Short;
+        //边框 
+        FrameChoose(info.Rare, showCardObj.transform.GetChild(6).GetComponent<Image>());
+        //碎片 
+        if (card.level < DataTable.CardLevel.Keys.Max())
         {
-            showCardObj.transform.GetChild(2).GetComponent<Text>().text = fuzhuData.chips + "/" + LoadJsonFile.upGradeTableDatas[fuzhuData.level][1];
-            showCardObj.transform.GetChild(2).GetComponent<Text>().color = fuzhuData.chips >= int.Parse(LoadJsonFile.upGradeTableDatas[fuzhuData.level][1]) ? ColorDataStatic.deep_green : Color.black;
+            var consume = DataTable.CardLevel[card.level + 1].ChipsConsume;
+            showCardObj.transform.GetChild(2).GetComponent<Text>().text = card.chips + "/" + consume;
+            showCardObj.transform.GetChild(2).GetComponent<Text>().color =
+                card.chips >= consume ? ColorDataStatic.deep_green : Color.black;
         }
         else
         {
             showCardObj.transform.GetChild(2).GetComponent<Text>().text = "";
         }
 
-        int getGoldNums = GetGoldNumsForSellCard(fuzhuData);
-        sellCardBtn.transform.GetChild(0).GetComponent<Text>().text = getGoldNums.ToString();
+        int goldPrice = GetGoldPrice(card);
+        sellCardBtn.transform.GetChild(0).GetComponent<Text>().text = goldPrice.ToString();
         sellCardBtn.GetComponent<Button>().onClick.RemoveAllListeners();
         sellCardBtn.GetComponent<Button>().onClick.AddListener(delegate ()
         {
-            OnClickForSellCard(fuzhuData, getGoldNums);
+            OnClickForSellCard(card, goldPrice);
         });
         sellCardBtn.SetActive(true);
 
-        if (fuzhuData.level > 0)
+        if (card.level > 0)
         {
             showCardObj.transform.GetChild(4).GetComponent<Image>().enabled = true;
-            //设置星级展示
-            showCardObj.transform.GetChild(4).GetComponent<Image>().sprite = Resources.Load("Image/gradeImage/" + fuzhuData.level, typeof(Sprite)) as Sprite;
-            //出战相关设置
+            //设置星级展示 
+            showCardObj.transform.GetChild(4).GetComponent<Image>().sprite = GameResources.GradeImg[card.level];
+            //出战相关设置 
             holdOrFightBtn.SetActive(true);
-            if (fuzhuData.isFight > 0)
+            if (card.isFight > 0)
             {
                 showCardObj.transform.GetChild(7).gameObject.SetActive(true);
-                holdOrFightBtn.GetComponentInChildren<Text>().text = LoadJsonFile.GetStringText(30);
+                holdOrFightBtn.GetComponentInChildren<Text>().text = DataTable.GetStringText(30);
             }
             else
             {
                 showCardObj.transform.GetChild(7).gameObject.SetActive(false);
-                holdOrFightBtn.GetComponentInChildren<Text>().text = LoadJsonFile.GetStringText(31);
+                holdOrFightBtn.GetComponentInChildren<Text>().text = DataTable.GetStringText(31);
             }
         }
         else
@@ -1090,7 +921,7 @@ public class UIManager : MonoBehaviour
             showCardObj.transform.GetChild(7).gameObject.SetActive(false);
             showCardObj.transform.GetChild(4).GetComponent<Image>().enabled = false;
         }
-        //选择框处理
+        //选择框处理 
         if (lastSelectImg != null)
         {
             lastSelectImg.enabled = false;
@@ -1098,14 +929,14 @@ public class UIManager : MonoBehaviour
         lastSelectImg = selectImg;
         lastSelectImg.enabled = true;
 
-        selectCardData = fuzhuData;
+        selectCardData = card;
 
-        CalculatedNeedYuanBao(fuzhuData.level);
+        CalculatedNeedYuanBao(card.level);
     }
 
-    /// <summary>
-    /// 创建并展示单位列表
-    /// </summary>
+    /// <summary> 
+    /// 创建并展示单位列表 
+    /// </summary> 
     private void CreateHeroAndTowerContent()
     {
         TakeBackHeroCardPooling();
@@ -1116,17 +947,17 @@ public class UIManager : MonoBehaviour
 
         int cardNums = 0;
 
-        SortHSTData(PlayerDataForGame.instance.hstData.heroSaveData);   //  排序
+        SortHSTData(PlayerDataForGame.instance.hstData.heroSaveData);   //  排序 
 
-        NowLevelAndHadChip heroDataIndex = new NowLevelAndHadChip();    //临时记录武将存档信息
+        NowLevelAndHadChip heroDataIndex = new NowLevelAndHadChip();    //临时记录武将存档信息 
         for (int i = 0; i < PlayerDataForGame.instance.hstData.heroSaveData.Count; i++)
         {
             heroDataIndex = PlayerDataForGame.instance.hstData.heroSaveData[i];
-            if (indexChooseListForceId==int.Parse(LoadJsonFile.heroTableDatas[heroDataIndex.id][6]))
+            if (indexChooseListForceId == DataTable.Hero[heroDataIndex.id].ForceTableId)
             {
                 if (heroDataIndex.level > 0 || heroDataIndex.chips > 0)
                 {
-                    if (heroDataIndex.isFight>0)
+                    if (heroDataIndex.isFight > 0)
                     {
                         PlayerDataForGame.instance.fightHeroId.Add(heroDataIndex.id);
                     }
@@ -1136,62 +967,41 @@ public class UIManager : MonoBehaviour
             }
         }
 
-        NowLevelAndHadChip fuzhuDataIndex = new NowLevelAndHadChip();
-        //排序
-        //SortHSTData(PlayerDataForGame.instance.hstData.soldierSaveData);
-        //for (int i = 0; i < PlayerDataForGame.instance.hstData.soldierSaveData.Count; i++)
-        //{
-        //    fuzhuDataIndex = PlayerDataForGame.instance.hstData.soldierSaveData[i];
-        //    if (fuzhuDataIndex.level > 0 || fuzhuDataIndex.chips > 0)
-        //    {
-        //        cardNums++;
-        //        ShowOneFuZhuRules(LoadJsonFile.soldierTableDatas, fuzhuDataIndex, 13);
-        //    }
-        //}
+        NowLevelAndHadChip card = new NowLevelAndHadChip();
         SortHSTData(PlayerDataForGame.instance.hstData.towerSaveData);
         for (int i = 0; i < PlayerDataForGame.instance.hstData.towerSaveData.Count; i++)
         {
-            fuzhuDataIndex = PlayerDataForGame.instance.hstData.towerSaveData[i];
-            if (indexChooseListForceId == int.Parse(LoadJsonFile.towerTableDatas[fuzhuDataIndex.id][15]))
+            card = PlayerDataForGame.instance.hstData.towerSaveData[i];
+            if (indexChooseListForceId == DataTable.Tower[card.id].ForceId)
             {
-                if (fuzhuDataIndex.level > 0 || fuzhuDataIndex.chips > 0)
+                if (card.level > 0 || card.chips > 0)
                 {
-                    if (fuzhuDataIndex.isFight > 0)
+                    if (card.isFight > 0)
                     {
-                        PlayerDataForGame.instance.fightTowerId.Add(fuzhuDataIndex.id);
+                        PlayerDataForGame.instance.fightTowerId.Add(card.id);
                     }
                     cardNums++;
-                    ShowOneFuZhuRules(LoadJsonFile.towerTableDatas, fuzhuDataIndex, 10);
+                    ShowOneFuZhuRules(card);
                 }
             }
         }
         SortHSTData(PlayerDataForGame.instance.hstData.trapSaveData);
         for (int i = 0; i < PlayerDataForGame.instance.hstData.trapSaveData.Count; i++)
         {
-            fuzhuDataIndex = PlayerDataForGame.instance.hstData.trapSaveData[i];
-            if (indexChooseListForceId == int.Parse(LoadJsonFile.trapTableDatas[fuzhuDataIndex.id][14]))
+            card = PlayerDataForGame.instance.hstData.trapSaveData[i];
+            if (indexChooseListForceId == DataTable.Trap[card.id].ForceId)
             {
-                if (fuzhuDataIndex.level > 0 || fuzhuDataIndex.chips > 0)
+                if (card.level > 0 || card.chips > 0)
                 {
-                    if (fuzhuDataIndex.isFight > 0)
+                    if (card.isFight > 0)
                     {
-                        PlayerDataForGame.instance.fightTrapId.Add(fuzhuDataIndex.id);
+                        PlayerDataForGame.instance.fightTrapId.Add(card.id);
                     }
                     cardNums++;
-                    ShowOneFuZhuRules(LoadJsonFile.trapTableDatas, fuzhuDataIndex, 8);
+                    ShowOneFuZhuRules(card);
                 }
             }
         }
-        //SortHSTData(PlayerDataForGame.instance.hstData.spellSaveData);
-        //for (int i = 0; i < PlayerDataForGame.instance.hstData.spellSaveData.Count; i++)
-        //{
-        //    fuzhuDataIndex = PlayerDataForGame.instance.hstData.spellSaveData[i];
-        //    if (fuzhuDataIndex.level > 0 || fuzhuDataIndex.chips > 0)
-        //    {
-        //        cardNums++;
-        //        ShowOneFuZhuRules(LoadJsonFile.spellTableDatas, fuzhuDataIndex, 6);
-        //    }
-        //}
         if (cardNums > 0)
         {
             StartCoroutine(LiteUpdateListChooseFirst(0));
@@ -1203,11 +1013,11 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// 名字显示规则
-    /// </summary>
-    /// <param name="nameText"></param>
-    /// <param name="str"></param>
+    /// <summary> 
+    /// 名字显示规则 
+    /// </summary> 
+    /// <param name="nameText"></param> 
+    /// <param name="str"></param> 
     public void ShowNameTextRules(Text nameText, string str)
     {
         nameText.text = str;
@@ -1236,45 +1046,48 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// 显示单个武将
-    /// </summary>
-    /// <param name="heroData"></param>
-    private void ShowOneHeroRules(NowLevelAndHadChip heroData)
+    /// <summary> 
+    /// 显示单个武将 
+    /// </summary> 
+    /// <param name="card"></param> 
+    private void ShowOneHeroRules(NowLevelAndHadChip card)
     {
-        GameObject obj = GetHeroCardToShow();
-        //名字
-        ShowNameTextRules(obj.transform.GetChild(3).GetComponent<Text>(), LoadJsonFile.heroTableDatas[heroData.id][1]);
-        //名字颜色根据稀有度
-        obj.transform.GetChild(3).GetComponent<Text>().color = NameColorChoose(LoadJsonFile.heroTableDatas[heroData.id][3]);
-        //卡牌
-        obj.transform.GetChild(1).GetComponent<Image>().sprite = Resources.Load("Image/Cards/Hero/" + LoadJsonFile.heroTableDatas[heroData.id][16], typeof(Sprite)) as Sprite;
-        //兵种名
-        obj.transform.GetChild(5).GetComponentInChildren<Text>().text = LoadJsonFile.classTableDatas[int.Parse(LoadJsonFile.heroTableDatas[heroData.id][5])][3];
-        //兵种框
-        obj.transform.GetChild(5).GetComponent<Image>().sprite = Resources.Load("Image/classImage/" + 0, typeof(Sprite)) as Sprite;
-        //边框
-        FrameChoose(LoadJsonFile.heroTableDatas[heroData.id][3], obj.transform.GetChild(6).GetComponent<Image>());
-        //碎片
-        if (heroData.level < LoadJsonFile.upGradeTableDatas.Count)
+        var info = card.GetInfo();
+        GameObject obj = GetHeroCardFromPool();
+        //名字 
+        ShowNameTextRules(obj.transform.GetChild(3).GetComponent<Text>(), info.Name);
+        //名字颜色根据稀有度 
+        obj.transform.GetChild(3).GetComponent<Text>().color = NameColorChoose(info.Rare);
+        //卡牌 
+        obj.transform.GetChild(1).GetComponent<Image>().sprite = GameResources.HeroImg[info.Id];
+        //兵种名 
+        obj.transform.GetChild(5).GetComponentInChildren<Text>().text = info.Short;
+        //兵种框 
+        obj.transform.GetChild(5).GetComponent<Image>().sprite = GameResources.ClassImg[0];
+        //边框 
+        FrameChoose(info.Rare, obj.transform.GetChild(6).GetComponent<Image>());
+        //碎片 
+        if (card.level < DataTable.CardLevel.Keys.Max())
         {
-            obj.transform.GetChild(2).GetComponent<Text>().text = heroData.chips + "/" + LoadJsonFile.upGradeTableDatas[heroData.level][1];
-            obj.transform.GetChild(2).GetComponent<Text>().color = heroData.chips >= int.Parse(LoadJsonFile.upGradeTableDatas[heroData.level][1]) ? ColorDataStatic.deep_green : Color.black;
+            var chipsConsume = DataTable.CardLevel[card.level + 1].ChipsConsume;
+            obj.transform.GetChild(2).GetComponent<Text>().text = card.chips + "/" + chipsConsume;
+            obj.transform.GetChild(2).GetComponent<Text>().color =
+                card.chips >= chipsConsume ? ColorDataStatic.deep_green : Color.white;
         }
         else
         {
             obj.transform.GetChild(2).GetComponent<Text>().text = "";
         }
-        if (heroData.level > 0)
+        if (card.level > 0)
         {
             obj.transform.GetChild(4).GetComponent<Image>().enabled = true;
             obj.transform.GetChild(8).gameObject.SetActive(false);
-            //设置星级展示
-            obj.transform.GetChild(4).GetComponent<Image>().sprite = Resources.Load("Image/gradeImage/" + heroData.level, typeof(Sprite)) as Sprite;
+            //设置星级展示 
+            obj.transform.GetChild(4).GetComponent<Image>().sprite = GameResources.GradeImg[card.level];
             obj.transform.GetChild(7).gameObject.SetActive(false);
-            if (heroData.isFight > 0) //出战标记
+            if (card.isFight > 0) //出战标记 
             {
-                PlayerDataForGame.instance.AddOrCutFightCardId(heroData.typeIndex, heroData.id, true);
+                PlayerDataForGame.instance.EnlistCard(card, true);
                 obj.transform.GetChild(7).gameObject.SetActive(true);
             }
             else
@@ -1291,89 +1104,90 @@ public class UIManager : MonoBehaviour
         obj.GetComponent<Button>().onClick.RemoveAllListeners();
         obj.GetComponent<Button>().onClick.AddListener(delegate ()
         {
-            OnClickHeroCardFun(heroData, obj.transform.GetChild(9).GetComponent<Image>());
+            OnClickHeroCardFun(card, obj.transform.GetChild(9).GetComponent<Image>());
         });
     }
 
-    /// <summary>
-    /// 点击武将卡牌的方法
-    /// </summary>
-    /// <param name="heroData"></param>
-    private void OnClickHeroCardFun(NowLevelAndHadChip heroData, Image selectImg)
+    /// <summary> 
+    /// 点击武将卡牌的方法 
+    /// </summary> 
+    /// <param name="card"></param> 
+    private void OnClickHeroCardFun(NowLevelAndHadChip card, Image selectImg)
     {
         PlayOnClickMusic();
+        var info = card.GetInfo();
+        //Debug.Log("点击的武将id：" + heroData.id); 
+        //武将名字 
+        infoTran.GetChild(0).GetComponent<Text>().text = info.Name;
+        //武将名字颜色 
+        infoTran.GetChild(0).GetComponent<Text>().color = NameColorChoose(info.Rare);
+        //武将属性 
+        var damages = DataTable.Hero[card.id].Damages;
+        infoTran.GetChild(1).GetComponent<Text>().text = string.Format(DataTable.GetStringText(32), damages[card.level > 0 ? card.level - 1 : 0]);
+        var hps = DataTable.Hero[card.id].Hps;
+        infoTran.GetChild(2).GetComponent<Text>().text = string.Format(DataTable.GetStringText(33), hps[card.level > 0 ? card.level - 1 : 0]);
+        //武将介绍 
+        infoTran.GetChild(3).GetComponent<Text>().text = info.Intro;
 
-        //Debug.Log("点击的武将id：" + heroData.id);
-        //武将名字
-        infoTran.GetChild(0).GetComponent<Text>().text = LoadJsonFile.heroTableDatas[heroData.id][1];
-        //武将名字颜色
-        infoTran.GetChild(0).GetComponent<Text>().color = NameColorChoose(LoadJsonFile.heroTableDatas[heroData.id][3]);
-        //武将属性
-        string[] strs_attack = LoadJsonFile.heroTableDatas[heroData.id][7].Split(',');
-        infoTran.GetChild(1).GetComponent<Text>().text = string.Format(LoadJsonFile.GetStringText(32), strs_attack[heroData.level > 0 ? heroData.level - 1 : 0]);
-        string[] strs_health = LoadJsonFile.heroTableDatas[heroData.id][8].Split(',');
-        infoTran.GetChild(2).GetComponent<Text>().text = string.Format(LoadJsonFile.GetStringText(33), strs_health[heroData.level > 0 ? heroData.level - 1 : 0]);
-        //武将介绍
-        infoTran.GetChild(3).GetComponent<Text>().text = LoadJsonFile.heroTableDatas[heroData.id][2];
-
-        //名字
-        ShowNameTextRules(showCardObj.transform.GetChild(3).GetComponent<Text>(), LoadJsonFile.heroTableDatas[heroData.id][1]);
-        //名字颜色
-        showCardObj.transform.GetChild(3).GetComponent<Text>().color = NameColorChoose(LoadJsonFile.heroTableDatas[heroData.id][3]);
-        //卡牌
-        showCardObj.transform.GetChild(1).GetComponent<Image>().sprite = Resources.Load("Image/Cards/Hero/" + LoadJsonFile.heroTableDatas[heroData.id][16], typeof(Sprite)) as Sprite;
-        //兵种名
-        showCardObj.transform.GetChild(5).GetComponentInChildren<Text>().text = LoadJsonFile.classTableDatas[int.Parse(LoadJsonFile.heroTableDatas[heroData.id][5])][3];
-        //兵种框
-        showCardObj.transform.GetChild(5).GetComponent<Image>().sprite = Resources.Load("Image/classImage/" + 0, typeof(Sprite)) as Sprite;
-        //边框
-        FrameChoose(LoadJsonFile.heroTableDatas[heroData.id][3], showCardObj.transform.GetChild(6).GetComponent<Image>());
-        //碎片
-        if (heroData.level < LoadJsonFile.upGradeTableDatas.Count)
+        //名字 
+        ShowNameTextRules(showCardObj.transform.GetChild(3).GetComponent<Text>(), info.Name);
+        //名字颜色 
+        showCardObj.transform.GetChild(3).GetComponent<Text>().color = NameColorChoose(info.Rare);
+        //卡牌 
+        showCardObj.transform.GetChild(1).GetComponent<Image>().sprite = GameResources.HeroImg[card.id];
+        //兵种名 
+        showCardObj.transform.GetChild(5).GetComponentInChildren<Text>().text = info.Short;
+        //兵种框 
+        showCardObj.transform.GetChild(5).GetComponent<Image>().sprite = GameResources.ClassImg[0];
+        //边框 
+        FrameChoose(info.Rare, showCardObj.transform.GetChild(6).GetComponent<Image>());
+        //碎片 
+        if (card.level < DataTable.CardLevel.Keys.Max())
         {
-            showCardObj.transform.GetChild(2).GetComponent<Text>().text = heroData.chips + "/" + LoadJsonFile.upGradeTableDatas[heroData.level][1];
-            showCardObj.transform.GetChild(2).GetComponent<Text>().color = heroData.chips >= int.Parse(LoadJsonFile.upGradeTableDatas[heroData.level][1]) ? ColorDataStatic.deep_green : Color.black;
+            var consumeChips = DataTable.CardLevel[card.level + 1].ChipsConsume;
+            showCardObj.transform.GetChild(2).GetComponent<Text>().text = card.chips + "/" + consumeChips;
+            showCardObj.transform.GetChild(2).GetComponent<Text>().color = card.chips >= consumeChips ? ColorDataStatic.deep_green : Color.black;
         }
         else
         {
             showCardObj.transform.GetChild(2).GetComponent<Text>().text = "";
         }
 
-        int getGoldNums = GetGoldNumsForSellCard(heroData);
+        int getGoldNums = GetGoldPrice(card);
         sellCardBtn.transform.GetChild(0).GetComponent<Text>().text = getGoldNums.ToString();
         sellCardBtn.GetComponent<Button>().onClick.RemoveAllListeners();
         sellCardBtn.GetComponent<Button>().onClick.AddListener(delegate ()
         {
-            OnClickForSellCard(heroData, getGoldNums);
+            OnClickForSellCard(card, getGoldNums);
         });
         sellCardBtn.SetActive(true);
 
-        if (heroData.level > 0)
+        if (card.level > 0)
         {
             showCardObj.transform.GetChild(4).GetComponent<Image>().enabled = true;
-            //设置星级展示
-            showCardObj.transform.GetChild(4).GetComponent<Image>().sprite = Resources.Load("Image/gradeImage/" + heroData.level, typeof(Sprite)) as Sprite;
-            //出战相关设置
+            //设置星级展示 
+            showCardObj.transform.GetChild(4).GetComponent<Image>().sprite = GameResources.GradeImg[card.level];
+            //出战相关设置 
             holdOrFightBtn.SetActive(true);
-            if (heroData.isFight > 0)
+            if (card.isFight > 0)
             {
                 showCardObj.transform.GetChild(7).gameObject.SetActive(true);
-                holdOrFightBtn.GetComponentInChildren<Text>().text = LoadJsonFile.GetStringText(30);
+                holdOrFightBtn.GetComponentInChildren<Text>().text = DataTable.GetStringText(30);
             }
             else
             {
                 showCardObj.transform.GetChild(7).gameObject.SetActive(false);
-                holdOrFightBtn.GetComponentInChildren<Text>().text = LoadJsonFile.GetStringText(31);
+                holdOrFightBtn.GetComponentInChildren<Text>().text = DataTable.GetStringText(31);
             }
         }
         else
         {
-            //sellCardBtn.SetActive(false);
+            //sellCardBtn.SetActive(false); 
             holdOrFightBtn.SetActive(false);
             showCardObj.transform.GetChild(7).gameObject.SetActive(false);
             showCardObj.transform.GetChild(4).GetComponent<Image>().enabled = false;
         }
-        //选择框处理
+        //选择框处理 
         if (lastSelectImg != null)
         {
             lastSelectImg.enabled = false;
@@ -1381,48 +1195,18 @@ public class UIManager : MonoBehaviour
         lastSelectImg = selectImg;
         lastSelectImg.enabled = true;
 
-        selectCardData = heroData;
+        selectCardData = card;
 
-        CalculatedNeedYuanBao(heroData.level);
+        CalculatedNeedYuanBao(card.level);
     }
 
-    //根据卡牌类型和id得到其稀有度
-    private int GetIdBackCardRarity(int cardType, int cardId)
+    //出售卡牌可得金币 
+    private int GetGoldPrice(NowLevelAndHadChip heroData)
     {
-        string rarityStr = string.Empty;
-        switch (cardType)
-        {
-            case 0:
-                rarityStr = LoadJsonFile.heroTableDatas[cardId][3];
-                break;
-            case 1:
-                rarityStr = LoadJsonFile.soldierTableDatas[cardId][3];
-                break;
-            case 2:
-                rarityStr = LoadJsonFile.towerTableDatas[cardId][3];
-                break;
-            case 3:
-                rarityStr = LoadJsonFile.trapTableDatas[cardId][3];
-                break;
-            case 4:
-                rarityStr = LoadJsonFile.spellTableDatas[cardId][3];
-                break;
-            default:
-                break;
-        }
-        return int.Parse(rarityStr);
-    }
-
-    //出售卡牌可得金币
-    private int GetGoldNumsForSellCard(NowLevelAndHadChip heroData)
-    {
-        int chips = heroData.chips;
-        for (int i = 0; i < heroData.level; i++)
-        {
-            chips += int.Parse(LoadJsonFile.upGradeTableDatas[i][1]);
-        }
+        var info = heroData.GetInfo();
+        int chips = heroData.chips + DataTable.CardLevel.Where(lv => lv.Key < heroData.level).Sum(kv => kv.Value.ChipsConsume);
         int golds = 0;
-        switch (GetIdBackCardRarity(heroData.typeIndex, heroData.id))
+        switch (info.Rare)
         {
             case 1:
                 golds = 10;
@@ -1448,12 +1232,12 @@ public class UIManager : MonoBehaviour
         return golds * chips;
     }
 
-    //出售卡牌
+    //出售卡牌 
     private void OnClickForSellCard(NowLevelAndHadChip heroData, int getGoldNums)
     {
-        //if (GetIdBackCardRarity(heroData.typeIndex, heroData.id) >= 4)
+        //if (GetIdBackCardRarity(heroData.typeIndex, heroData.id) >= 4) 
         {
-            AudioController0.instance.ChangeAudioClip(AudioController0.instance.audioClips[18], AudioController0.instance.audioVolumes[18]);
+            AudioController0.instance.ChangeAudioClip(18);
             AudioController0.instance.PlayAudioSource(0);
             queRenWindows.transform.GetChild(0).GetChild(1).GetComponent<Button>().onClick.RemoveAllListeners();
             queRenWindows.transform.GetChild(0).GetChild(1).GetComponent<Button>().onClick.AddListener(delegate ()
@@ -1479,20 +1263,20 @@ public class UIManager : MonoBehaviour
                     default:
                         break;
                 }
-                //Debug.Log("---出售" + heroData.typeIndex + "类型的卡牌：" + heroData.id);
+                //Debug.Log("---出售" + heroData.typeIndex + "类型的卡牌：" + heroData.id); 
                 heroData.chips = 0;
                 heroData.level = 0;
                 heroData.isFight = 0;
-                //datas.Remove(heroData);
-                //LoadSaveData.instance.SaveByJson(PlayerDataForGame.instance.hstData);
+                //datas.Remove(heroData); 
+                //LoadSaveData.instance.SaveByJson(PlayerDataForGame.instance.hstData); 
                 PlayerDataForGame.instance.isNeedSaveData = true;
                 LoadSaveData.instance.SaveGameData(2);
                 ConsumeManager.instance.AddYuanBao(getGoldNums);
-                AudioController0.instance.ChangeAudioClip(AudioController0.instance.audioClips[17], AudioController0.instance.audioVolumes[17]);
+                AudioController0.instance.ChangeAudioClip(17);
                 AudioController0.instance.PlayAudioSource(0);
-                //刷新主城列表
+                //刷新主城列表 
                 ChangeScrollView();
-                PlayerDataForGame.instance.AddOrCutFightCardId(heroData.typeIndex, heroData.id, false);
+                PlayerDataForGame.instance.EnlistCard(heroData, false);
                 UpdateCardNumsShow();
                 queRenWindows.SetActive(false);
             });
@@ -1500,34 +1284,34 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// 匹配稀有度的颜色
-    /// </summary>
-    /// <returns></returns>
-    public Color NameColorChoose(string rarity)
+    /// <summary> 
+    /// 匹配稀有度的颜色 
+    /// </summary> 
+    /// <returns></returns> 
+    public Color NameColorChoose(int rarity)
     {
         Color color = new Color();
         switch (rarity)
         {
-            case "1":
+            case 1:
                 color = ColorDataStatic.name_gray;
                 break;
-            case "2":
+            case 2:
                 color = ColorDataStatic.name_green;
                 break;
-            case "3":
+            case 3:
                 color = ColorDataStatic.name_blue;
                 break;
-            case "4":
+            case 4:
                 color = ColorDataStatic.name_purple;
                 break;
-            case "5":
+            case 5:
                 color = ColorDataStatic.name_orange;
                 break;
-            case "6":
+            case 6:
                 color = ColorDataStatic.name_red;
                 break;
-            case "7":
+            case 7:
                 color = ColorDataStatic.name_black;
                 break;
             default:
@@ -1537,22 +1321,24 @@ public class UIManager : MonoBehaviour
         return color;
     }
 
-    // <summary>
-    /// 匹配稀有度边框
-    /// </summary>
-    public void FrameChoose(string rarity, Image img)
+    // <summary> 
+    /// 匹配稀有度边框 
+    /// </summary> 
+    public void FrameChoose(int rarity, Image img)
     {
+        img.enabled = false;//暂时不提供边框 
+        return;
         img.enabled = true;
         switch (rarity)
         {
-            case "4":
-                img.sprite = Resources.Load("Image/frameImage/tong", typeof(Sprite)) as Sprite;
+            case 4:
+                img.sprite = GameResources.FrameImg[3];
                 break;
-            case "5":
-                img.sprite = Resources.Load("Image/frameImage/yin", typeof(Sprite)) as Sprite;
+            case 5:
+                img.sprite = GameResources.FrameImg[2];
                 break;
-            case "6":
-                img.sprite = Resources.Load("Image/frameImage/jin", typeof(Sprite)) as Sprite;
+            case 6:
+                img.sprite = GameResources.FrameImg[1];
                 break;
             default:
                 img.enabled = false;
@@ -1560,81 +1346,85 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// 对HST的数据进行排序
-    /// </summary>
+    /// <summary> 
+    /// 对HST的数据进行排序 
+    /// </summary> 
     private void SortHSTData(List<NowLevelAndHadChip> dataList)
     {
-        //dataList.Sort((NowLevelAndHadChip n1, NowLevelAndHadChip n2) => n2.level.CompareTo(n1.level));
-        dataList.Sort((NowLevelAndHadChip n1, NowLevelAndHadChip n2) =>
+        dataList.Sort((c1, c2) =>
         {
-            if (n2.isFight.CompareTo(n1.isFight) != 0)
+            if (c2.isFight.CompareTo(c1.isFight) != 0)
             {
-                return n2.isFight.CompareTo(n1.isFight);
+                return c2.isFight.CompareTo(c1.isFight);
             }
-            else
+
+            if (c2.level.CompareTo(c1.level) != 0)
             {
-                if (n2.level.CompareTo(n1.level) != 0)
-                {
-                    return n2.level.CompareTo(n1.level);
-                }
-                else
-                {
-                    return GetIdBackCardRarity(n2.typeIndex, n2.id).CompareTo(GetIdBackCardRarity(n1.typeIndex, n1.id));
-                }
+                return c2.level.CompareTo(c1.level);
             }
+
+            return GetRare(c2).CompareTo(GetRare(c1));
         });
+
+        int GetRare(NowLevelAndHadChip c)
+        {
+            switch ((GameCardType)c.typeIndex)
+            {
+                case GameCardType.Hero:
+                    return DataTable.Hero[c.id].Rarity;
+                case GameCardType.Tower:
+                    return DataTable.Tower[c.id].Rarity;
+                case GameCardType.Trap:
+                    return DataTable.Trap[c.id].Rarity;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
     }
 
-    /// <summary>
-    /// 初始化玩家信息显示
-    /// </summary>
+    /// <summary> 
+    /// 初始化玩家信息显示 
+    /// </summary> 
     public void InitializationPlayerInfo()
     {
-        //player`s name
-        playerInfoObj.transform.GetChild(1).GetChild(1).GetComponent<Text>().text = LoadJsonFile.playerInitialTableDatas[PlayerDataForGame.instance.pyData.forceId][1];
-        if (PlayerDataForGame.instance.pyData.level >= LoadJsonFile.playerLevelTableDatas.Count)
+        //player`s name 
+        playerInfoObj.transform.GetChild(1).GetChild(1).GetComponent<Text>().text = DataTable.PlayerInitialConfig[PlayerDataForGame.instance.pyData.ForceId].Force;
+        if (PlayerDataForGame.instance.pyData.Level >= DataTable.PlayerLevelConfig.Count)
         {
             playerInfoObj.transform.GetChild(0).GetComponent<Slider>().value = 1;
-            playerInfoObj.transform.GetChild(2).GetChild(1).GetComponent<Text>().text =LoadJsonFile.GetStringText(34);
-            playerInfoObj.transform.GetChild(0).GetChild(2).GetComponent<Text>().text = PlayerDataForGame.instance.pyData.exp + "/" + 99999;
+            playerInfoObj.transform.GetChild(2).GetChild(1).GetComponent<Text>().text = DataTable.GetStringText(34);
+            playerInfoObj.transform.GetChild(0).GetChild(2).GetComponent<Text>().text = PlayerDataForGame.instance.pyData.Exp + "/" + 99999;
         }
         else
         {
-            //exp
-            playerInfoObj.transform.GetChild(0).GetComponent<Slider>().value = PlayerDataForGame.instance.pyData.exp / float.Parse(LoadJsonFile.playerLevelTableDatas[PlayerDataForGame.instance.pyData.level][1]);
-            //level
-            playerInfoObj.transform.GetChild(2).GetChild(1).GetComponent<Text>().text = string.Format(LoadJsonFile.GetStringText(35), PlayerDataForGame.instance.pyData.level);//玩家等级
-            playerInfoObj.transform.GetChild(0).GetChild(2).GetComponent<Text>().text = PlayerDataForGame.instance.pyData.exp + "/" + LoadJsonFile.playerLevelTableDatas[PlayerDataForGame.instance.pyData.level][1];
+            //Exp 
+            playerInfoObj.transform.GetChild(0).GetComponent<Slider>().value = 1f * PlayerDataForGame.instance.pyData.Exp / DataTable.PlayerLevelConfig[PlayerDataForGame.instance.pyData.Level].Exp;
+            //Level 
+            playerInfoObj.transform.GetChild(2).GetChild(1).GetComponent<Text>().text = string.Format(DataTable.GetStringText(35), PlayerDataForGame.instance.pyData.Level);//玩家等级 
+            playerInfoObj.transform.GetChild(0).GetChild(2).GetComponent<Text>().text =
+                PlayerDataForGame.instance.pyData.Exp + "/" +
+                DataTable.PlayerLevelConfig[PlayerDataForGame.instance.pyData.Level].Exp;
         }
-        //货币
-        yuanBaoNumText.text = PlayerDataForGame.instance.pyData.yuanbao.ToString();
-        yvQueNumText.text = PlayerDataForGame.instance.pyData.yvque.ToString();
-        showTiLiNums = PlayerPrefs.GetInt(TimeSystemControl.staminaStr);
+        //货币 
+        yuanBaoNumText.text = PlayerDataForGame.instance.pyData.YuanBao.ToString();
+        yvQueNumText.text = PlayerDataForGame.instance.pyData.YvQue.ToString();
+        showTiLiNums = PlayerDataForGame.instance.pyData.Stamina;
         tiLiNumText.text = showTiLiNums + "/90";
 
         CreateHeroAndTowerContent();
         UpdateCardNumsShow();
 
-        StartCoroutine(LiteToChangeViewShow(0));
+        StartCoroutine(LateToChangeViewShow(0));
     }
 
-    //得到合成所需元宝
+    //得到合成所需元宝 
     private void CalculatedNeedYuanBao(int nowLevel)
     {
-        if (nowLevel == 0)
-        {
-            heImgObj.SetActive(true);
-            ShowOrHideGuideObj(2, true);
-        }
-        else
-        {
-            heImgObj.SetActive(false);
-        }
+        if (nowLevel == 0) ShowOrHideGuideObj(2, true);
         heImgObj.SetActive(nowLevel == 0);
-        if (nowLevel < LoadJsonFile.upGradeTableDatas.Count)
+        if (nowLevel < DataTable.CardLevel.Keys.Max())
         {
-            needYuanBaoNums = int.Parse(LoadJsonFile.upGradeTableDatas[nowLevel][2]);
+            needYuanBaoNums = DataTable.CardLevel[nowLevel + 1].YuanBaoConsume;
             heChengBtn.transform.GetComponentInChildren<Text>().text = "" + needYuanBaoNums;
             heChengBtn.SetActive(true);
         }
@@ -1644,16 +1434,17 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// 合成卡牌
-    /// </summary>
+    /// <summary> 
+    /// 合成卡牌 
+    /// </summary> 
     public void SynthesizeCard()
     {
-        if (selectCardData.chips >= int.Parse(LoadJsonFile.upGradeTableDatas[selectCardData.level][1]))
+        var nextLevel = DataTable.CardLevel[selectCardData.level + 1];
+        if (selectCardData.chips >= nextLevel.ChipsConsume)
         {
-            if (ConsumeManager.instance.CutYuanBao(needYuanBaoNums))
+            if (ConsumeManager.instance.DeductYuanBao(nextLevel.ChipsConsume))
             {
-                selectCardData.chips -= int.Parse(LoadJsonFile.upGradeTableDatas[selectCardData.level][1]);
+                selectCardData.chips -= nextLevel.ChipsConsume;
 
                 selectCardData.level++;
                 if (!selectCardData.isHad)
@@ -1665,7 +1456,7 @@ public class UIManager : MonoBehaviour
                 {
                     selectCardData.maxLevel = selectCardData.level;
                 }
-                //LoadSaveData.instance.SaveByJson(PlayerDataForGame.instance.hstData);
+                //LoadSaveData.instance.SaveByJson(PlayerDataForGame.instance.hstData); 
                 PlayerDataForGame.instance.isNeedSaveData = true;
                 LoadSaveData.instance.SaveGameData(2);
 
@@ -1673,7 +1464,7 @@ public class UIManager : MonoBehaviour
                 upStarEffectObj.SetActive(true);
                 StartCoroutine(HideTheEffectOfUpStar());
 
-                AudioController0.instance.ChangeAudioClip(AudioController0.instance.audioClips[16], AudioController0.instance.audioVolumes[16]);
+                AudioController0.instance.ChangeAudioClip(16);
                 AudioController0.instance.PlayAudioSource(0);
 
                 UpdateLevelCard();
@@ -1682,41 +1473,41 @@ public class UIManager : MonoBehaviour
             }
             else
             {
-                //Debug.Log("元宝不足，合成失败");
-                PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(36));
+                //Debug.Log("元宝不足，合成失败"); 
+                PlayerDataForGame.instance.ShowStringTips(DataTable.GetStringText(36));
                 PlayOnClickMusic();
             }
         }
         else
         {
-            //Debug.Log("碎片不足，合成失败");
-            PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(37));
+            //Debug.Log("碎片不足，合成失败"); 
+            PlayerDataForGame.instance.ShowStringTips(DataTable.GetStringText(37));
             PlayOnClickMusic();
         }
     }
 
-    //隐藏升星特效
+    //隐藏升星特效 
     IEnumerator HideTheEffectOfUpStar()
     {
         yield return new WaitForSeconds(1.7f);
         upStarEffectObj.SetActive(false);
     }
 
-    /// <summary>
-    /// 出战或回城设置方法
-    /// </summary>
+    /// <summary> 
+    /// 出战或回城设置方法 
+    /// </summary> 
     public void ChuZhanOrStaySetFun()
     {
         Transform listCard = lastSelectImg.transform.parent;
         if (selectCardData.isFight > 0)
         {
-            if (PlayerDataForGame.instance.AddOrCutFightCardId(selectCardData.typeIndex, selectCardData.id, false))
+            if (PlayerDataForGame.instance.EnlistCard(selectCardData, false))
             {
                 listCard.GetChild(7).gameObject.SetActive(false);
                 showCardObj.transform.GetChild(7).gameObject.SetActive(false);
-                holdOrFightBtn.GetComponentInChildren<Text>().text = LoadJsonFile.GetStringText(31);
+                holdOrFightBtn.GetComponentInChildren<Text>().text = DataTable.GetStringText(31);
                 selectCardData.isFight = 0;
-                AudioController0.instance.ChangeAudioClip(AudioController0.instance.audioClips[15], AudioController0.instance.audioVolumes[15]);
+                AudioController0.instance.ChangeAudioClip(15);
                 AudioController0.instance.PlayAudioSource(0);
             }
             else
@@ -1726,59 +1517,61 @@ public class UIManager : MonoBehaviour
         }
         else
         {
-            if (PlayerDataForGame.instance.AddOrCutFightCardId(selectCardData.typeIndex, selectCardData.id, true))
+            if (PlayerDataForGame.instance.EnlistCard(selectCardData, true))
             {
                 listCard.GetChild(7).gameObject.SetActive(true);
                 showCardObj.transform.GetChild(7).gameObject.SetActive(true);
-                holdOrFightBtn.GetComponentInChildren<Text>().text = LoadJsonFile.GetStringText(30);
+                holdOrFightBtn.GetComponentInChildren<Text>().text = DataTable.GetStringText(30);
                 selectCardData.isFight = 1;
-                AudioController0.instance.ChangeAudioClip(AudioController0.instance.audioClips[14], AudioController0.instance.audioVolumes[14]);
+                AudioController0.instance.ChangeAudioClip(14);
                 AudioController0.instance.PlayAudioSource(0);
             }
             else
             {
-                PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(38));
+                PlayerDataForGame.instance.ShowStringTips(DataTable.GetStringText(38));
 
                 PlayOnClickMusic();
             }
         }
         UpdateCardNumsShow();
-        //LoadSaveData.instance.SaveByJson(PlayerDataForGame.instance.hstData);
+        //LoadSaveData.instance.SaveByJson(PlayerDataForGame.instance.hstData); 
         PlayerDataForGame.instance.isNeedSaveData = true;
         LoadSaveData.instance.SaveGameData(2);
     }
 
-    //升级卡牌后更新显示
+    //升级卡牌后更新显示 
     private void UpdateLevelCard()
     {
-        //Debug.Log("selectCardData.level: " + selectCardData.level);
+        //Debug.Log("selectCardData.Level: " + selectCardData.Level); 
         Transform listCard = lastSelectImg.transform.parent;
-        if (selectCardData.level < LoadJsonFile.upGradeTableDatas.Count)
+        if (selectCardData.level < DataTable.CardLevel.Keys.Max())
         {
-            listCard.GetChild(2).GetComponent<Text>().text = selectCardData.chips + "/" + LoadJsonFile.upGradeTableDatas[selectCardData.level][1];
-            listCard.GetChild(2).GetComponent<Text>().color = selectCardData.chips >= int.Parse(LoadJsonFile.upGradeTableDatas[selectCardData.level][1]) ? ColorDataStatic.deep_green : Color.black;
+            var consume = DataTable.CardLevel[selectCardData.level + 1].ChipsConsume;
+            listCard.GetChild(2).GetComponent<Text>().text = selectCardData.chips + "/" + consume;
+            listCard.GetChild(2).GetComponent<Text>().color =
+                selectCardData.chips >= consume ? ColorDataStatic.deep_green : Color.white;
         }
         else
         {
             listCard.GetChild(2).GetComponent<Text>().text = "";
         }
         listCard.GetChild(4).GetComponent<Image>().enabled = true;
-        //设置星级展示
-        listCard.GetChild(4).GetComponent<Image>().sprite = Resources.Load("Image/gradeImage/" + selectCardData.level, typeof(Sprite)) as Sprite;
+        //设置星级展示 
+        listCard.GetChild(4).GetComponent<Image>().sprite = GameResources.GradeImg[selectCardData.level];
         listCard.GetChild(8).gameObject.SetActive(false);
         listCard.GetComponent<Button>().onClick.Invoke();
     }
 
-    /// <summary>
-    /// 展示奖励
-    /// </summary>
-    /// <param name="yuanBaoNums">元宝</param>
-    /// <param name="yuQueNums">玉阙</param>
-    /// <param name="expNums">经验</param>
-    /// <param name="tiLiNums">体力</param>
-    /// <param name="rewardsCards">卡牌奖励</param>
-    /// <param name="waitTime">展示等待时间</param>
-    public void ShowRewardsThings(int yuanBaoNums, int yuQueNums, int expNums, int tiLiNums, List<RewardsCardClass> rewardsCards, float waitTime)
+    /// <summary> 
+    /// 展示奖励 
+    /// </summary> 
+    /// <param name="yuanBao">元宝</param> 
+    /// <param name="yvQue">玉阙</param> 
+    /// <param name="exp">经验</param> 
+    /// <param name="stamina">体力</param> 
+    /// <param name="rewardsCards">卡牌奖励</param> 
+    /// <param name="waitTime">展示等待时间</param> 
+    public void ShowRewardsThings(int yuanBao, int yvQue, int exp, int stamina, List<RewardsCardClass> rewardsCards, float waitTime)
     {
         for (int i = 0; i < rewardsParent.childCount; i++)
         {
@@ -1795,22 +1588,22 @@ public class UIManager : MonoBehaviour
             }
         }
 
-        //rewardsShowObj.transform.GetChild(0).GetChild(0).GetComponent<Text>().text = str;
-        if (yuanBaoNums > 0)
+        //rewardsShowObj.transform.GetChild(0).GetChild(0).GetComponent<Text>().text = str; 
+        if (yuanBao > 0)
         {
-            ShowOneReward(0, new RewardsCardClass() { cardChips = yuanBaoNums });
+            ShowOneReward(0, new RewardsCardClass() { cardChips = yuanBao });
         }
-        if (yuQueNums > 0)
+        if (yvQue > 0)
         {
-            ShowOneReward(1, new RewardsCardClass() { cardChips = yuQueNums });
+            ShowOneReward(1, new RewardsCardClass() { cardChips = yvQue });
         }
-        if (expNums > 0)
+        if (exp > 0)
         {
-            ShowOneReward(2, new RewardsCardClass() { cardChips = expNums });
+            ShowOneReward(2, new RewardsCardClass() { cardChips = exp });
         }
-        if (tiLiNums > 0)
+        if (stamina > 0)
         {
-            ShowOneReward(3, new RewardsCardClass() { cardChips = tiLiNums });
+            ShowOneReward(3, new RewardsCardClass() { cardChips = stamina });
         }
         for (int i = 0; i < rewardsCards.Count; i++)
         {
@@ -1818,17 +1611,13 @@ public class UIManager : MonoBehaviour
         }
         StartCoroutine(OpenRewardsWindows(waitTime));
     }
-    //展示奖品
+    //展示奖品 
     IEnumerator OpenRewardsWindows(float startTime)
     {
         yield return new WaitForSeconds(startTime);
-        for (int i = 0; i < boxBtnObjs.Length; i++)
-        {
-            boxBtnObjs[i].transform.GetChild(0).GetChild(1).gameObject.SetActive(true);
-            boxBtnObjs[i].transform.GetChild(0).GetChild(2).gameObject.SetActive(false);
-        }
+        taoYuan.CloseAllChests();
         rewardsShowObj.SetActive(true);
-        //刷新主城列表
+        //刷新主城列表 
         ChangeScrollView();
         rewardsShowObj.transform.GetComponentInChildren<ScrollRect>().horizontalNormalizedPosition = 0f;
         yield return new WaitForSeconds(1f);
@@ -1838,7 +1627,7 @@ public class UIManager : MonoBehaviour
         PlayerDataForGame.instance.ClearGarbageStationObj();
     }
 
-    //获取单个奖品展示框
+    //获取单个奖品展示框 
     private GameObject FindShowRewardsBox()
     {
         GameObject go = new GameObject();
@@ -1858,11 +1647,11 @@ public class UIManager : MonoBehaviour
         return go;
     }
 
-    /// <summary>
-    /// 展示单个奖品
-    /// </summary>
-    /// <param name="rewardType">0元宝1玉阙2经验3卡牌</param>
-    /// <param name="rewardsCard"></param>
+    /// <summary> 
+    /// 展示单个奖品 
+    /// </summary> 
+    /// <param name="rewardType">0元宝,1玉阙,2经验,3体力,4卡牌</param> 
+    /// <param name="rewardsCard"></param> 
     private void ShowOneReward(int rewardType, RewardsCardClass rewardsCard)
     {
         if (rewardsCard.cardChips <= 0)
@@ -1871,62 +1660,30 @@ public class UIManager : MonoBehaviour
         }
 
         GameObject obj = FindShowRewardsBox();
-
+        var info = new NowLevelAndHadChip().Instance((GameCardType)rewardsCard.cardType,rewardsCard.cardId).GetInfo();
         obj.transform.GetChild(rewardType).gameObject.SetActive(true);
         if (rewardType == 4)
         {
             Transform cardTran = obj.transform.GetChild(4);
-            switch (rewardsCard.cardType)
-            {
-                case 0:
-                    cardTran.GetComponent<Image>().sprite = Resources.Load("Image/Cards/Hero/" + LoadJsonFile.heroTableDatas[rewardsCard.cardId][16], typeof(Sprite)) as Sprite;
-                    ShowNameTextRules(cardTran.GetChild(0).GetComponent<Text>(), LoadJsonFile.heroTableDatas[rewardsCard.cardId][1]);
-                    cardTran.GetChild(0).GetComponent<Text>().color = NameColorChoose(LoadJsonFile.heroTableDatas[rewardsCard.cardId][3]);
-                    cardTran.GetChild(1).GetComponent<Image>().sprite = Resources.Load("Image/classImage/" + 0, typeof(Sprite)) as Sprite;
-                    cardTran.GetChild(1).GetChild(0).GetComponentInChildren<Text>().text = LoadJsonFile.classTableDatas[int.Parse(LoadJsonFile.heroTableDatas[rewardsCard.cardId][5])][3];
-                    FrameChoose(LoadJsonFile.heroTableDatas[rewardsCard.cardId][3], cardTran.GetChild(2).GetComponent<Image>());
-                    break;
-                case 1:
-                    //cardTran.GetChild(0).GetComponent<Text>().text = LoadJsonFile.soldierTableDatas[rewardsCard.cardId][1];
-                    break;
-                case 2:
-                    cardTran.GetComponent<Image>().sprite = Resources.Load("Image/Cards/FuZhu/" + LoadJsonFile.towerTableDatas[rewardsCard.cardId][10], typeof(Sprite)) as Sprite;
-                    ShowNameTextRules(cardTran.GetChild(0).GetComponent<Text>(), LoadJsonFile.towerTableDatas[rewardsCard.cardId][1]);
-                    cardTran.GetChild(0).GetComponent<Text>().color = NameColorChoose(LoadJsonFile.towerTableDatas[rewardsCard.cardId][3]);
-                    cardTran.GetChild(1).GetComponent<Image>().sprite = Resources.Load("Image/classImage/" + 1, typeof(Sprite)) as Sprite;
-                    cardTran.GetChild(1).GetChild(0).GetComponentInChildren<Text>().text = LoadJsonFile.towerTableDatas[rewardsCard.cardId][5];
-                    FrameChoose(LoadJsonFile.towerTableDatas[rewardsCard.cardId][3], cardTran.GetChild(2).GetComponent<Image>());
-                    break;
-                case 3:
-                    cardTran.GetComponent<Image>().sprite = Resources.Load("Image/Cards/FuZhu/" + LoadJsonFile.trapTableDatas[rewardsCard.cardId][8], typeof(Sprite)) as Sprite;
-                    ShowNameTextRules(cardTran.GetChild(0).GetComponent<Text>(), LoadJsonFile.trapTableDatas[rewardsCard.cardId][1]);
-                    cardTran.GetChild(0).GetComponent<Text>().color = NameColorChoose(LoadJsonFile.trapTableDatas[rewardsCard.cardId][3]);
-                    cardTran.GetChild(1).GetComponent<Image>().sprite = Resources.Load("Image/classImage/" + 1, typeof(Sprite)) as Sprite;
-                    cardTran.GetChild(1).GetChild(0).GetComponentInChildren<Text>().text = LoadJsonFile.trapTableDatas[rewardsCard.cardId][5];
-                    FrameChoose(LoadJsonFile.trapTableDatas[rewardsCard.cardId][3], cardTran.GetChild(2).GetComponent<Image>());
-                    break;
-                case 4:
-                    //cardTran.GetChild(0).GetComponent<Text>().text = LoadJsonFile.spellTableDatas[rewardsCard.cardId][1];
-                    break;
-                default:
-                    break;
-            }
+            cardTran.GetComponent<Image>().sprite = info.Type == GameCardType.Hero ? GameResources.HeroImg[info.Id] : GameResources.FuZhuImg[info.ImageId];
+            ShowNameTextRules(cardTran.GetChild(0).GetComponent<Text>(), info.Name);
+            cardTran.GetChild(0).GetComponent<Text>().color = NameColorChoose(info.Rare);
+            cardTran.GetChild(1).GetComponent<Image>().sprite = info.Type == GameCardType.Hero ? GameResources.ClassImg[0] : GameResources.ClassImg[1];
+            cardTran.GetChild(1).GetChild(0).GetComponentInChildren<Text>().text = info.Short;
+            FrameChoose(info.Rare, cardTran.GetChild(2).GetComponent<Image>());
         }
+
         obj.transform.GetChild(5).GetComponent<Text>().text = "×" + rewardsCard.cardChips;
     }
 
-
-    /// <summary>
-    /// 主城界面切换
-    /// </summary>
-    /// <param name="index"></param>
-    public void ZhuChengInterfaceSwitching(int index)
+    /// <summary> 
+    /// 主城界面切换 
+    /// </summary> 
+    /// <param name="index"></param> 
+    public void MainPageSwitching(int index)
     {
-        if (isJumping)
-        {
-            return;
-        }
-
+        if (IsJumping) return;
+        currentPage = (Pages)index;
         PlayOnClickMusic();
 
         for (int i = 0; i < zhuChengInterFaces.Length; i++)
@@ -1936,30 +1693,47 @@ public class UIManager : MonoBehaviour
         }
         zhuChengInterFaces[index].SetActive(true);
         particlesForInterface[index].SetActive(true);
-
+        //暂时未开启的页面 
+        waitWhileImpress.gameObject.SetActive(
+            index == 3 //对决 
+        );
         switch (index)
         {
-            case 0:
+            case 0://桃园 
                 ShowOrHideGuideObj(0, true);
-                if (PlayerDataForGame.instance.gbocData.fightBoxs.Count > 0)
-                {
-                    ShowOrHideGuideObj(1, true);
-                }
+                if (PlayerDataForGame.instance.gbocData.fightBoxs.Count > 0) ShowOrHideGuideObj(1, true);
                 break;
-            case 2:
-                PlayerDataForGame.instance.isZhanYi = true;
+            case 2://战役 
                 ShowOrHideGuideObj(3, true);
+                expedition.OnClickChangeWarsFun(expedition.RecordedExpeditionWarId);
                 warsChooseListObj.transform.parent.parent.GetComponent<ScrollRect>().DOVerticalNormalizedPos(0f, 0.3f);
                 break;
-            case 4:
-                PlayerDataForGame.instance.isZhanYi = false;
+            case 4://霸业 
+                bayeBelowLevelPanel.gameObject.SetActive(PlayerDataForGame.instance.pyData.Level < 5);
+                if (!SystemTimer.IsToday(PlayerDataForGame.instance.warsData.baYe.lastBaYeActivityTime))
+                {
+                    BaYeManager.instance.Init();
+                    InitBaYeFun();
+                }
+                if (BaYeManager.instance.isShowTips)
+                {
+                    PlayerDataForGame.instance.ShowStringTips(BaYeManager.instance.tipsText);
+                    BaYeManager.instance.tipsText = string.Empty;
+                    BaYeManager.instance.isShowTips = false;
+                }
+                break;
+            case 1://主城 
+                break;
+            case 3://对决 
+                PlayerDataForGame.instance.ShowStringTips(DataTable.GetStringText(67));
                 break;
             default:
-                break;
+                XDebug.LogError<UIManager>($"未知页面索引[{index}]。");
+                throw new ArgumentOutOfRangeException();
         }
     }
 
-    //显示或隐藏指引
+    //显示或隐藏指引 
     public void ShowOrHideGuideObj(int index, bool isShow)
     {
         if (isShow)
@@ -1996,7 +1770,7 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    //用于刷新列表后选择第一个单位
+    //用于刷新列表后选择第一个单位 
     IEnumerator LiteUpdateListChooseFirst(float startTime)
     {
         yield return new WaitForSeconds(startTime);
@@ -2006,53 +1780,53 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// 获取玩家经验
-    /// </summary>
-    /// <param name="expNums"></param>
+    /// <summary> 
+    /// 获取玩家经验 
+    /// </summary> 
+    /// <param name="expNums"></param> 
     public void GetPlayerExp(int expNums)
     {
-        if (PlayerDataForGame.instance.pyData.level >= LoadJsonFile.playerLevelTableDatas.Count)
+        if (PlayerDataForGame.instance.pyData.Level >= DataTable.PlayerLevelConfig.Count)
         {
-            PlayerDataForGame.instance.pyData.exp += expNums;
-            playerInfoObj.transform.GetChild(0).GetChild(2).GetComponent<Text>().text = PlayerDataForGame.instance.pyData.exp + "/" + 99999;
+            PlayerDataForGame.instance.pyData.Exp += expNums;
+            playerInfoObj.transform.GetChild(0).GetChild(2).GetComponent<Text>().text = PlayerDataForGame.instance.pyData.Exp + "/" + 99999;
         }
         else
         {
-            PlayerDataForGame.instance.pyData.exp += expNums;
-            while (int.Parse(LoadJsonFile.playerLevelTableDatas[PlayerDataForGame.instance.pyData.level][1]) <= PlayerDataForGame.instance.pyData.exp)
+            PlayerDataForGame.instance.pyData.Exp += expNums;
+            while (DataTable.PlayerLevelConfig[PlayerDataForGame.instance.pyData.Level].Exp <= PlayerDataForGame.instance.pyData.Exp)
             {
-                PlayerDataForGame.instance.pyData.exp -= int.Parse(LoadJsonFile.playerLevelTableDatas[PlayerDataForGame.instance.pyData.level][1]);
-                PlayerDataForGame.instance.pyData.level++;
-                PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(39));
-                if (PlayerDataForGame.instance.pyData.level >= LoadJsonFile.playerLevelTableDatas.Count)
+                PlayerDataForGame.instance.pyData.Exp -= DataTable.PlayerLevelConfig[PlayerDataForGame.instance.pyData.Level].Exp;
+                PlayerDataForGame.instance.pyData.Level++;
+                PlayerDataForGame.instance.ShowStringTips(DataTable.GetStringText(39));
+                if (PlayerDataForGame.instance.pyData.Level >= DataTable.PlayerLevelConfig.Count)
                 {
-                    PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(40));
+                    PlayerDataForGame.instance.ShowStringTips(DataTable.GetStringText(40));
                     break;
                 }
             }
-            if (PlayerDataForGame.instance.pyData.level >= LoadJsonFile.playerLevelTableDatas.Count)
+            if (PlayerDataForGame.instance.pyData.Level >= DataTable.PlayerLevelConfig.Count)
             {
                 playerInfoObj.transform.GetChild(0).GetComponent<Slider>().value = 1;
-                playerInfoObj.transform.GetChild(2).GetChild(1).GetComponent<Text>().text = LoadJsonFile.GetStringText(34);
-                playerInfoObj.transform.GetChild(0).GetChild(2).GetComponent<Text>().text = PlayerDataForGame.instance.pyData.exp + "/" + 99999;
+                playerInfoObj.transform.GetChild(2).GetChild(1).GetComponent<Text>().text = DataTable.GetStringText(34);
+                playerInfoObj.transform.GetChild(0).GetChild(2).GetComponent<Text>().text = PlayerDataForGame.instance.pyData.Exp + "/" + 99999;
             }
             else
             {
-                playerInfoObj.transform.GetChild(0).GetComponent<Slider>().value = PlayerDataForGame.instance.pyData.exp / float.Parse(LoadJsonFile.playerLevelTableDatas[PlayerDataForGame.instance.pyData.level][1]);
-                playerInfoObj.transform.GetChild(2).GetChild(1).GetComponent<Text>().text = string.Format(LoadJsonFile.GetStringText(35), PlayerDataForGame.instance.pyData.level);
-                playerInfoObj.transform.GetChild(0).GetChild(2).GetComponent<Text>().text = PlayerDataForGame.instance.pyData.exp + "/" + LoadJsonFile.playerLevelTableDatas[PlayerDataForGame.instance.pyData.level][1];
+                playerInfoObj.transform.GetChild(0).GetComponent<Slider>().value = 1f * PlayerDataForGame.instance.pyData.Exp / DataTable.PlayerLevelConfig[PlayerDataForGame.instance.pyData.Level].Exp;
+                playerInfoObj.transform.GetChild(2).GetChild(1).GetComponent<Text>().text = string.Format(DataTable.GetStringText(35), PlayerDataForGame.instance.pyData.Level);
+                playerInfoObj.transform.GetChild(0).GetChild(2).GetComponent<Text>().text = PlayerDataForGame.instance.pyData.Exp + "/" + DataTable.PlayerLevelConfig[PlayerDataForGame.instance.pyData.Level].Exp;
             }
             UpdateCardNumsShow();
         }
-        //LoadSaveData.instance.SaveByJson(PlayerDataForGame.instance.pyData);
+        //LoadSaveData.instance.SaveByJson(PlayerDataForGame.instance.pyData); 
         PlayerDataForGame.instance.isNeedSaveData = true;
         LoadSaveData.instance.SaveGameData(1);
     }
 
-    /// <summary>
-    /// 初始化卡牌池
-    /// </summary>
+    /// <summary> 
+    /// 初始化卡牌池 
+    /// </summary> 
     private void InitHeroCardPooling()
     {
         for (int i = 0; i < minInitCardCount; i++)
@@ -2063,11 +1837,11 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// 从卡牌池中获取空卡牌
-    /// </summary>
-    /// <returns></returns>
-    private GameObject GetHeroCardToShow()
+    /// <summary> 
+    /// 从卡牌池中获取空卡牌 
+    /// </summary> 
+    /// <returns></returns> 
+    private GameObject GetHeroCardFromPool()
     {
         foreach (GameObject item in heroCardPoolList)
         {
@@ -2082,9 +1856,9 @@ public class UIManager : MonoBehaviour
         return go;
     }
 
-    /// <summary>
-    /// 回收卡牌池
-    /// </summary>
+    /// <summary> 
+    /// 回收卡牌池 
+    /// </summary> 
     private void TakeBackHeroCardPooling()
     {
         for (int i = 0; i < heroCardPoolList.Count; i++)
@@ -2096,401 +1870,192 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    //定位到存档中cardId对应的索引号
-    public int FindIndexFromData(List<NowLevelAndHadChip> saveData, int cardId)
-    {
-        int index = 0;
-        for (; index < saveData.Count; index++)
-        {
-            if (saveData[index].id == cardId)
-            {
-                break;
-            }
-        }
-        return index;
-    }
-
-    //添加体力
-    public void AddTiLiNums(int addNums)
+    //添加体力 
+    public void AddStamina(int addNums)
     {
         TimeSystemControl.instance.AddTiLiNums(addNums);
     }
 
-    //播放点击音效
+    //播放点击音效 
     public void PlayOnClickMusic()
     {
-        AudioController0.instance.ChangeAudioClip(AudioController0.instance.audioClips[13], AudioController0.instance.audioVolumes[13]);
+        AudioController0.instance.ChangeAudioClip(13);
         AudioController0.instance.PlayAudioSource(0);
     }
 
     [SerializeField]
-    Text musicBtnText;  //音乐开关文本
+    Text musicBtnText;  //音乐开关文本 
 
-    //打开设置界面
+    //打开设置界面 
     public void OpenSettingWinInit()
     {
         PlayOnClickMusic();
         if (AudioController0.instance.isPlayMusic != 1)
         {
-            musicBtnText.text = LoadJsonFile.GetStringText(41);
+            musicBtnText.text = DataTable.GetStringText(41);
         }
         else
         {
-            musicBtnText.text = LoadJsonFile.GetStringText(42);
+            musicBtnText.text = DataTable.GetStringText(42);
         }
     }
 
-    //开关音乐
+    //开关音乐 
     public void OpenOrCloseMusic()
     {
         if (AudioController0.instance.isPlayMusic != 1)
         {
-            //打开
+            //打开 
             PlayerPrefs.SetInt(LoadSaveData.instance.IsPlayMusicStr, 1);
             AudioController0.instance.isPlayMusic = 1;
             AudioController1.instance.audioSource.Play();
-            musicBtnText.text = LoadJsonFile.GetStringText(42);
+            musicBtnText.text = DataTable.GetStringText(42);
             PlayOnClickMusic();
         }
         else
         {
-            //关闭
+            //关闭 
             PlayerPrefs.SetInt(LoadSaveData.instance.IsPlayMusicStr, 0);
             AudioController0.instance.isPlayMusic = 0;
             AudioController0.instance.audioSource.Pause();
             AudioController1.instance.audioSource.Pause();
-            musicBtnText.text = LoadJsonFile.GetStringText(41);
+            musicBtnText.text = DataTable.GetStringText(41);
         }
     }
 
-    [SerializeField]
-    GameObject jinNangObj;  //锦囊入口
-    [SerializeField]
-    GameObject jinNangWindowObj;  //锦囊窗口
-    bool isCanOpenJinNang = true;  //记录是否可以开启锦囊
+    bool isJinNangReady = true;  //记录是否可以开启锦囊 
 
-    //刷新锦囊入口的显示
-    public void UpdateShowJinNangBtn(bool isCanOpen)
+    //刷新锦囊入口的显示 
+    public void UpdateShowJinNangBtn(bool isReady)
     {
-        if (isCanOpenJinNang != isCanOpen)
-        {
-            jinNangObj.SetActive(isCanOpen);
-            isCanOpenJinNang = isCanOpen;
-        }
-    }
-
-    //开启锦囊
-    public void OpenJinNangFun()
-    {
-        if (TimeSystemControl.instance.OnClickToGetJinNang())
-        {
-            AudioController0.instance.ChangeAudioClip(AudioController0.instance.audioClips[11], AudioController0.instance.audioVolumes[11]);
-            AudioController0.instance.PlayAudioSource(0);
-
-            //锦囊奖励界面
-            Transform rewardsTran = jinNangWindowObj.transform.GetChild(1).GetChild(1);
-            rewardsTran.gameObject.SetActive(false);
-            //点击继续obj
-            GameObject contuineObj = jinNangWindowObj.transform.GetChild(3).gameObject;
-            contuineObj.SetActive(false);
-
-            int randId = UnityEngine.Random.Range(0, LoadJsonFile.knowledgeTableDatas.Count);
-            //锦囊底框
-            Image jinNangImg = jinNangWindowObj.transform.GetChild(1).GetComponent<Image>();
-            jinNangImg.color = new Color(jinNangImg.color.r, jinNangImg.color.g, jinNangImg.color.b, 0);
-            //锦囊内容
-            Text jinNangText = jinNangWindowObj.transform.GetChild(1).GetChild(0).GetComponent<Text>();
-            //新增人物名
-            Text jinNangTextName = jinNangWindowObj.transform.GetChild(1).GetChild(0).GetChild(0).GetComponent<Text>();
-            jinNangText.text = "";
-            jinNangTextName.text = "";//新增人物名
-            jinNangText.gameObject.SetActive(true);
-            jinNangText.color = LoadJsonFile.knowledgeTableDatas[randId][1] == "1" ? ColorDataStatic.name_deepRed : ColorDataStatic.name_brown;
-            jinNangText.color = new Color(jinNangText.color.r, jinNangText.color.g, jinNangText.color.b, 0);
-            jinNangTextName.color = new Color(jinNangTextName.color.r, jinNangTextName.color.g, jinNangTextName.color.b, 0);
-
-            //奖励内容
-            int addTiLiNums = int.Parse(LoadJsonFile.knowledgeTableDatas[randId][3]);
-            string[] arrs = LoadJsonFile.knowledgeTableDatas[randId][4].Split(',');
-            int addYuanBaoNums = UnityEngine.Random.Range(int.Parse(arrs[0]), int.Parse(arrs[1]));
-            //背景点击继续按钮
-            Button jinNangBackBtn = jinNangWindowObj.transform.GetChild(0).GetComponent<Button>();
-            jinNangBackBtn.onClick.RemoveAllListeners();
-            //点击广告按钮
-            Button watchAdFordoubleBtn = rewardsTran.GetChild(1).GetComponent<Button>();
-            watchAdFordoubleBtn.onClick.RemoveAllListeners();
-            watchAdFordoubleBtn.gameObject.SetActive(true);
-
-            jinNangImg.DOFade(1, 0.5f).OnComplete(delegate ()
-            {
-                jinNangText.text = LoadJsonFile.knowledgeTableDatas[randId][2];
-                jinNangTextName.text = LoadJsonFile.knowledgeTableDatas[randId][5];//新增人物名
-                jinNangTextName.DOFade(1, 1.5f);
-                jinNangText.DOFade(1, 1.5f).OnComplete(delegate ()
-                {
-                    contuineObj.SetActive(true);
-                    jinNangBackBtn.onClick.AddListener(delegate ()
-                    {
-                        PlayOnClickMusic();
-                        jinNangTextName.DOFade(0, 1f);
-                        jinNangText.DOFade(0, 1f).OnComplete(delegate ()
-                        {
-                            //展示奖励内容
-                            UpdateJinNangRewards(addYuanBaoNums, addTiLiNums);
-                            rewardsTran.gameObject.SetActive(true);
-
-                            //点击背景领取并退出锦囊
-                            jinNangBackBtn.onClick.AddListener(delegate ()
-                            {
-                                PlayOnClickMusic();
-                                if (addYuanBaoNums > 0)
-                                    ConsumeManager.instance.AddYuanBao(addYuanBaoNums);
-                                if (addTiLiNums > 0)
-                                    TimeSystemControl.instance.AddTiLiNums(addTiLiNums);
-                                PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(43));
-                                jinNangWindowObj.SetActive(false);
-                            });
-                            //点击广告双倍奖励
-                            watchAdFordoubleBtn.onClick.AddListener(delegate ()
-                            {
-                                PlayOnClickMusic();
-                                //背景按钮无效
-                                jinNangBackBtn.enabled = false;
-                                watchAdFordoubleBtn.enabled = false;
-                                if (!DoNewAdController.instance.GetReWardVideo(
-                                //if (!AdController.instance.ShowVideo(
-                                    delegate ()
-                                    {
-                                        //奖励翻倍
-                                        addYuanBaoNums = addYuanBaoNums * 2;
-                                        addTiLiNums = addTiLiNums * 2;
-                                        UpdateJinNangRewards(addYuanBaoNums, addTiLiNums);
-                                        jinNangBackBtn.enabled = true;
-                                        watchAdFordoubleBtn.gameObject.SetActive(false);
-                                        watchAdFordoubleBtn.enabled = true;
-                                    },
-                                    delegate ()
-                                    {
-                                        PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(6));
-                                        jinNangBackBtn.enabled = true;
-                                        watchAdFordoubleBtn.enabled = true;
-                                    }
-                                    ))
-                                {
-                                    PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(6));
-                                    jinNangBackBtn.enabled = true;
-                                    watchAdFordoubleBtn.enabled = true;
-                                }
-
-                            });
-                        });
-                        jinNangBackBtn.onClick.RemoveAllListeners();
-                    });
-                });
-            });
-            jinNangWindowObj.SetActive(true);
-        }
-        else
-        {
-            PlayOnClickMusic();
-            PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(44));
-        }
+        if (isJinNangReady == isReady) return;
+        taoYuan.jinNangBtn.gameObject.SetActive(isReady);
+        isJinNangReady = isReady;
     }
 
     [SerializeField]
-    Transform jinNangRewardsTran;   //锦囊奖励父级
-
-    //展示锦囊中的奖励内容
-    private void UpdateJinNangRewards(int yuanBaoNums, int tiLiNums)
-    {
-        //元宝
-        if (yuanBaoNums > 0)
-        {
-            jinNangRewardsTran.GetChild(0).GetChild(4).GetComponent<Text>().text = "×" + yuanBaoNums;
-            jinNangRewardsTran.GetChild(0).gameObject.SetActive(true);
-        }
-        else
-        {
-            jinNangRewardsTran.GetChild(0).gameObject.SetActive(false);
-        }
-        //体力
-        if (tiLiNums > 0)
-        {
-            jinNangRewardsTran.GetChild(3).GetChild(4).GetComponent<Text>().text = "×" + tiLiNums;
-            jinNangRewardsTran.GetChild(3).gameObject.SetActive(true);
-        }
-        else
-        {
-            jinNangRewardsTran.GetChild(3).gameObject.SetActive(false);
-        }
-    }
-
+    Button rtCloseBtn;  //兑换界面关闭按钮 
     [SerializeField]
-    Button rtCloseBtn;  //兑换界面关闭按钮
+    InputField rtInputField;  //兑换界面输入控件 
     [SerializeField]
-    InputField rtInputField;  //兑换界面输入控件
-    [SerializeField]
-    Button rtconfirmBtn;  //兑换界面确认兑换按钮
+    Button rtconfirmBtn;  //兑换界面确认兑换按钮 
 
-    //兑换礼包方法
+    //兑换礼包方法 
     public void RedemptionCodeFun()
     {
         string str = rtInputField.text;
         if (str == "")
         {
-            PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(45));
+            PlayerDataForGame.instance.ShowStringTips(DataTable.GetStringText(45));
             PlayOnClickMusic();
         }
         else
         {
-            if (!TimeSystemControl.instance.isGetNetworkTime)
+            int indexId = -1;
+            for (int i = 0; i < DataTable.RCode.Count; i++)
             {
-                PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(46));
-                PlayOnClickMusic();
-            }
-            else
-            {
-                int indexId = -1;
-                for (int i = 0; i < LoadJsonFile.rCodeTableDatas.Count; i++)
+                if (str == DataTable.RCode[i].Code)
                 {
-                    if (str == LoadJsonFile.rCodeTableDatas[i][1])
-                    {
-                        indexId = i;
-                        break;
-                    }
+                    indexId = i;
+                    break;
                 }
-                if (indexId != -1)
+            }
+            if (indexId != -1)
+            {
+                var now = TimeSystemControl.instance.SystemTimer.Now.LocalDateTime;
+                if(!DataTable.RCode[indexId].Lasting.IsTableTimeInRange(now))
                 {
-                    string[] arr = LoadJsonFile.rCodeTableDatas[indexId][2].Split('-');
-                    DateTime startTime = DateTime.ParseExact(arr[0], "yyyyMMdd", System.Globalization.CultureInfo.CurrentCulture);
-                    DateTime endTime = DateTime.ParseExact(arr[1], "yyyyMMdd", System.Globalization.CultureInfo.CurrentCulture);
-                    DateTime nowTime = TimeSystemControl.instance.GetStrBackTime();
-
-                    if (nowTime < startTime || nowTime > endTime)
-                    {
-                        rtInputField.text = "";
-                        PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(47));
-                        PlayOnClickMusic();
-                    }
-                    else
-                    {
-                        if (!PlayerDataForGame.instance.gbocData.redemptionCodeGotList[indexId].isGot)
-                        {
-                            //获得奖励
-                            int addYvQueNums = int.Parse(LoadJsonFile.rCodeTableDatas[indexId][4]);
-                            ConsumeManager.instance.AddYuQue(addYvQueNums);
-                            int addYuanBaoNums = int.Parse(LoadJsonFile.rCodeTableDatas[indexId][5]);
-                            ConsumeManager.instance.AddYuanBao(addYuanBaoNums);
-                            int tiLiNums = int.Parse(LoadJsonFile.rCodeTableDatas[indexId][6]);
-                            AddTiLiNums(tiLiNums);
-                            string[] arrRewards = LoadJsonFile.rCodeTableDatas[indexId][7].Split(';');
-                            List<RewardsCardClass> rewards = new List<RewardsCardClass>();
-                            int cardType = 0;
-                            int cardId = 0;
-                            int chips = 0;
-                            for (int i = 0; i < arrRewards.Length; i++)
-                            {
-                                if (arrRewards[i] != "")
-                                {
-                                    string[] arrs = arrRewards[i].Split(',');
-                                    cardType = int.Parse(arrs[0]);
-                                    cardId = int.Parse(arrs[1]);
-                                    chips = int.Parse(arrs[2]);
-                                    GetAndSaveCardChips(cardType, cardId, chips);
-
-                                    RewardsCardClass rewardCard = new RewardsCardClass();
-                                    rewardCard.cardType = cardType;
-                                    rewardCard.cardId = cardId;
-                                    rewardCard.cardChips = chips;
-                                    rewards.Add(rewardCard);
-                                }
-                            }
-                            PlayerDataForGame.instance.isNeedSaveData = true;
-                            LoadSaveData.instance.SaveGameData(2);
-                            ShowRewardsThings(addYuanBaoNums, addYvQueNums, 0, tiLiNums, rewards, 0);
-
-                            PlayerDataForGame.instance.gbocData.redemptionCodeGotList[indexId].isGot = true;
-                            PlayerDataForGame.instance.isNeedSaveData = true;
-                            LoadSaveData.instance.SaveGameData(4);
-
-                            rtInputField.text = "";
-                            PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.rCodeTableDatas[indexId][3]);
-                            rtCloseBtn.onClick.Invoke();
-                            AudioController0.instance.ChangeAudioClip(AudioController0.instance.audioClips[0], AudioController0.instance.audioVolumes[0]);
-                            AudioController0.instance.PlayAudioSource(0);
-                        }
-                        else
-                        {
-                            rtInputField.text = "";
-                            PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(48));
-                            PlayOnClickMusic();
-                        }
-                    }
+                    rtInputField.text = "";
+                    PlayerDataForGame.instance.ShowStringTips(DataTable.GetStringText(47));
+                    PlayOnClickMusic();
                 }
                 else
                 {
-                    rtInputField.text = "";
-                    PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(49));
-                    PlayOnClickMusic();
+                    if (!PlayerDataForGame.instance.gbocData.redemptionCodeGotList[indexId].isGot)
+                    {
+                        //获得奖励 
+                        var yuQue = DataTable.RCode[indexId].YuQue;
+                        ConsumeManager.instance.AddYuQue(yuQue);
+                        var yuanBao = DataTable.RCode[indexId].YuanBao;
+                        ConsumeManager.instance.AddYuanBao(yuanBao);
+                        var stamina = DataTable.RCode[indexId].TiLi;
+                        AddStamina(stamina);
+                        var cards = DataTable.RCode[indexId].Cards;
+                        List<RewardsCardClass> rewards = new List<RewardsCardClass>();
+                        for (int i = 0; i < cards.Length; i++)
+                        {
+                            var card = cards[i];
+                            rewardManager.RewardCard((GameCardType) card.Type, card.CardId, card.Chips);
+                            var rewardCard = new RewardsCardClass
+                            {
+                                cardType = card.Type, cardId = card.CardId, cardChips = card.Chips
+                            };
+                            rewards.Add(rewardCard);
+                        }
+
+                        PlayerDataForGame.instance.isNeedSaveData = true;
+                        LoadSaveData.instance.SaveGameData(2);
+                        ShowRewardsThings(yuanBao, yuQue, 0, stamina, rewards, 0);
+
+                        PlayerDataForGame.instance.gbocData.redemptionCodeGotList[indexId].isGot = true;
+                        PlayerDataForGame.instance.isNeedSaveData = true;
+                        LoadSaveData.instance.SaveGameData(4);
+
+                        rtInputField.text = "";
+                        PlayerDataForGame.instance.ShowStringTips(DataTable.RCode[indexId].Info);
+                        rtCloseBtn.onClick.Invoke();
+                        AudioController0.instance.ChangeAudioClip(0);
+                        AudioController0.instance.PlayAudioSource(0);
+                    }
+                    else
+                    {
+                        rtInputField.text = "";
+                        PlayerDataForGame.instance.ShowStringTips(DataTable.GetStringText(48));
+                        PlayOnClickMusic();
+                    }
                 }
+            }
+            else
+            {
+                rtInputField.text = "";
+                PlayerDataForGame.instance.ShowStringTips(DataTable.GetStringText(49));
+                PlayOnClickMusic();
             }
         }
     }
 
-    //获取并存储奖励碎片
-    private void GetAndSaveCardChips(int cardType, int cardId, int chips)
-    {
-        switch (cardType)
-        {
-            case 0:
-                PlayerDataForGame.instance.hstData.heroSaveData[FindIndexFromData(PlayerDataForGame.instance.hstData.heroSaveData, cardId)].chips += chips;
-                break;
-            case 1:
-                PlayerDataForGame.instance.hstData.soldierSaveData[FindIndexFromData(PlayerDataForGame.instance.hstData.soldierSaveData, cardId)].chips += chips;
-                break;
-            case 2:
-                PlayerDataForGame.instance.hstData.towerSaveData[FindIndexFromData(PlayerDataForGame.instance.hstData.towerSaveData, cardId)].chips += chips;
-                break;
-            case 3:
-                PlayerDataForGame.instance.hstData.trapSaveData[FindIndexFromData(PlayerDataForGame.instance.hstData.trapSaveData, cardId)].chips += chips;
-                break;
-            case 4:
-                PlayerDataForGame.instance.hstData.spellSaveData[FindIndexFromData(PlayerDataForGame.instance.hstData.spellSaveData, cardId)].chips += chips;
-                break;
-            default:
-                break;
-        }
-    }
+    ///////////////////////////鸡坛相关///////////////////////////////// 
 
-    ///////////////////////////鸡坛相关/////////////////////////////////
-
-    //给体力商店按钮添加方法
+    //给体力商店按钮添加方法 
     private void InitChickenBtnFun()
     {
+        var chickenTables = DataTable.Chicken.Values.ToList();
         for (int i = 0; i < chickenShopBtns.Length; i++)
         {
+            var chicken = chickenTables[i];
             int index = i;
             chickenShopBtns[i].onClick.AddListener(delegate ()
             {
-                ChickenShoppingGetTiLi(index);
+                ChickenShoppingGetTiLi(chicken.Id);
             });
-            //显示体力的数量
-            chickenShopBtns[i].transform.parent.GetChild(1).GetComponent<Text>().text = "×" + LoadJsonFile.tiLiStoreTableDatas[i][1];
-            //显示消耗玉阙的数量
+            //显示体力的数量 
+            chickenShopBtns[i].transform.parent.GetChild(1).GetComponent<Text>().text = "×" + chicken.Stamina;
+            //显示消耗玉阙的数量 
             if (i != 0)
             {
-                chickenShopBtns[i].transform.GetChild(0).GetComponent<Text>().text = "×" + LoadJsonFile.tiLiStoreTableDatas[i][2];
+                chickenShopBtns[i].transform.GetChild(0).GetComponent<Text>().text = "×" + chicken.YuQueCost;
             }
         }
 
-        chickenEntObj.transform.GetChild(1).GetComponent<Button>().onClick.AddListener(delegate() {
-            AudioController0.instance.ChangeAudioClip(AudioController0.instance.audioClips[25], AudioController0.instance.audioVolumes[25]);
+        chickenEntObj.transform.GetChild(1).GetComponent<Button>().onClick.AddListener(delegate ()
+        {
+            AudioController0.instance.ChangeAudioClip(25);
             AudioController0.instance.PlayAudioSource(0);
             chickenShopWindowObj.SetActive(true);
         });
     }
 
-    //体力商店按钮统一处理
+    //体力商店按钮统一处理 
     private void OpenOrCloseChickenBtn(bool isCanTake)
     {
         for (int i = 0; i < chickenShopBtns.Length; i++)
@@ -2499,12 +2064,12 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    //消耗玉阙获得体力
+    //消耗玉阙获得体力 
     private bool GetTiLiForChicken(int quQueNums, int tiLiNums)
     {
-        if (ConsumeManager.instance.CutYuQue(quQueNums))
+        if (ConsumeManager.instance.DeductYuQue(quQueNums))
         {
-            AddTiLiNums(tiLiNums);
+            AddStamina(tiLiNums);
             return true;
         }
         else
@@ -2513,54 +2078,39 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    //商店购买体力
-    private void ChickenShoppingGetTiLi(int indexBtn)
+    //商店购买体力 
+    [Skip]
+    private void ChickenShoppingGetTiLi(int chickenId)
     {
-        AudioController0.instance.ChangeAudioClip(AudioController0.instance.audioClips[13], AudioController0.instance.audioVolumes[13]);
+        AudioController0.instance.ChangeAudioClip(13);
         OpenOrCloseChickenBtn(false);
-        int getTiLiNums = int.Parse(LoadJsonFile.tiLiStoreTableDatas[indexBtn][1]);
-        int needYvQueNums = int.Parse(LoadJsonFile.tiLiStoreTableDatas[indexBtn][2]);
-        switch (indexBtn)
+        var stamina = DataTable.Chicken[chickenId].Stamina;
+        var yuQueCost = DataTable.Chicken[chickenId].YuQueCost;
+        switch (chickenId)
         {
             case 0:
-                if (!DoNewAdController.instance.GetReWardVideo(
-                //if (!AdController.instance.ShowVideo(
-                    delegate ()
-                    {
-                        GetTiLiForChicken(needYvQueNums, getTiLiNums);
-                        PlayerDataForGame.instance.ShowStringTips(string.Format(LoadJsonFile.GetStringText(50), getTiLiNums));
-                        GetCkChangeTimeAndWindow();
-                        AudioController0.instance.ChangeAudioClip(AudioController0.instance.audioClips[25], AudioController0.instance.audioVolumes[25]);
-                        AudioController0.instance.PlayAudioSource(0);
-                    },
-                    delegate ()
-                    {
-                        PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(6));
-                        OpenOrCloseChickenBtn(true);
-                    }))
+                AdAgent.instance.BusyRetry(() =>
                 {
-                    PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(6));
+
+                    GetTiLiForChicken(yuQueCost, stamina);
+                    PlayerDataForGame.instance.ShowStringTips(string.Format(DataTable.GetStringText(50),
+                        stamina));
+                    GetCkChangeTimeAndWindow();
+                    AudioController0.instance.ChangeAudioClip(25);
+                    AudioController0.instance.PlayAudioSource(0);
+                }, () =>
+                {
+                    PlayerDataForGame.instance.ShowStringTips(DataTable.GetStringText(6));
                     OpenOrCloseChickenBtn(true);
-                }
+                });
                 break;
             case 1:
-                if (GetTiLiForChicken(needYvQueNums, getTiLiNums))
-                {
-                    PlayerDataForGame.instance.ShowStringTips(string.Format(LoadJsonFile.GetStringText(51), getTiLiNums));
-                    GetCkChangeTimeAndWindow();
-                    AudioController0.instance.ChangeAudioClip(AudioController0.instance.audioClips[25], AudioController0.instance.audioVolumes[25]);
-                }
-                else
-                {
-                    OpenOrCloseChickenBtn(true);
-                }
-                break;
             case 2:
-                if (GetTiLiForChicken(needYvQueNums, getTiLiNums))
+                if (GetTiLiForChicken(yuQueCost, stamina))
                 {
-                    PlayerDataForGame.instance.ShowStringTips(string.Format(LoadJsonFile.GetStringText(51), getTiLiNums));
+                    PlayerDataForGame.instance.ShowStringTips(string.Format(DataTable.GetStringText(51), stamina));
                     GetCkChangeTimeAndWindow();
-                    AudioController0.instance.ChangeAudioClip(AudioController0.instance.audioClips[25], AudioController0.instance.audioVolumes[25]);
+                    AudioController0.instance.ChangeAudioClip(25);
                 }
                 else
                 {
@@ -2571,26 +2121,26 @@ public class UIManager : MonoBehaviour
         AudioController0.instance.PlayAudioSource(0);
     }
 
-    //成功获得体力后的方法
+    //成功获得体力后的方法 
     private void GetCkChangeTimeAndWindow()
     {
-        //当前时间点TimeOfDay
-        TimeSpan dspNow = TimeSystemControl.instance.GetStrBackTime().TimeOfDay;
-        //TimeSpan dspNow = DateTime.Now.TimeOfDay;
+        //当前时间点TimeOfDay 
+        TimeSpan dspNow = TimeSystemControl.instance.SystemTimer.Now.LocalDateTime.TimeOfDay;
+        //TimeSpan dspNow = DateTime.Now.TimeOfDay; 
 
-        //在12点-14点之间
+        //在12点-14点之间 
         if (chickenOpenTs[0][0] < dspNow && dspNow < chickenOpenTs[0][1])
         {
             openCKTime0 = 2;
             PlayerPrefs.SetInt(TimeSystemControl.openCKTime0_str, openCKTime0);
         }
-        //在17点-19点之间
+        //在17点-19点之间 
         if (chickenOpenTs[1][0] < dspNow && dspNow < chickenOpenTs[1][1])
         {
             openCKTime1 = 2;
             PlayerPrefs.SetInt(TimeSystemControl.openCKTime1_str, openCKTime1);
         }
-        //在21点-23点之间
+        //在21点-23点之间 
         if (chickenOpenTs[2][0] < dspNow && dspNow < chickenOpenTs[2][1])
         {
             openCKTime2 = 2;
@@ -2601,16 +2151,16 @@ public class UIManager : MonoBehaviour
         OpenOrCloseChickenBtn(true);
     }
 
-    //鸡坛开启时间点
+    //鸡坛开启时间点 
     string[][] chickenOpenTimeStr = new string[3][] {
-        new string[2]{ "12:00", "14:00"}, 
-        new string[2]{ "16:00", "18:00"},   //关闭
-        new string[2]{ "19:00", "21:00"}  
+        new string[2]{ "12:00", "14:00"},
+        new string[2]{ "16:00", "18:00"},   //关闭 
+        new string[2]{ "19:00", "21:00"}
     };
 
     TimeSpan[][] chickenOpenTs = new TimeSpan[3][];
 
-    //初始化鸡坛开启时间
+    //初始化鸡坛开启时间 
     private void InitChickenOpenTs()
     {
         for (int i = 0; i < chickenOpenTs.Length; i++)
@@ -2621,7 +2171,7 @@ public class UIManager : MonoBehaviour
             chickenOpenTs[i] = ts;
         }
 
-        //这是当天首次进游戏
+        //这是当天首次进游戏 
         if (TimeSystemControl.instance.isFInGame)
         {
             openCKTime0 = 0;
@@ -2639,12 +2189,12 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    //对开启鸡坛时间进行矫正
+    //对开启鸡坛时间进行矫正 
     public void InitOpenChickenTime(bool isGetNetTime)
     {
         if (!isGetNetTime)
         {
-            //没有网络连接关闭鸡坛入口
+            //没有网络连接关闭鸡坛入口 
             if (chickenEntObj.activeSelf)
             {
                 chickenEntObj.SetActive(false);
@@ -2660,34 +2210,34 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    int openCKTime0 = 0;    //0未到时1可开启2已领取
+    int openCKTime0 = 0;    //0未到时1可开启2已领取 
     int openCKTime1 = 0;
     int openCKTime2 = 0;
 
     int closeCkWinSeconds = 7201;
 
-    //刷新鸡坛关闭时间显示
+    //刷新鸡坛关闭时间显示 
     private void UpdateChickenCloseTime(TimeSpan dspNow, TimeSpan dspEnd)
     {
         int seconds = (int)(dspEnd.TotalSeconds - dspNow.TotalSeconds);
         if (seconds < closeCkWinSeconds)
         {
             closeCkWinSeconds = seconds;
-            chickenCloseText.text = TimeSystemControl.instance.BackToTimeShow(closeCkWinSeconds);
+            chickenCloseText.text = TimeSystemControl.instance.TimeDisplayText(closeCkWinSeconds);
         }
     }
 
-    //是否可以开启鸡坛
+    //是否可以开启鸡坛 
     private bool CanOpenChickenEntr()
     {
-        //当前时间点TimeOfDay
-        TimeSpan dspNow = TimeSystemControl.instance.GetStrBackTime().TimeOfDay;
-        //TimeSpan dspNow = DateTime.Now.TimeOfDay;
+        //当前时间点TimeOfDay 
+        TimeSpan dspNow = TimeSystemControl.instance.SystemTimer.Now.LocalDateTime.TimeOfDay;
+        //TimeSpan dspNow = DateTime.Now.TimeOfDay; 
 
-        //在12点-14点之间
+        //在12点-14点之间 
         if (chickenOpenTs[0][0] < dspNow && dspNow < chickenOpenTs[0][1])
         {
-            //如果未领取过
+            //如果未领取过 
             if (openCKTime0 != 2)
             {
                 if (openCKTime0 == 0)
@@ -2718,7 +2268,7 @@ public class UIManager : MonoBehaviour
                 PlayerPrefs.SetInt(TimeSystemControl.openCKTime0_str, openCKTime0);
             }
         }
-        //在17点-19点之间
+        //在17点-19点之间 
         if (chickenOpenTs[1][0] < dspNow && dspNow < chickenOpenTs[1][1])
         {
             if (openCKTime1 != 2)
@@ -2751,7 +2301,7 @@ public class UIManager : MonoBehaviour
                 PlayerPrefs.SetInt(TimeSystemControl.openCKTime1_str, openCKTime1);
             }
         }
-        //在21点-23点之间
+        //在21点-23点之间 
         if (chickenOpenTs[2][0] < dspNow && dspNow < chickenOpenTs[2][1])
         {
             if (openCKTime2 != 2)
@@ -2802,27 +2352,28 @@ public class UIManager : MonoBehaviour
             else
             {
                 isShowQuitTips = true;
-                PlayerDataForGame.instance.ShowStringTips(LoadJsonFile.GetStringText(52));
+                PlayerDataForGame.instance.ShowStringTips(DataTable.GetStringText(52));
                 Invoke("ResetQuitBool", 2f);
             }
         }
     }
-    //重置退出游戏判断参数
+    //重置退出游戏判断参数 
     private void ResetQuitBool()
     {
         isShowQuitTips = false;
     }
 
-    /// <summary>
-    /// 存储游戏
-    /// </summary>
+    /// <summary> 
+    /// 存储游戏 
+    /// </summary> 
     public void SaveGame()
     {
         LoadSaveData.instance.SaveGameData();
     }
 
-    //退出游戏
-    public void ExitGame() {
+    //退出游戏 
+    public void ExitGame()
+    {
         PlayOnClickMusic();
 
 #if UNITY_ANDROID

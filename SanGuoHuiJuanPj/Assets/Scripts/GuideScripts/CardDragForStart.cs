@@ -207,7 +207,8 @@ public class CardDragForStart : MonoBehaviour
                             EffectsPoolingControl.instance.GetEffectToFight1("toBattle", 0.7f, FightForManagerForStart.instance.playerCardsPos[goIndexPos].transform);
 
                             posIndex = goIndexPos;
-                            FightControlForStart.instance.PlayAudioForSecondClip(85, 0);
+                            FightControlForStart.instance.PlayAudioForSecondClip(85
+                                , 0);
                         }
                         //拖动牌原位置 在备战位
                         else
