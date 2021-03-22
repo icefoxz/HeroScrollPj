@@ -126,7 +126,9 @@ public class SystemTimer : MonoBehaviour
 
     private IEnumerator SynchronizeDateTime()
     {
+#if !UNITY_EDITOR
         while (true)
+#endif
         {
             RequestSynchronizeDatetime();
             yield return new WaitForSeconds(SyncSecs);
@@ -135,9 +137,6 @@ public class SystemTimer : MonoBehaviour
 
     private async void RequestSynchronizeDatetime()
     {
-#if UNITY_EDITOR
-        //DebugLog($"请求服务器...{TaobaoTimeStampApi}");
-#endif
         var sw = new Stopwatch();
         sw.Start();
         var response = await Http.GetAsync(TaobaoTimeStampApi);

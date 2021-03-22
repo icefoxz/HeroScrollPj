@@ -602,27 +602,22 @@ public class UIManager : MonoBehaviour
         var playerUnlockProgress = PlayerDataForGame.instance.warsData.warUnlockSaveData.Single(w => w.warId == warId);
         if (playerUnlockProgress.isTakeReward) PlayerDataForGame.instance.ShowStringTips("首通宝箱已领取！");
         var reward = DataTable.War[warId].AchievementReward;
-        if (reward.YuanBao > 0)
+        if (reward != null)
         {
-            ConsumeManager.instance.AddYuanBao(reward.YuanBao);
+            if (reward.YuanBao > 0) ConsumeManager.instance.AddYuanBao(reward.YuanBao);
+            if (reward.YvQue > 0) ConsumeManager.instance.AddYuQue(reward.YvQue);
+            if (reward.Stamina > 0) AddStamina(reward.Stamina);
         }
-        if (reward.YvQue > 0)
-        {
-            ConsumeManager.instance.AddYuQue(reward.YvQue);
-        }
-        if (reward.Stamina > 0)
-        {
-            AddStamina(reward.Stamina);
-        }
+        else reward = new ConsumeResources();
 
         var card = DataTable.War[warId].AchievementCardProduce;
 
-        List<RewardsCardClass> cards = new List<RewardsCardClass>();
+        var cards = new List<RewardsCardClass>();
 
         if (card != null)
         {
             rewardManager.RewardCard((GameCardType)card.Type, card.CardId, card.Chips);
-            RewardsCardClass rewardCard = new RewardsCardClass
+            var rewardCard = new RewardsCardClass
             {
                 cardType = card.Type, cardId = card.CardId, cardChips = card.Chips
             };

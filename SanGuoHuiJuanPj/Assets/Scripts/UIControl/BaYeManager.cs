@@ -142,6 +142,7 @@ public class BaYeManager : MonoBehaviour
             var story = m.Value;
             var warId = DataTable.BaYeStoryEvent[story.Id].WarId;
             warId = warId == default ? -1 : warId;
+            var amount = story.Type == 4 ? 2 : 1;//答题(4)会生成两个战令供选择
             return new BaYeStoryEvent
             {
                 StoryId = story.Id,
@@ -151,7 +152,7 @@ public class BaYeManager : MonoBehaviour
                 YvQueReward = Random.Range(story.YuQueRange.Item1, story.YuQueRange.Item2),
                 YuanBaoReward = Random.Range(story.YuanBaoRange.Item1, story.YuanBaoRange.Item2),
                 WarId = warId,
-                ZhanLing = GetZhanLing(story.ZhanLingRange.Item1, story.ZhanLingRange.Item2)
+                ZhanLing = GetZhanLing(amount,story.ZhanLingRange.Item1, story.ZhanLingRange.Item2)
             };
         }).Where(kv => kv.Value.StoryId != 0).ToDictionary(kv => kv.Key, kv => kv.Value);
         PlayerDataForGame.instance.warsData.baYe.lastStoryEventsRefreshHour =
@@ -164,14 +165,19 @@ public class BaYeManager : MonoBehaviour
             SelectorUIMove(false, null);
         }
 
-        Dictionary<int, int> GetZhanLing(int min, int max)
+        Dictionary<int, int> GetZhanLing(int amount,int min, int max)
         {
             var forceList = DataTable.Force.Keys.ToList();
+            if (forceList.Count < amount)
+                throw XDebug.Throw<BaYeManager>($"要求生成的数量[{amount}]大于军团数[{forceList.Count}]");
             var zhanLingSelection = new Dictionary<int, int>();
-            var index = Random.Range(0, forceList.Count);
-            var pick = forceList[index];
-            zhanLingSelection.Add(pick, Random.Range(min, max + 1));
-            forceList.Remove(pick);
+            for (int i = 0; i < amount; i++)
+            {
+                var index = Random.Range(0, forceList.Count);
+                var pick = forceList[index];
+                zhanLingSelection.Add(pick, Random.Range(min, max + 1));
+                forceList.Remove(pick);
+            }
             return zhanLingSelection;
         }
     }
@@ -228,7 +234,7 @@ public class BaYeManager : MonoBehaviour
     private BaYeCityEvent GetBaYeEvent(int eventId,int cityId)
     {
         var baYeEvent = DataTable.BaYeCityEvent[eventId];//读取事件数据
-        var mappingTable = DataTable.BaYeLevelMapping[baYeEvent.BaYeBattleTableId];//获取对应战斗表
+        var mappingTable = DataTable.BaYeLevelMapping[baYeEvent.BaYeLevelMappingId];//获取对应战斗表
 
         return new BaYeCityEvent {EventId = eventId, CityId = cityId, WarIds = GetWarList(mappingTable).ToList(), ExpList = baYeEvent.BaYeExps.ToList(), PassedStages = new bool[baYeEvent.BaYeExps.Length]};
     }

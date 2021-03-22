@@ -322,34 +322,34 @@ public class FightController : MonoBehaviour
     }
 
     ///////攻击trap单位////////////
-    private void AttackTrapUnit(int damage, FightCardData attackUnit, FightCardData attackedUnit, bool isCanFightBack)
+    private void AttackTrapUnit(int damage, FightCardData attackUnit, FightCardData defUnit, bool isCanFightBack)
     {
         var isGongChengChe = ((GameCardType)attackUnit.cardType) == GameCardType.Hero &&
                              DataTable.Hero[attackUnit.cardId].MilitaryUnitTableId == 23;//攻城车
 
-        switch (attackedUnit.cardId)
+        switch (defUnit.cardId)
         {
             case 0://拒马
-                attackedUnit.nowHp -= damage;
-                AttackedAnimShow(attackedUnit, damage, false);
+                defUnit.nowHp -= damage;
+                AttackedAnimShow(defUnit, damage, false);
                 if (isCanFightBack && attackUnit.cardMoveType == 0 && !isGongChengChe)//攻城车不被拒马反伤
                 {
-                    damage = DefDamageProcessFun(attackedUnit, attackUnit, damage);
+                    damage = DefDamageProcessFun(defUnit, attackUnit, damage);
                     attackUnit.nowHp -= (int)(damage * (DataTable.GetGameValue(8) / 100f));
                     GameObject effectObj = AttackToEffectShow(attackUnit, false, "7A");
-                    effectObj.transform.localScale = new Vector3(1, attackedUnit.isPlayerCard ? 1 : -1, 1);
+                    effectObj.transform.localScale = new Vector3(1, defUnit.isPlayerCard ? 1 : -1, 1);
                     AttackedAnimShow(attackUnit, damage, false);
                     PlayAudioForSecondClip(89, 0.2f);
                 }
                 break;
             case 1://地雷
-                attackedUnit.nowHp -= damage;
-                AttackedAnimShow(attackedUnit, damage, false);
+                defUnit.nowHp -= damage;
+                AttackedAnimShow(defUnit, damage, false);
                 if (isCanFightBack && attackUnit.cardMoveType == 0)  //踩地雷的是近战
                 {
-                    int dileiDamage = GameCardInfo.GetInfo(GameCardType.Trap, attackUnit.cardId)
+                    int dileiDamage = GameCardInfo.GetInfo((GameCardType)defUnit.cardType,defUnit.cardId)
                         .GetDamage(attackUnit.cardGrade);
-                    dileiDamage = DefDamageProcessFun(attackedUnit, attackUnit, dileiDamage);
+                    dileiDamage = DefDamageProcessFun(defUnit, attackUnit, dileiDamage);
                     attackUnit.nowHp -= dileiDamage;
                     AttackToEffectShow(attackUnit, false, "201A");
                     AttackedAnimShow(attackUnit, dileiDamage, false);
@@ -357,85 +357,85 @@ public class FightController : MonoBehaviour
                 }
                 break;
             case 2://石墙
-                attackedUnit.nowHp -= damage;
-                AttackedAnimShow(attackedUnit, damage, false);
+                defUnit.nowHp -= damage;
+                AttackedAnimShow(defUnit, damage, false);
                 break;
             case 3://八阵图
-                attackedUnit.nowHp -= damage;
-                AttackedAnimShow(attackedUnit, damage, false);
+                defUnit.nowHp -= damage;
+                AttackedAnimShow(defUnit, damage, false);
                 if (attackUnit.cardMoveType == 0 && !isGongChengChe)//攻城车免疫
                 {
                     TakeOneUnitDizzed(attackUnit, DataTable.GetGameValue(133));
                 }
                 break;
             case 4://金锁阵
-                attackedUnit.nowHp -= damage;
-                AttackedAnimShow(attackedUnit, damage, false);
+                defUnit.nowHp -= damage;
+                AttackedAnimShow(defUnit, damage, false);
                 if (attackUnit.cardMoveType == 0 && !isGongChengChe)//攻城车免疫
                 {
                     TakeToImprisoned(attackUnit, DataTable.GetGameValue(10));
                 }
                 break;
             case 5://鬼兵阵
-                attackedUnit.nowHp -= damage;
-                AttackedAnimShow(attackedUnit, damage, false);
+                defUnit.nowHp -= damage;
+                AttackedAnimShow(defUnit, damage, false);
                 if (attackUnit.cardMoveType == 0 && !isGongChengChe)//攻城车免疫
                 {
                     TakeToCowardly(attackUnit, DataTable.GetGameValue(11));
                 }
                 break;
             case 6://火墙
-                attackedUnit.nowHp -= damage;
-                AttackedAnimShow(attackedUnit, damage, false);
+                defUnit.nowHp -= damage;
+                AttackedAnimShow(defUnit, damage, false);
                 if (isCanFightBack && attackUnit.cardMoveType == 0 && !isGongChengChe)//攻城车免疫
                 {
                     TakeToBurn(attackUnit, DataTable.GetGameValue(12));
                 }
                 break;
             case 7://毒泉
-                attackedUnit.nowHp -= damage;
-                AttackedAnimShow(attackedUnit, damage, false);
+                defUnit.nowHp -= damage;
+                AttackedAnimShow(defUnit, damage, false);
                 if (isCanFightBack && attackUnit.cardMoveType == 0 && !isGongChengChe)//攻城车免疫
                 {
                     TakeToPoisoned(attackUnit, DataTable.GetGameValue(13));
                 }
                 break;
             case 8://刀墙
-                attackedUnit.nowHp -= damage;
-                AttackedAnimShow(attackedUnit, damage, false);
+                defUnit.nowHp -= damage;
+                AttackedAnimShow(defUnit, damage, false);
                 if (isCanFightBack && attackUnit.cardMoveType == 0 && !isGongChengChe)//攻城车免疫
                 {
                     TakeToBleed(attackUnit, DataTable.GetGameValue(14));
                 }
                 break;
             case 9://滚石
-                attackedUnit.nowHp -= damage;
-                AttackedAnimShow(attackedUnit, damage, false);
+                defUnit.nowHp -= damage;
+                AttackedAnimShow(defUnit, damage, false);
                 break;
             case 10://滚木
-                attackedUnit.nowHp -= damage;
-                AttackedAnimShow(attackedUnit, damage, false);
+                defUnit.nowHp -= damage;
+                AttackedAnimShow(defUnit, damage, false);
                 break;
             case 11://金币宝箱
-                if (attackedUnit.nowHp > 0)
+                if (defUnit.nowHp > 0)
                 {
-                    attackedUnit.nowHp -= damage;
-                    GetGoldBoxFun(attackedUnit);
+                    defUnit.nowHp -= damage;
+                    GetGoldBoxFun(defUnit);
                 }
-                AttackedAnimShow(attackedUnit, damage, false);
+                AttackedAnimShow(defUnit, damage, false);
                 break;
             case 12://宝箱
-                if (attackedUnit.nowHp > 0)
+                if (defUnit.nowHp > 0)
                 {
-                    attackedUnit.nowHp -= damage;
-                    if (attackedUnit.nowHp <= 0)
+                    defUnit.nowHp -= damage;
+                    if (defUnit.nowHp <= 0)
                     {
                         //GameObject obj = EffectsPoolingControl.instance.GetEffectToFight("GetGold", 1.5f, attackedUnit.cardObj.transform);
                         //obj.GetComponentInChildren<Text>().text = string.Format(LoadJsonFile.GetStringText(8), LoadJsonFile.enemyUnitTableDatas[attackedUnit.unitId][4]);
                         PlayAudioForSecondClip(98, 0);
                     }
                 }
-                AttackedAnimShow(attackedUnit, damage, false);
+                AttackedAnimShow(defUnit, damage, false);
                 break;
             default:
                 break;
@@ -2686,88 +2686,87 @@ public class FightController : MonoBehaviour
     /// 防御伤害计算流程
     /// </summary>
     /// <param name="attackUnit">攻击者</param>
-    /// <param name="attackedUnit">被攻击者</param>
+    /// <param name="defendUnit">被攻击者</param>
     /// <param name="damage">伤害值</param>
-    public int DefDamageProcessFun(FightCardData attackUnit, FightCardData attackedUnit, int damage)
+    public int DefDamageProcessFun(FightCardData attackUnit, FightCardData defendUnit, int damage)
     {
-        attackedUnit.attackedBehavior = 0;
+        defendUnit.attackedBehavior = 0;
         int finalDamage = damage;
-        if (attackedUnit.cardType == 0)
+        if (defendUnit.cardType == 0)
         {
-            var attUnit = HeroCombatInfo.GetInfo(attackUnit.cardId);
-            var defUnit = HeroCombatInfo.GetInfo(attackedUnit.cardId);
+            var defUnit = HeroCombatInfo.GetInfo(defendUnit.cardId);
 
             //判断闪避
-            int dodgeRateNums = defUnit.DodgeRatio + attackedUnit.fightState.fengShenTaiAddtion;
-            if (DataTable.Hero[attackedUnit.cardId].MilitaryUnitTableId == 3 || DataTable.Hero[attackedUnit.cardId].MilitaryUnitTableId == 10)   //飞甲，死士 自身血量每降低10 %，提高5%闪避
+            int dodgeRateNums = defUnit.DodgeRatio + defendUnit.fightState.fengShenTaiAddtion;
+            if (DataTable.Hero[defendUnit.cardId].MilitaryUnitTableId == 3 || DataTable.Hero[defendUnit.cardId].MilitaryUnitTableId == 10)   //飞甲，死士 自身血量每降低10 %，提高5%闪避
             {
-                if (DataTable.Hero[attackedUnit.cardId].MilitaryUnitTableId == 3)
+                if (DataTable.Hero[defendUnit.cardId].MilitaryUnitTableId == 3)
                 {
-                    dodgeRateNums = dodgeRateNums + (int)((1f - (float)attackedUnit.nowHp / attackedUnit.fullHp) / (DataTable.GetGameValue(106) / 100f) * DataTable.GetGameValue(107));
+                    dodgeRateNums = dodgeRateNums + (int)((1f - (float)defendUnit.nowHp / defendUnit.fullHp) / (DataTable.GetGameValue(106) / 100f) * DataTable.GetGameValue(107));
                 }
                 else
                 {
-                    dodgeRateNums = dodgeRateNums + (int)((1f - (float)attackedUnit.nowHp / attackedUnit.fullHp) / (DataTable.GetGameValue(108) / 100f) * DataTable.GetGameValue(109));
+                    dodgeRateNums = dodgeRateNums + (int)((1f - (float)defendUnit.nowHp / defendUnit.fullHp) / (DataTable.GetGameValue(108) / 100f) * DataTable.GetGameValue(109));
                 }
             }
             if (TakeSpecialAttack(dodgeRateNums))
             {
                 finalDamage = 0;
-                ShowSpellTextObj(attackedUnit.cardObj, DataTable.GetStringText(19), false);
+                ShowSpellTextObj(defendUnit.cardObj, DataTable.GetStringText(19), false);
                 PlayAudioForSecondClip(97, 0);
-                attackedUnit.attackedBehavior = 2;
+                defendUnit.attackedBehavior = 2;
             }
             else
             {
                 //远程攻击者，判断远程闪避
-                if (attackUnit != null && attackUnit.cardType == 0 && attackUnit.cardMoveType == 1 && TakeSpecialAttack(attackedUnit.fightState.miWuZhenAddtion))
+                if (attackUnit != null && attackUnit.cardType == 0 && attackUnit.cardMoveType == 1 && TakeSpecialAttack(defendUnit.fightState.miWuZhenAddtion))
                 {
                     finalDamage = 0;
-                    ShowSpellTextObj(attackedUnit.cardObj, DataTable.GetStringText(19), false);
+                    ShowSpellTextObj(defendUnit.cardObj, DataTable.GetStringText(19), false);
                     PlayAudioForSecondClip(97, 0);
-                    attackedUnit.attackedBehavior = 2;
+                    defendUnit.attackedBehavior = 2;
                 }
                 else
                 {
                     //判断无敌
-                    if (attackedUnit.fightState.invincibleNums > 0)
+                    if (defendUnit.fightState.invincibleNums > 0)
                     {
                         finalDamage = 0;
-                        ShowSpellTextObj(attackedUnit.cardObj, DataTable.GetStringText(18), false);
+                        ShowSpellTextObj(defendUnit.cardObj, DataTable.GetStringText(18), false);
                         PlayAudioForSecondClip(96, 0);
-                        attackedUnit.attackedBehavior = 4;
+                        defendUnit.attackedBehavior = 4;
                     }
                     else
                     {
                         //判断护盾//不可抵挡法术
-                        if (attackUnit != null && (attackUnit.cardType != 0 || attackUnit.cardDamageType == 0) && OffsetWithStand(attackedUnit))
+                        if (attackUnit != null && (attackUnit.cardType != 0 || attackUnit.cardDamageType == 0) && OffsetWithStand(defendUnit))
                         {
                             finalDamage = 0;
-                            ShowSpellTextObj(attackedUnit.cardObj, DataTable.GetStringText(18), false);
+                            ShowSpellTextObj(defendUnit.cardObj, DataTable.GetStringText(18), false);
                             PlayAudioForSecondClip(96, 0);
-                            attackedUnit.attackedBehavior = 3;
+                            defendUnit.attackedBehavior = 3;
                         }
                         else
                         {
                             int defPropNums = 0;
                             //免伤计算
-                            if (attackedUnit.fightState.removeArmorNums <= 0)   //是否有卸甲
+                            if (defendUnit.fightState.removeArmorNums <= 0)   //是否有卸甲
                             {
-                                defPropNums = defUnit.Armor + attackedUnit.fightState.fenghuotaiAddtion;
+                                defPropNums = defUnit.Armor + defendUnit.fightState.fenghuotaiAddtion;
                                 //白马/重甲，自身血量每降低10%，提高5%免伤
-                                switch (DataTable.Hero[attackedUnit.cardId].MilitaryUnitTableId)
+                                switch (DataTable.Hero[defendUnit.cardId].MilitaryUnitTableId)
                                 {
                                     case 2:
                                         //重甲，自身血量每降低10%，提高5%免伤
-                                        defPropNums = defPropNums + (int)((1f - (float)attackedUnit.nowHp / attackedUnit.fullHp) / (DataTable.GetGameValue(110) / 100f) * DataTable.GetGameValue(111));
+                                        defPropNums = defPropNums + (int)((1f - (float)defendUnit.nowHp / defendUnit.fullHp) / (DataTable.GetGameValue(110) / 100f) * DataTable.GetGameValue(111));
                                         break;
                                     case 11:
                                         //白马，自身血量每降低10%，提高5%免伤
-                                        defPropNums = defPropNums + (int)((1f - (float)attackedUnit.nowHp / attackedUnit.fullHp) / (DataTable.GetGameValue(112) / 100f) * DataTable.GetGameValue(113));
+                                        defPropNums = defPropNums + (int)((1f - (float)defendUnit.nowHp / defendUnit.fullHp) / (DataTable.GetGameValue(112) / 100f) * DataTable.GetGameValue(113));
                                         break;
                                     case 58:
                                         //铁骑，单位越多免伤越高
-                                        List<FightCardData> tieQiList = attackedUnit.isPlayerCard ? tieQiCardsPy : tieQiCardsEm;
+                                        List<FightCardData> tieQiList = defendUnit.isPlayerCard ? tieQiCardsPy : tieQiCardsEm;
                                         int nowTieQiNums = 0;
                                         for (int i = 0; i < tieQiList.Count; i++)
                                         {
@@ -2785,7 +2784,7 @@ public class FightController : MonoBehaviour
                                         break;
                                 }
                                 //羁绊相关免伤
-                                Dictionary<int, JiBanActivedClass> jiBanAllTypes = attackedUnit.isPlayerCard ? playerJiBanAllTypes : enemyJiBanAllTypes;
+                                Dictionary<int, JiBanActivedClass> jiBanAllTypes = defendUnit.isPlayerCard ? playerJiBanAllTypes : enemyJiBanAllTypes;
                                 //五子良将激活时所受伤害减免30%
                                 //if (jiBanAllTypes[(int)JiBanSkillName.WuZiLiangJiang].isActived)
                                 //{
@@ -2821,50 +2820,50 @@ public class FightController : MonoBehaviour
                             }
 
                             //流血状态加成
-                            if (attackedUnit.fightState.bleedNums > 0)
+                            if (defendUnit.fightState.bleedNums > 0)
                             {
                                 finalDamage = (int)(finalDamage * DataTable.GetGameValue(117) / 100f);
                             }
                             //抵扣防护盾
-                            finalDamage = AddOrCutShieldValue(finalDamage, attackedUnit, false);
+                            finalDamage = AddOrCutShieldValue(finalDamage, defendUnit, false);
                         }
                     }
                 }
             }
-            if (attackedUnit.cardType == 0)
+            if (defendUnit.cardType == 0)
             {
-                switch (DataTable.Hero[attackedUnit.cardId].MilitaryUnitTableId)
+                switch (DataTable.Hero[defendUnit.cardId].MilitaryUnitTableId)
                 {
                     case 1:
                         //近战兵种受到暴击和会心加盾
-                        if (attackedUnit.fightState.dizzyNums <= 0 && attackedUnit.fightState.imprisonedNums <= 0)
+                        if (defendUnit.fightState.dizzyNums <= 0 && defendUnit.fightState.imprisonedNums <= 0)
                         {
                             if (indexAttackType != 0)
                             {
-                                if (attackedUnit.fightState.withStandNums <= 0)
+                                if (defendUnit.fightState.withStandNums <= 0)
                                 {
-                                    FightForManager.instance.CreateSateIcon(attackedUnit.cardObj.transform.GetChild(7), StringNameStatic.StateIconPath_withStand, true);
+                                    FightForManager.instance.CreateSateIcon(defendUnit.cardObj.transform.GetChild(7), StringNameStatic.StateIconPath_withStand, true);
                                 }
-                                attackedUnit.fightState.withStandNums++;
+                                defendUnit.fightState.withStandNums++;
                             }
                         }
                         break;
                     case 12:
                         //神武战意技能
-                        if (attackedUnit.fightState.willFightNums <= 0)
+                        if (defendUnit.fightState.willFightNums <= 0)
                         {
-                            FightForManager.instance.CreateSateIcon(attackedUnit.cardObj.transform.GetChild(7), StringNameStatic.StateIconPath_willFight, true);
+                            FightForManager.instance.CreateSateIcon(defendUnit.cardObj.transform.GetChild(7), StringNameStatic.StateIconPath_willFight, true);
                         }
-                        if (attackedUnit.fightState.willFightNums < 10)
+                        if (defendUnit.fightState.willFightNums < 10)
                         {
-                            attackedUnit.fightState.willFightNums++;
-                            attackedUnit.cardObj.transform.Find(StringNameStatic.StateIconPath_willFight + "Din").GetComponent<Image>().color = new Color(1, 1, 1, 0.4f + 0.6f * (attackedUnit.fightState.willFightNums / 10f));
+                            defendUnit.fightState.willFightNums++;
+                            defendUnit.cardObj.transform.Find(StringNameStatic.StateIconPath_willFight + "Din").GetComponent<Image>().color = new Color(1, 1, 1, 0.4f + 0.6f * (defendUnit.fightState.willFightNums / 10f));
                         }
-                        ShowSpellTextObj(attackedUnit.cardObj, "12", false);
+                        ShowSpellTextObj(defendUnit.cardObj, "12", false);
                         break;
                     case 41:
                         //敢死死战技能
-                        finalDamage = GanSiSiZhanAttack(finalDamage, attackedUnit);
+                        finalDamage = GanSiSiZhanAttack(finalDamage, defendUnit);
                         break;
                     default:
                         break;
