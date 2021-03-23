@@ -22,10 +22,12 @@ public class WarDataMocker : MonoBehaviour
     public MyCard[] heroes;
     public MyCard[] towers;
     public MyCard[] traps;
+    public GameResources gameResources = new GameResources();
 
 #if UNITY_EDITOR
-    private void Awake()
+    private void Start()
     {
+        gameResources.Init();
         DataTable.instance = gameObject.GetComponent<DataTable>();
         var player = Instantiate(playerDataPrefab);
         Instantiate(audioController0Prefab);
@@ -43,7 +45,6 @@ public class WarDataMocker : MonoBehaviour
 
     private void PrepareCards()
     {
-        var forceId = (int) force;
         var hst = PlayerDataForGame.instance.hstData;
         var hfMap = DataTable.Hero.Values.Select(card =>
         {
@@ -52,8 +53,10 @@ public class WarDataMocker : MonoBehaviour
             return new {id, origin};
         }).ToDictionary(c => c.id, c => c.origin);
         Dictionary<int, List<int>> cards;
+        var forceId = -2;//客制化阵容
         if (!isCustomCard)
         {
+            forceId = (int) force;
             cards = hst.heroSaveData.Concat(hst.soldierSaveData.Concat(hst.towerSaveData)) //合并所有卡牌
                 .Where(c => hfMap[c.id] == forceId && c.level > 0 && c.chips > 0 && c.isFight > 0) //过滤选中势力，并符合出战条件
                 .GroupBy(c => c.typeIndex, c => c.id, (type, ids) => new {type, ids}) //把卡牌再根据卡牌类型分类组合
@@ -67,14 +70,11 @@ public class WarDataMocker : MonoBehaviour
                 .GroupBy(c => c.typeIndex, c => c.id, (type, cIds) => new {type, cIds})
                 .ToDictionary(c => c.type, c => c.cIds.ToList());
         }
+        PlayerDataForGame.instance.WarForceMap[PlayerDataForGame.WarTypes.Expedition] = forceId;
 
-        if (!cards.TryGetValue(0, out PlayerDataForGame.instance.fightHeroId))
-            PlayerDataForGame.instance.fightHeroId = new List<int>();//英雄类型
-        if (!cards.TryGetValue(2, out PlayerDataForGame.instance.fightTowerId)) //塔类型
-            PlayerDataForGame.instance.fightTowerId = new List<int>();
-        if (!cards.TryGetValue(3, out PlayerDataForGame.instance.fightTrapId)) //陷阱类型
-            PlayerDataForGame.instance.fightTrapId = new List<int>();
-
+        PlayerDataForGame.instance.fightHeroId = cards.ContainsKey(0) ? cards[0] : new List<int>();
+        PlayerDataForGame.instance.fightTowerId = cards.ContainsKey(2) ? cards[2] : new List<int>();
+        PlayerDataForGame.instance.fightTrapId = cards.ContainsKey(3) ? cards[3] : new List<int>();
     }
     [Serializable]
     public class MyCard

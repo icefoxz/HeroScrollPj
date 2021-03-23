@@ -40,14 +40,15 @@ public class BaYeWindowUI : MiniWindowUI
     public void ShowQuest(QuestTable quest, Action onCorrectAction, Action onFaultyAction)
     {
         question.text = quest.Question;
-        var answers = new[] {quest.A, quest.B, quest.C};
+        var answers = new[] {(1,quest.A), (2,quest.B), (3,quest.C)};
         for (int i = 0; i < answer.Length; i++)
         {
             var btn = answer[i];
-            btn.GetComponentInChildren<Text>().text = answers[i];
+            var asw = answers[i];
+            btn.GetComponentInChildren<Text>().text = asw.Item2;
             btn.onClick.RemoveAllListeners();
             btn.onClick.AddListener(Close);
-            if (quest.Answer == i)
+            if (quest.Answer == asw.Item1)
                 btn.onClick.AddListener(onCorrectAction.Invoke);
             else btn.onClick.AddListener(onFaultyAction.Invoke);
         }

@@ -11,8 +11,13 @@ namespace Assets.Scripts.Utl
     internal class UnityMainThread : MonoBehaviour
     {
         internal static UnityMainThread thread;
+        public ExceptionHandlerUi ExceptionPanel;
         private Queue<UnityAction> jobs = new Queue<UnityAction>();
-        void Awake() => thread = this;
+        void Awake()
+        {
+            thread = this;
+            ExceptionPanel.Init();
+        }
 
         void Update()
         {

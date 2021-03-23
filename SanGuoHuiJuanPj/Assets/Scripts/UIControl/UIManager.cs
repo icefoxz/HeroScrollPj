@@ -1442,7 +1442,7 @@ public class UIManager : MonoBehaviour
         var nextLevel = DataTable.CardLevel[selectCardData.level + 1];
         if (selectCardData.chips >= nextLevel.ChipsConsume)
         {
-            if (ConsumeManager.instance.DeductYuanBao(nextLevel.ChipsConsume))
+            if (ConsumeManager.instance.DeductYuanBao(nextLevel.YuanBaoConsume))
             {
                 selectCardData.chips -= nextLevel.ChipsConsume;
 
@@ -1943,84 +1943,81 @@ public class UIManager : MonoBehaviour
     //兑换礼包方法 
     public void RedemptionCodeFun()
     {
-        string str = rtInputField.text;
-        if (str == "")
+        var code = rtInputField.text;
+
+        if (string.IsNullOrWhiteSpace(code))
         {
-            PlayerDataForGame.instance.ShowStringTips(DataTable.GetStringText(45));
-            PlayOnClickMusic();
+            ShowMessage(45);
+            return;
         }
-        else
+
+        var rCode = DataTable.RCode.Values.FirstOrDefault(c => c.Code == code);
+        if(rCode == null)
         {
-            int indexId = -1;
-            for (int i = 0; i < DataTable.RCode.Count; i++)
-            {
-                if (str == DataTable.RCode[i].Code)
-                {
-                    indexId = i;
-                    break;
-                }
-            }
-            if (indexId != -1)
-            {
-                var now = TimeSystemControl.instance.SystemTimer.Now.LocalDateTime;
-                if(!DataTable.RCode[indexId].Lasting.IsTableTimeInRange(now))
-                {
-                    rtInputField.text = "";
-                    PlayerDataForGame.instance.ShowStringTips(DataTable.GetStringText(47));
-                    PlayOnClickMusic();
-                }
-                else
-                {
-                    if (!PlayerDataForGame.instance.gbocData.redemptionCodeGotList[indexId].isGot)
-                    {
-                        //获得奖励 
-                        var yuQue = DataTable.RCode[indexId].YuQue;
-                        ConsumeManager.instance.AddYuQue(yuQue);
-                        var yuanBao = DataTable.RCode[indexId].YuanBao;
-                        ConsumeManager.instance.AddYuanBao(yuanBao);
-                        var stamina = DataTable.RCode[indexId].TiLi;
-                        AddStamina(stamina);
-                        var cards = DataTable.RCode[indexId].Cards;
-                        List<RewardsCardClass> rewards = new List<RewardsCardClass>();
-                        for (int i = 0; i < cards.Length; i++)
-                        {
-                            var card = cards[i];
-                            rewardManager.RewardCard((GameCardType) card.Type, card.CardId, card.Chips);
-                            var rewardCard = new RewardsCardClass
-                            {
-                                cardType = card.Type, cardId = card.CardId, cardChips = card.Chips
-                            };
-                            rewards.Add(rewardCard);
-                        }
+            ShowMessage(49);
+            return;
+        }
 
-                        PlayerDataForGame.instance.isNeedSaveData = true;
-                        LoadSaveData.instance.SaveGameData(2);
-                        ShowRewardsThings(yuanBao, yuQue, 0, stamina, rewards, 0);
+        var now = TimeSystemControl.instance.SystemTimer.Now.LocalDateTime;
+        if (!rCode.Lasting.IsTableTimeInRange(now))
+        {
+            ShowMessage(47);
+            return;
+        }
 
-                        PlayerDataForGame.instance.gbocData.redemptionCodeGotList[indexId].isGot = true;
-                        PlayerDataForGame.instance.isNeedSaveData = true;
-                        LoadSaveData.instance.SaveGameData(4);
+        var playerRecord = PlayerDataForGame.instance.gbocData.redemptionCodeGotList
+            .FirstOrDefault(c => c.id == rCode.Id);
+        var isRedeemed = playerRecord != null && playerRecord.isGot;
 
-                        rtInputField.text = "";
-                        PlayerDataForGame.instance.ShowStringTips(DataTable.RCode[indexId].Info);
-                        rtCloseBtn.onClick.Invoke();
-                        AudioController0.instance.ChangeAudioClip(0);
-                        AudioController0.instance.PlayAudioSource(0);
-                    }
-                    else
-                    {
-                        rtInputField.text = "";
-                        PlayerDataForGame.instance.ShowStringTips(DataTable.GetStringText(48));
-                        PlayOnClickMusic();
-                    }
-                }
-            }
-            else
+        if (isRedeemed)
+        {
+            ShowMessage(48);
+            return;
+        }
+
+        //获得奖励 
+        ConsumeManager.instance.AddYuQue(rCode.YuQue);
+        ConsumeManager.instance.AddYuanBao(rCode.YuanBao);
+        AddStamina(rCode.TiLi);
+        var cards = rCode.Cards;
+        List<RewardsCardClass> rewards = new List<RewardsCardClass>();
+        for (int i = 0; i < cards.Length; i++)
+        {
+            var card = cards[i];
+            rewardManager.RewardCard((GameCardType) card.Type, card.CardId, card.Chips);
+            var rewardCard = new RewardsCardClass
             {
-                rtInputField.text = "";
-                PlayerDataForGame.instance.ShowStringTips(DataTable.GetStringText(49));
-                PlayOnClickMusic();
-            }
+                cardType = card.Type,
+                cardId = card.CardId,
+                cardChips = card.Chips
+            };
+            rewards.Add(rewardCard);
+        }
+
+        PlayerDataForGame.instance.isNeedSaveData = true;
+        LoadSaveData.instance.SaveGameData(2);
+        ShowRewardsThings(rCode.YuanBao, rCode.YuQue, 0, rCode.TiLi, rewards, 0);
+
+        if (playerRecord == null)
+        {
+            playerRecord = new RedemptionCodeGot {id = rCode.Id};
+            PlayerDataForGame.instance.gbocData.redemptionCodeGotList.Add(playerRecord);
+        }
+        playerRecord.isGot = true;
+        PlayerDataForGame.instance.isNeedSaveData = true;
+        LoadSaveData.instance.SaveGameData(4);
+
+        rtInputField.text = "";
+        PlayerDataForGame.instance.ShowStringTips(rCode.Info);
+        rtCloseBtn.onClick.Invoke();
+        AudioController0.instance.ChangeAudioClip(0);
+        AudioController0.instance.PlayAudioSource(0);
+
+        void ShowMessage(int textId)
+        {
+            PlayerDataForGame.instance.ShowStringTips(DataTable.GetStringText(textId));
+            rtInputField.text = string.Empty;
+            PlayOnClickMusic();
         }
     }
 
@@ -2033,11 +2030,7 @@ public class UIManager : MonoBehaviour
         for (int i = 0; i < chickenShopBtns.Length; i++)
         {
             var chicken = chickenTables[i];
-            int index = i;
-            chickenShopBtns[i].onClick.AddListener(delegate ()
-            {
-                ChickenShoppingGetTiLi(chicken.Id);
-            });
+            chickenShopBtns[i].onClick.AddListener(() => ChickenShoppingGetTiLi(chicken.Id));
             //显示体力的数量 
             chickenShopBtns[i].transform.parent.GetChild(1).GetComponent<Text>().text = "×" + chicken.Stamina;
             //显示消耗玉阙的数量 
@@ -2088,10 +2081,9 @@ public class UIManager : MonoBehaviour
         var yuQueCost = DataTable.Chicken[chickenId].YuQueCost;
         switch (chickenId)
         {
-            case 0:
+            case 1:
                 AdAgent.instance.BusyRetry(() =>
                 {
-
                     GetTiLiForChicken(yuQueCost, stamina);
                     PlayerDataForGame.instance.ShowStringTips(string.Format(DataTable.GetStringText(50),
                         stamina));
@@ -2104,8 +2096,8 @@ public class UIManager : MonoBehaviour
                     OpenOrCloseChickenBtn(true);
                 });
                 break;
-            case 1:
             case 2:
+            case 3:
                 if (GetTiLiForChicken(yuQueCost, stamina))
                 {
                     PlayerDataForGame.instance.ShowStringTips(string.Format(DataTable.GetStringText(51), stamina));

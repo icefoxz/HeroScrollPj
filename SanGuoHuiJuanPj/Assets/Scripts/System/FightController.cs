@@ -639,10 +639,10 @@ public class FightController : MonoBehaviour
             int nowDamage = DefDamageProcessFun(attackUnit, attackedUnit, damage);
             attackedUnit.nowHp -= nowDamage;
             AttackedAnimShow(attackedUnit, nowDamage, false);
-            if (attackedUnit.cardType == 522 && attackedUnit.nowHp<=0)
-            { 
-                recordWinner = attackUnit.isPlayerCard ? 1 : -1;
-            }
+            if (attackedUnit.cardType == 522 && attackedUnit.nowHp<=0)
+            { 
+                recordWinner = attackUnit.isPlayerCard ? 1 : -1;
+            }
         }
     }
 
@@ -2808,7 +2808,7 @@ public class FightController : MonoBehaviour
                                 defPropNums = defPropNums > DataTable.GetGameValue(116) ? DataTable.GetGameValue(116) : defPropNums;
 
                                 //判断攻击者的伤害类型，获得被攻击者的物理或法术免伤百分比
-                                if (attackUnit.cardDamageType == 0)
+                                if (attackUnit?.cardDamageType == 0)
                                 {
                                     defPropNums = defPropNums + defUnit.PhysicalResist;
                                 }
@@ -2869,7 +2869,7 @@ public class FightController : MonoBehaviour
                     default:
                         break;
                 }
-                if (attackUnit.fightState.dizzyNums <= 0 && attackUnit.fightState.imprisonedNums <= 0)
+                if (attackUnit?.fightState.dizzyNums <= 0 && attackUnit.fightState.imprisonedNums <= 0)
                 {
                     switch (DataTable.Hero[attackUnit.cardId].MilitaryUnitTableId)
                     {
@@ -3963,7 +3963,7 @@ public class FightController : MonoBehaviour
                 }
                 waitTime = 1f;
                 break;
-            case JiBanSkillName.HeBeiSiTingZhu:
+            case JiBanSkillName.HeBeiSiTingZhu:
                 PlayAudioForSecondClip(104, 0);
                 fullScreenEffectObjs[6].SetActive(false);
                 fullScreenEffectObjs[6].transform.position = jBEffectShowPos[isPlayer ? 1 : 0].position;
