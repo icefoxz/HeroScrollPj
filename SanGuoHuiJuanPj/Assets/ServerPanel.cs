@@ -21,7 +21,7 @@ public class ServerPanel : MonoBehaviour
         SignalR.OnStatusChanged += Instance_OnStatusChanged;
         reconnectButton.onClick.AddListener(()=>SignalRClient.instance.Login(OnConnectAction));
         gameObject.SetActive(false);
-        requestTimeOut.gameObject.SetActive(true);
+        MessageSwitch(false);
         SetException();
     }
 
@@ -31,6 +31,12 @@ public class ServerPanel : MonoBehaviour
         exceptionMsg.text = exception;
     }
     public void ApplicationQuit() => Application.Quit();
+
+    private void MessageSwitch(bool isMaintenance)
+    {
+        serverMaintenance.gameObject.SetActive(isMaintenance);
+        requestTimeOut.gameObject.SetActive(!isMaintenance);
+    }
 
     private void OnConnectAction(bool isConnected, int code)
     {
@@ -49,8 +55,7 @@ public class ServerPanel : MonoBehaviour
 
     private void ShowServerMaintenance()
     {
-        serverMaintenance.gameObject.SetActive(true);
-        requestTimeOut.gameObject.SetActive(false);
+        MessageSwitch(true);
         reconnectButton.gameObject.SetActive(false);
     }
     //当因为各种原因断线
