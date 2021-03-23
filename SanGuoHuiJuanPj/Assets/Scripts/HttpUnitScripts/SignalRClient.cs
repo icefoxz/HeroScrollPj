@@ -28,6 +28,7 @@ public class SignalRClient : MonoBehaviour
     private CancellationTokenSource cancellationTokenSource;
     private static HubConnection _connection;
     private Dictionary<string, UnityAction<string>> _actions;
+    private bool isBusy;
     private void Awake()
     {
         if (instance != null)
@@ -51,6 +52,7 @@ public class SignalRClient : MonoBehaviour
 
     public async void Login(Action<bool,int> recallAction,string username = null,string password = null)
     {
+        if(isBusy)return;
         if (username == null) username = PlayerDataForGame.instance.acData.Username;
         if (password == null) password = PlayerDataForGame.instance.acData.Password;
         cancellationTokenSource = new CancellationTokenSource();
@@ -69,6 +71,7 @@ public class SignalRClient : MonoBehaviour
                     severBackCode = ServerBackCode.ERR_SERVERSTATE_ZERO;
                     break;
             }
+            isBusy = false;
             recallAction.Invoke(false, (int) severBackCode);
             return;
         }
@@ -76,6 +79,7 @@ public class SignalRClient : MonoBehaviour
         var jsonString = await response.Content.ReadAsStringAsync();
         var connectionInfo = JsonConvert.DeserializeObject<SignalRConnectionInfo>(jsonString);
         var result = await ConnectSignalRAsync(connectionInfo, cancellationTokenSource.Token);
+        isBusy = false;
         recallAction?.Invoke(result, (int) response.StatusCode);
     }
 

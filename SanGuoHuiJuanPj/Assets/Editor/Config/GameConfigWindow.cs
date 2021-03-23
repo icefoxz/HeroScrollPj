@@ -50,15 +50,7 @@ namespace Assets.Editor.Config
         void Save()
         {
             message = string.Empty;
-            var serverConfig = new ServerFields
-            {
-                ServerUrl = configAsset.ServerUrl,
-                INSTANCE_ID_API = configAsset.INSTANCE_ID_API,
-                PLAYER_UPLOAD_COUNT_API = configAsset.PLAYER_UPLOAD_COUNT_API,
-                PLAYER_REG_ACCOUNT_API = configAsset.PLAYER_REG_ACCOUNT_API,
-                PLAYER_SAVE_DATA_UPLOAD_API = configAsset.PLAYER_SAVE_DATA_UPLOAD_API,
-                USER_LOGIN_API = configAsset.USER_LOGIN_API
-            };
+            var serverConfig = new ServerFields(configAsset);
             var encrypt = EncryptDecipherTool.DESEncrypt(Json.Serialize(serverConfig));
             File.WriteAllText("assets/resources/game/pz.bytes", encrypt);
             XDebug.Log<GameConfigWindow>("配置文件已加密存档！");

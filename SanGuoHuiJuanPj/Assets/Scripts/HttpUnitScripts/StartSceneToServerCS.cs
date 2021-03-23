@@ -196,11 +196,11 @@ public class StartSceneToServerCS : MonoBehaviour
         BugHotFix.OnFixStaminaV2_05();
 #if UNITY_EDITOR
         if (isSkipLogin)
-#endif
         {
             LoadMainScene(true, (int) HttpStatusCode.OK);
             return;
         }
+#endif
 
         //OldLoginTask(LoadMainScene);
         signalRClient.Login(LoadMainScene, username, password);
