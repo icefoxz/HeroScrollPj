@@ -10,6 +10,7 @@ using Debug = UnityEngine.Debug;
 public static class XDebug
 {
     private static bool isInit;
+    private static ExceptionHandlerUi exceptionHandlerUi;
     public static void Init()
     {
         if (isInit)return;
@@ -18,19 +19,20 @@ public static class XDebug
         AppDebugClass.DeleteOldAppLog();   //删除原先DebugFile 
     }
 
+    public static void SubscribeHandler(ExceptionHandlerUi handler) => exceptionHandlerUi = handler;
     private static void Application_logMessageReceived(string condition, string stackTrace, LogType type)
     {
         switch (type)
         {
             case LogType.Error:
+            case LogType.Exception:
+                exceptionHandlerUi.OnLogReceived(condition, stackTrace, type);
                 break;
             case LogType.Assert:
                 break;
             case LogType.Warning:
                 break;
             case LogType.Log:
-                break;
-            case LogType.Exception:
                 break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(type), type, null);

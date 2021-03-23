@@ -10,10 +10,10 @@ public class ExceptionHandlerUi : MonoBehaviour
 
     public void Init()
     {
-        Application.logMessageReceived += OnLogReceived;
+        XDebug.SubscribeHandler(this);
     }
 
-    private void OnLogReceived(string condition, string stacktrace, LogType type)
+    public void OnLogReceived(string condition, string stacktrace, LogType type)
     {
         if (type == LogType.Error || type == LogType.Exception)
         {
