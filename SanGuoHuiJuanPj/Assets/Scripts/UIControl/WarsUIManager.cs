@@ -103,7 +103,7 @@ public class WarsUIManager : MonoBehaviour
 
     bool isEnteredLevel;    //记录是否进入了关卡
 
-    private GameResources GameResources => PlayerDataForGame.instance.GameResources;
+    private GameResources GameResources => GameResources.Instance;
 
     private void Awake()
     {
@@ -1109,19 +1109,28 @@ public class WarsUIManager : MonoBehaviour
     private void InitCardListShow()
     {
         var forceId = PlayerDataForGame.instance.CurrentWarForceId;
+#if UNITY_EDITOR
+        if (forceId == -2) //-2为测试用不重置卡牌，直接沿用卡牌上的阵容
+        {
+            PlayerDataForGame.instance.fightHeroId.Select(id=> new NowLevelAndHadChip().Instance(GameCardType.Hero,id))
+                .Concat(PlayerDataForGame.instance.fightTowerId.Select(id=> new NowLevelAndHadChip().Instance(GameCardType.Tower,id)))
+                .Concat(PlayerDataForGame.instance.fightTrapId.Select(id=> new NowLevelAndHadChip().Instance(GameCardType.Trap,id)))
+                .ToList().ForEach(CreateCardToList);
+            return;
+        }
+#endif
+        PlayerDataForGame.instance.fightHeroId.Clear();
+        PlayerDataForGame.instance.fightTowerId.Clear();
+        PlayerDataForGame.instance.fightTrapId.Clear();
 
-            PlayerDataForGame.instance.fightHeroId.Clear();
-            PlayerDataForGame.instance.fightTowerId.Clear();
-            PlayerDataForGame.instance.fightTrapId.Clear();
-
-            var hstData = PlayerDataForGame.instance.hstData;
-            //临时记录武将存档信息
-            hstData.heroSaveData.Enlist(forceId).ToList()
-                .ForEach(CreateCardToList);
-            hstData.towerSaveData.Enlist(forceId).ToList()
-                .ForEach(CreateCardToList);
-            hstData.trapSaveData.Enlist(forceId).ToList()
-                .ForEach(CreateCardToList);
+        var hstData = PlayerDataForGame.instance.hstData;
+        //临时记录武将存档信息
+        hstData.heroSaveData.Enlist(forceId).ToList()
+            .ForEach(CreateCardToList);
+        hstData.towerSaveData.Enlist(forceId).ToList()
+            .ForEach(CreateCardToList);
+        hstData.trapSaveData.Enlist(forceId).ToList()
+            .ForEach(CreateCardToList);
     }
 
     //创建玩家卡牌

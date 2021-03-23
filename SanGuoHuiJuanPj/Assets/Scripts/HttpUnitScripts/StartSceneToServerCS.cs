@@ -194,7 +194,9 @@ public class StartSceneToServerCS : MonoBehaviour
 #endif
         if (busyPanel) busyPanel.SetActive(true);
         BugHotFix.OnFixStaminaV2_05();
+#if UNITY_EDITOR
         if (isSkipLogin)
+#endif
         {
             LoadMainScene(true, (int) HttpStatusCode.OK);
             return;

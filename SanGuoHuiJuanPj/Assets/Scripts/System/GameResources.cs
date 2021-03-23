@@ -12,8 +12,9 @@ public enum ForceFlags
     吕 = 4
 }
 
-public class GameResources 
+public class GameResources
 {
+    public static GameResources Instance { get; private set; }
     private Dictionary<int, Sprite> heroImgMap;
     private Dictionary<int, Sprite> classImgMap;
     private Dictionary<int, Sprite> fuZhuImgMap;
@@ -62,6 +63,7 @@ public class GameResources
     public void Init(bool forceReload = false)
     {
         if (isInit && !forceReload) return;
+        Instance = this;
         heroImgMap  = Resources.LoadAll<Sprite>(HeroImagesPath)
              .Select(o => new {imageId = int.Parse(o.name), sprite = o})
             .Join(DataTable.Hero.Values, c => c.imageId, t => t.ImageId,
