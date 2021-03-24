@@ -22,12 +22,22 @@ public class SignalRClient : MonoBehaviour
     /// SignalR 网络状态
     /// </summary>
     public HubConnectionState Status;
+    /// <summary>
+    /// 重试次数
+    /// </summary>
+    public int Retries = 5;
+
+    public int ServerTimeOutMinutes = 3;
+    public int KeeAliveIntervalSecs = 20;
+    public int HandShakeTimeoutSecs = 20;
     public ServerPanel ServerPanel;
     public event UnityAction<HubConnectionState> OnStatusChanged;
     public static SignalRClient instance;
     private CancellationTokenSource cancellationTokenSource;
     private static HubConnection _connection;
     private Dictionary<string, UnityAction<string>> _actions;
+    private bool isBusy;
+    private int retryCount;
     private void Awake()
     {
         if (instance != null)
@@ -51,10 +61,11 @@ public class SignalRClient : MonoBehaviour
 
     public async void Login(Action<bool,int> recallAction,string username = null,string password = null)
     {
+        if(isBusy)return;
         if (username == null) username = PlayerDataForGame.instance.acData.Username;
         if (password == null) password = PlayerDataForGame.instance.acData.Password;
         cancellationTokenSource = new CancellationTokenSource();
-        cancellationTokenSource.Token.Register(() => OnConnectionClose(HubConnectionState.Disconnected, XDebug.Throw<SignalRClient>("取消连接！")));
+        cancellationTokenSource.Token.Register(()=>OnConnectionClose(XDebug.Throw<SignalRClient>("取消连接！")));
         var response = await Http.PostAsync(Server.SIGNALR_LOGIN_API,Json.Serialize(GetUserInfo(username,password)), cancellationTokenSource.Token);
         if (!response.IsSuccessStatusCode)
         {
@@ -69,6 +80,7 @@ public class SignalRClient : MonoBehaviour
                     severBackCode = ServerBackCode.ERR_SERVERSTATE_ZERO;
                     break;
             }
+            isBusy = false;
             recallAction.Invoke(false, (int) severBackCode);
             return;
         }
@@ -76,6 +88,7 @@ public class SignalRClient : MonoBehaviour
         var jsonString = await response.Content.ReadAsStringAsync();
         var connectionInfo = JsonConvert.DeserializeObject<SignalRConnectionInfo>(jsonString);
         var result = await ConnectSignalRAsync(connectionInfo, cancellationTokenSource.Token);
+        isBusy = false;
         recallAction?.Invoke(result, (int) response.StatusCode);
     }
 
@@ -95,17 +108,31 @@ public class SignalRClient : MonoBehaviour
     {
         try
         {
+            if (_connection != null)
+            {
+                ResetConnection();
+                await _connection.DisposeAsync();
+            }
             _connection = new HubConnectionBuilder()
                 .WithUrl(connectionInfo.Url, cfg =>
-                    cfg.AccessTokenProvider = ()=> Task.Run(() => connectionInfo.AccessToken, cancellationToken))
+                    cfg.AccessTokenProvider = () => Task.Run(() => connectionInfo.AccessToken, cancellationToken))
+                .WithAutomaticReconnect(new TimeSpan[]
+                {
+                    TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(2), TimeSpan.FromSeconds(4), TimeSpan.FromSeconds(5),
+                    TimeSpan.FromSeconds(5)
+                })
                 .Build();
-            _connection.Closed += e => OnConnectionClose(_connection.State, e);
-            _connection.Reconnected += s => OnReconnected(_connection.State, s);
-            _connection.Reconnecting += e => OnReconnecting(_connection.State, e);
+            _connection.ServerTimeout = TimeSpan.FromMinutes(ServerTimeOutMinutes);
+            _connection.KeepAliveInterval = TimeSpan.FromSeconds(KeeAliveIntervalSecs);
+            _connection.HandshakeTimeout = TimeSpan.FromSeconds(HandShakeTimeoutSecs);
+            _connection.Closed += OnConnectionClose;
+            _connection.Reconnected += OnReconnected;
+            _connection.Reconnecting += OnReconnecting;
             _connection.On<string, string>(EventStrings.Server_Call, OnServerCall);
             await _connection.StartAsync(cancellationToken);
             StatusChanged(_connection.State,$"Host:{connectionInfo.Url},\nToken:{connectionInfo.AccessToken}\n连接成功！");
             cancellationTokenSource = null;
+            Application.quitting += Disconnect;
         }
         catch (Exception e)
         {
@@ -144,15 +171,28 @@ public class SignalRClient : MonoBehaviour
     /// <summary>
     /// 强制离线
     /// </summary>
-    public async void Disconnect()
+    public void Disconnect()
     {
         if (_connection.State == HubConnectionState.Disconnected)
             return;
 
         if (cancellationTokenSource?.IsCancellationRequested == false)
+        {
             cancellationTokenSource.Cancel();
-        if (_connection.State != HubConnectionState.Disconnected)
-            await _connection.StopAsync();
+            ResetConnection();
+            return;
+        }
+        if (_connection.State == HubConnectionState.Disconnected) return;
+        _connection.StopAsync().Wait();
+        ResetConnection();
+    }
+
+    private void ResetConnection()
+    {
+        _connection.Closed -= OnConnectionClose;
+        _connection.Reconnected -= OnReconnected;
+        _connection.Reconnecting -= OnReconnecting;
+        Application.quitting -= Disconnect;
     }
 
     #region Event
@@ -160,37 +200,30 @@ public class SignalRClient : MonoBehaviour
     /// <summary>
     /// 当客户端尝试重新连接服务器
     /// </summary>
-    /// <param name="state"></param>
-    /// <param name="e"></param>
-    /// <returns></returns>
-    private Task OnReconnecting(HubConnectionState state,Exception e)
+    private Task OnReconnecting(Exception exception)
     {
-        StatusChanged(state, e.ToString());
+        retryCount++;
+        StatusChanged(_connection.State, exception.ToString());
         return Task.CompletedTask;
     }
 
     /// <summary>
     /// 当客户端重新连线
     /// </summary>
-    /// <param name="state"></param>
-    /// <param name="arg"></param>
-    /// <returns></returns>
-    private Task OnReconnected(HubConnectionState state,string arg)
+    private Task OnReconnected(string msg)
     {
-        StatusChanged(state, arg);
+        retryCount = 0;
+        StatusChanged(_connection.State, msg);
         return Task.CompletedTask;
     }
 
     /// <summary>
     /// 当客户端断线的处理方法
     /// </summary>
-    /// <param name="state"></param>
-    /// <param name="e"></param>
-    /// <returns></returns>
-    private Task OnConnectionClose(HubConnectionState state,Exception e)
+    private Task OnConnectionClose(Exception exception)
     {
-        StatusChanged(state, e.ToString());
-        if (state == HubConnectionState.Disconnected)
+        StatusChanged(_connection.State, exception.ToString());
+        if (_connection.State == HubConnectionState.Disconnected)
             ServerPanel.OnSignalRDisconnected();
         return Task.CompletedTask;
     }
@@ -218,4 +251,5 @@ public class SignalRClient : MonoBehaviour
         [JsonProperty("url")] public string Url { get; set; }
         [JsonProperty("accessToken")] public string AccessToken { get; set; }
     }
+
 }

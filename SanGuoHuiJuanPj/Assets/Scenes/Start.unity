@@ -194,7 +194,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_FontData:
-    m_Font: {fileID: 12800000, guid: 65585f9679c2fd944a2bde26e0fc65e2, type: 3}
+    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
     m_FontSize: 45
     m_FontStyle: 0
     m_BestFit: 0
@@ -4799,6 +4799,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Status: 0
+  Retries: 5
   ServerPanel: {fileID: 1646223395}
 --- !u!4 &423182362
 Transform:
@@ -7461,7 +7462,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e96df91d8871ba9479ffbfe23771aad0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isSkipLogin: 1
+  isSkipLogin: 0
   isSkipInitBattle: 0
   closeBtn: {fileID: 116243771}
   loginBtn: {fileID: 186113620}
@@ -10293,7 +10294,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &832102369
 RectTransform:
   m_ObjectHideFlags: 0
@@ -21607,7 +21608,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.2685185, y: 0.7083333}
   m_AnchorMax: {x: 0.7314815, y: 0.96875}
-  m_AnchoredPosition: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0.5, y: 0}
   m_SizeDelta: {x: 1, y: 1}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1428015716
@@ -24151,7 +24152,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.037037037, y: 0.15067707}
   m_AnchorMax: {x: 0.9638889, y: 0.38505208}
-  m_AnchoredPosition: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0.5, y: 1}
   m_SizeDelta: {x: 1, y: 1}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1001 &1713090337

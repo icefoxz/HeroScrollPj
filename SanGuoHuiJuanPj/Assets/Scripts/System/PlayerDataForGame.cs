@@ -288,7 +288,6 @@ public class PlayerDataForGame : MonoBehaviour
     {
         var cardType = (GameCardType) card.typeIndex;
         var cardLimit = DataTable.PlayerLevelConfig[pyData.Level].CardLimit;
-        if (TotalCardsEnlisted >= cardLimit) return false;
         List<int> cardList = null;
         switch (cardType)
         {
@@ -307,6 +306,7 @@ public class PlayerDataForGame : MonoBehaviour
 
         if(isAdd)
         {
+            if (TotalCardsEnlisted >= cardLimit) return false;
             if (!cardList.Contains(card.id))
                 cardList.Add(card.id);
             return true;
