@@ -1196,7 +1196,7 @@ public class UIManager : MonoBehaviour
         lastSelectImg.enabled = true;
 
         selectCardData = card;
-
+        
         CalculatedNeedYuanBao(card.level);
     }
 
