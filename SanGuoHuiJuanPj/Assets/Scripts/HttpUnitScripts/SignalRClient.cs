@@ -26,6 +26,10 @@ public class SignalRClient : MonoBehaviour
     /// 重试次数
     /// </summary>
     public int Retries = 5;
+
+    public int ServerTimeOutMinutes = 3;
+    public int KeeAliveIntervalSecs = 20;
+    public int HandShakeTimeoutSecs = 20;
     public ServerPanel ServerPanel;
     public event UnityAction<HubConnectionState> OnStatusChanged;
     public static SignalRClient instance;
@@ -118,9 +122,9 @@ public class SignalRClient : MonoBehaviour
                     TimeSpan.FromSeconds(5)
                 })
                 .Build();
-            _connection.ServerTimeout = TimeSpan.FromMinutes(3);
-            _connection.KeepAliveInterval = TimeSpan.FromSeconds(20);
-            _connection.HandshakeTimeout = TimeSpan.FromSeconds(20);
+            _connection.ServerTimeout = TimeSpan.FromMinutes(ServerTimeOutMinutes);
+            _connection.KeepAliveInterval = TimeSpan.FromSeconds(KeeAliveIntervalSecs);
+            _connection.HandshakeTimeout = TimeSpan.FromSeconds(HandShakeTimeoutSecs);
             _connection.Closed += OnConnectionClose;
             _connection.Reconnected += OnReconnected;
             _connection.Reconnecting += OnReconnecting;
@@ -128,6 +132,7 @@ public class SignalRClient : MonoBehaviour
             await _connection.StartAsync(cancellationToken);
             StatusChanged(_connection.State,$"Host:{connectionInfo.Url},\nToken:{connectionInfo.AccessToken}\n连接成功！");
             cancellationTokenSource = null;
+            Application.quitting += Disconnect;
         }
         catch (Exception e)
         {
@@ -187,6 +192,7 @@ public class SignalRClient : MonoBehaviour
         _connection.Closed -= OnConnectionClose;
         _connection.Reconnected -= OnReconnected;
         _connection.Reconnecting -= OnReconnecting;
+        Application.quitting -= Disconnect;
     }
 
     #region Event
