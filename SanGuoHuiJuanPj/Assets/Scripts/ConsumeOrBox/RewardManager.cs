@@ -114,7 +114,8 @@ public class RewardManager : MonoBehaviour
     /// <param name="cardId">具体id</param>
     /// <param name="chips">碎片数量</param>
     /// <returns></returns>
-    public void RewardCard(GameCardType cardType, int cardId, int chips) => PlayerDataForGame.instance.hstData.heroSaveData.GetOrInstance(cardId, cardType).chips += chips;
+    public void RewardCard(GameCardType cardType, int cardId, int chips) =>
+        PlayerDataForGame.instance.hstData.heroSaveData.GetOrInstance(cardId, cardType, 0).chips += chips;
 
 
     //卡牌和权重类
