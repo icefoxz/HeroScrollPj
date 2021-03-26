@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Net;
-using System.Threading.Tasks;
+﻿using System.Collections;
 using Microsoft.AspNetCore.SignalR.Client;
 using UnityEngine;
 using UnityEngine.UI;
-using Task = System.Threading.Tasks.Task;
 
 public class ServerPanel : MonoBehaviour
 {
@@ -32,7 +27,6 @@ public class ServerPanel : MonoBehaviour
         exceptionMsg.gameObject.SetActive(!string.IsNullOrWhiteSpace(exception));
         exceptionMsg.text = exception;
     }
-    public void ApplicationQuit() => Application.Quit();
 
     private void MessageSwitch(bool isMaintenance)
     {
