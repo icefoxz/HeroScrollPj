@@ -602,8 +602,7 @@ public class FightForManagerForStart : MonoBehaviour
         data.cardGrade = chessman.Star;
         data.fightState = new FightState();
         var cardType = (GameCardType) chessman.CardType;
-        var card = new NowLevelAndHadChip().Instance(cardType, chessman.CardId);
-        card.level = chessman.Star;
+        var card = new NowLevelAndHadChip().Instance(cardType, chessman.CardId, chessman.Star);
         var info = card.GetInfo();
         //兵种
         data.cardObj.transform.GetChild(1).GetComponent<Image>().sprite = cardType == GameCardType.Hero

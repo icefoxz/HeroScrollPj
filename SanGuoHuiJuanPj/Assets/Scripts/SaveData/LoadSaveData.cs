@@ -588,15 +588,15 @@ public class LoadSaveData : MonoBehaviour
         };
         DataTable.PlayerInitialConfig[pySaveData.ForceId].InitialHero.ToList().ForEach(id =>
         {
-            var card = hstSaveData.heroSaveData.GetOrInstance(id, GameCardType.Hero);
+            var card = hstSaveData.heroSaveData.GetOrInstance(id, GameCardType.Hero, 1);
             card.isFight = id == 0 || id == 1 ? 1 : 0;
         });
         DataTable.PlayerInitialConfig[pySaveData.ForceId].InitialTower.ToList().ForEach(id =>
         {
-            var card = hstSaveData.towerSaveData.GetOrInstance(id, GameCardType.Tower);
+            var card = hstSaveData.towerSaveData.GetOrInstance(id, GameCardType.Tower, 1);
             card.isFight = id == 0 ? 1 : 0;
         });
-
+        SaveByJson(hstSaveData);
         /////////////////////////////////////////////////////////////////////////////////////////// 
         WarsDataClass warsSaveData = new WarsDataClass();
         warsSaveData.warUnlockSaveData = new List<UnlockWarCount>();

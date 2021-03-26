@@ -1112,9 +1112,9 @@ public class WarsUIManager : MonoBehaviour
 #if UNITY_EDITOR
         if (forceId == -2) //-2为测试用不重置卡牌，直接沿用卡牌上的阵容
         {
-            PlayerDataForGame.instance.fightHeroId.Select(id=> new NowLevelAndHadChip().Instance(GameCardType.Hero,id))
-                .Concat(PlayerDataForGame.instance.fightTowerId.Select(id=> new NowLevelAndHadChip().Instance(GameCardType.Tower,id)))
-                .Concat(PlayerDataForGame.instance.fightTrapId.Select(id=> new NowLevelAndHadChip().Instance(GameCardType.Trap,id)))
+            PlayerDataForGame.instance.fightHeroId.Select(id=> new NowLevelAndHadChip().Instance(GameCardType.Hero,id,1))
+                .Concat(PlayerDataForGame.instance.fightTowerId.Select(id=> new NowLevelAndHadChip().Instance(GameCardType.Tower,id,1)))
+                .Concat(PlayerDataForGame.instance.fightTrapId.Select(id=> new NowLevelAndHadChip().Instance(GameCardType.Trap,id,1)))
                 .ToList().ForEach(CreateCardToList);
             return;
         }

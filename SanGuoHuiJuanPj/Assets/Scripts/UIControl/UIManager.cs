@@ -1393,7 +1393,7 @@ public class UIManager : MonoBehaviour
     {
         //player`s name 
         playerInfoObj.transform.GetChild(1).GetChild(1).GetComponent<Text>().text = DataTable.PlayerInitialConfig[PlayerDataForGame.instance.pyData.ForceId].Force;
-        if (PlayerDataForGame.instance.pyData.Level >= DataTable.PlayerLevelConfig.Count)
+        if (PlayerDataForGame.instance.pyData.Level >= DataTable.PlayerLevelConfig.Keys.Max())
         {
             playerInfoObj.transform.GetChild(0).GetComponent<Slider>().value = 1;
             playerInfoObj.transform.GetChild(2).GetChild(1).GetComponent<Text>().text = DataTable.GetStringText(34);
@@ -1402,12 +1402,10 @@ public class UIManager : MonoBehaviour
         else
         {
             //Exp 
-            playerInfoObj.transform.GetChild(0).GetComponent<Slider>().value = 1f * PlayerDataForGame.instance.pyData.Exp / DataTable.PlayerLevelConfig[PlayerDataForGame.instance.pyData.Level].Exp;
+            playerInfoObj.transform.GetChild(0).GetComponent<Slider>().value = 1f * PlayerDataForGame.instance.pyData.Exp / DataTable.PlayerLevelConfig[PlayerDataForGame.instance.pyData.Level + 1].Exp;
             //Level 
             playerInfoObj.transform.GetChild(2).GetChild(1).GetComponent<Text>().text = string.Format(DataTable.GetStringText(35), PlayerDataForGame.instance.pyData.Level);//玩家等级 
-            playerInfoObj.transform.GetChild(0).GetChild(2).GetComponent<Text>().text =
-                PlayerDataForGame.instance.pyData.Exp + "/" +
-                DataTable.PlayerLevelConfig[PlayerDataForGame.instance.pyData.Level].Exp;
+            playerInfoObj.transform.GetChild(0).GetChild(2).GetComponent<Text>().text = PlayerDataForGame.instance.pyData.Exp + "/" + DataTable.PlayerLevelConfig[PlayerDataForGame.instance.pyData.Level + 1].Exp;
         }
         //货币 
         yuanBaoNumText.text = PlayerDataForGame.instance.pyData.YuanBao.ToString();
@@ -1664,7 +1662,7 @@ public class UIManager : MonoBehaviour
         }
 
         GameObject obj = FindShowRewardsBox();
-        var info = new NowLevelAndHadChip().Instance((GameCardType)rewardsCard.cardType,rewardsCard.cardId).GetInfo();
+        var info = new NowLevelAndHadChip().Instance((GameCardType)rewardsCard.cardType,rewardsCard.cardId, 0).GetInfo();
         obj.transform.GetChild(rewardType).gameObject.SetActive(true);
         if (rewardType == 4)
         {
@@ -1794,35 +1792,37 @@ public class UIManager : MonoBehaviour
         {
             PlayerDataForGame.instance.pyData.Exp += expNums;
             playerInfoObj.transform.GetChild(0).GetChild(2).GetComponent<Text>().text = PlayerDataForGame.instance.pyData.Exp + "/" + 99999;
+            PlayerDataForGame.instance.isNeedSaveData = true;
+            LoadSaveData.instance.SaveGameData(1);
+            return;
+        }
+
+        PlayerDataForGame.instance.pyData.Exp += expNums;
+        while (DataTable.PlayerLevelConfig[PlayerDataForGame.instance.pyData.Level + 1].Exp <= PlayerDataForGame.instance.pyData.Exp)
+        {
+            PlayerDataForGame.instance.pyData.Exp -= DataTable.PlayerLevelConfig[PlayerDataForGame.instance.pyData.Level + 1].Exp;
+            PlayerDataForGame.instance.pyData.Level++;
+            PlayerDataForGame.instance.ShowStringTips(DataTable.GetStringText(39));
+            if (PlayerDataForGame.instance.pyData.Level == DataTable.PlayerLevelConfig.Keys.Max())
+            {
+                PlayerDataForGame.instance.ShowStringTips(DataTable.GetStringText(40));
+                break;
+            }
+        }
+
+        if (PlayerDataForGame.instance.pyData.Level >= DataTable.PlayerLevelConfig.Keys.Max())
+        {
+            playerInfoObj.transform.GetChild(0).GetComponent<Slider>().value = 1;
+            playerInfoObj.transform.GetChild(2).GetChild(1).GetComponent<Text>().text = DataTable.GetStringText(34);
+            playerInfoObj.transform.GetChild(0).GetChild(2).GetComponent<Text>().text = PlayerDataForGame.instance.pyData.Exp + "/" + 99999;
         }
         else
         {
-            PlayerDataForGame.instance.pyData.Exp += expNums;
-            while (DataTable.PlayerLevelConfig[PlayerDataForGame.instance.pyData.Level].Exp <= PlayerDataForGame.instance.pyData.Exp)
-            {
-                PlayerDataForGame.instance.pyData.Exp -= DataTable.PlayerLevelConfig[PlayerDataForGame.instance.pyData.Level].Exp;
-                PlayerDataForGame.instance.pyData.Level++;
-                PlayerDataForGame.instance.ShowStringTips(DataTable.GetStringText(39));
-                if (PlayerDataForGame.instance.pyData.Level >= DataTable.PlayerLevelConfig.Count)
-                {
-                    PlayerDataForGame.instance.ShowStringTips(DataTable.GetStringText(40));
-                    break;
-                }
-            }
-            if (PlayerDataForGame.instance.pyData.Level >= DataTable.PlayerLevelConfig.Count)
-            {
-                playerInfoObj.transform.GetChild(0).GetComponent<Slider>().value = 1;
-                playerInfoObj.transform.GetChild(2).GetChild(1).GetComponent<Text>().text = DataTable.GetStringText(34);
-                playerInfoObj.transform.GetChild(0).GetChild(2).GetComponent<Text>().text = PlayerDataForGame.instance.pyData.Exp + "/" + 99999;
-            }
-            else
-            {
-                playerInfoObj.transform.GetChild(0).GetComponent<Slider>().value = 1f * PlayerDataForGame.instance.pyData.Exp / DataTable.PlayerLevelConfig[PlayerDataForGame.instance.pyData.Level].Exp;
-                playerInfoObj.transform.GetChild(2).GetChild(1).GetComponent<Text>().text = string.Format(DataTable.GetStringText(35), PlayerDataForGame.instance.pyData.Level);
-                playerInfoObj.transform.GetChild(0).GetChild(2).GetComponent<Text>().text = PlayerDataForGame.instance.pyData.Exp + "/" + DataTable.PlayerLevelConfig[PlayerDataForGame.instance.pyData.Level].Exp;
-            }
-            UpdateCardNumsShow();
+            playerInfoObj.transform.GetChild(0).GetComponent<Slider>().value = 1f * PlayerDataForGame.instance.pyData.Exp / DataTable.PlayerLevelConfig[PlayerDataForGame.instance.pyData.Level + 1].Exp;
+            playerInfoObj.transform.GetChild(2).GetChild(1).GetComponent<Text>().text = string.Format(DataTable.GetStringText(35), PlayerDataForGame.instance.pyData.Level);
+            playerInfoObj.transform.GetChild(0).GetChild(2).GetComponent<Text>().text = PlayerDataForGame.instance.pyData.Exp + "/" + DataTable.PlayerLevelConfig[PlayerDataForGame.instance.pyData.Level + 1].Exp;
         }
+        UpdateCardNumsShow();
         //LoadSaveData.instance.SaveByJson(PlayerDataForGame.instance.pyData); 
         PlayerDataForGame.instance.isNeedSaveData = true;
         LoadSaveData.instance.SaveGameData(1);

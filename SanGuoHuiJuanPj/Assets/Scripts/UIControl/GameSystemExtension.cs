@@ -38,18 +38,20 @@ public static class GameSystemExtension
         return force == forceId && (card.level > 0 || card.chips > 0) && card.isFight > 0;
     });
 
-    public static NowLevelAndHadChip GetOrInstance(this List<NowLevelAndHadChip> cards, int cardId, int cardType) =>
-        cards.GetOrInstance(cardId, (GameCardType) cardType);
-    public static NowLevelAndHadChip GetOrInstance(this List<NowLevelAndHadChip> cards, int cardId, GameCardType cardType)
+    public static NowLevelAndHadChip GetOrInstance(this List<NowLevelAndHadChip> cards, int cardId, int cardType, int level) =>
+        cards.GetOrInstance(cardId, (GameCardType) cardType,level);
+
+    public static NowLevelAndHadChip GetOrInstance(this List<NowLevelAndHadChip> cards, int cardId,
+        GameCardType cardType, int level)
     {
         var card = cards.SingleOrDefault(c => c.id == cardId);
         if (card != null) return card;
-        card = new NowLevelAndHadChip().Instance(cardType, cardId);
+        card = new NowLevelAndHadChip().Instance(cardType, cardId, level);
         cards.Add(card);
         return card;
     }
 
-    public static NowLevelAndHadChip Instance(this NowLevelAndHadChip card, GameCardType type, int cardId, int cardLevel = 1)
+    public static NowLevelAndHadChip Instance(this NowLevelAndHadChip card, GameCardType type, int cardId, int cardLevel)
     {
         card.id = cardId;
         card.level = cardLevel;
