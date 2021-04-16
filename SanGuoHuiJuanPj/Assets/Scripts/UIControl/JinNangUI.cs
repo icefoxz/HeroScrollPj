@@ -69,7 +69,7 @@ public class JinNangUI: MonoBehaviour
                 //    ConsumeManager.instance.AddYuanBao(yuanBaoValue);
                 //if (staminaValue > 0)
                 //    TimeSystemControl.instance.AddTiLiNums(staminaValue);
-                ConsumeManager.instance.UpdatePlayerData(playerDataDto);
+                ConsumeManager.instance.SaveChangeUpdatePlayerData(playerDataDto);
                 PlayerDataForGame.instance.Redemption(PlayerDataForGame.RedeemTypes.JinNang);
                 PlayerDataForGame.instance.ShowStringTips(DataTable.GetStringText(43));
                 continueBtn.onClick.RemoveAllListeners();
@@ -92,29 +92,33 @@ public class JinNangUI: MonoBehaviour
         });
     }
 
-    private async void OnSuccessDoubleReward(int yuanBaoValue, int staminaValue, string token)
+    private void OnSuccessDoubleReward(int yuanBaoValue, int staminaValue, string token)
     {
-        var result = await SignalRClient.instance.Invoke(EventStrings.Req_TokenResources, new object[] {token});
+        SignalRClient.instance.Invoke(EventStrings.Req_TokenResources,
+            result => RecallOnSuccessDoubleReward(yuanBaoValue, staminaValue, result),
+            ViewBag.Instance().SetValue(token));
+    }
+
+    private void RecallOnSuccessDoubleReward(int yuanBaoValue, int staminaValue,string result)
+    {
         var args = Json.DeserializeObjs(result);
-        var player = Json.Deserialize<PlayerDataDto>(args[0].ToString());
-        if (player == null)
+        if (args == null)
         {
-            UnityMainThread.thread.RunNextFrame(()=>PlayerDataForGame.instance.ShowStringTips(result));
+            PlayerDataForGame.instance.ShowStringTips(result);
             return;
         }
+
+        var player = Json.Deserialize<PlayerDataDto>(args[0]?.ToString());
         playerDataDto = player;
-        UnityMainThread.thread.RunNextFrame(() =>
-        {
-            //奖励翻倍
-            yuanBaoValue *= 2;
-            staminaValue *= 2;
-            DisplayReward(yuanBaoValue, staminaValue);
-            continueBtn.enabled = true;
-            doubleAdBtn.gameObject.SetActive(false);
-            doubleAdBtn.enabled = true;
-            doubleAdBtn.onClick.RemoveAllListeners();
-            PlayerDataForGame.instance.ShowStringTips("翻倍成功！");
-        });
+        //奖励翻倍
+        yuanBaoValue *= 2;
+        staminaValue *= 2;
+        DisplayReward(yuanBaoValue, staminaValue);
+        continueBtn.enabled = true;
+        doubleAdBtn.gameObject.SetActive(false);
+        doubleAdBtn.enabled = true;
+        doubleAdBtn.onClick.RemoveAllListeners();
+        PlayerDataForGame.instance.ShowStringTips("翻倍成功！");
     }
 
     private void DisplayReward(int yuanBaoAmt, int staminaAmt)

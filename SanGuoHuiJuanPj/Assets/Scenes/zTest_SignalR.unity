@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.37311992, g: 0.38074034, b: 0.35872713, a: 1}
+  m_IndirectSpecularColor: {r: 0.37311953, g: 0.38074014, b: 0.3587274, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -720,8 +720,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4c663bb380cd2334d96b97fefa037a75, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Username: yx10015
-  Password: 
+  Username: yx10001
+  Password: 123456
   Client: {fileID: 978275133}
 --- !u!1 &974301706
 GameObject:
@@ -864,6 +864,7 @@ GameObject:
   - component: {fileID: 978275134}
   - component: {fileID: 978275133}
   - component: {fileID: 978275135}
+  - component: {fileID: 978275136}
   m_Layer: 0
   m_Name: SignalRClient
   m_TagString: Untagged
@@ -888,6 +889,7 @@ MonoBehaviour:
   KeeAliveIntervalSecs: 20
   HandShakeTimeoutSecs: 20
   ServerPanel: {fileID: 0}
+  ApiPanel: {fileID: 0}
 --- !u!4 &978275134
 Transform:
   m_ObjectHideFlags: 0
@@ -939,6 +941,22 @@ MonoBehaviour:
   selectedBaYeEventId: 0
   selectedCity: 0
   mainSceneTips: 
+--- !u!114 &978275136
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 978275132}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b5fbd3829056d59498182d7407c7ea4a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  IsPlayMusicStr: IsPlayMusicStr
+  firstForceId: 0
+  isLoadingSaveData: 0
+  isHadSaveData: 0
 --- !u!1 &1020336920
 GameObject:
   m_ObjectHideFlags: 0

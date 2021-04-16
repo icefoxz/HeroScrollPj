@@ -215,6 +215,20 @@ public class LoadSaveData : MonoBehaviour
         //    UploadArchiveToServer(pyDataStr, hSTDataStr, warsDataStr, gbocDataStr); 
         //} 
     }
+
+    public void ReplaceRedeemCode(List<RedemptionCodeGot> list)
+    {
+        var gbocPath = AppDebugClass.gbocDataString;
+        var text = File.ReadAllText(gbocPath);
+        var json = EncryptDecipherTool.DESDecrypt(text);
+        var gbocData = Json.Deserialize<GetBoxOrCodeData>(json);
+        PlayerDataForGame.instance.isHadNewSaveData = true;
+        gbocData.redemptionCodeGotList = list;
+        PlayerDataForGame.instance.gbocData = gbocData;
+        PlayerDataForGame.instance.isNeedSaveData = true;
+        SaveByJson(gbocData);
+    }
+
     /// <summary> 
     /// 读档json 
     /// </summary> 
@@ -672,12 +686,9 @@ public class LoadSaveData : MonoBehaviour
     /// <summary> 
     /// 存储游戏 
     /// </summary> 
-    /// <param name="indexFun">默认0：全部存储，1：存储pyData，2：存储hstData，3：存储warsData，4：存储gbocData，5:py + war(霸业)，6:py + gboc</param> 
+    /// <param name="indexFun">默认0：全部存储，1：存储pyData，2：存储hstData，3：存储warsData，4：存储gbocData，5:py + war(霸业)，6:py + gboc，7:py + hst</param> 
     public void SaveGameData(int indexFun = 0)
     {
-        if (PlayerDataForGame.instance.warsData.warUnlockSaveData == null)
-            throw new InvalidDataContractException(
-                $"{nameof(LoadSaveData)}.{nameof(SaveGameData)}: warUnlockSaveData = null!");
         if (PlayerDataForGame.instance.isNeedSaveData)
         {
             switch (indexFun)
@@ -708,11 +719,18 @@ public class LoadSaveData : MonoBehaviour
                     SaveByJson(PlayerDataForGame.instance.pyData);
                     SaveByJson(PlayerDataForGame.instance.gbocData);
                     break;
+                case 7:
+                    SaveByJson(PlayerDataForGame.instance.pyData);
+                    SaveByJson(PlayerDataForGame.instance.hstData);
+                    break;
                 default:
                     break;
             }
             PlayerDataForGame.instance.isNeedSaveData = false;
         }
+#if UNITY_EDITOR
+        XDebug.Log<LoadSaveData>($"存档[{indexFun}]完毕！");
+#endif
     }
 
     /// <summary> 

@@ -6,6 +6,8 @@ using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Assets.Scripts.Utl;
+using CorrelateLib;
 using Microsoft.AspNetCore.SignalR.Client;
 using Newtonsoft.Json;
 using Unity.Collections;
@@ -36,6 +38,7 @@ public class SignalRClient : MonoBehaviour
     private Dictionary<string, UnityAction<object[]>> _actions;
     private static readonly Type _stringType = typeof(string);
     private bool isBusy;
+    public ApiPanel ApiPanel;
 
     private void Awake()
     {
@@ -56,7 +59,8 @@ public class SignalRClient : MonoBehaviour
         _actions = new Dictionary<string, UnityAction<object[]>>();
         OnStatusChanged += s => DebugLog($"状态更新[{s}]!");
         ServerPanel?.Init(this);
-        SubscribeAction(EventStrings.SR_UploadPy,OnServerCalledUpload);
+        SubscribeAction(EventStrings.SR_UploadPy, OnServerCalledUpload);
+        ApiPanel.Init(this);
     }
 
     async void OnApplicationQuit()
@@ -66,7 +70,7 @@ public class SignalRClient : MonoBehaviour
         await _connection.DisposeAsync();
     }
 
-    public async void Login(Action<bool,int> recallAction,string username = null,string password = null)
+    public async void Login(Action<bool,int, int> recallAction,string username = null,string password = null)
     {
         if(isBusy)return;
         if (username == null) username = PlayerDataForGame.instance.acData.Username;
@@ -88,7 +92,7 @@ public class SignalRClient : MonoBehaviour
                     break;
             }
             isBusy = false;
-            recallAction.Invoke(false, (int) severBackCode);
+            recallAction.Invoke(false, (int) severBackCode, 0);
             return;
         }
 
@@ -96,27 +100,55 @@ public class SignalRClient : MonoBehaviour
         var connectionInfo = JsonConvert.DeserializeObject<SignalRConnectionInfo>(jsonString);
         var result = await ConnectSignalRAsync(connectionInfo, cancellationTokenSource.Token);
         isBusy = false;
-        recallAction?.Invoke(result, (int) response.StatusCode);
+        recallAction?.Invoke(result, (int) response.StatusCode, connectionInfo.Arrangement);
     }
 
-    public async Task SynchronizePlayerData()
+    public async Task SynchronizePlayerData(bool forceSync = false)
     {
         var jData = await Invoke(EventStrings.Req_PlayerData);
-        var args = Json.DeserializeList<object>(jData);
-        var isSync = (bool)args[0];
-        if(!isSync)return;
-        var playerData = Json.Deserialize<PlayerData>(args[1].ToString());
-        var codes = Json.Deserialize<Dictionary<int,string>>(args[2].ToString());
-        PlayerDataForGame.instance.pyData = playerData;
-        var redeems = PlayerDataForGame.instance.gbocData.redemptionCodeGotList;
-        var rSave = codes.Join(redeems, r => r.Key, c => c.id, (c, r) =>
+        var viewBag = Json.Deserialize<ViewBag>(jData);
+        if(!forceSync)
         {
-            r.isGot = true;
-            return r;
-        }).ToList();
-        PlayerDataForGame.instance.gbocData.redemptionCodeGotList = rSave;
+            var isSync = (bool) viewBag.Values[0];
+            if (!isSync) return;
+        }
+        var playerData = viewBag.GetObj<PlayerData>(ViewBag.PlayerDataDto);
+        PlayerDataForGame.instance.pyData = playerData;
         PlayerDataForGame.instance.isNeedSaveData = true;
         LoadSaveData.instance.SaveGameData(6);
+    }
+
+    public async Task SynchronizeSaved()
+    {
+        var jData = await Invoke(EventStrings.Req_Saved);
+        var bag = Json.Deserialize<ViewBag>(jData);
+        var playerData = bag.GetPlayerDataDto();
+        var warChestList = bag.GetPlayerWarChests();
+        var redeemedList = bag.GetPlayerRedeemedCodes();
+        var warCampaignList = bag.GetPlayerWarCampaignDtos();
+        var gameCardList = bag.GetPlayerGameCardDtos();
+        var troops = bag.GetPlayerTroopDtos();
+        PlayerDataForGame.instance.pyData = PlayerData.Instance(playerData);
+        PlayerDataForGame.instance.warsData.warUnlockSaveData = warCampaignList.Select(w => new UnlockWarCount
+        {
+            warId = w.WarId,
+            isTakeReward = w.IsFirstRewardTaken,
+            unLockCount = w.UnlockProgress
+        }).ToList();
+        var cards = gameCardList.Select(NowLevelAndHadChip.Instance)
+            .GroupBy(c => (GameCardType)c.typeIndex, c => c)
+            .ToDictionary(c => c.Key, c => c.ToList());
+        troops.SelectMany(t => t.EnList)
+            .Join(cards, t => t.Key, c => c.Key, (t, c) => c)
+            .ToList().ForEach(t => t.Value.ForEach(c => c.isFight = 1));
+        PlayerDataForGame.instance.gbocData.redemptionCodeGotList = redeemedList.Join(DataTable.RCode.Values, c => c,
+            r => r.Code, (_, r) => new RedemptionCodeGot {id = r.Id, isGot = true}).ToList();
+        PlayerDataForGame.instance.gbocData.fightBoxs = warChestList.ToList();
+        cards.TryGetValue(GameCardType.Hero, out PlayerDataForGame.instance.hstData.heroSaveData);
+        cards.TryGetValue(GameCardType.Tower, out PlayerDataForGame.instance.hstData.towerSaveData);
+        cards.TryGetValue(GameCardType.Trap, out PlayerDataForGame.instance.hstData.trapSaveData);
+        PlayerDataForGame.instance.isNeedSaveData = true;
+        LoadSaveData.instance.SaveGameData();
     }
 
     private UserInfo GetUserInfo(string username,string password)
@@ -193,26 +225,18 @@ public class SignalRClient : MonoBehaviour
         action?.Invoke(args);
     }
 
-    public async void Send(string method, object[] args, CancellationToken cancellationToken = default)
+    public async void Invoke(string method, UnityAction<string> recallAction , IViewBag bag = default,
+        CancellationToken cancellationToken = default)
     {
-        try
-        {
-            await _connection.SendAsync(method, Json.Serialize(args), cancellationToken);
-        }
-        catch (Exception e)
-        {
-#if UNITY_EDITOR
-            XDebug.LogError<SignalRClient>(e.Message);
-            throw;
-#endif
-        }
+        var result = await Invoke(method, bag, cancellationToken);
+        UnityMainThread.thread.RunNextFrame(()=>recallAction?.Invoke(result));
     }
 
-    public async Task<string> Invoke(string method, object[] args = default, CancellationToken cancellationToken = default)
+    private async Task<string> Invoke(string method, IViewBag bag = default, CancellationToken cancellationToken = default)
     {
         try
         {
-            var result = await _connection.InvokeCoreAsync(method, _stringType, new object[] {Json.Serialize(args)},
+            var result = await _connection.InvokeCoreAsync(method, _stringType, new object[] {Json.Serialize(bag)},
                 cancellationToken);
             return result?.ToString();
         }
@@ -222,6 +246,7 @@ public class SignalRClient : MonoBehaviour
             XDebug.LogError<SignalRClient>(e.Message);
             throw;
 #endif
+            return null;
         }
     }
 
@@ -256,13 +281,42 @@ public class SignalRClient : MonoBehaviour
 
     private async void OnServerCalledUpload(object[] args)
     {
-        var playerData = PlayerDataForGame.instance.pyData;
-        var redeemCodeIds = PlayerDataForGame.instance.gbocData.redemptionCodeGotList.Where(c => c.isGot)
+        var saved = PlayerDataForGame.instance;
+        var playerData = saved.pyData;
+        var redeemCodeIds = saved.gbocData.redemptionCodeGotList.Where(c => c.isGot)
             .Select(c => c.id).ToList();
-        var redeemedCodes = redeemCodeIds.Join(DataTable.RCode, id => id, d => d.Key, (_, d) => d.Value.Code).ToList();
+        var warChest = saved.gbocData.fightBoxs.ToArray();
+        var redeemedCodes = redeemCodeIds.Join(DataTable.RCode, id => id, d => d.Key, (_, d) => d.Value.Code).ToArray();
         var token = args[0];
-        var param = new[] {token, playerData, redeemedCodes};
-        await Invoke(EventStrings.Req_UploadPy, param);
+        var campaign = saved.warsData.warUnlockSaveData.Select(w => new WarCampaignDto
+                {WarId = w.warId, IsFirstRewardTaken = w.isTakeReward, UnlockProgress = w.unLockCount})
+            .Where(w => w.UnlockProgress > 0).ToArray();
+        var cards = saved.hstData.heroSaveData
+            .Join(DataTable.Hero, c => c.id, h => h.Key, (c, h) => new {ForceId = h.Value.ForceTableId, c})
+            .Concat(saved.hstData.towerSaveData.Join(DataTable.Tower, c => c.id, t => t.Key,
+                (c, t) => new {t.Value.ForceId, c})).Concat(saved.hstData.trapSaveData.Join(DataTable.Trap, c => c.id,
+                t => t.Key, (c, t) => new {t.Value.ForceId, c})).Where(c => c.c.chips > 0 || c.c.level > 0).ToList();
+        var troops = cards.GroupBy(c => c.ForceId, c => c).Select(c =>
+        {
+            var list = c.GroupBy(o => o.c.typeIndex, o => o.c)
+                .ToDictionary(o => (GameCardType) o.Key, o => o.Select(a => a).ToArray());
+            return new TroopDto
+            {
+                ForceId = c.Key,
+                Cards = list.ToDictionary(l => l.Key, l => l.Value.Select(o => o.id).ToArray()),
+                EnList = list.ToDictionary(l => l.Key,
+                    l => l.Value.Where(o => o.isFight > 0).Select(o => o.id).ToArray())
+            };
+        }).ToArray();
+        var viewBag = ViewBag.Instance()
+            .SetValue(token)
+            .PlayerDataDto(playerData.ToDto())
+            .PlayerRedeemedCodes(redeemedCodes)
+            .PlayerWarChests(warChest)
+            .PlayerWarCampaignDtos(campaign)
+            .PlayerGameCardDtos(cards.Select(c => c.c.ToDto()).ToArray())
+            .PlayerTroopDtos(troops);
+        await Invoke(EventStrings.Req_UploadPy, viewBag);
     }
 
     #endregion
@@ -318,8 +372,8 @@ public class SignalRClient : MonoBehaviour
 
     private class SignalRConnectionInfo
     {
-        [JsonProperty("url")] public string Url { get; set; }
-        [JsonProperty("accessToken")] public string AccessToken { get; set; }
+        public string Url { get; set; }
+        public string AccessToken { get; set; }
+        public int Arrangement { get; set; }
     }
-
 }

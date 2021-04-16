@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using CorrelateLib;
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
@@ -115,11 +116,10 @@ public class Expedition : MonoBehaviour
     private void InitWarsListInfo(int btnIndex,bool forceRefresh = false)
     {
         //防止跳转界面时切换关卡
-        if (UIManager.instance.IsJumping)
-            return;
+        if (UIManager.instance.IsJumping) return;
+        //如果点击同个难度模式不需要刷新
+        if (!forceRefresh && currentMode == indexWarModeMap[btnIndex]) return;
 
-        if (!forceRefresh && currentMode == indexWarModeMap[btnIndex])
-            return;
         currentMode = indexWarModeMap[btnIndex];
         //右侧难度选择按钮刷新大小
         OnSelectDifficultyUiScale(btnIndex);
@@ -129,68 +129,59 @@ public class Expedition : MonoBehaviour
         foreach (var ui in stages) Destroy(ui.gameObject);
         stages.Clear();
 
-        int startWarId,lastWarId = 0;
+        var lastStageWarId = warMode.WarList.Min;
         if (warMode.Id == 6)
         {
-            startWarId = lastWarId = DataTable.PlayerLevelConfig[PlayerDataForGame.instance.pyData.Level].YuanZhengWarTableId;
+            var warId = DataTable.PlayerLevelConfig[PlayerDataForGame.instance.pyData.Level].YuanZhengWarTableId;
+            lastStageWarId = warId;
+            InitWarListUi(warId);
         }
         else
         {
-            startWarId = warMode.WarList.Min;
-            lastWarId = warMode.WarList.IncMax;
-        }
+            var wars = DataTable.War
+                .Where(w => w.Key >= warMode.WarList.Min && w.Key <= warMode.WarList.IncMax)
+                .OrderBy(w => w.Key)
+                .ToList();
 
-        int index = startWarId;
-        for (; index <= lastWarId; index++)
-        {
-            var warId = PlayerDataForGame.instance.warsData.warUnlockSaveData[index].warId;
-            var warsCount = DataTable.War[warId].CheckPoints;
-            var warStageUi = Instantiate(warStageBtnPrefab, warStageScrollRect.content);
-            warStageUi.boundWarId = warId;
-            stages.Add(warStageUi);
-            var playerStageProgress = PlayerDataForGame.instance.warsData.warUnlockSaveData[index];
-            var isFirstRewardTaken = playerStageProgress.isTakeReward;
-            warStageUi.boxButton.gameObject.SetActive(!isFirstRewardTaken);
-            var anim = warStageUi.boxButton.GetComponent<Animator>();
-            anim.enabled = false;
-            if (!isFirstRewardTaken)
+            foreach (var item in wars)
             {
-                var isUnlock = playerStageProgress.unLockCount >= warsCount;
-                warStageUi.boxButton.interactable = isUnlock;
-                if (isUnlock)
-                {
-                    anim.enabled = true;
-                    warStageUi.boxButton.onClick.AddListener(() =>
-                    {
-                        UIManager.instance.GetWarFirstRewards(warId);
-                        warStageUi.boxButton.onClick.RemoveAllListeners();
-                        warStageUi.boxButton.gameObject.SetActive(false);
-                    });
-                }
-                else
-                {
-                    warStageUi.boxButton.onClick.AddListener(() =>
-                        PlayerDataForGame.instance.ShowStringTips(DataTable.GetStringText(26)));
-                }
+                var war = item.Value;
+                InitWarListUi(war.Id);
+                lastStageWarId = war.Id;
+                var campaign = PlayerDataForGame.instance.warsData.warUnlockSaveData.FirstOrDefault(w => w.warId == war.Id);
+                if (campaign == null || campaign.unLockCount < war.CheckPoints) break;
             }
-            //战役列拼接
-            warStageUi.title.text = DataTable.War[index].Title + "\u2000\u2000\u2000\u2000"
-                + Mathf.Min(PlayerDataForGame.instance.warsData.warUnlockSaveData[index].unLockCount, warsCount) + "/" +
-                warsCount;
-            warStageUi.button.onClick.AddListener(() =>
-            {
-                OnClickChangeWarsFun(warId);
-                UIManager.instance.PlayOnClickMusic();
-            });
-            if(playerStageProgress.unLockCount < warsCount)break;
         }
 
-        var lastStageWarId = PlayerDataForGame.instance.warsData.warUnlockSaveData[index > lastWarId ? lastWarId : index]
-            .warId;
+
         //默认选择最后一个关卡
         OnClickChangeWarsFun(lastStageWarId);
         //如果UIManager在初始化，代表是场景转跳，不需要动画显示
         warStageScrollRect.DOVerticalNormalizedPos(0f, 0.3f);
+    }
+
+    private void InitWarListUi(int warId)
+    {
+        var checkPoints = DataTable.War[warId].CheckPoints;
+        var warStageUi = Instantiate(warStageBtnPrefab, warStageScrollRect.content);
+        var campaign = PlayerDataForGame.instance.warsData.warUnlockSaveData.FirstOrDefault(w => w.warId == warId);
+        stages.Add(warStageUi);
+        warStageUi.SetUi(warId, DataTable.War[warId].Title
+                                + "\u2000\u2000\u2000\u2000"
+                                + Mathf.Min(campaign?.unLockCount ?? 0, checkPoints)
+                                + "/" + checkPoints
+            , () => { OnClickChangeWarsFun(warId); UIManager.instance.PlayOnClickMusic(); });
+        if (campaign == null) return;
+        var isUnlock = campaign.unLockCount >= checkPoints;
+        if (!campaign.isTakeReward && isUnlock)
+        {
+            warStageUi.SetChest(() =>
+            {
+                GetWarAchievementRewards(warId);
+                warStageUi.boxButton.onClick.RemoveAllListeners();
+                warStageUi.boxButton.gameObject.SetActive(false);
+            });
+        }
     }
 
     private void OnSelectDifficultyUiScale(int index)
@@ -242,24 +233,75 @@ public class Expedition : MonoBehaviour
             .SetAutoKill(false);
     }
 
-    //private class WarMode
-    //{
-    //    public int id;
-    //    public string title;
-    //    public int[] warList;
-    //    public int unlockWarId;
-    //    public int[] tili;
-    //    public string intro;
+    /// <summary> 
+    /// 领取战役首通宝箱 
+    /// </summary> 
+    private void GetWarAchievementRewards(int warId)
+    {
+        var playerUnlockProgress = PlayerDataForGame.instance.warsData.warUnlockSaveData.Single(w => w.warId == warId);
+        if (playerUnlockProgress.isTakeReward) PlayerDataForGame.instance.ShowStringTips("首通宝箱已领取！");
+        //var reward = DataTable.War[warId].AchievementReward;
+        //if (reward != null)
+        //{
+        //    if (reward.YuanBao > 0) ConsumeManager.instance.AddYuanBao(reward.YuanBao);
+        //    if (reward.YvQue > 0) ConsumeManager.instance.AddYuQue(reward.YvQue);
+        //    if (reward.Stamina > 0) UIManager.instance.AddStamina(reward.Stamina);
+        //}
+        //else reward = new ConsumeResources();
 
-    //    public WarMode(IReadOnlyList<string> map)
-    //    {
-    //        id = int.Parse(map[0]);
-    //        title = map[1];
-    //        warList = string.IsNullOrWhiteSpace(map[2]) ? new int[0] : map[2].TableStringToInts().ToArray();
-    //        unlockWarId = int.Parse(map[3]);
-    //        tili = map[4].TableStringToInts().ToArray();
-    //        intro = map[5];
-    //    }
-    //}
+        //var card = DataTable.War[warId].AchievementCardProduce;
+
+        //var cards = new List<RewardsCardClass>();
+
+        //if (card != null)
+        //{
+        //    UIManager.instance.rewardManager.RewardCard((GameCardType)card.Type, card.CardId, card.Chips);
+        //    var rewardCard = new RewardsCardClass
+        //    {
+        //        cardType = card.Type, cardId = card.CardId, cardChips = card.Chips
+        //    };
+        //    cards.Add(rewardCard);
+        //    PlayerDataForGame.instance.isNeedSaveData = true;
+        //    LoadSaveData.instance.SaveGameData(2);
+        //}
+        ApiPanel.instance.Invoke(vb =>
+            {
+                var re = vb.GetResourceDto();
+                var py = vb.GetPlayerDataDto();
+                var reCard = vb.GetGameCardDto();
+                if(reCard!=null)
+                {
+                    List<NowLevelAndHadChip> list = null;
+                    switch (reCard.Type)
+                    {
+                        case GameCardType.Hero:
+                            list = PlayerDataForGame.instance.hstData.heroSaveData;
+                            break;
+                        case GameCardType.Tower:
+                            list = PlayerDataForGame.instance.hstData.towerSaveData;
+                            break;
+                        case GameCardType.Trap:
+                            list = PlayerDataForGame.instance.hstData.trapSaveData;
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException();
+                    }
+
+                    var card = list.GetOrInstance(reCard.CardId, reCard.Type, reCard.Level);
+                    card.chips += reCard.Chips;
+                }
+                playerUnlockProgress.isTakeReward = true;
+                ConsumeManager.instance.SaveChangeUpdatePlayerData(py, 0);
+                UIManager.instance.ShowRewardsThings(re.YuanBao, re.YuQue, 0, re.Stamina,
+                    reCard == null ? new List<RewardsCardClass>() :
+                    new List<RewardsCardClass>
+                    {
+                        new RewardsCardClass {cardId = reCard.CardId, cardChips = reCard.Chips, cardType = (int) reCard.Type}
+                    }, 0);
+            }, PlayerDataForGame.instance.ShowStringTips,
+            EventStrings.Req_Achievement,
+            ViewBag.Instance().SetValue(playerUnlockProgress.warId));
+    }
+
 
 }

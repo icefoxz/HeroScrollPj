@@ -112,6 +112,7 @@ public class PlayerDataForGame : MonoBehaviour
     [HideInInspector]
     public int boxForTiLiNums;  //返还体力单个宝箱扣除体力数 
 
+    private bool isRequestingSaveFile; //存档请求中
     //计算出战总数量 
     public int TotalCardsEnlisted => fightHeroId.Count + fightTowerId.Count + fightTrapId.Count;
 
@@ -179,25 +180,30 @@ public class PlayerDataForGame : MonoBehaviour
     /// 跳转场景 
     /// </summary> 
     /// <param name="sceneIndex"></param> 
-    /// <param name="isNeedLoadData"></param> 
-    public void JumpSceneFun(int sceneIndex, bool isNeedLoadData)
+    /// <param name="isRequestSyncData">是否请求同步存档</param> 
+    public void JumpSceneFun(int sceneIndex, bool isRequestSyncData)
     {
         if (!isJumping)
         {
             loadingImg.DOPause();
-            StartCoroutine(ShowTransitionEffect(sceneIndex, isNeedLoadData));
+            StartCoroutine(ShowTransitionEffect(sceneIndex, isRequestSyncData));
         }
     }
 
-    IEnumerator ShowTransitionEffect(int sceneIndex, bool isNeedLoadData)
+    IEnumerator ShowTransitionEffect(int sceneIndex, bool isRequestSyncData)
     {
+        if(isRequestSyncData)
+        {
+            isRequestingSaveFile = true;
+            ApiPanel.instance.SyncSaved(() => isRequestingSaveFile = false);
+        }
         loadingImg.gameObject.SetActive(true);
         loadingImg.DOFade(1, fadeSpeed);
 
         yield return new WaitForSeconds(fadeSpeed);
 
+        yield return new WaitWhile(() => isRequestingSaveFile);
         asyncOp = SceneManager.LoadSceneAsync(sceneIndex, LoadSceneMode.Single);//异步加载场景，Single:不保留现有场景 
-
         var tips = DataTable.Tips.RandomPick().Value;
         infoText.text = tips.Text;
         infoText.transform.GetChild(0).GetComponent<Text>().text = tips.Sign;
@@ -206,10 +212,10 @@ public class PlayerDataForGame : MonoBehaviour
         infoText.gameObject.SetActive(true);
         asyncOp.allowSceneActivation = false;
         isJumping = true;
-        if (isNeedLoadData)
-        {
-            LoadSaveData.instance.LoadByJson();
-        }
+        //if (isNeedLoadData)
+        //{
+        //    LoadSaveData.instance.LoadByJson();
+        //}
     }
 
     //隐藏 
@@ -438,6 +444,7 @@ public class PlayerDataForGame : MonoBehaviour
     public void SetStamina(int stamina)
     {
         pyData.Stamina = stamina;
+        pyData.LastStaminaUpdateTicks = SystemTimer.instance.NowUnixTicks;
         isNeedSaveData = true;
         LoadSaveData.instance.SaveGameData(1);
     }

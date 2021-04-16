@@ -7,6 +7,7 @@ using System;
 using System.Linq;
 
 using Beebyte.Obfuscator;
+using CorrelateLib;
 using UnityEngine.Events;
 
 public class UIManager : MonoBehaviour
@@ -151,12 +152,17 @@ public class UIManager : MonoBehaviour
         indexChooseListForceId = 0;
         selectCardData = new NowLevelAndHadChip();
         rewardManager = gameObject.AddComponent<RewardManager>();
-        ItemsRedemptionFunc();
     }
 
     // Start is called before the first frame update 
     void Start()
     {
+        AudioController1.instance.ChangeBackMusic();
+        TimeSystemControl.instance.isOpenMainScene = true;
+
+        Invoke(nameof(GetBackTiLiForFight), 2f);
+
+        ItemsRedemptionFunc();
         //版本修正 
         BugHotFix.OnFixYvQueV1_90();
         BugHotFix.OnFixLianYuV2_02();
@@ -187,13 +193,7 @@ public class UIManager : MonoBehaviour
     }
 
     //时间管理 
-    private void OnEnable()
-    {
-        AudioController1.instance.ChangeBackMusic();
-        TimeSystemControl.instance.isOpenMainScene = true;
 
-        Invoke("GetBackTiLiForFight", 2f);
-    }
     private void OnDisable()
     {
         TimeSystemControl.instance.isOpenMainScene = false;
@@ -454,7 +454,7 @@ public class UIManager : MonoBehaviour
             //如果宝箱未被开过 
             if (!baYe.openedChest[i])
                 baYeChestButtons[i].Ready();
-            else baYeChestButtons[i].Opened();
+            else baYeChestButtons[i].Open();
         }
     }
 
@@ -571,66 +571,51 @@ public class UIManager : MonoBehaviour
             PlayerDataForGame.instance.ShowStringTips("当前经验不足以领取！");
             return;
         }
+
         var btnIndex = index - 1;
-        baYeChestButtons[btnIndex].Opened();
         var isOpen = baYe.openedChest[btnIndex];
         if (isOpen)
         {
             PlayerDataForGame.instance.ShowStringTips("该奖励已经领取了噢！");
+            baYeChestButtons[btnIndex].Open();
             return;
         }
-        var rewardId = DataTable.BaYeTask[index].WarChestTableId;
-        var chest = DataTable.WarChest[rewardId];
-        var exp = chest.Exp;
-        var yvQue = RewardManager.instance.GetRandomYvQue(rewardId);
-        var yuanBao = RewardManager.instance.GetRandomYuanBao(rewardId);
-        var cards = RewardManager.instance.GetCards(rewardId, false);
-        ConsumeManager.instance.AddYuQue(yvQue);
-        ConsumeManager.instance.AddYuanBao(yuanBao);
+
+        var warChestId = DataTable.BaYeTask[index].WarChestTableId;
+        ApiPanel.instance.Invoke(bag => WarChestRecallAction(bag),
+            PlayerDataForGame.instance.ShowStringTips,
+            EventStrings.Req_WarChest,
+            ViewBag.Instance().SetValue(warChestId));
+        baYeChestButtons[btnIndex].Open();
         PlayerDataForGame.instance.warsData.baYe.openedChest[btnIndex] = true;
         PlayerDataForGame.instance.isNeedSaveData = true;
-        LoadSaveData.instance.SaveGameData(3);
-        ShowRewardsThings(yuanBao, yvQue, exp, 0, cards, 0.5f);
         AudioController0.instance.ForcePlayAudio(0);
     }
 
-    /// <summary> 
-    /// 领取战役首通宝箱 
-    /// </summary> 
-    public void GetWarFirstRewards(int warId)
+    public PlayerDataDto WarChestRecallAction(ViewBag bag)
     {
-        var playerUnlockProgress = PlayerDataForGame.instance.warsData.warUnlockSaveData.Single(w => w.warId == warId);
-        if (playerUnlockProgress.isTakeReward) PlayerDataForGame.instance.ShowStringTips("首通宝箱已领取！");
-        var reward = DataTable.War[warId].AchievementReward;
-        if (reward != null)
+        var warChest = bag.GetWarChest();
+        var player = bag.GetPlayerDataDto();
+        var rewards = new List<RewardsCardClass>();
+        foreach (var chestCard in warChest.Cards)
         {
-            if (reward.YuanBao > 0) ConsumeManager.instance.AddYuanBao(reward.YuanBao);
-            if (reward.YvQue > 0) ConsumeManager.instance.AddYuQue(reward.YvQue);
-            if (reward.Stamina > 0) AddStamina(reward.Stamina);
-        }
-        else reward = new ConsumeResources();
-
-        var card = DataTable.War[warId].AchievementCardProduce;
-
-        var cards = new List<RewardsCardClass>();
-
-        if (card != null)
-        {
-            rewardManager.RewardCard((GameCardType)card.Type, card.CardId, card.Chips);
-            var rewardCard = new RewardsCardClass
+            var type = (GameCardType) chestCard.Key;
+            chestCard.Value.ForEach(c =>
             {
-                cardType = card.Type, cardId = card.CardId, cardChips = card.Chips
-            };
-            cards.Add(rewardCard);
-            PlayerDataForGame.instance.isNeedSaveData = true;
-            LoadSaveData.instance.SaveGameData(2);
+                var card = new RewardsCardClass
+                {
+                    cardId = c[0],
+                    cardChips = c[1],
+                    cardType = chestCard.Key
+                };
+                RewardManager.instance.RewardCard(type, card.cardId, card.cardChips); //获取卡牌
+                rewards.Add(card);
+            });
         }
 
-        playerUnlockProgress.isTakeReward = true;
-        PlayerDataForGame.instance.isNeedSaveData = true;
-        LoadSaveData.instance.SaveGameData(3);
-
-        ShowRewardsThings(reward.YuanBao, reward.YvQue, 0, reward.Stamina, cards, 0);
+        ShowRewardsThings(warChest.YuanBao, warChest.YvQue, warChest.Exp, 0, rewards, 1.5f); //显示奖励窗口
+        ConsumeManager.instance.SaveChangeUpdatePlayerData(player, 0);
+        return player;
     }
 
     int showTiLiNums = 0;
@@ -1153,13 +1138,10 @@ public class UIManager : MonoBehaviour
             showCardObj.transform.GetChild(2).GetComponent<Text>().text = "";
         }
 
-        int getGoldNums = GetGoldPrice(card);
-        sellCardBtn.transform.GetChild(0).GetComponent<Text>().text = getGoldNums.ToString();
+        int goldPrice = GetGoldPrice(card);
+        sellCardBtn.transform.GetChild(0).GetComponent<Text>().text = goldPrice.ToString();
         sellCardBtn.GetComponent<Button>().onClick.RemoveAllListeners();
-        sellCardBtn.GetComponent<Button>().onClick.AddListener(delegate ()
-        {
-            OnClickForSellCard(card, getGoldNums);
-        });
+        sellCardBtn.GetComponent<Button>().onClick.AddListener(() => OnClickForSellCard(card, goldPrice));
         sellCardBtn.SetActive(true);
 
         if (card.level > 0)
@@ -1233,55 +1215,31 @@ public class UIManager : MonoBehaviour
     }
 
     //出售卡牌 
-    private void OnClickForSellCard(NowLevelAndHadChip heroData, int getGoldNums)
+    private void OnClickForSellCard(NowLevelAndHadChip heroData, int goldPrice)
     {
-        //if (GetIdBackCardRarity(heroData.typeIndex, heroData.id) >= 4) 
+        AudioController0.instance.ChangeAudioClip(18);
+        AudioController0.instance.PlayAudioSource(0);
+        queRenWindows.transform.GetChild(0).GetChild(1).GetComponent<Button>().onClick.RemoveAllListeners();
+        queRenWindows.transform.GetChild(0).GetChild(1).GetComponent<Button>().onClick.AddListener(() =>
         {
-            AudioController0.instance.ChangeAudioClip(18);
+            //Debug.Log("---出售" + heroData.typeIndex + "类型的卡牌：" + heroData.id); 
+            heroData.chips = 0;
+            heroData.level = 0;
+            heroData.isFight = 0;
+            //datas.Remove(heroData); 
+            //LoadSaveData.instance.SaveByJson(PlayerDataForGame.instance.hstData); 
+            PlayerDataForGame.instance.isNeedSaveData = true;
+            LoadSaveData.instance.SaveGameData(2);
+            ConsumeManager.instance.AddYuanBao(goldPrice);
+            AudioController0.instance.ChangeAudioClip(17);
             AudioController0.instance.PlayAudioSource(0);
-            queRenWindows.transform.GetChild(0).GetChild(1).GetComponent<Button>().onClick.RemoveAllListeners();
-            queRenWindows.transform.GetChild(0).GetChild(1).GetComponent<Button>().onClick.AddListener(delegate ()
-            {
-                List<NowLevelAndHadChip> datas = new List<NowLevelAndHadChip>();
-                switch (heroData.typeIndex)
-                {
-                    case 0:
-                        datas = PlayerDataForGame.instance.hstData.heroSaveData;
-                        break;
-                    case 1:
-                        datas = PlayerDataForGame.instance.hstData.soldierSaveData;
-                        break;
-                    case 2:
-                        datas = PlayerDataForGame.instance.hstData.towerSaveData;
-                        break;
-                    case 3:
-                        datas = PlayerDataForGame.instance.hstData.trapSaveData;
-                        break;
-                    case 4:
-                        datas = PlayerDataForGame.instance.hstData.spellSaveData;
-                        break;
-                    default:
-                        break;
-                }
-                //Debug.Log("---出售" + heroData.typeIndex + "类型的卡牌：" + heroData.id); 
-                heroData.chips = 0;
-                heroData.level = 0;
-                heroData.isFight = 0;
-                //datas.Remove(heroData); 
-                //LoadSaveData.instance.SaveByJson(PlayerDataForGame.instance.hstData); 
-                PlayerDataForGame.instance.isNeedSaveData = true;
-                LoadSaveData.instance.SaveGameData(2);
-                ConsumeManager.instance.AddYuanBao(getGoldNums);
-                AudioController0.instance.ChangeAudioClip(17);
-                AudioController0.instance.PlayAudioSource(0);
-                //刷新主城列表 
-                ChangeScrollView();
-                PlayerDataForGame.instance.EnlistCard(heroData, false);
-                UpdateCardNumsShow();
-                queRenWindows.SetActive(false);
-            });
-            queRenWindows.SetActive(true);
-        }
+            //刷新主城列表 
+            ChangeScrollView();
+            PlayerDataForGame.instance.EnlistCard(heroData, false);
+            UpdateCardNumsShow();
+            queRenWindows.SetActive(false);
+        });
+        queRenWindows.SetActive(true);
     }
 
     /// <summary> 
@@ -1387,6 +1345,15 @@ public class UIManager : MonoBehaviour
     /// </summary> 
     public void InitializationPlayerInfo()
     {
+        RefreshPlayerInfoUi();
+        CreateHeroAndTowerContent();
+        UpdateCardNumsShow();
+
+        StartCoroutine(LateToChangeViewShow(0));
+    }
+
+    public void RefreshPlayerInfoUi()
+    {
         //player`s name 
         playerInfoObj.transform.GetChild(1).GetChild(1).GetComponent<Text>().text = DataTable.PlayerInitialConfig[PlayerDataForGame.instance.pyData.ForceId].Force;
         if (PlayerDataForGame.instance.pyData.Level >= DataTable.PlayerLevelConfig.Keys.Max())
@@ -1408,11 +1375,6 @@ public class UIManager : MonoBehaviour
         yvQueNumText.text = PlayerDataForGame.instance.pyData.YvQue.ToString();
         showTiLiNums = PlayerDataForGame.instance.pyData.Stamina;
         tiLiNumText.text = showTiLiNums + "/90";
-
-        CreateHeroAndTowerContent();
-        UpdateCardNumsShow();
-
-        StartCoroutine(LateToChangeViewShow(0));
     }
 
     //得到合成所需元宝 
@@ -1438,55 +1400,56 @@ public class UIManager : MonoBehaviour
     public void SynthesizeCard()
     {
         var nextLevel = DataTable.CardLevel[selectCardData.level + 1];
-        if (selectCardData.chips >= nextLevel.ChipsConsume)
+        var isChipsEnough = selectCardData.chips >= nextLevel.ChipsConsume;
+        var isYanBaoEnough = PlayerDataForGame.instance.pyData.YuanBao >= nextLevel.YuanBaoConsume;
+
+        if (!isChipsEnough || !isYanBaoEnough || !ConsumeManager.instance.DeductYuanBao(nextLevel.YuanBaoConsume))
         {
-            if (ConsumeManager.instance.DeductYuanBao(nextLevel.YuanBaoConsume))
+            PlayerDataForGame.instance.ShowStringTips(isYanBaoEnough
+                ? DataTable.GetStringText(36)
+                : DataTable.GetStringText(37));
+            PlayOnClickMusic();
+            return;
+        }
+
+        ApiPanel.instance.Invoke(vb =>
             {
-                selectCardData.chips -= nextLevel.ChipsConsume;
-
-                selectCardData.level++;
-                if (!selectCardData.isHad)
+                var player = vb.GetPlayerDataDto();
+                var dto = vb.GetGameCardDto();
+                NowLevelAndHadChip card;
+                var hst = PlayerDataForGame.instance.hstData;
+                switch (dto.Type)
                 {
-                    selectCardData.isHad = true;
-                    MainWuBeiUIManager.instance.UpdateArmsBtnTextShow();
+                    case GameCardType.Hero:
+                        card = hst.heroSaveData.First(c => c.id == dto.CardId);
+                        break;
+                    case GameCardType.Tower:
+                        card = hst.towerSaveData.First(c => c.id == dto.CardId);
+                        break;
+                    case GameCardType.Trap:
+                        card = hst.trapSaveData.First(c => c.id == dto.CardId);
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
                 }
-                if (selectCardData.maxLevel < selectCardData.level)
-                {
-                    selectCardData.maxLevel = selectCardData.level;
-                }
-                //LoadSaveData.instance.SaveByJson(PlayerDataForGame.instance.hstData); 
-                PlayerDataForGame.instance.isNeedSaveData = true;
-                LoadSaveData.instance.SaveGameData(2);
 
-                upStarEffectObj.SetActive(false);
-                upStarEffectObj.SetActive(true);
-                StartCoroutine(HideTheEffectOfUpStar());
-
+                card.chips = dto.Chips;
+                card.level = dto.Level;
+                ConsumeManager.instance.SaveChangeUpdatePlayerData(player, 7);
+                StartCoroutine(PlayCardUpgradeEffect());
                 AudioController0.instance.ChangeAudioClip(16);
                 AudioController0.instance.PlayAudioSource(0);
-
                 UpdateLevelCard();
-
                 ShowOrHideGuideObj(2, false);
-            }
-            else
-            {
-                //Debug.Log("元宝不足，合成失败"); 
-                PlayerDataForGame.instance.ShowStringTips(DataTable.GetStringText(36));
-                PlayOnClickMusic();
-            }
-        }
-        else
-        {
-            //Debug.Log("碎片不足，合成失败"); 
-            PlayerDataForGame.instance.ShowStringTips(DataTable.GetStringText(37));
-            PlayOnClickMusic();
-        }
+            }, PlayerDataForGame.instance.ShowStringTips,
+            EventStrings.Req_CardMerge);
     }
 
     //隐藏升星特效 
-    IEnumerator HideTheEffectOfUpStar()
+    IEnumerator PlayCardUpgradeEffect()
     {
+        upStarEffectObj.SetActive(false);
+        upStarEffectObj.SetActive(true);
         yield return new WaitForSeconds(1.7f);
         upStarEffectObj.SetActive(false);
     }
@@ -1873,7 +1836,7 @@ public class UIManager : MonoBehaviour
     //添加体力 
     public void AddStamina(int addNums)
     {
-        TimeSystemControl.instance.AddTiLiNums(addNums);
+        TimeSystemControl.instance.AddStamina(addNums);
     }
 
     //播放点击音效 
@@ -1975,43 +1938,13 @@ public class UIManager : MonoBehaviour
             return;
         }
 
-        //获得奖励 
-        ConsumeManager.instance.AddYuQue(rCode.YuQue);
-        ConsumeManager.instance.AddYuanBao(rCode.YuanBao);
-        AddStamina(rCode.TiLi);
-        var cards = rCode.Cards;
-        List<RewardsCardClass> rewards = new List<RewardsCardClass>();
-        for (int i = 0; i < cards.Length; i++)
-        {
-            var card = cards[i];
-            rewardManager.RewardCard((GameCardType) card.Type, card.CardId, card.Chips);
-            var rewardCard = new RewardsCardClass
+        ApiPanel.instance.Invoke(vb =>
             {
-                cardType = card.Type,
-                cardId = card.CardId,
-                cardChips = card.Chips
-            };
-            rewards.Add(rewardCard);
-        }
-
-        PlayerDataForGame.instance.isNeedSaveData = true;
-        LoadSaveData.instance.SaveGameData(2);
-        ShowRewardsThings(rCode.YuanBao, rCode.YuQue, 0, rCode.TiLi, rewards, 0);
-
-        if (playerRecord == null)
-        {
-            playerRecord = new RedemptionCodeGot {id = rCode.Id};
-            PlayerDataForGame.instance.gbocData.redemptionCodeGotList.Add(playerRecord);
-        }
-        playerRecord.isGot = true;
-        PlayerDataForGame.instance.isNeedSaveData = true;
-        LoadSaveData.instance.SaveGameData(4);
-
-        rtInputField.text = "";
-        PlayerDataForGame.instance.ShowStringTips(rCode.Info);
-        rtCloseBtn.onClick.Invoke();
-        AudioController0.instance.ChangeAudioClip(0);
-        AudioController0.instance.PlayAudioSource(0);
+                var rC = vb.GetRCode();
+                var py = vb.GetPlayerDataDto();
+                OnSuccessRedeemed(rC, playerRecord, py);
+            }, PlayerDataForGame.instance.ShowStringTips,
+            EventStrings.Req_RCode, ViewBag.Instance().SetValue(rCode.Code));
 
         void ShowMessage(int textId)
         {
@@ -2019,6 +1952,28 @@ public class UIManager : MonoBehaviour
             rtInputField.text = string.Empty;
             PlayOnClickMusic();
         }
+    }
+
+    private void OnSuccessRedeemed(RCodeTable rCode, RedemptionCodeGot playerRecord,PlayerDataDto playerData)
+    {
+        var rewards = rCode.Cards.Select(c => new RewardsCardClass
+            {cardId = c.CardId, cardChips = c.Chips, cardType = c.Type}).ToList();
+
+        if (playerRecord == null)
+        {
+            playerRecord = new RedemptionCodeGot {id = rCode.Id};
+            PlayerDataForGame.instance.gbocData.redemptionCodeGotList.Add(playerRecord);
+        }
+
+        playerRecord.isGot = true;
+        ConsumeManager.instance.SaveChangeUpdatePlayerData(playerData, 0);
+
+        rtInputField.text = "";
+        PlayerDataForGame.instance.ShowStringTips(rCode.Info);
+        rtCloseBtn.onClick.Invoke();
+        AudioController0.instance.ChangeAudioClip(0);
+        AudioController0.instance.PlayAudioSource(0);
+        ShowRewardsThings(rCode.YuanBao, rCode.YuQue, 0, rCode.TiLi, rewards, 0);
     }
 
     ///////////////////////////鸡坛相关///////////////////////////////// 
@@ -2077,39 +2032,38 @@ public class UIManager : MonoBehaviour
     {
         AudioController0.instance.ChangeAudioClip(13);
         OpenOrCloseChickenBtn(false);
-        var stamina = DataTable.Chicken[chickenId].Stamina;
-        var yuQueCost = DataTable.Chicken[chickenId].YuQueCost;
-        switch (chickenId)
-        {
-            case 1:
-                AdAgent.instance.BusyRetry(() =>
-                {
-                    GetTiLiForChicken(yuQueCost, stamina);
-                    PlayerDataForGame.instance.ShowStringTips(string.Format(DataTable.GetStringText(50),
-                        stamina));
-                    GetCkChangeTimeAndWindow();
-                    AudioController0.instance.ChangeAudioClip(25);
-                    AudioController0.instance.PlayAudioSource(0);
-                }, () =>
+        if (chickenId == 0)
+            AdAgent.instance.BusyRetry(InvokeApi
+                , () =>
                 {
                     PlayerDataForGame.instance.ShowStringTips(DataTable.GetStringText(6));
                     OpenOrCloseChickenBtn(true);
                 });
-                break;
-            case 2:
-            case 3:
-                if (GetTiLiForChicken(yuQueCost, stamina))
+        else InvokeApi();
+
+        void InvokeApi()
+        {
+            ApiPanel.instance.Invoke(bag =>
                 {
-                    PlayerDataForGame.instance.ShowStringTips(string.Format(DataTable.GetStringText(51), stamina));
-                    GetCkChangeTimeAndWindow();
-                    AudioController0.instance.ChangeAudioClip(25);
-                }
-                else
+                    var chicken = bag.GetChicken();
+                    var player = bag.GetPlayerDataDto();
+                    ConsumeManager.instance.SaveChangeUpdatePlayerData(player);
+                    //GetTiLiForChicken(yuQueCost, stamina);
+                    OnSuccessRequestChicken(chickenId == 1 ? 50 : 51, chicken.Stamina);
+                }, msg =>
                 {
+                    PlayerDataForGame.instance.ShowStringTips(msg);
                     OpenOrCloseChickenBtn(true);
-                }
-                break;
+                }, EventStrings.Req_Chicken,
+                ViewBag.Instance().SetValue(chickenId));
         }
+    }
+
+    private void OnSuccessRequestChicken(int textIndex, int stamina)
+    {
+        PlayerDataForGame.instance.ShowStringTips(string.Format(DataTable.GetStringText(textIndex), stamina));
+        GetCkChangeTimeAndWindow();
+        AudioController0.instance.ChangeAudioClip(25);
         AudioController0.instance.PlayAudioSource(0);
     }
 

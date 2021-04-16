@@ -11,7 +11,10 @@ public class TestSignalRConnection : MonoBehaviour
 
     public void Login()
     {
-        Client.Login((isSuccess, code) => Debug.Log($"SignalR连接: {isSuccess}, StatusCode[{code}]!"), Username,
+        Client.Login(
+            (isSuccess, code, arrangement) =>
+                Debug.Log($"SignalR连接: {isSuccess}, StatusCode[{code}], Arrangement[{arrangement}]!"),
+            Username,
             Password);
         var player = new PlayerData {Exp = 100};
         PlayerDataForGame.instance.pyData = player;
@@ -21,7 +24,8 @@ public class TestSignalRConnection : MonoBehaviour
     {
         //var card = new GameCardDto(14, GameCardType.Hero, 3, 2);
         //var result = await Client.Invoke("Req_CardSell", new object[] {14, 0, Json.Serialize(card)});
-        await Client.SynchronizePlayerData();
+        //await Client.SynchronizePlayerData(true);
+        await Client.SynchronizeSaved();
         //XDebug.Log<TestSignalRConnection>(result);
     }
 
