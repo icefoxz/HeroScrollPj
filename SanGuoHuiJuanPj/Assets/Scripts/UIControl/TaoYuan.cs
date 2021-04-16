@@ -4,7 +4,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading;
+using System.Threading.Tasks;
+using Assets.Scripts.Utl;
 using Beebyte.Obfuscator;
+using CorrelateLib;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -50,23 +53,43 @@ using UnityEngine.UI;
             chest.chestButton.enabled = zyChestCount > 0;
             continue;
         }
-        jinNangBtn.onClick.AddListener(OnOpenJinNang);
+        jinNangBtn.onClick.AddListener(()=>ApiPanel.instance.Invoke(OnOpenJinNang));
     }
 
-    public void OnOpenJinNang()
+    public async Task OnOpenJinNang()
     {
         if (TimeSystemControl.instance.OnClickToGetJinNang())
         {
-            var list = DataTable.Tips.Values.ToList();
-            var randId = UnityEngine.Random.Range(0, list.Count);
-            var tips = list[randId];
-            var yuanBao = UnityEngine.Random.Range(tips.YuanBaoReward.Min, tips.YuanBaoReward.ExcMax);
-            var textColor = tips.Color == 1 ? ColorDataStatic.name_deepRed : ColorDataStatic.name_brown;
-            jinNangUi.OnReward(tips.Text, textColor, tips.Sign, tips.Stamina, yuanBao);
+            var value = await SignalRClient.instance.Invoke(EventStrings.Req_JinNang);
+            var args = Json.DeserializeObjs(value);
+            var jinNang = Json.Deserialize<JinNangDto>(args[0].ToString());
+            var doubleToken = args[1].ToString();
+            var playerDto = Json.Deserialize<PlayerDataDto>(args[2].ToString());
+            if (jinNang == null)
+            {
+                Failed();
+                return;
+            }
+            //var list = DataTable.Tips.Values.ToList();
+            //var randId = UnityEngine.Random.Range(0, list.Count);
+            //var tips = list[randId];
+            //var yuanBao = UnityEngine.Random.Range(tips.YuanBaoReward.Min, tips.YuanBaoReward.ExcMax);
+            var textColor = jinNang.Color == 1 ? ColorDataStatic.name_deepRed : ColorDataStatic.name_brown;
+            UnityMainThread.thread.RunNextFrame(() =>
+                jinNangUi.OnReward(jinNang.Text, textColor, jinNang.Sign, jinNang.Stamina, jinNang.YuanBao, doubleToken,
+                    playerDto));
             return;
         }
-        UIManager.instance.PlayOnClickMusic();
-        PlayerDataForGame.instance.ShowStringTips(DataTable.GetStringText(44));
+        Failed();
+
+        void Failed()
+        {
+            UnityMainThread.thread.RunNextFrame(() =>
+            {
+                UIManager.instance.PlayOnClickMusic();
+                PlayerDataForGame.instance.ShowStringTips(DataTable.GetStringText(44));
+            });
+        }
     }
 
     public void UpdateJiuTan(bool isReady,string jiuTanCount, string countDown)
@@ -207,7 +230,6 @@ using UnityEngine.UI;
 
     public void CloseAllChests()
     {
-        //todo: 检查为什么会null，在打开战役第一次宝箱
         if (chestCostMap == null) return;
         foreach (var map in chestCostMap)
         {

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using Assets;
+using CorrelateLib;
 using UnityEngine;
 
 public class ConsumeManager : MonoBehaviour
@@ -121,4 +123,12 @@ public class ConsumeManager : MonoBehaviour
         LoadSaveData.instance.SaveGameData(1);
     }
 
+    public void UpdatePlayerData(PlayerDataDto player)
+    {
+        PlayerDataForGame.instance.pyData.CloneData(player);
+        UIManager.instance.yvQueNumText.text = PlayerDataForGame.instance.pyData.YvQue.ToString();
+        UIManager.instance.yuanBaoNumText.text = PlayerDataForGame.instance.pyData.YuanBao.ToString();
+        PlayerDataForGame.instance.isNeedSaveData = true;
+        LoadSaveData.instance.SaveGameData(1);
+    }
 }

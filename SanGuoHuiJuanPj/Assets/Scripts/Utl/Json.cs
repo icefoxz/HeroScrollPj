@@ -31,6 +31,7 @@ public static class Json
         return function.Invoke(list);
     }
 
+    public static object[] DeserializeObjs(string value) => Deserialize<object[]>(value);
     public static string Serialize(object obj) => JsonConvert.SerializeObject(obj);
 
     public static T Deserialize<T>(string value) where T : class

@@ -1203,10 +1203,6 @@ public class UIManager : MonoBehaviour
     //出售卡牌可得金币 
     private int GetGoldPrice(NowLevelAndHadChip heroData)
     {
-        if (heroData.level == 1)
-        {
-
-        }
         var info = heroData.GetInfo();
         int chips = heroData.chips + DataTable.CardLevel.Where(lv => lv.Key <= heroData.level).Sum(kv => kv.Value.ChipsConsume);
         int golds = 0;

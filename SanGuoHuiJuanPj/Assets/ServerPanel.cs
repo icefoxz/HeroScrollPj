@@ -58,7 +58,7 @@ public class ServerPanel : MonoBehaviour
     public void OnSignalRDisconnected() => Instance_OnStatusChanged(HubConnectionState.Disconnected);
 
     //当服务器强制离线
-    private void ServerCallDisconnect(string arg)
+    private void ServerCallDisconnect(object[] arg)
     {
         SignalR.Disconnect();
         Instance_OnStatusChanged(HubConnectionState.Disconnected);
