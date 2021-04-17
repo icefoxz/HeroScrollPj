@@ -235,7 +235,7 @@ public class SignalRClient : MonoBehaviour
         catch (Exception e)
         {
 #if UNITY_EDITOR
-            XDebug.LogError<SignalRClient>(e.Message);
+            XDebug.LogError<SignalRClient>($"{method}:{e.Message}");
             throw;
 #endif
             return null;

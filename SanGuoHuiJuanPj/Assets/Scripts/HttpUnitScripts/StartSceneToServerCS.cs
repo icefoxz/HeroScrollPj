@@ -205,6 +205,7 @@ public class StartSceneToServerCS : MonoBehaviour
             var ac = PlayerDataForGame.instance.acData;
             ac.Password = signInUi.PasswordField.text;
             PlayerDataForGame.instance.isNeedSaveData = true;
+            PlayerDataForGame.instance.Arrangement = arrangement;
             LoadSaveData.instance.SaveGameData(1);
             SetAccountInfo();
             StartSceneUIManager.instance.LoadingScene(1, true);

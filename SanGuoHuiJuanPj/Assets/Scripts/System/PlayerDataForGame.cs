@@ -57,6 +57,7 @@ public class PlayerDataForGame : MonoBehaviour
     public bool isHadNewSaveData; //记录游戏内是否有最新的读档数据 
 
     public UserInfo acData = new UserInfo();  //玩家账户信息 
+    public int Arrangement { get; set; }//服务器账号标记
 
     public PlayerData pyData;  //玩家基本信息 
     public GetBoxOrCodeData gbocData = new GetBoxOrCodeData();  //玩家宝箱与兑换码信息 
@@ -197,7 +198,11 @@ public class PlayerDataForGame : MonoBehaviour
         if(isRequestSyncData)
         {
             isRequestingSaveFile = true;
-            ApiPanel.instance.SyncSaved(() => isRequestingSaveFile = false);
+            if (Arrangement == 0)
+            {
+                LoadSaveData.instance.LoadByJson();
+                isRequestingSaveFile = false;
+            }else ApiPanel.instance.SyncSaved(() => isRequestingSaveFile = false);
         }
         loadingImg.gameObject.SetActive(true);
         loadingImg.DOFade(1, fadeSpeed);

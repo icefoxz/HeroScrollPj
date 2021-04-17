@@ -532,6 +532,18 @@ public class LoadSaveData : MonoBehaviour
                 save.warUnlockSaveData.Add(unlock);
             }
         }
+
+        var duplicated = save.warUnlockSaveData.GroupBy(w => w.warId, w => w).Where(w => w.Count() > 1).ToList();
+        for (int i = 0; i < duplicated.Count; i++)
+        {
+            var w = duplicated[i];
+            var elements = w.ToList();
+            for (int j = 1; j < elements.Count; j++)
+            {
+                var e = elements[j];
+                save.warUnlockSaveData.Remove(e);
+            }
+        }
         if (isNeedSaveDate)
         {
             SaveByJson(save);
