@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Assets.Scripts.Utl;
+using CorrelateLib;
 using Microsoft.AspNetCore.SignalR.Client;
 using Newtonsoft.Json;
 using Unity.Collections;
@@ -12,6 +15,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using Object = System.Object;
 
 /// <summary>
 /// Signal客户端
@@ -22,10 +26,6 @@ public class SignalRClient : MonoBehaviour
     /// SignalR 网络状态
     /// </summary>
     public HubConnectionState Status;
-    /// <summary>
-    /// 重试次数
-    /// </summary>
-    public int Retries = 5;
 
     public int ServerTimeOutMinutes = 3;
     public int KeeAliveIntervalSecs = 20;
@@ -35,9 +35,11 @@ public class SignalRClient : MonoBehaviour
     public static SignalRClient instance;
     private CancellationTokenSource cancellationTokenSource;
     private static HubConnection _connection;
-    private Dictionary<string, UnityAction<string>> _actions;
+    private Dictionary<string, UnityAction<object[]>> _actions;
+    private static readonly Type _stringType = typeof(string);
     private bool isBusy;
-    private int retryCount;
+    public ApiPanel ApiPanel;
+
     private void Awake()
     {
         if (instance != null)
@@ -54,12 +56,21 @@ public class SignalRClient : MonoBehaviour
     private void Start()
     {
         //Login();
-        _actions = new Dictionary<string, UnityAction<string>>();
+        _actions = new Dictionary<string, UnityAction<object[]>>();
         OnStatusChanged += s => DebugLog($"状态更新[{s}]!");
-        ServerPanel.Init(this);
+        ServerPanel?.Init(this);
+        SubscribeAction(EventStrings.SR_UploadPy, OnServerCalledUpload);
+        ApiPanel.Init(this);
     }
 
-    public async void Login(Action<bool,int> recallAction,string username = null,string password = null)
+    async void OnApplicationQuit()
+    {
+        if (_connection == null)return;
+        await _connection.StopAsync();
+        await _connection.DisposeAsync();
+    }
+
+    public async void Login(Action<bool,int, int> recallAction,string username = null,string password = null)
     {
         if(isBusy)return;
         if (username == null) username = PlayerDataForGame.instance.acData.Username;
@@ -76,12 +87,12 @@ public class SignalRClient : MonoBehaviour
                 case HttpStatusCode.Unauthorized:
                     severBackCode = ServerBackCode.ERR_PW_ERROR;
                     break;
-                case HttpStatusCode.ServiceUnavailable:
+                case HttpStatusCode.HttpVersionNotSupported:
                     severBackCode = ServerBackCode.ERR_SERVERSTATE_ZERO;
                     break;
             }
             isBusy = false;
-            recallAction.Invoke(false, (int) severBackCode);
+            recallAction.Invoke(false, (int) severBackCode, 0);
             return;
         }
 
@@ -89,7 +100,47 @@ public class SignalRClient : MonoBehaviour
         var connectionInfo = JsonConvert.DeserializeObject<SignalRConnectionInfo>(jsonString);
         var result = await ConnectSignalRAsync(connectionInfo, cancellationTokenSource.Token);
         isBusy = false;
-        recallAction?.Invoke(result, (int) response.StatusCode);
+        recallAction?.Invoke(result, (int) response.StatusCode, connectionInfo.Arrangement);
+    }
+
+    public async Task SynchronizePlayerData(bool forceSync = false)
+    {
+        var jData = await Invoke(EventStrings.Req_PlayerData);
+        var viewBag = Json.Deserialize<ViewBag>(jData);
+        if(!forceSync)
+        {
+            var isSync = (bool) viewBag.Values[0];
+            if (!isSync) return;
+        }
+        var playerData = viewBag.GetObj<PlayerData>(ViewBag.PlayerDataDto);
+        PlayerDataForGame.instance.pyData = playerData;
+        PlayerDataForGame.instance.isNeedSaveData = true;
+        LoadSaveData.instance.SaveGameData(6);
+    }
+
+    public async Task SynchronizeSaved()
+    {
+        var jData = await Invoke(EventStrings.Req_Saved);
+        var bag = Json.Deserialize<ViewBag>(jData);
+        var playerData = bag.GetPlayerDataDto();
+        var warChestList = bag.GetPlayerWarChests();
+        var redeemedList = bag.GetPlayerRedeemedCodes();
+        var warCampaignList = bag.GetPlayerWarCampaignDtos();
+        var gameCardList = bag.GetPlayerGameCardDtos();
+        var troops = bag.GetPlayerTroopDtos();
+        PlayerDataForGame.instance.pyData = PlayerData.Instance(playerData);
+        PlayerDataForGame.instance.warsData.warUnlockSaveData = warCampaignList.Select(w => new UnlockWarCount
+        {
+            warId = w.WarId,
+            isTakeReward = w.IsFirstRewardTaken,
+            unLockCount = w.UnlockProgress
+        }).ToList();
+        PlayerDataForGame.instance.UpdateGameCards(troops, gameCardList);
+        PlayerDataForGame.instance.gbocData.redemptionCodeGotList = redeemedList.Join(DataTable.RCode.Values, c => c,
+            r => r.Code, (_, r) => new RedemptionCodeGot {id = r.Id, isGot = true}).ToList();
+        PlayerDataForGame.instance.gbocData.fightBoxs = warChestList.ToList();
+        PlayerDataForGame.instance.isNeedSaveData = true;
+        LoadSaveData.instance.SaveGameData();
     }
 
     private UserInfo GetUserInfo(string username,string password)
@@ -142,14 +193,14 @@ public class SignalRClient : MonoBehaviour
         return true;
     }
 
-    public void SubscribeAction(string method, UnityAction<string> action)
+    public void SubscribeAction(string method, UnityAction<object[]> action)
     {
         if (!_actions.ContainsKey(method))
             _actions.Add(method, default);
         _actions[method] += action;
     }
 
-    public void UnSubscribeAction(string method, UnityAction<string> action)
+    public void UnSubscribeAction(string method, UnityAction<object[]> action)
     {
         if (!_actions.ContainsKey(method))
             throw XDebug.Throw<SignalRClient>($"Method[{method}] not registered!");
@@ -161,17 +212,40 @@ public class SignalRClient : MonoBehaviour
 #if UNITY_EDITOR
         DebugLog($"{method}: {content}");
 #endif
-        if(! _actions.TryGetValue(method.ToString(),out var action))return;
-        action?.Invoke(content);
+        if(! _actions.TryGetValue(method,out var action))return;
+        var args = Json.Deserialize<object[]>(content);
+        action?.Invoke(args);
     }
 
-    private async Task InvokeAsync(string method,string arg,CancellationToken cancellationToken = default) => await _connection.SendAsync(method, arg, cancellationToken);
-    public async void Invoke(string method, string arg) => await InvokeAsync(method, arg);
+    public async void Invoke(string method, UnityAction<string> recallAction , IViewBag bag = default,
+        CancellationToken cancellationToken = default)
+    {
+        var result = await Invoke(method, bag, cancellationToken);
+        UnityMainThread.thread.RunNextFrame(()=>recallAction?.Invoke(result));
+    }
+
+    private async Task<string> Invoke(string method, IViewBag bag = default, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var result = await _connection.InvokeCoreAsync(method, _stringType, new object[] {Json.Serialize(bag)},
+                cancellationToken);
+            return result?.ToString();
+        }
+        catch (Exception e)
+        {
+#if UNITY_EDITOR
+            XDebug.LogError<SignalRClient>($"{method}:{e.Message}");
+            throw;
+#endif
+            return null;
+        }
+    }
 
     /// <summary>
     /// 强制离线
     /// </summary>
-    public void Disconnect()
+    public async void Disconnect()
     {
         if (_connection.State == HubConnectionState.Disconnected)
             return;
@@ -183,7 +257,7 @@ public class SignalRClient : MonoBehaviour
             return;
         }
         if (_connection.State == HubConnectionState.Disconnected) return;
-        _connection.StopAsync().Wait();
+        await _connection.StopAsync();
         ResetConnection();
     }
 
@@ -195,6 +269,50 @@ public class SignalRClient : MonoBehaviour
         Application.quitting -= Disconnect;
     }
 
+    #region Upload
+
+    private async void OnServerCalledUpload(object[] args)
+    {
+        var saved = PlayerDataForGame.instance;
+        var playerData = saved.pyData;
+        var redeemCodeIds = saved.gbocData.redemptionCodeGotList.Where(c => c.isGot)
+            .Select(c => c.id).ToList();
+        var warChest = saved.gbocData.fightBoxs.ToArray();
+        var redeemedCodes = redeemCodeIds.Join(DataTable.RCode, id => id, d => d.Key, (_, d) => d.Value.Code).ToArray();
+        var token = args[0];
+        var campaign = saved.warsData.warUnlockSaveData.Select(w => new WarCampaignDto
+                {WarId = w.warId, IsFirstRewardTaken = w.isTakeReward, UnlockProgress = w.unLockCount})
+            .Where(w => w.UnlockProgress > 0).ToArray();
+        var cards = saved.hstData.heroSaveData
+            .Join(DataTable.Hero, c => c.id, h => h.Key, (c, h) => new {ForceId = h.Value.ForceTableId, c})
+            .Concat(saved.hstData.towerSaveData.Join(DataTable.Tower, c => c.id, t => t.Key,
+                (c, t) => new {t.Value.ForceId, c})).Concat(saved.hstData.trapSaveData.Join(DataTable.Trap, c => c.id,
+                t => t.Key, (c, t) => new {t.Value.ForceId, c})).Where(c => c.c.chips > 0 || c.c.level > 0).ToList();
+        var troops = cards.GroupBy(c => c.ForceId, c => c).Select(c =>
+        {
+            var list = c.GroupBy(o => o.c.typeIndex, o => o.c)
+                .ToDictionary(o => (GameCardType) o.Key, o => o.Select(a => a).ToArray());
+            return new TroopDto
+            {
+                ForceId = c.Key,
+                Cards = list.ToDictionary(l => l.Key, l => l.Value.Select(o => o.id).ToArray()),
+                EnList = list.ToDictionary(l => l.Key,
+                    l => l.Value.Where(o => o.isFight > 0).Select(o => o.id).ToArray())
+            };
+        }).ToArray();
+        var viewBag = ViewBag.Instance()
+            .SetValue(token)
+            .PlayerDataDto(playerData.ToDto())
+            .PlayerRedeemedCodes(redeemedCodes)
+            .PlayerWarChests(warChest)
+            .PlayerWarCampaignDtos(campaign)
+            .PlayerGameCardDtos(cards.Select(c => c.c.ToDto()).ToArray())
+            .PlayerTroopDtos(troops);
+        await Invoke(EventStrings.Req_UploadPy, viewBag);
+    }
+
+    #endregion
+
     #region Event
 
     /// <summary>
@@ -202,7 +320,6 @@ public class SignalRClient : MonoBehaviour
     /// </summary>
     private Task OnReconnecting(Exception exception)
     {
-        retryCount++;
         StatusChanged(_connection.State, exception.ToString());
         return Task.CompletedTask;
     }
@@ -212,7 +329,6 @@ public class SignalRClient : MonoBehaviour
     /// </summary>
     private Task OnReconnected(string msg)
     {
-        retryCount = 0;
         StatusChanged(_connection.State, msg);
         return Task.CompletedTask;
     }
@@ -224,7 +340,7 @@ public class SignalRClient : MonoBehaviour
     {
         StatusChanged(_connection.State, exception.ToString());
         if (_connection.State == HubConnectionState.Disconnected)
-            ServerPanel.OnSignalRDisconnected();
+            ServerPanel?.OnSignalRDisconnected();
         return Task.CompletedTask;
     }
     private void StatusChanged(HubConnectionState status, string message)
@@ -248,8 +364,8 @@ public class SignalRClient : MonoBehaviour
 
     private class SignalRConnectionInfo
     {
-        [JsonProperty("url")] public string Url { get; set; }
-        [JsonProperty("accessToken")] public string AccessToken { get; set; }
+        public string Url { get; set; }
+        public string AccessToken { get; set; }
+        public int Arrangement { get; set; }
     }
-
 }

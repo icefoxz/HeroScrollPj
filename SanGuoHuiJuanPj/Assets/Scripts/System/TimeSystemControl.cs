@@ -52,9 +52,9 @@ public class TimeSystemControl : MonoBehaviour
     long openFreeBoxTimeLong2;
     //long openJinNangTimeLong;   //记录锦囊开启的网络long
 
-    private string tiLiHuiFuNeedTimes = "tLHFNT"; //游戏内的计时器记录体力恢复时间 单位秒
-    private string tiLiHuiFuTime = "tLHFT"; //记录体力恢复满的网络时间点
-    int oneTiLiHfSeconds = 600;   //单个体力恢复时间12分钟
+    private const string StaminaSecsSlot = "tLHFNT"; //游戏内的计时器记录体力恢复时间 单位秒
+    private const string StaminaTimeSlot = "tLHFT"; //记录体力恢复满的网络时间点
+    int staminaRecoverSecs = 600;   //单个体力恢复时间12分钟
     int secondsNetTime_TiLiHf = 0; //记录体力恢复网络剩余时间
     long tiLiHfTimeLong;   //记录体力恢复满的网络long
     int maxStamina;  //记录最大体力值
@@ -71,7 +71,7 @@ public class TimeSystemControl : MonoBehaviour
     bool isCanGetBox2;
     bool isJNTimeValid;    //记录是否锦囊开启时间合法
 
-    bool isNeedRecoverStamina;   //记录是否需要恢复体力
+    public bool IsCountdown { get; private set; }
 
     //DateTime timeNow;
     //DateTime startTime;
@@ -131,10 +131,10 @@ public class TimeSystemControl : MonoBehaviour
 
         //isNeedHuiFuTiLi = false;
         //tiLiHfTimeLong = 0;
-        PlayerPrefs.SetInt(tiLiHuiFuNeedTimes, 0);
-        PlayerPrefs.SetString(tiLiHuiFuTime, "0");
+        PlayerPrefs.SetInt(StaminaSecsSlot, 0);
+        PlayerPrefs.SetString(StaminaTimeSlot, "0");
         maxStamina = DataTable.ResourceConfig[2].NewPlayerValue;//startValue
-        tiLiHfTimeLong = long.Parse(PlayerPrefs.GetString(tiLiHuiFuTime));
+        tiLiHfTimeLong = long.Parse(PlayerPrefs.GetString(StaminaTimeSlot));
 
         PlayerPrefs.SetInt(openCKTime0_str, 0);
         PlayerPrefs.SetInt(openCKTime1_str, 0);
@@ -160,7 +160,7 @@ public class TimeSystemControl : MonoBehaviour
         //openJinNangTimeLong = long.Parse(PlayerPrefs.GetString(jinNangOpenTime));
 
         maxStamina = DataTable.ResourceConfig[2].NewPlayerValue;//startValue
-        long.TryParse(PlayerPrefs.GetString(tiLiHuiFuTime), out tiLiHfTimeLong);
+        long.TryParse(PlayerPrefs.GetString(StaminaTimeSlot), out tiLiHfTimeLong);
     }
 
     private void Update()
@@ -175,7 +175,7 @@ public class TimeSystemControl : MonoBehaviour
         UpdateChickenShoping();
     }
 
-    public void InitStaminaCount(bool startCount) => isNeedRecoverStamina = startCount;
+    public void InitStaminaCount(bool isCountdown) => IsCountdown = isCountdown;
 
     /// <summary>
     /// 更新时间触发器
@@ -232,7 +232,7 @@ public class TimeSystemControl : MonoBehaviour
     private void UpdateChickenShoping()
     {
         //在主界面的话
-        if (isOpenMainScene)
+        if (isOpenMainScene && UIManager.instance.IsInit)
         {
             UIManager.instance.InitOpenChickenTime(true);
             //UIManager.instance.InitOpenChickenTime(true);
@@ -271,44 +271,47 @@ public class TimeSystemControl : MonoBehaviour
     /// <summary>
     /// 添加体力
     /// </summary>
-    /// <param name="addNums"></param>
-    public void AddTiLiNums(int addNums)
+    /// <param name="stamina"></param>
+    public void AddStamina(int stamina)
     {
-        int needTimes = PlayerPrefs.GetInt(tiLiHuiFuNeedTimes);
+        int fullRecoveredSecs = PlayerPrefs.GetInt(StaminaSecsSlot);//从记录获取总体力填满的秒数
 
-        int cutTimes = oneTiLiHfSeconds * addNums;
+        int addedStaminaSecs = staminaRecoverSecs * stamina;//增加的体力花费的秒数
 
-        if (cutTimes < needTimes)
+        if (addedStaminaSecs < fullRecoveredSecs)
         {
-            needTimes = needTimes - cutTimes;
-            secondsNetTime_TiLiHf = secondsNetTime_TiLiHf - (cutTimes * 1000);
-            PlayerPrefs.SetInt(tiLiHuiFuNeedTimes, needTimes);
+            fullRecoveredSecs = fullRecoveredSecs - addedStaminaSecs;
+            secondsNetTime_TiLiHf = secondsNetTime_TiLiHf - (addedStaminaSecs * 1000);
+            PlayerPrefs.SetInt(StaminaSecsSlot, fullRecoveredSecs);
+            tiLiHfTimeLong = 0;
+            return;
         }
-        else
+
+        int nowStamina = PlayerDataForGame.instance.pyData.Stamina;
+        var staminaSet = nowStamina + stamina;
+        var staminaMax = PlayerDataForGame.instance.staminaMax;//极限值
+        staminaSet = staminaSet > staminaMax ? staminaMax : staminaSet;//体力永远不大于极限值
+        if(staminaSet != nowStamina)
         {
-            int nowStamina = PlayerDataForGame.instance.pyData.Stamina;
-            var staminaSet = nowStamina + addNums;
-            var staminaMax = PlayerDataForGame.instance.staminaMax;//极限值
-            staminaSet = staminaSet > staminaMax ? staminaMax : staminaSet;//体力永远不大于极限值
             PlayerDataForGame.instance.SetStamina(staminaSet);
+        }
 
-            if (isNeedRecoverStamina)
-            {
-                isNeedRecoverStamina = false;    //记录不需要再倒计时恢复体力
+        if (IsCountdown)
+        {
+            IsCountdown = false;    //记录不需要再倒计时恢复体力
 
-                PlayerPrefs.SetInt(tiLiHuiFuNeedTimes, 0);  //游戏内恢复满总时间归零
+            PlayerPrefs.SetInt(StaminaSecsSlot, 0);  //游戏内恢复满总时间归零
 
-                tiLiHfTimeLong = 0; //体力恢复满的网络long标签归零
+            tiLiHfTimeLong = 0; //体力恢复满的网络long标签归零
 
-                PlayerPrefs.SetString(tiLiHuiFuTime, tiLiHfTimeLong.ToString());  //体力恢复满的网络时间点归零
+            PlayerPrefs.SetString(StaminaTimeSlot, tiLiHfTimeLong.ToString());  //体力恢复满的网络时间点归零
 
-                secondsNetTime_TiLiHf = 0;  //体力恢复网络剩余时间标签归零
-            }
+            secondsNetTime_TiLiHf = 0;  //体力恢复网络剩余时间标签归零
+        }
 
-            if (isOpenMainScene)
-            {
-                UIManager.instance.UpdateShowTiLiInfo(TimeDisplayText(0));
-            }
+        if (isOpenMainScene)
+        {
+            UIManager.instance.UpdateShowTiLiInfo(TimeDisplayText(0));
         }
 
         tiLiHfTimeLong = 0;
@@ -316,7 +319,11 @@ public class TimeSystemControl : MonoBehaviour
 
     private void UpdateStaminaTimer()
     {
-        if (!isNeedRecoverStamina)
+        if (PlayerDataForGame.instance.pyData.LastStaminaUpdateTicks == 0)
+        {
+            PlayerDataForGame.instance.pyData.LastStaminaUpdateTicks = SystemTimer.NowUnixTicks - (PlayerPrefs.GetInt(StaminaSecsSlot) * 1000);
+        }
+        if (!IsCountdown)
         {
             if (isOpenMainScene)
             {
@@ -327,15 +334,15 @@ public class TimeSystemControl : MonoBehaviour
 
         if (tiLiHfTimeLong == 0)
         {
-            tiLiHfTimeLong = SystemTimer.NowUnixTicks + PlayerPrefs.GetInt(tiLiHuiFuNeedTimes) * 1000;
-            PlayerPrefs.SetString(tiLiHuiFuTime, tiLiHfTimeLong.ToString());
+            tiLiHfTimeLong = SystemTimer.NowUnixTicks + PlayerPrefs.GetInt(StaminaSecsSlot) * 1000;
+            PlayerPrefs.SetString(StaminaTimeSlot, tiLiHfTimeLong.ToString());
         }
 
         int secondsCha = (int) ((tiLiHfTimeLong - SystemTimer.NowUnixTicks) / 1000);
         if (secondsNetTime_TiLiHf > secondsCha || (secondsNetTime_TiLiHf <= 0 && secondsCha != 0))
         {
             secondsNetTime_TiLiHf = secondsCha;
-            int totalTimes = PlayerPrefs.GetInt(tiLiHuiFuNeedTimes);
+            int totalTimes = PlayerPrefs.GetInt(StaminaSecsSlot);
             UpdateTiLiHuiFuTime(totalTimes - secondsNetTime_TiLiHf, totalTimes);
         }
     }
@@ -351,21 +358,21 @@ public class TimeSystemControl : MonoBehaviour
             totalTimesNums = 0;
             PlayerDataForGame.instance.SetStamina(maxStamina);
             secondsRemaining = 0;
-            isNeedRecoverStamina = false;
+            IsCountdown = false;
             tiLiHfTimeLong = 0;
-            PlayerPrefs.SetString(tiLiHuiFuTime, "0");
+            PlayerPrefs.SetString(StaminaTimeSlot, "0");
         }
         else
         {
-            secondsRemaining = totalTimesNums % oneTiLiHfSeconds;
-            int nowStaminaNum = (DataTable.ResourceConfig[2].NewPlayerValue * oneTiLiHfSeconds - totalTimesNums) / oneTiLiHfSeconds;
+            secondsRemaining = totalTimesNums % staminaRecoverSecs;
+            int nowStaminaNum = (DataTable.ResourceConfig[2].NewPlayerValue * staminaRecoverSecs - totalTimesNums) / staminaRecoverSecs;
             PlayerDataForGame.instance.SetStamina(nowStaminaNum);
         }
         if (isOpenMainScene)
         {
             UIManager.instance.UpdateShowTiLiInfo(TimeDisplayText(secondsRemaining));
         }
-        PlayerPrefs.SetInt(tiLiHuiFuNeedTimes, totalTimesNums);
+        PlayerPrefs.SetInt(StaminaSecsSlot, totalTimesNums);
     }
 
     //消耗体力
@@ -375,33 +382,33 @@ public class TimeSystemControl : MonoBehaviour
 
         if ((nowStamina - usedNums) < maxStamina)
         {
-            isNeedRecoverStamina = true;
+            IsCountdown = true;
             if (nowStamina > maxStamina)
             {
                 usedNums = usedNums - (nowStamina - maxStamina);
             }
 
-            PlayerPrefs.SetInt(tiLiHuiFuNeedTimes,
-                oneTiLiHfSeconds * usedNums + PlayerPrefs.GetInt(tiLiHuiFuNeedTimes));
+            PlayerPrefs.SetInt(StaminaSecsSlot,
+                staminaRecoverSecs * usedNums + PlayerPrefs.GetInt(StaminaSecsSlot));
 
-            secondsNetTime_TiLiHf += (usedNums * oneTiLiHfSeconds * 1000);
+            secondsNetTime_TiLiHf += (usedNums * staminaRecoverSecs * 1000);
 
             if (tiLiHfTimeLong == 0)
             {
                 long huiFuTimeLong = SystemTimer.NowUnixTicks;
-                huiFuTimeLong += (PlayerPrefs.GetInt(tiLiHuiFuNeedTimes) * 1000);
+                huiFuTimeLong += (PlayerPrefs.GetInt(StaminaSecsSlot) * 1000);
                 tiLiHfTimeLong = huiFuTimeLong;
             }
             else
             {
-                tiLiHfTimeLong += (oneTiLiHfSeconds * 1000 * usedNums);
+                tiLiHfTimeLong += (staminaRecoverSecs * 1000 * usedNums);
             }
 
-            PlayerPrefs.SetString(tiLiHuiFuTime, tiLiHfTimeLong.ToString());
+            PlayerPrefs.SetString(StaminaTimeSlot, tiLiHfTimeLong.ToString());
         }
         else
         {
-            isNeedRecoverStamina = false;
+            IsCountdown = false;
         }
     }
 

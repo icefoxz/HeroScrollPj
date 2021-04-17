@@ -35,7 +35,7 @@ public static class GameSystemExtension
                 force = DataTable.Trap[card.id].ForceId;
                 break;
         }
-        return force == forceId && (card.level > 0 || card.chips > 0) && card.isFight > 0;
+        return force == forceId && card.level > 0 && card.isFight > 0;
     });
 
     public static NowLevelAndHadChip GetOrInstance(this List<NowLevelAndHadChip> cards, int cardId, int cardType, int level) =>

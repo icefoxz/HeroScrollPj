@@ -3,6 +3,7 @@ using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using CorrelateLib;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -56,6 +57,7 @@ public class PlayerDataForGame : MonoBehaviour
     public bool isHadNewSaveData; //记录游戏内是否有最新的读档数据 
 
     public UserInfo acData = new UserInfo();  //玩家账户信息 
+    public int Arrangement { get; set; }//服务器账号标记
 
     public PlayerData pyData;  //玩家基本信息 
     public GetBoxOrCodeData gbocData = new GetBoxOrCodeData();  //玩家宝箱与兑换码信息 
@@ -112,9 +114,11 @@ public class PlayerDataForGame : MonoBehaviour
     [HideInInspector]
     public int boxForTiLiNums;  //返还体力单个宝箱扣除体力数 
 
+    private bool isRequestingSaveFile; //存档请求中
     //计算出战总数量 
     public int TotalCardsEnlisted => fightHeroId.Count + fightTowerId.Count + fightTrapId.Count;
 
+    public WarReward WarReward { get; set; }
     public GameResources GameResources { get; set; }
     public BaYeManager BaYeManager { get; set; }
 
@@ -179,25 +183,34 @@ public class PlayerDataForGame : MonoBehaviour
     /// 跳转场景 
     /// </summary> 
     /// <param name="sceneIndex"></param> 
-    /// <param name="isNeedLoadData"></param> 
-    public void JumpSceneFun(int sceneIndex, bool isNeedLoadData)
+    /// <param name="isRequestSyncData">是否请求同步存档</param> 
+    public void JumpSceneFun(int sceneIndex, bool isRequestSyncData)
     {
         if (!isJumping)
         {
             loadingImg.DOPause();
-            StartCoroutine(ShowTransitionEffect(sceneIndex, isNeedLoadData));
+            StartCoroutine(ShowTransitionEffect(sceneIndex, isRequestSyncData));
         }
     }
 
-    IEnumerator ShowTransitionEffect(int sceneIndex, bool isNeedLoadData)
+    IEnumerator ShowTransitionEffect(int sceneIndex, bool isRequestSyncData)
     {
+        if(isRequestSyncData)
+        {
+            isRequestingSaveFile = true;
+            if (Arrangement == 0)
+            {
+                LoadSaveData.instance.LoadByJson();
+                isRequestingSaveFile = false;
+            }else ApiPanel.instance.SyncSaved(() => isRequestingSaveFile = false);
+        }
         loadingImg.gameObject.SetActive(true);
         loadingImg.DOFade(1, fadeSpeed);
 
         yield return new WaitForSeconds(fadeSpeed);
 
+        yield return new WaitWhile(() => isRequestingSaveFile);
         asyncOp = SceneManager.LoadSceneAsync(sceneIndex, LoadSceneMode.Single);//异步加载场景，Single:不保留现有场景 
-
         var tips = DataTable.Tips.RandomPick().Value;
         infoText.text = tips.Text;
         infoText.transform.GetChild(0).GetComponent<Text>().text = tips.Sign;
@@ -206,10 +219,10 @@ public class PlayerDataForGame : MonoBehaviour
         infoText.gameObject.SetActive(true);
         asyncOp.allowSceneActivation = false;
         isJumping = true;
-        if (isNeedLoadData)
-        {
-            LoadSaveData.instance.LoadByJson();
-        }
+        //if (isNeedLoadData)
+        //{
+        //    LoadSaveData.instance.LoadByJson();
+        //}
     }
 
     //隐藏 
@@ -429,8 +442,8 @@ public class PlayerDataForGame : MonoBehaviour
 
     public void UpdateWarUnlockProgress(int totalStagesPass)
     {
-        if (totalStagesPass > warsData.warUnlockSaveData[selectedWarId].unLockCount)
-            warsData.warUnlockSaveData[selectedWarId].unLockCount = totalStagesPass;
+        if (totalStagesPass > warsData.GetCampaign(selectedWarId).unLockCount)
+            warsData.GetCampaign(selectedWarId).unLockCount = totalStagesPass;
         isNeedSaveData = true;
         LoadSaveData.instance.SaveGameData(3);
     }
@@ -438,6 +451,7 @@ public class PlayerDataForGame : MonoBehaviour
     public void SetStamina(int stamina)
     {
         pyData.Stamina = stamina;
+        pyData.LastStaminaUpdateTicks = SystemTimer.instance.NowUnixTicks;
         isNeedSaveData = true;
         LoadSaveData.instance.SaveGameData(1);
     }
@@ -451,5 +465,40 @@ public class PlayerDataForGame : MonoBehaviour
         }
         isNeedSaveData = true;
         LoadSaveData.instance.SaveGameData(1);
+    }
+
+    public void UpdateGameCards(TroopDto[] troops, GameCardDto[] gameCardList)
+    {
+        var cards = gameCardList.Select(NowLevelAndHadChip.Instance)
+            .GroupBy(c => (GameCardType) c.typeIndex, c => c)
+            .ToDictionary(c => c.Key, c => c.ToList());
+        troops.SelectMany(t => t.EnList)
+            .Join(cards, t => t.Key, c => c.Key, (t, c) => c)
+            .ToList().ForEach(t => t.Value.ForEach(c => c.isFight = 1));
+        cards.TryGetValue(GameCardType.Hero, out hstData.heroSaveData);
+        cards.TryGetValue(GameCardType.Tower, out hstData.towerSaveData);
+        cards.TryGetValue(GameCardType.Trap, out hstData.trapSaveData);
+    }
+
+    public void SendTroopToWarApi(int warId)
+    {
+        var cards = hstData.heroSaveData.Concat(hstData.towerSaveData).Concat(hstData.trapSaveData)
+            .Enlist(CurrentWarForceId).Select(c => c.ToDto()).ToList();
+        ApiPanel.instance.Invoke(vb =>
+            {
+                WarReward = new WarReward(vb.Values[0].ToString(), warId);
+            },ShowStringTips, EventStrings.Req_TroopToCampaign,
+            ViewBag.Instance().TroopDto(new TroopDto
+            {
+                EnList = cards.GroupBy(c => c.Type, c => c.CardId).ToDictionary(c => c.Key, c => c.ToArray()),
+                ForceId = CurrentWarForceId
+            }).SetValue(warId));
+    }
+
+    public void RefreshEnlisted(int forceId)
+    {
+        fightHeroId = hstData.heroSaveData.Enlist(forceId).Select(h=>h.id).ToList();
+        fightTowerId = hstData.towerSaveData.Enlist(forceId).Select(t => t.id).ToList();
+        fightTrapId = hstData.trapSaveData.Enlist(forceId).Select(t => t.id).ToList();
     }
 }
