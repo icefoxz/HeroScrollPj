@@ -135,18 +135,10 @@ public class SignalRClient : MonoBehaviour
             isTakeReward = w.IsFirstRewardTaken,
             unLockCount = w.UnlockProgress
         }).ToList();
-        var cards = gameCardList.Select(NowLevelAndHadChip.Instance)
-            .GroupBy(c => (GameCardType)c.typeIndex, c => c)
-            .ToDictionary(c => c.Key, c => c.ToList());
-        troops.SelectMany(t => t.EnList)
-            .Join(cards, t => t.Key, c => c.Key, (t, c) => c)
-            .ToList().ForEach(t => t.Value.ForEach(c => c.isFight = 1));
+        PlayerDataForGame.instance.UpdateGameCards(troops, gameCardList);
         PlayerDataForGame.instance.gbocData.redemptionCodeGotList = redeemedList.Join(DataTable.RCode.Values, c => c,
             r => r.Code, (_, r) => new RedemptionCodeGot {id = r.Id, isGot = true}).ToList();
         PlayerDataForGame.instance.gbocData.fightBoxs = warChestList.ToList();
-        cards.TryGetValue(GameCardType.Hero, out PlayerDataForGame.instance.hstData.heroSaveData);
-        cards.TryGetValue(GameCardType.Tower, out PlayerDataForGame.instance.hstData.towerSaveData);
-        cards.TryGetValue(GameCardType.Trap, out PlayerDataForGame.instance.hstData.trapSaveData);
         PlayerDataForGame.instance.isNeedSaveData = true;
         LoadSaveData.instance.SaveGameData();
     }

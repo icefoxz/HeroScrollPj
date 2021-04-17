@@ -30,7 +30,7 @@ public class ApiPanel : MonoBehaviour
         SetBusy(true);
         Client.Invoke(method, value =>
         {
-            recallAction(value);
+            recallAction?.Invoke(value);
             SetBusy(false);
         }, bag, cancellationToken);
     }
@@ -42,9 +42,9 @@ public class ApiPanel : MonoBehaviour
         SetBusy(this);
         Client.Invoke(method, result =>
         {
-            var objs = Json.Deserialize<ViewBag>(result);
-            if (objs == null) failedAction?.Invoke(result);
-            else successAction.Invoke(objs);
+            var viewBag = Json.Deserialize<ViewBag>(result);
+            if (viewBag == null) failedAction?.Invoke(result);
+            else successAction.Invoke(viewBag);
             SetBusy(false);
         }, bag, cancellationToken);
     }

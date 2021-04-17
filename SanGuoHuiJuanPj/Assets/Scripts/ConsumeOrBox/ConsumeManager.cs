@@ -138,4 +138,12 @@ public class ConsumeManager : MonoBehaviour
         if (UIManager.instance != null)
             UIManager.instance.RefreshPlayerInfoUi();
     }
+
+    public void SaveUpdatePlayerTroops(PlayerDataDto player, TroopDto[] troops,GameCardDto[] gameCards)
+    {
+        PlayerDataForGame.instance.UpdateGameCards(troops, gameCards);
+        SaveChangeUpdatePlayerData(player, 7);
+        if (UIManager.instance != null)
+            UIManager.instance.RefreshPlayerInfoUi();
+    }
 }

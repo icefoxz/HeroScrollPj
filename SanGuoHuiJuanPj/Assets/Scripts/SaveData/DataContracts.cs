@@ -229,6 +229,17 @@ public class WarsDataClass
     //战役解锁进度
     public List<UnlockWarCount> warUnlockSaveData;
     public BaYeDataClass baYe = new BaYeDataClass();
+
+    public UnlockWarCount GetCampaign(int warId)
+    {
+        var war = warUnlockSaveData.FirstOrDefault(w => w.warId == warId);
+        if (war == null)
+        {
+            war = new UnlockWarCount {warId = warId};
+            warUnlockSaveData.Add(war);
+        }
+        return war;
+    }
 }
 
 #endregion

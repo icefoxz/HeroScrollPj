@@ -141,7 +141,7 @@ using UnityEngine.UI;
         AudioController0.instance.ChangeAudioClip(13);
 
         var chestId = -1; //宝箱在表里的Id
-        var isConsume = false;//是否消费
+        var consume = 0;//消费类型,0不消费,1消费,2打开宝箱
         if (chestUi == jiuTan) //酒坛
         {
             chestId = 0;
@@ -159,7 +159,7 @@ using UnityEngine.UI;
             if (!isConsumeAd)
             {
                 ConsumeManager.instance.DeductYuanBao(openJiuTanYBNums); //扣除酒坛元宝
-                isConsume = true;//消费元宝
+                consume = 1;//消费元宝
             }
             else
             {
@@ -173,7 +173,7 @@ using UnityEngine.UI;
             chestId = 1;
             if (!TimeSystemControl.instance.OnClickToGetFreeBox1())
                 if (ConsumeManager.instance.DeductYuQue(chestCostMap[chestUi])) //如果时间开启不了，尝试扣除玉阙开启
-                    isConsume = true; //消费玉阙
+                    consume = 1; //消费玉阙
                 else return;//如果无法消费，取消请求
         }
 
@@ -181,7 +181,7 @@ using UnityEngine.UI;
         {
             chestId = 2;
             if (!TimeSystemControl.instance.OnClickToGetFreeBox2())
-                if (ConsumeManager.instance.DeductYuQue(chestCostMap[chestUi])) isConsume = true; //消费玉阙
+                if (ConsumeManager.instance.DeductYuQue(chestCostMap[chestUi])) consume = 1; //消费玉阙
                 else return; //如果无法消费，取消请求
             UIManager.instance.ShowOrHideGuideObj(0, false);
         }
@@ -196,6 +196,7 @@ using UnityEngine.UI;
                 return;
             }
 
+            consume = 2;
             chestId = PlayerDataForGame.instance.gbocData.fightBoxs[0]; //获取叠在最上面的奖励id
             PlayerDataForGame.instance.gbocData.fightBoxs.Remove(chestId); //存档移除奖励
             var chestCount = PlayerDataForGame.instance.gbocData.fightBoxs.Count; //剩余的宝箱数量
@@ -207,7 +208,7 @@ using UnityEngine.UI;
         ApiPanel.instance.Invoke(viewBag =>
                 OnChestRecallAction(UIManager.instance.WarChestRecallAction(viewBag), chestUi),
             PlayerDataForGame.instance.ShowStringTips, EventStrings.Req_WarChest,
-            ViewBag.Instance().SetValues(chestId, isConsume));
+            ViewBag.Instance().SetValues(chestId, consume));
     }
 
     public void OnChestRecallAction(PlayerDataDto player, TaoYuanChestUI chestUi)

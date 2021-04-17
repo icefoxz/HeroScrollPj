@@ -3,6 +3,7 @@ using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using CorrelateLib;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -116,6 +117,7 @@ public class PlayerDataForGame : MonoBehaviour
     //计算出战总数量 
     public int TotalCardsEnlisted => fightHeroId.Count + fightTowerId.Count + fightTrapId.Count;
 
+    public WarReward WarReward { get; set; }
     public GameResources GameResources { get; set; }
     public BaYeManager BaYeManager { get; set; }
 
@@ -435,8 +437,8 @@ public class PlayerDataForGame : MonoBehaviour
 
     public void UpdateWarUnlockProgress(int totalStagesPass)
     {
-        if (totalStagesPass > warsData.warUnlockSaveData[selectedWarId].unLockCount)
-            warsData.warUnlockSaveData[selectedWarId].unLockCount = totalStagesPass;
+        if (totalStagesPass > warsData.GetCampaign(selectedWarId).unLockCount)
+            warsData.GetCampaign(selectedWarId).unLockCount = totalStagesPass;
         isNeedSaveData = true;
         LoadSaveData.instance.SaveGameData(3);
     }
@@ -458,5 +460,40 @@ public class PlayerDataForGame : MonoBehaviour
         }
         isNeedSaveData = true;
         LoadSaveData.instance.SaveGameData(1);
+    }
+
+    public void UpdateGameCards(TroopDto[] troops, GameCardDto[] gameCardList)
+    {
+        var cards = gameCardList.Select(NowLevelAndHadChip.Instance)
+            .GroupBy(c => (GameCardType) c.typeIndex, c => c)
+            .ToDictionary(c => c.Key, c => c.ToList());
+        troops.SelectMany(t => t.EnList)
+            .Join(cards, t => t.Key, c => c.Key, (t, c) => c)
+            .ToList().ForEach(t => t.Value.ForEach(c => c.isFight = 1));
+        cards.TryGetValue(GameCardType.Hero, out hstData.heroSaveData);
+        cards.TryGetValue(GameCardType.Tower, out hstData.towerSaveData);
+        cards.TryGetValue(GameCardType.Trap, out hstData.trapSaveData);
+    }
+
+    public void SendTroopToWarApi(int warId)
+    {
+        var cards = hstData.heroSaveData.Concat(hstData.towerSaveData).Concat(hstData.trapSaveData)
+            .Enlist(CurrentWarForceId).Select(c => c.ToDto()).ToList();
+        ApiPanel.instance.Invoke(vb =>
+            {
+                WarReward = new WarReward(vb.Values[0].ToString(), warId);
+            },ShowStringTips, EventStrings.Req_TroopToCampaign,
+            ViewBag.Instance().TroopDto(new TroopDto
+            {
+                EnList = cards.GroupBy(c => c.Type, c => c.CardId).ToDictionary(c => c.Key, c => c.ToArray()),
+                ForceId = CurrentWarForceId
+            }).SetValue(warId));
+    }
+
+    public void RefreshEnlisted(int forceId)
+    {
+        fightHeroId = hstData.heroSaveData.Enlist(forceId).Select(h=>h.id).ToList();
+        fightTowerId = hstData.towerSaveData.Enlist(forceId).Select(t => t.id).ToList();
+        fightTrapId = hstData.trapSaveData.Enlist(forceId).Select(t => t.id).ToList();
     }
 }

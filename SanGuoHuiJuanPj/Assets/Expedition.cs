@@ -129,7 +129,7 @@ public class Expedition : MonoBehaviour
         foreach (var ui in stages) Destroy(ui.gameObject);
         stages.Clear();
 
-        var lastStageWarId = warMode.WarList.Min;
+        var lastStageWarId = -1;
         if (warMode.Id == 6)
         {
             var warId = DataTable.PlayerLevelConfig[PlayerDataForGame.instance.pyData.Level].YuanZhengWarTableId;

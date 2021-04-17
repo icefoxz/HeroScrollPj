@@ -585,7 +585,7 @@ public class UIManager : MonoBehaviour
         ApiPanel.instance.Invoke(bag => WarChestRecallAction(bag),
             PlayerDataForGame.instance.ShowStringTips,
             EventStrings.Req_WarChest,
-            ViewBag.Instance().SetValue(warChestId));
+            ViewBag.Instance().SetValues(warChestId, 3));
         baYeChestButtons[btnIndex].Open();
         PlayerDataForGame.instance.warsData.baYe.openedChest[btnIndex] = true;
         PlayerDataForGame.instance.isNeedSaveData = true;
@@ -676,7 +676,7 @@ public class UIManager : MonoBehaviour
 
                 PlayerDataForGame.instance.getBackTiLiNums = staminaMap.MaxReturn;
                 PlayerDataForGame.instance.boxForTiLiNums = staminaMap.CostOfChest;
-
+                PlayerDataForGame.instance.SendTroopToWarApi(PlayerDataForGame.instance.selectedWarId);
                 StartCoroutine(LateGoToFightScene());
             }
             else
@@ -734,7 +734,7 @@ public class UIManager : MonoBehaviour
         }
         changeCardsListBtn.sprite = Resources.Load("Image/shiLi/Flag/" + indexChooseListForceId, typeof(Sprite)) as Sprite;
         changeCardsListNameImg.sprite = Resources.Load("Image/shiLi/Name/" + indexChooseListForceId, typeof(Sprite)) as Sprite;
-        CreateHeroAndTowerContent();
+        RefreshCardList();
         UpdateCardNumsShow();
         StartCoroutine(LateToChangeViewShow(0));
     }
@@ -775,7 +775,7 @@ public class UIManager : MonoBehaviour
     /// <summary> 
     /// 显示单个辅助 
     /// </summary> 
-    private void ShowOneFuZhuRules(NowLevelAndHadChip card)
+    private void GenerateFuZhuUi(NowLevelAndHadChip card)
     {
         var info = card.GetInfo();
         GameObject obj = GetHeroCardFromPool();
@@ -878,7 +878,7 @@ public class UIManager : MonoBehaviour
         sellCardBtn.GetComponent<Button>().onClick.RemoveAllListeners();
         sellCardBtn.GetComponent<Button>().onClick.AddListener(delegate ()
         {
-            OnClickForSellCard(card, goldPrice);
+            OnClickForSellCard(card);
         });
         sellCardBtn.SetActive(true);
 
@@ -922,80 +922,30 @@ public class UIManager : MonoBehaviour
     /// <summary> 
     /// 创建并展示单位列表 
     /// </summary> 
-    private void CreateHeroAndTowerContent()
+    private void RefreshCardList()
     {
         TakeBackHeroCardPooling();
-
-        PlayerDataForGame.instance.fightHeroId.Clear();
-        PlayerDataForGame.instance.fightTowerId.Clear();
-        PlayerDataForGame.instance.fightTrapId.Clear();
-
-        int cardNums = 0;
-
+        var total = 0;
         SortHSTData(PlayerDataForGame.instance.hstData.heroSaveData);   //  排序 
-
-        NowLevelAndHadChip heroDataIndex = new NowLevelAndHadChip();    //临时记录武将存档信息 
-        for (int i = 0; i < PlayerDataForGame.instance.hstData.heroSaveData.Count; i++)
-        {
-            heroDataIndex = PlayerDataForGame.instance.hstData.heroSaveData[i];
-            if (indexChooseListForceId == DataTable.Hero[heroDataIndex.id].ForceTableId)
-            {
-                if (heroDataIndex.level > 0 || heroDataIndex.chips > 0)
-                {
-                    if (heroDataIndex.isFight > 0)
-                    {
-                        PlayerDataForGame.instance.fightHeroId.Add(heroDataIndex.id);
-                    }
-                    cardNums++;
-                    ShowOneHeroRules(heroDataIndex);
-                }
-            }
-        }
-
-        NowLevelAndHadChip card = new NowLevelAndHadChip();
         SortHSTData(PlayerDataForGame.instance.hstData.towerSaveData);
-        for (int i = 0; i < PlayerDataForGame.instance.hstData.towerSaveData.Count; i++)
-        {
-            card = PlayerDataForGame.instance.hstData.towerSaveData[i];
-            if (indexChooseListForceId == DataTable.Tower[card.id].ForceId)
-            {
-                if (card.level > 0 || card.chips > 0)
-                {
-                    if (card.isFight > 0)
-                    {
-                        PlayerDataForGame.instance.fightTowerId.Add(card.id);
-                    }
-                    cardNums++;
-                    ShowOneFuZhuRules(card);
-                }
-            }
-        }
         SortHSTData(PlayerDataForGame.instance.hstData.trapSaveData);
-        for (int i = 0; i < PlayerDataForGame.instance.hstData.trapSaveData.Count; i++)
+        PlayerDataForGame.instance.RefreshEnlisted(indexChooseListForceId);
+        PlayerDataForGame.instance.hstData.heroSaveData.Concat(PlayerDataForGame.instance.hstData.towerSaveData).Concat(PlayerDataForGame.instance.hstData.trapSaveData).Select(c=>new{Card=c,Info=c.GetInfo()}).Where(c=>c.Info.ForceId == indexChooseListForceId).ToList().ForEach(c=>
         {
-            card = PlayerDataForGame.instance.hstData.trapSaveData[i];
-            if (indexChooseListForceId == DataTable.Trap[card.id].ForceId)
-            {
-                if (card.level > 0 || card.chips > 0)
-                {
-                    if (card.isFight > 0)
-                    {
-                        PlayerDataForGame.instance.fightTrapId.Add(card.id);
-                    }
-                    cardNums++;
-                    ShowOneFuZhuRules(card);
-                }
-            }
-        }
-        if (cardNums > 0)
-        {
-            StartCoroutine(LiteUpdateListChooseFirst(0));
-            ShowOrHideInfo(true);
-        }
-        else
+            if (c.Info.Type == GameCardType.Hero)
+                GenerateHeroUi(c.Card);
+            else GenerateFuZhuUi(c.Card);
+            total++;
+        });
+
+        if (total <= 0)
         {
             ShowOrHideInfo(false);
+            return;
         }
+
+        StartCoroutine(LiteUpdateListChooseFirst(0));
+        ShowOrHideInfo(true);
     }
 
     /// <summary> 
@@ -1035,7 +985,7 @@ public class UIManager : MonoBehaviour
     /// 显示单个武将 
     /// </summary> 
     /// <param name="card"></param> 
-    private void ShowOneHeroRules(NowLevelAndHadChip card)
+    private void GenerateHeroUi(NowLevelAndHadChip card)
     {
         var info = card.GetInfo();
         GameObject obj = GetHeroCardFromPool();
@@ -1141,7 +1091,7 @@ public class UIManager : MonoBehaviour
         int goldPrice = GetGoldPrice(card);
         sellCardBtn.transform.GetChild(0).GetComponent<Text>().text = goldPrice.ToString();
         sellCardBtn.GetComponent<Button>().onClick.RemoveAllListeners();
-        sellCardBtn.GetComponent<Button>().onClick.AddListener(() => OnClickForSellCard(card, goldPrice));
+        sellCardBtn.GetComponent<Button>().onClick.AddListener(() => OnClickForSellCard(card));
         sellCardBtn.SetActive(true);
 
         if (card.level > 0)
@@ -1215,31 +1165,43 @@ public class UIManager : MonoBehaviour
     }
 
     //出售卡牌 
-    private void OnClickForSellCard(NowLevelAndHadChip heroData, int goldPrice)
+    private void OnClickForSellCard(NowLevelAndHadChip gameCard)
     {
         AudioController0.instance.ChangeAudioClip(18);
         AudioController0.instance.PlayAudioSource(0);
         queRenWindows.transform.GetChild(0).GetChild(1).GetComponent<Button>().onClick.RemoveAllListeners();
         queRenWindows.transform.GetChild(0).GetChild(1).GetComponent<Button>().onClick.AddListener(() =>
         {
-            //Debug.Log("---出售" + heroData.typeIndex + "类型的卡牌：" + heroData.id); 
-            heroData.chips = 0;
-            heroData.level = 0;
-            heroData.isFight = 0;
-            //datas.Remove(heroData); 
-            //LoadSaveData.instance.SaveByJson(PlayerDataForGame.instance.hstData); 
-            PlayerDataForGame.instance.isNeedSaveData = true;
-            LoadSaveData.instance.SaveGameData(2);
-            ConsumeManager.instance.AddYuanBao(goldPrice);
-            AudioController0.instance.ChangeAudioClip(17);
-            AudioController0.instance.PlayAudioSource(0);
-            //刷新主城列表 
-            ChangeScrollView();
-            PlayerDataForGame.instance.EnlistCard(heroData, false);
-            UpdateCardNumsShow();
-            queRenWindows.SetActive(false);
+            ApiPanel.instance.Invoke(vb =>
+                {
+                    var player = vb.GetPlayerDataDto();
+                    var gameCards = vb.GetPlayerGameCardDtos();
+                    var troops = vb.GetPlayerTroopDtos();
+                    ConsumeManager.instance.SaveUpdatePlayerTroops(player, troops, gameCards);
+                    AudioController0.instance.ChangeAudioClip(17);
+                    AudioController0.instance.PlayAudioSource(0);
+                    RefreshList();
+                }, msg =>
+                {
+                    PlayerDataForGame.instance.ShowStringTips(msg);
+                    RefreshList();
+                },
+                EventStrings.Req_CardSell,
+                ViewBag.Instance().SetValues(new object[] {gameCard.id, gameCard.typeIndex}));
         });
         queRenWindows.SetActive(true);
+
+        //刷新主城列表 
+        void RefreshList()
+        {
+            gameCard.chips = 0;
+            gameCard.level = 0;
+            gameCard.isFight = 0;
+            ChangeScrollView();
+            PlayerDataForGame.instance.EnlistCard(gameCard, false);
+            UpdateCardNumsShow();
+            queRenWindows.SetActive(false);
+        }
     }
 
     /// <summary> 
@@ -1346,7 +1308,7 @@ public class UIManager : MonoBehaviour
     public void InitializationPlayerInfo()
     {
         RefreshPlayerInfoUi();
-        CreateHeroAndTowerContent();
+        RefreshCardList();
         UpdateCardNumsShow();
 
         StartCoroutine(LateToChangeViewShow(0));
@@ -1442,7 +1404,8 @@ public class UIManager : MonoBehaviour
                 UpdateLevelCard();
                 ShowOrHideGuideObj(2, false);
             }, PlayerDataForGame.instance.ShowStringTips,
-            EventStrings.Req_CardMerge);
+            EventStrings.Req_CardMerge,
+            ViewBag.Instance().SetValues(new object[] {selectCardData.id, selectCardData.typeIndex}));
     }
 
     //隐藏升星特效 

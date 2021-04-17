@@ -94,31 +94,27 @@ public class JinNangUI: MonoBehaviour
 
     private void OnSuccessDoubleReward(int yuanBaoValue, int staminaValue, string token)
     {
-        SignalRClient.instance.Invoke(EventStrings.Req_TokenResources,
-            result => RecallOnSuccessDoubleReward(yuanBaoValue, staminaValue, result),
+        ApiPanel.instance.Invoke(vb =>
+            {
+                var player = vb.GetPlayerDataDto();
+                ConsumeManager.instance.SaveChangeUpdatePlayerData(player);
+                //奖励翻倍
+                yuanBaoValue *= 2;
+                staminaValue *= 2;
+                DisplayReward(yuanBaoValue, staminaValue);
+                ResetUi("翻倍成功!");
+            }, ResetUi,
+            EventStrings.Req_TokenResources,
             ViewBag.Instance().SetValue(token));
-    }
 
-    private void RecallOnSuccessDoubleReward(int yuanBaoValue, int staminaValue,string result)
-    {
-        var args = Json.DeserializeObjs(result);
-        if (args == null)
+        void ResetUi(string message)
         {
-            PlayerDataForGame.instance.ShowStringTips(result);
-            return;
+            continueBtn.enabled = true;
+            doubleAdBtn.gameObject.SetActive(false);
+            doubleAdBtn.enabled = true;
+            doubleAdBtn.onClick.RemoveAllListeners();
+            PlayerDataForGame.instance.ShowStringTips(message);
         }
-
-        var player = Json.Deserialize<PlayerDataDto>(args[0]?.ToString());
-        playerDataDto = player;
-        //奖励翻倍
-        yuanBaoValue *= 2;
-        staminaValue *= 2;
-        DisplayReward(yuanBaoValue, staminaValue);
-        continueBtn.enabled = true;
-        doubleAdBtn.gameObject.SetActive(false);
-        doubleAdBtn.enabled = true;
-        doubleAdBtn.onClick.RemoveAllListeners();
-        PlayerDataForGame.instance.ShowStringTips("翻倍成功！");
     }
 
     private void DisplayReward(int yuanBaoAmt, int staminaAmt)
