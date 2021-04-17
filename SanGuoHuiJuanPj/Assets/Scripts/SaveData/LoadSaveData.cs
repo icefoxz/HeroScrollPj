@@ -215,6 +215,20 @@ public class LoadSaveData : MonoBehaviour
         //    UploadArchiveToServer(pyDataStr, hSTDataStr, warsDataStr, gbocDataStr); 
         //} 
     }
+
+    public void ReplaceRedeemCode(List<RedemptionCodeGot> list)
+    {
+        var gbocPath = AppDebugClass.gbocDataString;
+        var text = File.ReadAllText(gbocPath);
+        var json = EncryptDecipherTool.DESDecrypt(text);
+        var gbocData = Json.Deserialize<GetBoxOrCodeData>(json);
+        PlayerDataForGame.instance.isHadNewSaveData = true;
+        gbocData.redemptionCodeGotList = list;
+        PlayerDataForGame.instance.gbocData = gbocData;
+        PlayerDataForGame.instance.isNeedSaveData = true;
+        SaveByJson(gbocData);
+    }
+
     /// <summary> 
     /// 读档json 
     /// </summary> 
@@ -518,6 +532,18 @@ public class LoadSaveData : MonoBehaviour
                 save.warUnlockSaveData.Add(unlock);
             }
         }
+
+        var duplicated = save.warUnlockSaveData.GroupBy(w => w.warId, w => w).Where(w => w.Count() > 1).ToList();
+        for (int i = 0; i < duplicated.Count; i++)
+        {
+            var w = duplicated[i];
+            var elements = w.ToList();
+            for (int j = 1; j < elements.Count; j++)
+            {
+                var e = elements[j];
+                save.warUnlockSaveData.Remove(e);
+            }
+        }
         if (isNeedSaveDate)
         {
             SaveByJson(save);
@@ -672,12 +698,9 @@ public class LoadSaveData : MonoBehaviour
     /// <summary> 
     /// 存储游戏 
     /// </summary> 
-    /// <param name="indexFun">默认0：全部存储，1：存储pyData，2：存储hstData，3：存储warsData，4：存储gbocData，5:py + war(霸业)</param> 
+    /// <param name="indexFun">默认0：全部存储，1：存储pyData，2：存储hstData，3：存储warsData，4：存储gbocData，5:py + war(霸业)，6:py + gboc，7:py + hst</param> 
     public void SaveGameData(int indexFun = 0)
     {
-        if (PlayerDataForGame.instance.warsData.warUnlockSaveData == null)
-            throw new InvalidDataContractException(
-                $"{nameof(LoadSaveData)}.{nameof(SaveGameData)}: warUnlockSaveData = null!");
         if (PlayerDataForGame.instance.isNeedSaveData)
         {
             switch (indexFun)
@@ -704,50 +727,22 @@ public class LoadSaveData : MonoBehaviour
                     SaveByJson(PlayerDataForGame.instance.pyData);
                     SaveByJson(PlayerDataForGame.instance.warsData);
                     break;
+                case 6:
+                    SaveByJson(PlayerDataForGame.instance.pyData);
+                    SaveByJson(PlayerDataForGame.instance.gbocData);
+                    break;
+                case 7:
+                    SaveByJson(PlayerDataForGame.instance.pyData);
+                    SaveByJson(PlayerDataForGame.instance.hstData);
+                    break;
                 default:
                     break;
             }
             PlayerDataForGame.instance.isNeedSaveData = false;
         }
-    }
-
-    //游戏切除和再次进入的回调 
-    private void OnApplicationPause(bool focus)
-    {
-        if (PlayerDataForGame.instance.lastSenceIndex != 0)
-        {
-            if (focus)
-            {
-                //SaveAllGameData(); 
-                //Debug.Log("切出游戏，OnApplicationPause(true)"); 
-            }
-            else
-            {
-                //Debug.Log("切出游戏再次进入，OnApplicationPause(false)"); 
-            }
-        }
-    }
-
-    //退出游戏的回调 
-    private void OnApplicationQuit()
-    {
-        if (PlayerDataForGame.instance.lastSenceIndex != 0)
-        {
-            //SaveAllGameData(); 
-            //Debug.Log("正常退出游戏,OnApplicationQuit()"); 
-        }
-    }
-
-    private void OnApplicationFocus(bool focus)
-    {
-        if (focus)
-        {
-            //Debug.Log("暂停状态后进入游戏内，OnApplicationFocus(true)"); 
-        }
-        else
-        {
-            //Debug.Log("切出游戏画面进入暂停状态，OnApplicationFocus(false)"); 
-        }
+#if UNITY_EDITOR
+        XDebug.Log<LoadSaveData>($"存档[{indexFun}]完毕！");
+#endif
     }
 
     /// <summary> 

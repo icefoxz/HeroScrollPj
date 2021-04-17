@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using Assets;
+using Assets.Scripts.Utl;
+using CorrelateLib;
 using UnityEngine;
 
 public class ConsumeManager : MonoBehaviour
@@ -121,4 +124,26 @@ public class ConsumeManager : MonoBehaviour
         LoadSaveData.instance.SaveGameData(1);
     }
 
+    /// <summary>
+    /// 更新玩家数据
+    /// </summary>
+    /// <param name="player"></param>
+    /// <param name="saveIndex">默认0：全部存储，1：存储pyData，2：存储hstData，3：存储warsData，4：存储gbocData，5:py + war(霸业)，6:py + gboc，7:py + hst</param>
+    public void SaveChangeUpdatePlayerData(PlayerDataDto player, int saveIndex = 1)
+    {
+        PlayerDataForGame.instance.pyData.CloneData(player);
+        PlayerDataForGame.instance.isNeedSaveData = true;
+        LoadSaveData.instance.SaveGameData(saveIndex);
+
+        if (UIManager.instance != null)
+            UIManager.instance.RefreshPlayerInfoUi();
+    }
+
+    public void SaveUpdatePlayerTroops(PlayerDataDto player, TroopDto[] troops,GameCardDto[] gameCards)
+    {
+        PlayerDataForGame.instance.UpdateGameCards(troops, gameCards);
+        SaveChangeUpdatePlayerData(player, 7);
+        if (UIManager.instance != null)
+            UIManager.instance.RefreshPlayerInfoUi();
+    }
 }

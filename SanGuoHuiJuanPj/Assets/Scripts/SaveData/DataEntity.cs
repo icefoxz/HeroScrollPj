@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using CorrelateLib;
 using UnityEngine;
 
 public class UserSaveArchive : IUserSaveArchive
@@ -130,6 +132,26 @@ public class ObsoletedPlayerData
 /// </summary>
 public class PlayerData : IPlayerData
 {
+    public static PlayerData Instance(PlayerDataDto dto)
+    {
+        return new PlayerData
+        {
+            Level = dto.Level,
+            Exp = dto.Exp,
+            YuanBao = dto.YuanBao,
+            YvQue = dto.YvQue,
+            Stamina = dto.Stamina,
+            ForceId = dto.ForceId,
+            LastJinNangRedeemTime = dto.LastJinNangRedeemTime,
+            DailyJinNangRedemptionCount = dto.DailyJinNangRedemptionCount,
+            LastJiuTanRedeemTime = dto.LastJiuTanRedeemTime,
+            DailyJiuTanRedemptionCount = dto.DailyJiuTanRedemptionCount,
+            LastFourDaysChestRedeemTime = dto.LastFourDaysChestRedeemTime,
+            LastWeekChestRedeemTime = dto.LastWeekChestRedeemTime,
+            LastStaminaUpdateTicks = dto.LastStaminaUpdateTicks,
+            LastGameVersion = float.Parse(Application.version)
+        };
+    }
     //等级
     public int Level { get; set; } = 1;
     //经验
@@ -154,6 +176,8 @@ public class PlayerData : IPlayerData
     public long LastFourDaysChestRedeemTime { get; set; }
     //上传领取298宝箱时间
     public long LastWeekChestRedeemTime { get; set; }
+    //上个体力更新时间
+    public long LastStaminaUpdateTicks { get; set; }
     //游戏版本号
     public float LastGameVersion { get; set; }
     //战斗的时间倍率

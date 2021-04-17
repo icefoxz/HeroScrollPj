@@ -1,6 +1,9 @@
 ﻿using System.Threading;
+using Assets.Scripts.Utl;
 using Beebyte.Obfuscator;
+using CorrelateLib;
 using DG.Tweening;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -17,9 +20,11 @@ public class JinNangUI: MonoBehaviour
     public Text continueText;
     public Text jinNangContent;
     public Text characterName;
+    private PlayerDataDto playerDataDto;
 
-    public void OnReward(string content, Color contentColor, string character, int staminaValue, int yuanBaoValue)
+    public void OnReward(string content, Color contentColor, string character, int staminaValue, int yuanBaoValue,string token,PlayerDataDto playerData)
     {
+        playerDataDto = playerData;
         AudioController0.instance.ChangeAudioClip(11);
         AudioController0.instance.PlayAudioSource(0);
 
@@ -39,13 +44,13 @@ public class JinNangUI: MonoBehaviour
             jinNangContent.DOFade(1, 1.5f).OnComplete(() =>
             {
                 continueText.gameObject.SetActive(true);
-                continueBtn.onClick.AddListener(()=>OnContinueClick(yuanBaoValue,staminaValue));
+                continueBtn.onClick.AddListener(()=>OnContinueClick(yuanBaoValue,staminaValue,token));
             });
         });
         gameObject.SetActive(true);
     }
 
-    [Skip] private void OnContinueClick(int yuanBaoValue, int staminaValue)
+    [Skip] private void OnContinueClick(int yuanBaoValue, int staminaValue, string token)
     {
         UIManager.instance.PlayOnClickMusic();
         characterName.DOFade(0, 1f);
@@ -60,10 +65,11 @@ public class JinNangUI: MonoBehaviour
             continueBtn.onClick.AddListener(() =>
             {
                 UIManager.instance.PlayOnClickMusic();
-                if (yuanBaoValue > 0)
-                    ConsumeManager.instance.AddYuanBao(yuanBaoValue);
-                if (staminaValue > 0)
-                    TimeSystemControl.instance.AddTiLiNums(staminaValue);
+                //if (yuanBaoValue > 0)
+                //    ConsumeManager.instance.AddYuanBao(yuanBaoValue);
+                //if (staminaValue > 0)
+                //    TimeSystemControl.instance.AddTiLiNums(staminaValue);
+                ConsumeManager.instance.SaveChangeUpdatePlayerData(playerDataDto);
                 PlayerDataForGame.instance.Redemption(PlayerDataForGame.RedeemTypes.JinNang);
                 PlayerDataForGame.instance.ShowStringTips(DataTable.GetStringText(43));
                 continueBtn.onClick.RemoveAllListeners();
@@ -76,18 +82,7 @@ public class JinNangUI: MonoBehaviour
                 //背景按钮无效
                 continueBtn.enabled = false;
                 doubleAdBtn.enabled = false;
-                AdAgent.instance.BusyRetry(() =>
-                {
-                    PlayerDataForGame.instance.ShowStringTips("翻倍成功！");
-                    //奖励翻倍
-                    yuanBaoValue *= 2;
-                    staminaValue *= 2;
-                    DisplayReward(yuanBaoValue, staminaValue);
-                    continueBtn.enabled = true;
-                    doubleAdBtn.gameObject.SetActive(false);
-                    doubleAdBtn.enabled = true;
-                    doubleAdBtn.onClick.RemoveAllListeners();
-                }, () =>
+                AdAgent.instance.BusyRetry(()=>OnSuccessDoubleReward(yuanBaoValue,staminaValue,token), () =>
                 {
                     PlayerDataForGame.instance.ShowStringTips(DataTable.GetStringText(6));
                     continueBtn.enabled = true;
@@ -97,6 +92,30 @@ public class JinNangUI: MonoBehaviour
         });
     }
 
+    private void OnSuccessDoubleReward(int yuanBaoValue, int staminaValue, string token)
+    {
+        ApiPanel.instance.Invoke(vb =>
+            {
+                var player = vb.GetPlayerDataDto();
+                ConsumeManager.instance.SaveChangeUpdatePlayerData(player);
+                //奖励翻倍
+                yuanBaoValue *= 2;
+                staminaValue *= 2;
+                DisplayReward(yuanBaoValue, staminaValue);
+                ResetUi("翻倍成功!");
+            }, ResetUi,
+            EventStrings.Req_TokenResources,
+            ViewBag.Instance().SetValue(token));
+
+        void ResetUi(string message)
+        {
+            continueBtn.enabled = true;
+            doubleAdBtn.gameObject.SetActive(false);
+            doubleAdBtn.enabled = true;
+            doubleAdBtn.onClick.RemoveAllListeners();
+            PlayerDataForGame.instance.ShowStringTips(message);
+        }
+    }
 
     private void DisplayReward(int yuanBaoAmt, int staminaAmt)
     {

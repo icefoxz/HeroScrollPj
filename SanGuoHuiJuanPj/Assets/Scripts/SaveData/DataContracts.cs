@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Beebyte.Obfuscator;
+using CorrelateLib;
 using Newtonsoft.Json;
 
 #region 玩家数据相关类
@@ -117,6 +118,16 @@ public class RedemptionCodeGot
 [Skip]
 public class NowLevelAndHadChip//card
 {
+    public static NowLevelAndHadChip Instance(GameCardDto dto)
+    {
+        return new NowLevelAndHadChip
+        {
+            id = dto.CardId, 
+            chips = dto.Chips, 
+            level = dto.Level, 
+            typeIndex = (int) dto.Type
+        };
+    }
     public int id;          //id
     public int level = 1;   //当前等级
     public int chips;       //拥有碎片
@@ -218,6 +229,17 @@ public class WarsDataClass
     //战役解锁进度
     public List<UnlockWarCount> warUnlockSaveData;
     public BaYeDataClass baYe = new BaYeDataClass();
+
+    public UnlockWarCount GetCampaign(int warId)
+    {
+        var war = warUnlockSaveData.FirstOrDefault(w => w.warId == warId);
+        if (war == null)
+        {
+            war = new UnlockWarCount {warId = warId};
+            warUnlockSaveData.Add(war);
+        }
+        return war;
+    }
 }
 
 #endregion

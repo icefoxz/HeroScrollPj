@@ -188,30 +188,24 @@ public class StartSceneToServerCS : MonoBehaviour
 #if UNITY_EDITOR
         if (isSkipLogin)
         {
-            LoadMainScene(true, (int) HttpStatusCode.OK);
+            LoadMainScene(true, (int) HttpStatusCode.OK, 0);
             return;
         }
 #endif
         if (busyPanel) busyPanel.SetActive(true);
         BugHotFix.OnFixStaminaV2_05();
-#if UNITY_EDITOR
-        if (isSkipLogin)
-        {
-            LoadMainScene(true, (int) HttpStatusCode.OK);
-            return;
-        }
-#endif
-
         //OldLoginTask(LoadMainScene);
         signalRClient.Login(LoadMainScene, username, password);
     }
 
-    private void LoadMainScene(bool isSuccess, int code)
+    private void LoadMainScene(bool isSuccess, int code,int arrangement)
     {
         if (isSuccess)
         {
-            PlayerDataForGame.instance.acData.Password = signInUi.PasswordField.text;
+            var ac = PlayerDataForGame.instance.acData;
+            ac.Password = signInUi.PasswordField.text;
             PlayerDataForGame.instance.isNeedSaveData = true;
+            PlayerDataForGame.instance.Arrangement = arrangement;
             LoadSaveData.instance.SaveGameData(1);
             SetAccountInfo();
             StartSceneUIManager.instance.LoadingScene(1, true);
