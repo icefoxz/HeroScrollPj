@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using Beebyte.Obfuscator;
+using CorrelateLib;
 using UnityEngine;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
@@ -114,8 +115,12 @@ public class WarsUIManager : MonoBehaviour
         isPointMoveNow = false;
     }
 
-    // Start is called before the first frame update
     void Start()
+    {
+        StartCoroutine(Initialize());
+    }
+
+    IEnumerator Initialize()
     {
         //------------Awake----------------//
         cityLevel = 1;
@@ -151,6 +156,8 @@ public class WarsUIManager : MonoBehaviour
         PlayerDataForGame.instance.lastSenceIndex = 2;
         adRefreshBtn.onClick.AddListener(WatchAdForUpdateQiYv);
         gameOverWindow.Init();
+
+        yield return new WaitUntil(()=>PlayerDataForGame.instance.WarReward != null);
         InitMainUIShow();
 
         InitCardListShow();
@@ -279,14 +286,12 @@ public class WarsUIManager : MonoBehaviour
     public void BattleOverShow(bool isWin)
     {
         Time.timeScale = 1;
-
+        var reward = PlayerDataForGame.instance.WarReward;
         if (isWin)
         {
             //通关不返还体力
             PlayerDataForGame.instance.getBackTiLiNums = 0;
         }
-        var rewardMap = new Dictionary<int, int>();
-        var zhanLing = new Dictionary<int, int>();
         //如果是霸业
         if(PlayerDataForGame.instance.WarType == PlayerDataForGame.WarTypes.Baye)
         {
@@ -310,18 +315,18 @@ public class WarsUIManager : MonoBehaviour
                         cityEvent.PassedStages[warIndex] = true;
                         PlayerDataForGame.instance.BaYeManager.AddExp(cityEvent.CityId, exp); //给玩家加经验值
                         PlayerDataForGame.instance.mainSceneTips = $"获得经验值：{exp}";
-                        rewardMap.Trade(1, exp);
+                        reward.BaYeExp = exp;
                     }
                 }
                 else
                 {
                     var sEvent = baYeMgr.CachedStoryEvent;
-                    rewardMap.Trade(0, sEvent.GoldReward);//0
-                    rewardMap.Trade(1, sEvent.ExpReward);//1
-                    rewardMap.Trade(3, sEvent.YuanBaoReward);//3
-                    rewardMap.Trade(4, sEvent.YvQueReward);//4
+                    reward.Gold = sEvent.GoldReward; //0
+                    reward.BaYeExp = sEvent.ExpReward; //1
+                    reward.YuanBao = sEvent.YuanBaoReward; //3
+                    reward.YuQue = sEvent.YvQueReward; //4
                     var ling = sEvent.ZhanLing.First();
-                    zhanLing.Trade(ling.Key, ling.Value);
+                    reward.Ling.Trade(ling.Key, ling.Value);
                     baYeMgr.OnBayeStoryEventReward(baYeMgr.CachedStoryEvent);
                 }
             }
@@ -330,12 +335,28 @@ public class WarsUIManager : MonoBehaviour
         } else if (PlayerDataForGame.instance.WarType == PlayerDataForGame.WarTypes.Expedition)
         {
             PlayerDataForGame.instance.UpdateWarUnlockProgress(passedGuanQiaNums);
+            reward.Stamina = PlayerDataForGame.instance.getBackTiLiNums;
+            var ca = PlayerDataForGame.instance.warsData.GetCampaign(reward.WarId);
+            //if (treasureChestNums > 0) rewardMap.Trade(2, treasureChestNums); //index2是宝箱图
+            var viewBag = ViewBag.Instance()
+                .ResourceDto(new ResourceDto(reward.YuanBao, reward.YuQue, reward.Stamina, reward.Exp))
+                .WarCampaignDto(new WarCampaignDto{IsFirstRewardTaken = ca.isTakeReward,UnlockProgress = ca.unLockCount,WarId = ca.warId})
+                .SetValues(reward.Token, reward.Chests);
+            ApiPanel.instance.Invoke(vb =>
+                {
+                    var player = vb.GetPlayerDataDto();
+                    var campaign = vb.GetWarCampaignDto();
+                    var chests = vb.GetPlayerWarChests();
+                    PlayerDataForGame.instance.gbocData.fightBoxs.AddRange(chests);
+                    var war = PlayerDataForGame.instance.warsData.warUnlockSaveData.First(
+                        c => c.warId == campaign.WarId);
+                    war.unLockCount = campaign.UnlockProgress;
+                    ConsumeManager.instance.SaveChangeUpdatePlayerData(player, 0);
+                }, PlayerDataForGame.instance.ShowStringTips,
+                EventStrings.Req_WarReward, viewBag);
         }
-
-        if (treasureChestNums > 0) rewardMap.Trade(2, treasureChestNums); //index2是宝箱图
-
         //gameOverWindow.Show(rewardMap);
-        gameOverWindow.ShowWithZhanLing(rewardMap, zhanLing);
+        gameOverWindow.Show(reward, PlayerDataForGame.instance.WarType == PlayerDataForGame.WarTypes.Baye);
 
         PlayerDataForGame.instance.isNeedSaveData = true;
         LoadSaveData.instance.SaveGameData(3);

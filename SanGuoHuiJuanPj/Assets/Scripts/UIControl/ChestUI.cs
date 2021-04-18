@@ -14,7 +14,7 @@ public class ChestUI : MonoBehaviour
     public Button button;
     public Text Text;
 
-    public void Opened()
+    public void Open()
     {
         button.image.color = new Color(1,1,1,1);
         button.interactable = false;
