@@ -676,7 +676,6 @@ public class UIManager : MonoBehaviour
 
                 PlayerDataForGame.instance.getBackTiLiNums = staminaMap.MaxReturn;
                 PlayerDataForGame.instance.boxForTiLiNums = staminaMap.CostOfChest;
-                PlayerDataForGame.instance.SendTroopToWarApi(PlayerDataForGame.instance.selectedWarId);
                 StartCoroutine(LateGoToFightScene());
             }
             else
@@ -694,11 +693,10 @@ public class UIManager : MonoBehaviour
 
     IEnumerator LateGoToFightScene()
     {
+        if (PlayerDataForGame.instance.isJumping) yield break;
+        PlayerDataForGame.instance.SendTroopToWarApi();
         yield return new WaitForSeconds(1f);
-        if (!PlayerDataForGame.instance.isJumping)
-        {
-            PlayerDataForGame.instance.JumpSceneFun(2, false);
-        }
+        PlayerDataForGame.instance.JumpSceneFun(2, false, () => PlayerDataForGame.instance.WarReward != null);
     }
 
     //刷新上阵数量的显示 
@@ -1995,7 +1993,7 @@ public class UIManager : MonoBehaviour
     {
         AudioController0.instance.ChangeAudioClip(13);
         OpenOrCloseChickenBtn(false);
-        if (chickenId == 0)
+        if (chickenId == 1)
             AdAgent.instance.BusyRetry(InvokeApi
                 , () =>
                 {
@@ -2012,7 +2010,7 @@ public class UIManager : MonoBehaviour
                     var player = bag.GetPlayerDataDto();
                     ConsumeManager.instance.SaveChangeUpdatePlayerData(player);
                     //GetTiLiForChicken(yuQueCost, stamina);
-                    OnSuccessRequestChicken(chickenId == 1 ? 50 : 51, chicken.Stamina);
+                    OnSuccessRequestChicken(chickenId == 2 ? 50 : 51, chicken.Stamina);
                 }, msg =>
                 {
                     PlayerDataForGame.instance.ShowStringTips(msg);

@@ -116,7 +116,7 @@ public class RedemptionCodeGot
     public bool isGot;  //是否领取过
 }
 [Skip]
-public class NowLevelAndHadChip//card
+public class NowLevelAndHadChip : IGameCard//card
 {
     public static NowLevelAndHadChip Instance(GameCardDto dto)
     {
@@ -137,6 +137,10 @@ public class NowLevelAndHadChip//card
     public int maxLevel = 1;    //历史最高星级
 
     public bool IsOwned => chips > 0 || level > 0;//是否拥有
+    public int CardId => id;
+    public int Level => level;
+    public int Chips => chips;
+    public int Type => typeIndex;
 }
 /// <summary>
 /// 武将，士兵，塔等 信息存档数据类

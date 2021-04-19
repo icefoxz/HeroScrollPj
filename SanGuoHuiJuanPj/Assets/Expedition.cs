@@ -30,6 +30,7 @@ public class Expedition : MonoBehaviour
     /// </summary>
     private Dictionary<int, GameModeTable> indexWarModeMap; //按键和难度的映射
     private GameModeTable currentMode;//当前选择的难度
+    public GameModeTable CurrentMode => currentMode;
     public StaminaCost SelectedWarStaminaCost => currentMode.StaminaCost;
 
     public void Init()

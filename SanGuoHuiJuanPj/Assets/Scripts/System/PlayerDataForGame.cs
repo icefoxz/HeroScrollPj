@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using CorrelateLib;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
@@ -121,6 +122,7 @@ public class PlayerDataForGame : MonoBehaviour
     public WarReward WarReward { get; set; }
     public GameResources GameResources { get; set; }
     public BaYeManager BaYeManager { get; set; }
+    private List<UnityAction> SceneLoadActions { get; } = new List<UnityAction>();
 
     private void Awake()
     {
@@ -147,7 +149,7 @@ public class PlayerDataForGame : MonoBehaviour
         garbageStationObjs = new List<GameObject>();
         StartCoroutine(FadeTransitionEffect(0));
 
-        SceneManager.sceneLoaded += SceneManagerOnsceneLoaded;
+        SceneManager.sceneLoaded += SceneManagerOnSceneLoaded;
     }
 
     private void Start()
@@ -156,45 +158,47 @@ public class PlayerDataForGame : MonoBehaviour
         GameResources.Init();
     }
 
-    private void SceneManagerOnsceneLoaded(Scene scene, LoadSceneMode mode) => CurrentScene = (GameScene) scene.buildIndex;
+    private void SceneManagerOnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        CurrentScene = (GameScene) scene.buildIndex;
+        if(SceneLoadActions.Count == 0)return;
+        SceneLoadActions.ForEach(a=>a?.Invoke());
+        SceneLoadActions.Clear();
+    }
+
+    public void RegNextSceneLoadAction(UnityAction action) => SceneLoadActions.Add(action);
 
     private void Update()
     {
-        if (isJumping)
+        if (!isJumping) return;
+        loadPro = asyncOp?.progress??0.3f; //获取加载进度,最大为0.9 
+        if (loadPro >= 0.9f)
         {
-            loadPro = asyncOp.progress; //获取加载进度,最大为0.9 
-            if (loadPro >= 0.9f)
-            {
-                loadPro = 1;
-            }
-            loadingText.text = string.Format(DataTable.GetStringText(63), (int)(loadPro * 100));
-
-            if (loadPro >= 1 && !LoadSaveData.instance.isLoadingSaveData)
-            {
-                loadPro = 0;
-                isJumping = false;
-                asyncOp.allowSceneActivation = true;//场景加载完毕跳转 
-                StartCoroutine(FadeTransitionEffect(fadeSpeed));
-            }
+            loadPro = 1;
         }
+        loadingText.text = string.Format(DataTable.GetStringText(63), (int)(loadPro * 100));
+        if (loadPro < 1) return;
+        if (LoadSaveData.instance.isLoadingSaveData) return;
+        loadPro = 0;
+        isJumping = false;
     }
 
     /// <summary> 
     /// 跳转场景 
     /// </summary> 
     /// <param name="sceneIndex"></param> 
-    /// <param name="isRequestSyncData">是否请求同步存档</param> 
-    public void JumpSceneFun(int sceneIndex, bool isRequestSyncData)
+    /// <param name="isRequestSyncData">是否请求同步存档</param>
+    /// <param name="untilTrue">加载锁，直到返回true才会转换场景</param> 
+    public void JumpSceneFun(int sceneIndex, bool isRequestSyncData, Func<bool> untilTrue = null)
     {
-        if (!isJumping)
-        {
-            loadingImg.DOPause();
-            StartCoroutine(ShowTransitionEffect(sceneIndex, isRequestSyncData));
-        }
+        if (isJumping) return;
+        loadingImg.DOPause();
+        StartCoroutine(ShowTransitionEffect(sceneIndex, isRequestSyncData, untilTrue));
     }
 
-    IEnumerator ShowTransitionEffect(int sceneIndex, bool isRequestSyncData)
+    IEnumerator ShowTransitionEffect(int sceneIndex, bool isRequestSyncData,Func<bool> untilTrue)
     {
+        isJumping = true;
         if(isRequestSyncData)
         {
             isRequestingSaveFile = true;
@@ -205,24 +209,21 @@ public class PlayerDataForGame : MonoBehaviour
             }else ApiPanel.instance.SyncSaved(() => isRequestingSaveFile = false);
         }
         loadingImg.gameObject.SetActive(true);
-        loadingImg.DOFade(1, fadeSpeed);
+        loadingImg.DOFade(1, fadeSpeed/2);
 
         yield return new WaitForSeconds(fadeSpeed);
 
-        yield return new WaitWhile(() => isRequestingSaveFile);
-        asyncOp = SceneManager.LoadSceneAsync(sceneIndex, LoadSceneMode.Single);//异步加载场景，Single:不保留现有场景 
         var tips = DataTable.Tips.RandomPick().Value;
         infoText.text = tips.Text;
         infoText.transform.GetChild(0).GetComponent<Text>().text = tips.Sign;
 
         loadingText.gameObject.SetActive(true);
         infoText.gameObject.SetActive(true);
-        asyncOp.allowSceneActivation = false;
-        isJumping = true;
-        //if (isNeedLoadData)
-        //{
-        //    LoadSaveData.instance.LoadByJson();
-        //}
+        yield return new WaitWhile(() => isRequestingSaveFile);//这里阻塞下个场景初始化逻辑。等待存档加载完毕
+        if (untilTrue != null) yield return new WaitUntil(untilTrue);
+        asyncOp = SceneManager.LoadSceneAsync(sceneIndex, LoadSceneMode.Single);//异步加载场景，Single:不保留现有场景 
+        yield return new WaitUntil(() => asyncOp.isDone);
+        StartCoroutine(FadeTransitionEffect(fadeSpeed));
     }
 
     //隐藏 
@@ -232,10 +233,7 @@ public class PlayerDataForGame : MonoBehaviour
         loadingText.gameObject.SetActive(false);
         infoText.gameObject.SetActive(false);
         loadingImg.gameObject.SetActive(true);
-        loadingImg.DOFade(0, fadeSpeed).OnComplete(delegate ()
-        {
-            loadingImg.gameObject.SetActive(false);
-        });
+        loadingImg.DOFade(0, fadeSpeed).OnComplete(() => loadingImg.gameObject.SetActive(false));
     }
 
     private int scaleWidth = 0;
@@ -283,13 +281,8 @@ public class PlayerDataForGame : MonoBehaviour
 
     void OnApplicationPause(bool paused)
     {
-        if (paused)
-        {
-        }
-        else
-        {
-            setDesignContentScale();
-        }
+        if (paused) return;
+        setDesignContentScale();
     }
 
     
@@ -470,29 +463,35 @@ public class PlayerDataForGame : MonoBehaviour
     public void UpdateGameCards(TroopDto[] troops, GameCardDto[] gameCardList)
     {
         var cards = gameCardList.Select(NowLevelAndHadChip.Instance)
+            .Where(c => c.IsOwning())
             .GroupBy(c => (GameCardType) c.typeIndex, c => c)
             .ToDictionary(c => c.Key, c => c.ToList());
         troops.SelectMany(t => t.EnList)
             .Join(cards, t => t.Key, c => c.Key, (t, c) => c)
             .ToList().ForEach(t => t.Value.ForEach(c => c.isFight = 1));
-        cards.TryGetValue(GameCardType.Hero, out hstData.heroSaveData);
-        cards.TryGetValue(GameCardType.Tower, out hstData.towerSaveData);
-        cards.TryGetValue(GameCardType.Trap, out hstData.trapSaveData);
+        if (!cards.TryGetValue(GameCardType.Hero, out hstData.heroSaveData))
+            hstData.heroSaveData = new List<NowLevelAndHadChip>();
+        if (!cards.TryGetValue(GameCardType.Tower, out hstData.towerSaveData))
+            hstData.towerSaveData = new List<NowLevelAndHadChip>();
+        if (!cards.TryGetValue(GameCardType.Trap, out hstData.trapSaveData))
+            hstData.trapSaveData = new List<NowLevelAndHadChip>();
     }
 
-    public void SendTroopToWarApi(int warId)
+    public void SendTroopToWarApi()
     {
+        //todo: 暂时霸业不请求Api
+        if(WarType != WarTypes.Expedition)return;
         var cards = hstData.heroSaveData.Concat(hstData.towerSaveData).Concat(hstData.trapSaveData)
             .Enlist(CurrentWarForceId).Select(c => c.ToDto()).ToList();
         ApiPanel.instance.Invoke(vb =>
             {
-                WarReward = new WarReward(vb.Values[0].ToString(), warId);
-            },ShowStringTips, EventStrings.Req_TroopToCampaign,
+                WarReward = new WarReward(vb.Values[0].ToString(), selectedWarId);
+            }, ShowStringTips, EventStrings.Req_TroopToCampaign,
             ViewBag.Instance().TroopDto(new TroopDto
             {
                 EnList = cards.GroupBy(c => c.Type, c => c.CardId).ToDictionary(c => c.Key, c => c.ToArray()),
                 ForceId = CurrentWarForceId
-            }).SetValue(warId));
+            }).SetValues(selectedWarId, UIManager.instance.expedition.CurrentMode.Id));
     }
 
     public void RefreshEnlisted(int forceId)
