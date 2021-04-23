@@ -14,10 +14,6 @@ public class GameSystem : MonoBehaviour
     {
         instance = this;
         DontDestroyOnLoad(gameObject);
-    }
-
-    void Start()
-    {
         LoginUi = loginUiController;
         TimeSystemControl = timeSystemControl;
     }
