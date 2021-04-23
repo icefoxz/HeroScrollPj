@@ -109,7 +109,7 @@ public class StartSceneUIManager : MonoBehaviour
     /// 跳转场景
     /// </summary>
     /// <param name="sceneBuildIndex">场景索引</param>
-    public void LoadingScene(int sceneBuildIndex, bool isNeedLoadSave)
+    public void LoadingScene(int sceneBuildIndex, bool isRequestSyncData)
     {
         if (isJumping)
             return;
@@ -117,7 +117,7 @@ public class StartSceneUIManager : MonoBehaviour
         AudioController0.instance.ChangeAudioClip(12);
         AudioController0.instance.PlayAudioSource(0);
         TimeSystemControl.instance.InitIsTodayFirstLoadingGame();
-        PlayerDataForGame.instance.JumpSceneFun(sceneBuildIndex, isNeedLoadSave);
+        PlayerDataForGame.instance.JumpSceneFun(sceneBuildIndex, isRequestSyncData);
     }
 
     /// <summary>

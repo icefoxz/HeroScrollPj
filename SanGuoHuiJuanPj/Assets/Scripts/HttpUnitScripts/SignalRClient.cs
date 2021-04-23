@@ -7,16 +7,19 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Assets.Scripts.Utl;
+using Beebyte.Obfuscator;
 using CorrelateLib;
 using Microsoft.AspNetCore.SignalR.Client;
 using Newtonsoft.Json;
 using Unity.Collections;
 using UnityEngine;
+using UnityEngine.Android;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Object = System.Object;
 
+[Skip]
 /// <summary>
 /// Signal客户端
 /// </summary>
@@ -69,15 +72,20 @@ public class SignalRClient : MonoBehaviour
         await _connection.StopAsync();
         await _connection.DisposeAsync();
     }
-
-    public async void Login(Action<bool,int, int> recallAction,string username = null,string password = null)
+    /// <summary>
+    /// login
+    /// </summary>
+    /// <param name="recallAction">( isSuccess, statusCode, arrangement )</param>
+    /// <param name="username"></param>
+    /// <param name="password"></param>
+    public async void UserLogin(UnityAction<bool,int, int,int> recallAction,string username = null,string password = null)
     {
         if(isBusy)return;
         if (username == null) username = PlayerDataForGame.instance.acData.Username;
         if (password == null) password = PlayerDataForGame.instance.acData.Password;
         cancellationTokenSource = new CancellationTokenSource();
         cancellationTokenSource.Token.Register(()=>OnConnectionClose(XDebug.Throw<SignalRClient>("取消连接！")));
-        var response = await Http.PostAsync(Server.SIGNALR_LOGIN_API,Json.Serialize(GetUserInfo(username,password)), cancellationTokenSource.Token);
+        var response = await Http.PostAsync(Server.SIGNALR_LOGIN_API,Json.Serialize(Server.GetUserInfo(username,password)), cancellationTokenSource.Token);
         if (!response.IsSuccessStatusCode)
         {
             DebugLog($"连接失败！[{response.StatusCode}]");
@@ -92,7 +100,7 @@ public class SignalRClient : MonoBehaviour
                     break;
             }
             isBusy = false;
-            recallAction.Invoke(false, (int) severBackCode, 0);
+            recallAction.Invoke(false, (int) severBackCode, 0, 0);
             return;
         }
 
@@ -100,22 +108,40 @@ public class SignalRClient : MonoBehaviour
         var connectionInfo = JsonConvert.DeserializeObject<SignalRConnectionInfo>(jsonString);
         var result = await ConnectSignalRAsync(connectionInfo, cancellationTokenSource.Token);
         isBusy = false;
-        recallAction?.Invoke(result, (int) response.StatusCode, connectionInfo.Arrangement);
+        recallAction?.Invoke(result, (int) response.StatusCode, connectionInfo.Arrangement,
+            connectionInfo.IsNewRegistered);
     }
 
-    public async Task SynchronizePlayerData(bool forceSync = false)
+    public async void DirectLogin(UnityAction<bool, int, int,int> recallAction)
     {
-        var jData = await Invoke(EventStrings.Req_PlayerData);
-        var viewBag = Json.Deserialize<ViewBag>(jData);
-        if(!forceSync)
+        if(isBusy)return;
+        cancellationTokenSource = new CancellationTokenSource();
+        cancellationTokenSource.Token.Register(()=>OnConnectionClose(XDebug.Throw<SignalRClient>("取消连接！")));
+        var response = await Http.PostAsync(Server.DEVICE_LOGIN_API,Json.Serialize(Server.GetUserInfo(GamePref.Username,GamePref.Password)), cancellationTokenSource.Token);
+        if (!response.IsSuccessStatusCode)
         {
-            var isSync = (bool) viewBag.Values[0];
-            if (!isSync) return;
+            DebugLog($"连接失败！[{response.StatusCode}]");
+            var severBackCode = ServerBackCode.ERR_INVALIDOPERATION;
+            switch (response.StatusCode)
+            {
+                case HttpStatusCode.Unauthorized:
+                    severBackCode = ServerBackCode.ERR_PW_ERROR;
+                    break;
+                case HttpStatusCode.HttpVersionNotSupported:
+                    severBackCode = ServerBackCode.ERR_SERVERSTATE_ZERO;
+                    break;
+            }
+            isBusy = false;
+            recallAction.Invoke(false, (int) severBackCode, 0, 0);
+            return;
         }
-        var playerData = viewBag.GetObj<PlayerData>(ViewBag.PlayerDataDto);
-        PlayerDataForGame.instance.pyData = playerData;
-        PlayerDataForGame.instance.isNeedSaveData = true;
-        LoadSaveData.instance.SaveGameData(6);
+
+        var jsonString = await response.Content.ReadAsStringAsync();
+        var connectionInfo = JsonConvert.DeserializeObject<SignalRConnectionInfo>(jsonString);
+        var result = await ConnectSignalRAsync(connectionInfo, cancellationTokenSource.Token);
+        isBusy = false;
+        recallAction?.Invoke(result, (int) response.StatusCode, connectionInfo.Arrangement,
+            connectionInfo.IsNewRegistered);
     }
 
     public async Task SynchronizeSaved()
@@ -143,18 +169,6 @@ public class SignalRClient : MonoBehaviour
         LoadSaveData.instance.SaveGameData();
     }
 
-    private UserInfo GetUserInfo(string username,string password)
-    {
-        return new UserInfo
-        {
-            DeviceId = SystemInfo.deviceUniqueIdentifier,
-            Password = password,
-            Phone = PlayerDataForGame.instance?.acData?.Phone,
-            Username = username,
-            GameVersion = float.Parse(Application.version)
-        };
-    }
-    
     private async Task<bool> ConnectSignalRAsync(SignalRConnectionInfo connectionInfo,CancellationToken cancellationToken)
     {
         try
@@ -187,7 +201,7 @@ public class SignalRClient : MonoBehaviour
         }
         catch (Exception e)
         {
-            StatusChanged(_connection.State,$"连接失败！{e}");
+            StatusChanged(_connection?.State ?? HubConnectionState.Disconnected, $"连接失败！{e}");
             return false;
         }
         return true;
@@ -228,7 +242,8 @@ public class SignalRClient : MonoBehaviour
     {
         try
         {
-            var result = await _connection.InvokeCoreAsync(method, _stringType, new object[] {Json.Serialize(bag)},
+            var result = await _connection.InvokeCoreAsync(method, _stringType,
+                bag == null ? new object[0] : new object[] {Json.Serialize(bag)},
                 cancellationToken);
             return result?.ToString();
         }
@@ -250,7 +265,7 @@ public class SignalRClient : MonoBehaviour
         if (_connection.State == HubConnectionState.Disconnected)
             return;
 
-        if (cancellationTokenSource?.IsCancellationRequested == false)
+        if (cancellationTokenSource!=null && cancellationTokenSource.IsCancellationRequested == false)
         {
             cancellationTokenSource.Cancel();
             ResetConnection();
@@ -263,10 +278,11 @@ public class SignalRClient : MonoBehaviour
 
     private void ResetConnection()
     {
+        Application.quitting -= Disconnect;
+        if (_connection == null) return;
         _connection.Closed -= OnConnectionClose;
         _connection.Reconnected -= OnReconnected;
         _connection.Reconnecting -= OnReconnecting;
-        Application.quitting -= Disconnect;
     }
 
     #region Upload
@@ -367,5 +383,6 @@ public class SignalRClient : MonoBehaviour
         public string Url { get; set; }
         public string AccessToken { get; set; }
         public int Arrangement { get; set; }
+        public int IsNewRegistered { get; set; }
     }
 }

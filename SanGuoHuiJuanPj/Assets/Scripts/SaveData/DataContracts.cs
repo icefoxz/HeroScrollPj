@@ -138,8 +138,16 @@ public class NowLevelAndHadChip : IGameCard//card
 
     public bool IsOwned => chips > 0 || level > 0;//是否拥有
     public int CardId => id;
-    public int Level => level;
-    public int Chips => chips;
+    public int Level
+    {
+        get => level;
+        set => level = value;
+    }
+    public int Chips
+    {
+        get => chips;
+        set => chips = value;
+    }
     public int Type => typeIndex;
 }
 /// <summary>
