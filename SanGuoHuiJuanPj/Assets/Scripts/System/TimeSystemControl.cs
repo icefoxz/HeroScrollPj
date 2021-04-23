@@ -105,8 +105,11 @@ public class TimeSystemControl : MonoBehaviour
         isOpenMainScene = false;
     }
 
-    private void Start()
+    private bool isInit;
+    public void Init()
     {
+        if(isInit)return;
+        isInit = true;
         StartGameToInitOpenTime();
     }
 
@@ -165,7 +168,9 @@ public class TimeSystemControl : MonoBehaviour
 
     private void Update()
     {
+        if (!isInit) return;
         if (SystemTimer.Now == default) return;
+        if (PlayerDataForGame.instance.pyData == null) return;
         UpdateTimeTrigger();
         UpdateJinNangTimer();
         UpdateJiuTanTimer();

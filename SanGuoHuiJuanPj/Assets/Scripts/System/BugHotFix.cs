@@ -80,7 +80,7 @@ public static class BugHotFix
         var ac = PlayerDataForGame.instance.acData;
         ac.Username = userInfo.Username;
         ac.DeviceId = userInfo.DeviceId;
-        PlayerPrefs.SetString(StartSceneToServerCS.AccountId, ac.Username);
+        GamePref.SetUsername(ac.Username);
         //注册玩家账号
         userInfo = await Http.PostAsync<UserInfo>(Server.PLAYER_REG_ACCOUNT_API, Json.Serialize(new UserInfo
         {
