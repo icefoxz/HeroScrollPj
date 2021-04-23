@@ -11,9 +11,9 @@ public class TestSignalRConnection : MonoBehaviour
 
     public void Login()
     {
-        Client.Login(
-            (isSuccess, code, arrangement) =>
-                Debug.Log($"SignalR连接: {isSuccess}, StatusCode[{code}], Arrangement[{arrangement}]!"),
+        Client.UserLogin(
+            (isSuccess, code, arrangement,newReg) =>
+                Debug.Log($"SignalR连接: {isSuccess}, StatusCode[{code}], Arrangement[{arrangement}], NewReg[{newReg}]!"),
             Username,
             Password);
         var player = new PlayerData {Exp = 100};

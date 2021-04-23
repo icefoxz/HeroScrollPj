@@ -16,7 +16,7 @@ public class ServerPanel : MonoBehaviour
         SignalR = signalR;
         SignalR.SubscribeAction(EventStrings.SC_Disconnect,ServerCallDisconnect);
         SignalR.OnStatusChanged += Instance_OnStatusChanged;
-        reconnectButton.onClick.AddListener(()=>SignalRClient.instance.Login(OnConnectAction));
+        reconnectButton.onClick.AddListener(()=>SignalRClient.instance.UserLogin(OnConnectAction));
         gameObject.SetActive(false);
         MessageSwitch(false);
         SetException();
@@ -34,7 +34,7 @@ public class ServerPanel : MonoBehaviour
         requestTimeOut.gameObject.SetActive(!isMaintenance);
     }
 
-    private void OnConnectAction(bool isConnected, int code, int arrangement)
+    private void OnConnectAction(bool isConnected, int code, int arrangement, int newReg)
     {
         gameObject.SetActive(!isConnected);
         SetException(code.ToString());

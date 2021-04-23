@@ -5,6 +5,9 @@ using UnityEngine;
 public class LoginMocker : MonoBehaviour
 {
     public SignInUi Ui;
+    public LoginUiController Controller;
+
+    public void OnLoginWindowOpen() => Controller.OnAction(LoginUiController.ActionWindows.Login);
 
     public void EmptyAction()
     {

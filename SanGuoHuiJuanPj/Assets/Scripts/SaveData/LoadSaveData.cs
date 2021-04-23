@@ -465,7 +465,7 @@ public class LoadSaveData : MonoBehaviour
                 SetGamePlayerBasicData(save0, save1, save2, save3);
             }
             //初始化新手指引 
-            InitGuideData(false);
+            GamePref.SetIsFirstPlay(false);
         }
         else
         {
@@ -644,40 +644,10 @@ public class LoadSaveData : MonoBehaviour
 
         TimeSystemControl.instance.InitTimeRelatedData();
 
-        InitGuideData(true);
+        GamePref.SetIsFirstPlay(true);
 
         isHadSaveData = true;
         Debug.Log("初创存档成功");
-    }
-
-    /// <summary> 
-    /// 初始化指引数据 
-    /// </summary> 
-    /// <param name="isFirst"></param> 
-    private void InitGuideData(bool isFirst)
-    {
-        //是否是首次进游戏 
-        if (isFirst)
-        {
-            PlayerPrefs.SetInt(StringForGuide.guideJinBaoXiang, 0);
-            PlayerPrefs.SetInt(StringForGuide.guideZYBaoXiang, 0);
-            PlayerPrefs.SetInt(StringForGuide.guideHeCheng, 0);
-            PlayerPrefs.SetInt(StringForGuide.guideStartZY, 0);
-            PlayerPrefs.SetInt(StringForGuide.guideStartGQ, 0);
-            PlayerPrefs.SetInt(StringForGuide.guideCheckCardInfo, 0);
-            PlayerPrefs.SetInt(StringForGuide.guideShengJIZG, 0);
-        }
-        else
-        {
-            PlayerDataForGame.instance.guideObjsShowed = new int[7];
-            PlayerDataForGame.instance.guideObjsShowed[0] = PlayerPrefs.GetInt(StringForGuide.guideJinBaoXiang);
-            PlayerDataForGame.instance.guideObjsShowed[1] = PlayerPrefs.GetInt(StringForGuide.guideZYBaoXiang);
-            PlayerDataForGame.instance.guideObjsShowed[2] = PlayerPrefs.GetInt(StringForGuide.guideHeCheng);
-            PlayerDataForGame.instance.guideObjsShowed[3] = PlayerPrefs.GetInt(StringForGuide.guideStartZY);
-            PlayerDataForGame.instance.guideObjsShowed[4] = PlayerPrefs.GetInt(StringForGuide.guideStartGQ);
-            PlayerDataForGame.instance.guideObjsShowed[5] = PlayerPrefs.GetInt(StringForGuide.guideCheckCardInfo);
-            PlayerDataForGame.instance.guideObjsShowed[6] = PlayerPrefs.GetInt(StringForGuide.guideShengJIZG);
-        }
     }
 
     /// <summary> 
