@@ -34,7 +34,7 @@ public class ServerPanel : MonoBehaviour
         requestTimeOut.gameObject.SetActive(!isMaintenance);
     }
 
-    private void OnConnectAction(bool isConnected, int code, int arrangement, int newReg)
+    private void OnConnectAction(bool isConnected, int code, SignalRClient.SignalRConnectionInfo info)
     {
         gameObject.SetActive(!isConnected);
         SetException(code.ToString());

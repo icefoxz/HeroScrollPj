@@ -26,15 +26,15 @@ public class LoginUiController : MonoBehaviour
     public ChangePwdUi changePassword;
     public RetrievePasswordUi forgetPassword;
     public ResetAccountUi resetAccount;
-    public UnityAction<int,int> OnLoggedInAction;
+    public UnityAction<string,int,int> OnLoggedInAction;
     public UnityAction OnResetAccountAction;
     public Image busyPanel;
 
 #if UNITY_EDITOR
     void Start()
     {
-        OnLoggedInAction += (arrangement, newReg) =>
-            XDebug.Log<LoginUiController>($"{nameof(OnLoggedInAction)} Invoke({arrangement},{newReg})!");
+        OnLoggedInAction += (username, arrangement, newReg) =>
+            XDebug.Log<LoginUiController>($"{nameof(OnLoggedInAction)} Invoke({username},{arrangement},{newReg})!");
         OnResetAccountAction += () => XDebug.Log<LoginUiController>($"{nameof(OnResetAccountAction)} Invoke()!");
     }
 #endif
@@ -215,12 +215,13 @@ public class LoginUiController : MonoBehaviour
         SignalRClient.instance.DirectLogin(LoginAction);
     }
 
-    private void LoginAction(bool success, int code, int arrangement,int isNewReg)
+    private void LoginAction(bool success, int code, SignalRClient.SignalRConnectionInfo info)
     {
         busyPanel.gameObject.SetActive(false);
         if (success)
         {
-            UnityMainThread.thread.RunNextFrame(() => OnLoggedInAction.Invoke(arrangement, isNewReg));
+            UnityMainThread.thread.RunNextFrame(() =>
+                OnLoggedInAction.Invoke(info.Username, info.Arrangement, info.IsNewRegistered));
             return;
         }
         login.message.text = Server.ResponseMessage(code);

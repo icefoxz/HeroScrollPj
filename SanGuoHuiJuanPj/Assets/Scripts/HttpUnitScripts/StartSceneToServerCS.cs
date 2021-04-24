@@ -96,17 +96,27 @@ public class StartSceneToServerCS : MonoBehaviour
 
     }
 
-    private void OnLoggedIn(int arrangement,int newReg)
+    private void OnLoggedIn(string username,int arrangement,int newReg)
     {
-        var login = GameSystem.LoginUi.login;
-        var pwd = login.password.text;
-        var usr = login.username.text;
-        GamePref.SetPassword(pwd);
+        if (newReg > 0)
+        {
+            GamePref.SetIsFirstPlay(true);
+            PlayerDataForGame.instance.pyData = new PlayerData();
+            PlayerDataForGame.instance.hstData = new HSTDataClass();
+            PlayerDataForGame.instance.gbocData = new GetBoxOrCodeData();
+            PlayerDataForGame.instance.warsData = new WarsDataClass();
+        }
+        else
+        {
+            var pwd = GameSystem.LoginUi.login.password.text;
+            GamePref.SetPassword(pwd);
+            PlayerDataForGame.instance.acData.Password = pwd;
+        }
+        var usr = username;
         GamePref.SetUsername(usr);
         PlayerDataForGame.instance.acData.Username = usr;
-        PlayerDataForGame.instance.acData.Password = pwd;
         PlayerDataForGame.instance.Arrangement = arrangement;
-        GamePref.SetIsFirstPlay(newReg > 0);
+
         GameSystem.InitGameDependencyComponents();
         GameSystem.LoginUi.Close();
         StartSceneUIManager.instance.LoadingScene(1, true);

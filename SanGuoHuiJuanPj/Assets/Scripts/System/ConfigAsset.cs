@@ -32,11 +32,14 @@ namespace Assets.Editor
     public class ConfigAsset : ScriptableObject
     {
         public string ServerUrl;
-        public string PLAYER_SAVE_DATA_UPLOAD_API;
-        public string INSTANCE_ID_API;
-        public string PLAYER_REG_ACCOUNT_API;
-        public string PLAYER_UPLOAD_COUNT_API;
-        public string USER_LOGIN_API;
-        public string SIGNALR_LOGIN_API;
+        public string PLAYER_SAVE_DATA_UPLOAD_API ;
+        public string INSTANCE_ID_API             ;
+        public string REQUEST_USERNAME_API        ;
+        public string PLAYER_REG_ACCOUNT_API      ;
+        public string PLAYER_UPLOAD_COUNT_API     ;
+        public string USER_LOGIN_API              ;
+        public string SIGNALR_LOGIN_API           ;
+        public string DEVICE_LOGIN_API            ;
+        public string RESET_GAMEPLAY_API          ;
     }
 }
