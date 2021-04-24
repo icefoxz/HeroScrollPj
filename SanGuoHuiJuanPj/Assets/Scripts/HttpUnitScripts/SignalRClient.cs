@@ -53,7 +53,6 @@ public class SignalRClient : MonoBehaviour
         {
             instance = this;
         }
-        DontDestroyOnLoad(gameObject);
     }
 
     private void Start()

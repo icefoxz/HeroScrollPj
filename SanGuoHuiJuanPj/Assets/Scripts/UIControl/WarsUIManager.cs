@@ -122,7 +122,11 @@ public class WarsUIManager : MonoBehaviour
 
     IEnumerator Initialize()
     {
-        //------------Awake----------------//
+        if (PlayerDataForGame.instance.WarType == PlayerDataForGame.WarTypes.Expedition && string.IsNullOrWhiteSpace(PlayerDataForGame.instance.WarReward.Token))
+        {
+            BattleOverShow(false);
+            yield return null;
+        }
         cityLevel = 1;
         switch (PlayerDataForGame.instance.WarType)
         {
@@ -1452,17 +1456,17 @@ public class WarsUIManager : MonoBehaviour
     {
         if (isShow)
         {
-            if (PlayerDataForGame.instance.guideObjsShowed[index + 4] == 0)
+            if (PlayerDataForGame.instance.GuideObjsShowed[index + 4] == 0)
             {
                 guideObjs[index].SetActive(true);
             }
         }
         else
         {
-            if (PlayerDataForGame.instance.guideObjsShowed[index + 4] == 0)
+            if (PlayerDataForGame.instance.GuideObjsShowed[index + 4] == 0)
             {
                 guideObjs[index].SetActive(false);
-                PlayerDataForGame.instance.guideObjsShowed[index + 4] = 1;
+                PlayerDataForGame.instance.GuideObjsShowed[index + 4] = 1;
                 switch (index)
                 {
                     case 0:

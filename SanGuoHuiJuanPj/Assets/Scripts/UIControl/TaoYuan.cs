@@ -180,7 +180,7 @@ using UnityEngine.UI;
         if (chestUi == goldChest)
         {
             chestId = 2;
-            if (!TimeSystemControl.instance.OnClickToGetFreeBox2())
+            if (!TimeSystemControl.instance.IsFreeWeeklyChestAvailable())
                 if (ConsumeManager.instance.DeductYuQue(chestCostMap[chestUi])) consume = 1; //消费玉阙
                 else return; //如果无法消费，取消请求
             UIManager.instance.ShowOrHideGuideObj(0, false);

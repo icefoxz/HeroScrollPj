@@ -103,7 +103,6 @@ using UnityEngine;
         {
             instance = this;
         }
-        DontDestroyOnLoad(gameObject);
         Init();
     }
 

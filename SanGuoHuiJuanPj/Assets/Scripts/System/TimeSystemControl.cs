@@ -101,7 +101,6 @@ public class TimeSystemControl : MonoBehaviour
             Destroy(gameObject);
         else
             instance = this;
-        DontDestroyOnLoad(gameObject);
         isOpenMainScene = false;
     }
 
@@ -471,23 +470,35 @@ public class TimeSystemControl : MonoBehaviour
     {
         if (!isOpenMainScene) return;
 
-        if (isCanGetBox2)
+        var py = PlayerDataForGame.instance.pyData;
+
+        if (SystemTimer.UnixTicksFromNow(TimeSpan.FromDays(-7)) >= py.LastWeekChestRedeemTime)
         {
             UIManager.instance.taoYuan.goldChest.UpdateChest(string.Empty, true);
             return;
         }
 
-        if (openFreeBoxTimeLong2 == 0)
+        if (isCanGetBox2)
         {
-            openFreeBoxTimeLong2 = SystemTimer.NowUnixTicks + PlayerPrefs.GetInt(fBoxOpenNeedTimes2) * 1000;
-            PlayerPrefs.SetString(freeBoxOpenTime2, openFreeBoxTimeLong2.ToString());
+            return;
         }
 
-        int secondCha = (int)((openFreeBoxTimeLong2 - SystemTimer.NowUnixTicks) / 1000);
-        if (secondsNetTime_FreeBox2 <= secondCha && (secondsNetTime_FreeBox2 > 0 || secondCha == 0)) return;
-        secondsNetTime_FreeBox2 = secondCha;
-        int totalTimes = PlayerPrefs.GetInt(fBoxOpenNeedTimes2);
-        UpdateBoxOpenTimeFromGame2(totalTimes - secondsNetTime_FreeBox2, totalTimes);
+        //if (openFreeBoxTimeLong2 == 0)
+        //{
+        //    openFreeBoxTimeLong2 = SystemTimer.NowUnixTicks + PlayerPrefs.GetInt(fBoxOpenNeedTimes2) * 1000;
+        //    PlayerPrefs.SetString(freeBoxOpenTime2, openFreeBoxTimeLong2.ToString());
+        //}
+
+        var nextOpenTimeTick = py.LastWeekChestRedeemTime + TimeSpan.FromDays(7).TotalMilliseconds;
+        var secondsLeft = (int)(nextOpenTimeTick - SystemTimer.NowUnixTicks) / 1000;
+
+        UIManager.instance.taoYuan.goldChest.UpdateChest(TimeDisplayText(secondsLeft), false);
+
+        //int secondCha = (int)((openFreeBoxTimeLong2 - SystemTimer.NowUnixTicks) / 1000);
+        //if (secondsNetTime_FreeBox2 <= secondCha && (secondsNetTime_FreeBox2 > 0 || secondCha == 0)) return;
+        //secondsNetTime_FreeBox2 = secondCha;
+        //int totalTimes = PlayerPrefs.GetInt(fBoxOpenNeedTimes2);
+        //UpdateBoxOpenTimeFromGame2(totalTimes - secondsNetTime_FreeBox2, totalTimes);
     }
 
     private void UpdateJinNangTimer()
@@ -586,24 +597,8 @@ public class TimeSystemControl : MonoBehaviour
         }
     }
 
-    public bool OnClickToGetFreeBox2()
-    {
-        if (isCanGetBox2)
-        {
-            //Debug.Log("免费打开宝箱2");
-            secondsNetTime_FreeBox2 = 0;
-            isCanGetBox2 = false;
-            PlayerPrefs.SetInt(fBoxOpenNeedTimes2, openNeedSeconds2);
-            long nowTimeStr = SystemTimer.NowUnixTicks; //long.Parse(PlayerPrefs.GetString(NetworkTimestampStr));
-            nowTimeStr += (openNeedSeconds2 * 1000);
-            openFreeBoxTimeLong2 = nowTimeStr;
-            PlayerPrefs.SetString(freeBoxOpenTime2, nowTimeStr.ToString());
-            return true;
-        }
-
-        //Debug.Log("宝箱免费开启时间未到");
-        return false;
-    }
+    public bool IsFreeWeeklyChestAvailable() => PlayerDataForGame.instance.pyData.LastWeekChestRedeemTime <
+                                                SystemTimer.UnixTicksFromNow(TimeSpan.FromDays(-7));
 
     //开启锦囊
     public bool OnClickToGetJinNang()

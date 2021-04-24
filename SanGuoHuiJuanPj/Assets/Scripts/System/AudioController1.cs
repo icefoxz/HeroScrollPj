@@ -37,7 +37,6 @@ public class AudioController1 : MonoBehaviour
         {
             instance = this;
         }
-        DontDestroyOnLoad(gameObject);//跳转场景等不销毁
 
         audioSource = GetComponent<AudioSource>();
         audioPlayInterval = minRandTime;

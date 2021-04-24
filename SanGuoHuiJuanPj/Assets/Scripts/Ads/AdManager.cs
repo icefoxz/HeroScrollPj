@@ -17,7 +17,6 @@ public class AdManager : AdControllerBase
     {
         if (isInit) throw XDebug.Throw<AdManager>("Duplicate init!");
         isInit = true;
-        DontDestroyOnLoad(gameObject);
         var mainCanvas = GameObject.FindGameObjectWithTag(MainCanvas);
         DoNewAdController = gameObject.AddComponent<DoNewAdController>();
         AdmobController = gameObject.AddComponent<AdmobController>();

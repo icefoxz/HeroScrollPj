@@ -30,14 +30,13 @@ public static class GamePref
         }
         else
         {
-            PlayerDataForGame.instance.guideObjsShowed = new int[7];
-            PlayerDataForGame.instance.guideObjsShowed[0] = PlayerPrefs.GetInt(StringForGuide.guideJinBaoXiang);
-            PlayerDataForGame.instance.guideObjsShowed[1] = PlayerPrefs.GetInt(StringForGuide.guideZYBaoXiang);
-            PlayerDataForGame.instance.guideObjsShowed[2] = PlayerPrefs.GetInt(StringForGuide.guideHeCheng);
-            PlayerDataForGame.instance.guideObjsShowed[3] = PlayerPrefs.GetInt(StringForGuide.guideStartZY);
-            PlayerDataForGame.instance.guideObjsShowed[4] = PlayerPrefs.GetInt(StringForGuide.guideStartGQ);
-            PlayerDataForGame.instance.guideObjsShowed[5] = PlayerPrefs.GetInt(StringForGuide.guideCheckCardInfo);
-            PlayerDataForGame.instance.guideObjsShowed[6] = PlayerPrefs.GetInt(StringForGuide.guideShengJIZG);
+            PlayerDataForGame.instance.GuideObjsShowed[0] = PlayerPrefs.GetInt(StringForGuide.guideJinBaoXiang);
+            PlayerDataForGame.instance.GuideObjsShowed[1] = PlayerPrefs.GetInt(StringForGuide.guideZYBaoXiang);
+            PlayerDataForGame.instance.GuideObjsShowed[2] = PlayerPrefs.GetInt(StringForGuide.guideHeCheng);
+            PlayerDataForGame.instance.GuideObjsShowed[3] = PlayerPrefs.GetInt(StringForGuide.guideStartZY);
+            PlayerDataForGame.instance.GuideObjsShowed[4] = PlayerPrefs.GetInt(StringForGuide.guideStartGQ);
+            PlayerDataForGame.instance.GuideObjsShowed[5] = PlayerPrefs.GetInt(StringForGuide.guideCheckCardInfo);
+            PlayerDataForGame.instance.GuideObjsShowed[6] = PlayerPrefs.GetInt(StringForGuide.guideShengJIZG);
         }
     }
 }

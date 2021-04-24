@@ -23,6 +23,9 @@ public class SystemTimer : MonoBehaviour
     {
         return Epoch.AddMilliseconds(unixTicks);
     }
+
+    public static long UnixTicksFromNow(TimeSpan timeSpan) => (long) DateTimeOffset.UtcNow.Add(timeSpan).Subtract(Epoch).TotalMilliseconds;
+
     public static bool IsToday(DateTimeOffset date)
     {
         var dateLocal = date.LocalDateTime;

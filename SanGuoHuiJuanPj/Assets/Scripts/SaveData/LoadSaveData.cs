@@ -34,7 +34,6 @@ public class LoadSaveData : MonoBehaviour
             instance = this;
         }
         XDebug.Init();
-        DontDestroyOnLoad(gameObject);
         isLoadingSaveData = true;
         isHadSaveData = IsSaveFilesExist();
         if(AudioController0.instance)

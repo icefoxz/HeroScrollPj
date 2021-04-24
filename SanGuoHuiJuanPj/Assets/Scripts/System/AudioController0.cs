@@ -29,8 +29,6 @@ public class AudioController0 : MonoBehaviour
         {
             instance = this;
         }
-        DontDestroyOnLoad(gameObject);//跳转场景等不销毁
-
         isPlaying = false;
         audioSource = GetComponent<AudioSource>();
     }

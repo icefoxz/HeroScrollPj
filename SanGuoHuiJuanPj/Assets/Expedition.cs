@@ -106,6 +106,7 @@ public class Expedition : MonoBehaviour
             if (warMode.Unlock == default) return true;//解锁关卡为(id = 0)初始关卡
             var theWarBeforeUnlockWar = warMode.Unlock - 1;//当前需要解锁关卡的前一个关卡id
             var lastWarTotalStages = DataTable.War[theWarBeforeUnlockWar].CheckPoints;//上一个war的总关卡
+            if (PlayerDataForGame.instance.warsData.warUnlockSaveData.Count == 0) return false;
             return PlayerDataForGame.instance.warsData.warUnlockSaveData
                 .Single(w => w.warId == theWarBeforeUnlockWar).unLockCount >= lastWarTotalStages;//是否上一关已经完成
         }

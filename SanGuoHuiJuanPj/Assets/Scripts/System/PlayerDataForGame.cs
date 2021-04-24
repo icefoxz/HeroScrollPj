@@ -73,8 +73,11 @@ public class PlayerDataForGame : MonoBehaviour
         }
     } //玩家战役解锁+霸业进度信息 
 
-    [HideInInspector]
-    public int[] guideObjsShowed;   //存放各个指引展示情况 
+    public int[] GuideObjsShowed
+    {
+        get => guideObjsShowed;
+        set => guideObjsShowed = value;
+    } //存放各个指引展示情况 
 
     //记录出战单位 
     [HideInInspector]
@@ -135,7 +138,6 @@ public class PlayerDataForGame : MonoBehaviour
             instance = this;
         }
 
-        DontDestroyOnLoad(gameObject);
         selectedWarId = -1;
         isJumping = false;
         loadPro = 0;
@@ -358,6 +360,7 @@ public class PlayerDataForGame : MonoBehaviour
     public int selectedCity;
     public string mainSceneTips;
     private WarsDataClass _warsData = new WarsDataClass();
+    private int[] guideObjsShowed = new int[7];
 
     /// <summary> 
     /// 场景底部文本提示 
@@ -486,7 +489,11 @@ public class PlayerDataForGame : MonoBehaviour
         ApiPanel.instance.Invoke(vb =>
             {
                 WarReward = new WarReward(vb.Values[0].ToString(), selectedWarId);
-            }, ShowStringTips, EventStrings.Req_TroopToCampaign,
+            }, msg =>
+            {
+                ShowStringTips(msg);
+                WarReward = new WarReward(string.Empty, selectedWarId);
+            }, EventStrings.Req_TroopToCampaign,
             ViewBag.Instance().TroopDto(new TroopDto
             {
                 EnList = cards.GroupBy(c => c.Type, c => c.CardId).ToDictionary(c => c.Key, c => c.ToArray()),

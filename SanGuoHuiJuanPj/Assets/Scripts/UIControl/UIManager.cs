@@ -1660,17 +1660,17 @@ public class UIManager : MonoBehaviour
     {
         if (isShow)
         {
-            if (PlayerDataForGame.instance.guideObjsShowed[index] == 0)
+            if (PlayerDataForGame.instance.GuideObjsShowed[index] == 0)
             {
                 guideObjs[index].SetActive(true);
             }
         }
         else
         {
-            if (PlayerDataForGame.instance.guideObjsShowed[index] == 0)
+            if (PlayerDataForGame.instance.GuideObjsShowed[index] == 0)
             {
                 guideObjs[index].SetActive(false);
-                PlayerDataForGame.instance.guideObjsShowed[index] = 1;
+                PlayerDataForGame.instance.GuideObjsShowed[index] = 1;
                 switch (index)
                 {
                     case 0:
