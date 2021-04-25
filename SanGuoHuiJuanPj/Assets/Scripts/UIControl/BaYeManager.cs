@@ -66,8 +66,6 @@ public class BaYeManager : MonoBehaviour
             PlayerDataForGame.instance.isNeedSaveData = true;
             LoadSaveData.instance.SaveGameData(3);
         }
-        BugHotFix.OnFixZhanLingV1_99(baYe, zhanLingMap);
-
         InitBaYeMap();
     }
 

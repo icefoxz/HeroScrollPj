@@ -15,7 +15,10 @@ MonoBehaviour:
   ServerUrl: https://heroscrollpjtestserver0.azurewebsites.net/api/
   PLAYER_SAVE_DATA_UPLOAD_API: UploadSaveData
   INSTANCE_ID_API: GenerateUserId
+  REQUEST_USERNAME_API: RequestUsername
   PLAYER_REG_ACCOUNT_API: RegUser
   PLAYER_UPLOAD_COUNT_API: UploadCount
   USER_LOGIN_API: Login
   SIGNALR_LOGIN_API: SignalRLogin
+  DEVICE_LOGIN_API: DeviceSignIn
+  RESET_GAMEPLAY_API: ResetGamePlay

@@ -164,7 +164,7 @@ public class SignalRClient : MonoBehaviour
             isTakeReward = w.IsFirstRewardTaken,
             unLockCount = w.UnlockProgress
         }).ToList();
-        PlayerDataForGame.instance.UpdateGameCards(troops, gameCardList);
+        PlayerDataForGame.instance.UpdateGameCards(gameCardList, troops);
         PlayerDataForGame.instance.gbocData.redemptionCodeGotList = redeemedList.Join(DataTable.RCode.Values, c => c,
             r => r.Code, (_, r) => new RedemptionCodeGot {id = r.Id, isGot = true}).ToList();
         PlayerDataForGame.instance.gbocData.fightBoxs = warChestList.ToList();

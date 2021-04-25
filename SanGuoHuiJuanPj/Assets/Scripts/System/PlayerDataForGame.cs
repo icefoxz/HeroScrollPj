@@ -463,15 +463,19 @@ public class PlayerDataForGame : MonoBehaviour
         LoadSaveData.instance.SaveGameData(1);
     }
 
-    public void UpdateGameCards(TroopDto[] troops, GameCardDto[] gameCardList)
+    public void UpdateGameCards(GameCardDto[] gameCardList, TroopDto[] troops = null)
     {
         var cards = gameCardList.Select(NowLevelAndHadChip.Instance)
             .Where(c => c.IsOwning())
             .GroupBy(c => (GameCardType) c.typeIndex, c => c)
             .ToDictionary(c => c.Key, c => c.ToList());
-        troops.SelectMany(t => t.EnList)
-            .Join(cards, t => t.Key, c => c.Key, (t, c) => c)
-            .ToList().ForEach(t => t.Value.ForEach(c => c.isFight = 1));
+        if (troops != null)
+        {
+            var enlisted = troops.SelectMany(t => t.EnList).ToList();
+            foreach (var chip in enlisted.SelectMany(set =>
+                cards[set.Key].Join(set.Value, c => c.CardId, i => i, (c, _) => c)))
+                chip.isFight = 1;
+        }
         if (!cards.TryGetValue(GameCardType.Hero, out hstData.heroSaveData))
             hstData.heroSaveData = new List<NowLevelAndHadChip>();
         if (!cards.TryGetValue(GameCardType.Tower, out hstData.towerSaveData))

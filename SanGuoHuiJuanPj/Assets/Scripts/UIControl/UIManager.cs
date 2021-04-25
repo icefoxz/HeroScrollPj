@@ -163,9 +163,7 @@ public class UIManager : MonoBehaviour
         Invoke(nameof(GetBackTiLiForFight), 2f);
 
         ItemsRedemptionFunc();
-        //版本修正 
-        BugHotFix.OnFixYvQueV1_90();
-        BugHotFix.OnFixLianYuV2_02();
+
         TimeSystemControl.instance.InitStaminaCount(PlayerDataForGame.instance.pyData.Stamina <
                                                     TimeSystemControl.instance.MaxStamina);
 
@@ -1903,6 +1901,9 @@ public class UIManager : MonoBehaviour
             {
                 var rC = vb.GetRCode();
                 var py = vb.GetPlayerDataDto();
+                var cards = vb.GetPlayerGameCardDtos();
+                PlayerDataForGame.instance.UpdateGameCards(cards);
+                ConsumeManager.instance.SaveChangeUpdatePlayerData(py, 7);
                 OnSuccessRedeemed(rC, playerRecord, py);
             }, PlayerDataForGame.instance.ShowStringTips,
             EventStrings.Req_RCode, ViewBag.Instance().SetValue(rCode.Code));
