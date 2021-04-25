@@ -1399,7 +1399,7 @@ public class UIManager : MonoBehaviour
                 StartCoroutine(PlayCardUpgradeEffect());
                 AudioController0.instance.ChangeAudioClip(16);
                 AudioController0.instance.PlayAudioSource(0);
-                UpdateLevelCard();
+                UpdateLevelCardUi();
                 ShowOrHideGuideObj(2, false);
             }, PlayerDataForGame.instance.ShowStringTips,
             EventStrings.Req_CardMerge,
@@ -1462,7 +1462,7 @@ public class UIManager : MonoBehaviour
     }
 
     //升级卡牌后更新显示 
-    private void UpdateLevelCard()
+    private void UpdateLevelCardUi()
     {
         //Debug.Log("selectCardData.Level: " + selectCardData.Level); 
         Transform listCard = lastSelectImg.transform.parent;
