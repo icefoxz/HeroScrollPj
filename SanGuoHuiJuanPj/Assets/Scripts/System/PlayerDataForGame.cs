@@ -15,18 +15,13 @@ public class PlayerDataForGame : MonoBehaviour
     public static PlayerDataForGame instance;
 
     public int staminaMax = 500;
+    public int secsPerStamina = 600;
+    private int staminaIncreaseLimit = 90;
     //修复v1.89无限刷霸业宝箱3的Bug 
     //玉阙检查值 
     public int Bug1_9YvQueCheck = 5000;
     //玉阙修正数量 
     public int Bug1_9YvQueSet = 4999;
-    public enum GameScene
-    {
-        StartScene,
-        MainScene,
-        WarScene
-    }
-    public GameScene CurrentScene { get; private set; }
     [Serializable]
     public enum WarTypes
     {
@@ -122,10 +117,10 @@ public class PlayerDataForGame : MonoBehaviour
     //计算出战总数量 
     public int TotalCardsEnlisted => fightHeroId.Count + fightTowerId.Count + fightTrapId.Count;
 
+    public LocalStamina Stamina { get; private set; }
+
     public WarReward WarReward { get; set; }
-    public GameResources GameResources { get; set; }
     public BaYeManager BaYeManager { get; set; }
-    private List<UnityAction> SceneLoadActions { get; } = new List<UnityAction>();
 
     private void Awake()
     {
@@ -151,24 +146,7 @@ public class PlayerDataForGame : MonoBehaviour
         garbageStationObjs = new List<GameObject>();
         StartCoroutine(FadeTransitionEffect(0));
 
-        SceneManager.sceneLoaded += SceneManagerOnSceneLoaded;
     }
-
-    private void Start()
-    {
-        GameResources = new GameResources();
-        GameResources.Init();
-    }
-
-    private void SceneManagerOnSceneLoaded(Scene scene, LoadSceneMode mode)
-    {
-        CurrentScene = (GameScene) scene.buildIndex;
-        if(SceneLoadActions.Count == 0)return;
-        SceneLoadActions.ForEach(a=>a?.Invoke());
-        SceneLoadActions.Clear();
-    }
-
-    public void RegNextSceneLoadAction(UnityAction action) => SceneLoadActions.Add(action);
 
     private void Update()
     {
@@ -361,6 +339,7 @@ public class PlayerDataForGame : MonoBehaviour
     public string mainSceneTips;
     private WarsDataClass _warsData = new WarsDataClass();
     private int[] guideObjsShowed = new int[7];
+    
 
     /// <summary> 
     /// 场景底部文本提示 
@@ -444,15 +423,9 @@ public class PlayerDataForGame : MonoBehaviour
         LoadSaveData.instance.SaveGameData(3);
     }
 
-    public void SetStamina(int stamina)
-    {
-        pyData.Stamina = stamina;
-        pyData.LastStaminaUpdateTicks = SystemTimer.instance.NowUnixTicks;
-        isNeedSaveData = true;
-        LoadSaveData.instance.SaveGameData(1);
-    }
     public void AddStamina(int stamina)
     {
+        Stamina.AddStamina(stamina);
         pyData.Stamina += stamina;
         if (pyData.Stamina < 0)
         {
@@ -510,5 +483,17 @@ public class PlayerDataForGame : MonoBehaviour
         fightHeroId = hstData.heroSaveData.Enlist(forceId).Select(h=>h.id).ToList();
         fightTowerId = hstData.towerSaveData.Enlist(forceId).Select(t => t.id).ToList();
         fightTrapId = hstData.trapSaveData.Enlist(forceId).Select(t => t.id).ToList();
+    }
+
+    public void GenerateLocalStamina()
+    {
+        Stamina = new LocalStamina(pyData.LastStaminaUpdateTicks, pyData.Stamina, secsPerStamina, staminaIncreaseLimit,
+            staminaMax);
+    }
+
+    public void RetrieveStamina()
+    {
+        AddStamina(getBackTiLiNums);
+        getBackTiLiNums = 0;
     }
 }

@@ -158,6 +158,7 @@ public class SignalRClient : MonoBehaviour
         var gameCardList = bag.GetPlayerGameCardDtos();
         var troops = bag.GetPlayerTroopDtos();
         PlayerDataForGame.instance.pyData = PlayerData.Instance(playerData);
+        PlayerDataForGame.instance.GenerateLocalStamina();
         PlayerDataForGame.instance.warsData.warUnlockSaveData = warCampaignList.Select(w => new UnlockWarCount
         {
             warId = w.WarId,

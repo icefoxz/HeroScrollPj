@@ -128,7 +128,7 @@ public class UIManager : MonoBehaviour
     private List<BaYeCityField> cityFields; //霸业的地图物件 
     private List<BaYeForceField> forceFields; //可选势力物件 
     [HideInInspector] public RewardManager rewardManager;
-    private GameResources GameResources => PlayerDataForGame.instance.GameResources;
+    private GameResources GameResources => GameSystem.GameResources;
     public bool IsInit { get; private set; }
 
     [SerializeField]
@@ -158,8 +158,6 @@ public class UIManager : MonoBehaviour
     void Start()
     {
         AudioController1.instance.ChangeBackMusic();
-        TimeSystemControl.instance.isOpenMainScene = true;
-
         Invoke(nameof(GetBackTiLiForFight), 2f);
 
         ItemsRedemptionFunc();
@@ -188,13 +186,6 @@ public class UIManager : MonoBehaviour
         OnStartMainScene();
         PlayerDataForGame.instance.selectedWarId = -1;
         IsInit = true;
-    }
-
-    //时间管理 
-
-    private void OnDisable()
-    {
-        TimeSystemControl.instance.isOpenMainScene = false;
     }
 
     [SerializeField]
@@ -554,7 +545,7 @@ public class UIManager : MonoBehaviour
             cutTiLiTextObj.GetComponent<Text>().color = ColorDataStatic.deep_green;
             cutTiLiTextObj.GetComponent<Text>().text = "+" + PlayerDataForGame.instance.getBackTiLiNums;
             cutTiLiTextObj.SetActive(true);
-            AddStamina(PlayerDataForGame.instance.getBackTiLiNums);
+            PlayerDataForGame.instance.RetrieveStamina();
             PlayerDataForGame.instance.ShowStringTips(string.Format(DataTable.GetStringText(25), PlayerDataForGame.instance.getBackTiLiNums));
         }
         PlayerDataForGame.instance.lastSenceIndex = 1;
@@ -663,7 +654,6 @@ public class UIManager : MonoBehaviour
                 IsJumping = true;
                 AudioController0.instance.ChangeAudioClip(12);
                 AudioController0.instance.PlayAudioSource(0);
-                TimeSystemControl.instance.LetTiLiTimerTake(staminaCost);
                 PlayerDataForGame.instance.AddStamina(-staminaCost);
                 showTiLiNums = PlayerDataForGame.instance.pyData.Stamina;
                 tiLiNumText.text = showTiLiNums + "/90";
@@ -1792,12 +1782,6 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    //添加体力 
-    public void AddStamina(int addNums)
-    {
-        TimeSystemControl.instance.AddStamina(addNums);
-    }
-
     //播放点击音效 
     public void PlayOnClickMusic()
     {
@@ -1974,20 +1958,6 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    //消耗玉阙获得体力 
-    private bool GetTiLiForChicken(int quQueNums, int tiLiNums)
-    {
-        if (ConsumeManager.instance.DeductYuQue(quQueNums))
-        {
-            AddStamina(tiLiNums);
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
-
     //商店购买体力 
     [Skip]
     private void ChickenShoppingGetTiLi(int chickenId)
@@ -2131,7 +2101,7 @@ public class UIManager : MonoBehaviour
         if (seconds < closeCkWinSeconds)
         {
             closeCkWinSeconds = seconds;
-            chickenCloseText.text = TimeSystemControl.instance.TimeDisplayText(closeCkWinSeconds);
+            chickenCloseText.text = TimeSystemControl.instance.TimeDisplayText(TimeSpan.FromSeconds(closeCkWinSeconds));
         }
     }
 
@@ -2278,6 +2248,8 @@ public class UIManager : MonoBehaviour
     {
         LoadSaveData.instance.SaveGameData();
     }
+
+    public void AccountInfo() => GameSystem.LoginUi.OnAction(LoginUiController.ActionWindows.Info);
 
     //退出游戏 
     public void ExitGame()

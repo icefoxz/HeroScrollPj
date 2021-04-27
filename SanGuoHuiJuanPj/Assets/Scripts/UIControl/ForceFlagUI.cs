@@ -21,7 +21,7 @@ public class ForceFlagUI : MonoBehaviour
 
     public void Set(ForceFlags flag, bool display = true, string nameInText = null)
     {
-        var resources = PlayerDataForGame.instance.GameResources;
+        var resources = GameSystem.GameResources;
         forceFlag.sprite = resources.ForceFlag[flag];
         nameText.gameObject.SetActive(nameInText != null);
         forceName.gameObject.SetActive(nameInText == null);

@@ -158,7 +158,7 @@ public class BaYeManager : MonoBehaviour
         PlayerDataForGame.instance.isNeedSaveData = true;
         LoadSaveData.instance.SaveGameData(3);
         UIManager.instance.storyEventUiController.ResetUi();
-        if(PlayerDataForGame.instance.CurrentScene == PlayerDataForGame.GameScene.MainScene)
+        if(GameSystem.CurrentScene == GameSystem.GameScene.MainScene)
         {
             SelectorUIMove(false, null);
         }
@@ -299,7 +299,7 @@ public class BaYeManager : MonoBehaviour
         var py = PlayerDataForGame.instance.pyData;
         if (storyEvent.YvQueReward > 0) py.YvQue += storyEvent.YvQueReward;
         if (storyEvent.YuanBaoReward > 0) py.YuanBao += storyEvent.YuanBaoReward;
-        if(PlayerDataForGame.instance.CurrentScene == PlayerDataForGame.GameScene.MainScene)
+        if(GameSystem.CurrentScene == GameSystem.GameScene.MainScene)
         {
             UIManager.instance.yuanBaoNumText.text = py.YvQue.ToString();
             UIManager.instance.yvQueNumText.text = py.YvQue.ToString();

@@ -641,8 +641,6 @@ public class LoadSaveData : MonoBehaviour
 
         PlayerPrefs.SetInt(IsPlayMusicStr, 1);
 
-        TimeSystemControl.instance.InitTimeRelatedData();
-
         GamePref.SetIsFirstPlay(true);
 
         isHadSaveData = true;

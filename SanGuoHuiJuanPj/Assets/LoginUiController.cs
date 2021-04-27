@@ -130,14 +130,18 @@ public class LoginUiController : MonoBehaviour
 
     private void ChangePasswordApi()
     {
-        ApiPanel.instance.Invoke(arg =>
+        var viewBag = ViewBag.Instance().SetValues(GamePref.Username, GamePref.Password,
+            SystemInfo.deviceUniqueIdentifier,
+            changePassword.password.text);
+        ApiPanel.instance.Invoke(vb =>
             {
-                var vb = Json.Deserialize<ViewBag>(arg);
-                if (vb != null) ResetWindows();
-                PlayerDataForGame.instance.ShowStringTips(arg);
-            }, EventStrings.Req_ChangePassword,
-            ViewBag.Instance()
-                .SetValues(GamePref.Username, SystemInfo.deviceUniqueIdentifier, changePassword.password));
+                GamePref.SetUsername(vb.GetValue<string>(0));
+                GamePref.SetPassword(changePassword.password.text);
+                Close();
+                PlayerDataForGame.instance.ShowStringTips("密码修改成功！");
+            }, PlayerDataForGame.instance.ShowStringTips,
+            EventStrings.Req_ChangePassword,
+            viewBag);
     }
 
     private void InitAccountInfo()
@@ -164,6 +168,8 @@ public class LoginUiController : MonoBehaviour
         UnityMainThread.thread.RunNextFrame(() =>
         {
             PlayerDataForGame.instance.ShowStringTips("注册成功!");
+            GamePref.SetUsername(register.username.text);
+            GamePref.SetPassword(register.password.text);
             OnAction(ActionWindows.Login);
         });
     }
@@ -227,7 +233,7 @@ public class LoginUiController : MonoBehaviour
         login.message.text = Server.ResponseMessage(code);
     }
 
-    public void ResetWindows()
+    private void ResetWindows()
     {
         foreach (var obj in windowObjs) obj.Value.ResetUi();
     }

@@ -171,18 +171,29 @@ using UnityEngine.UI;
         if (chestUi == copperChest)
         {
             chestId = 1;
-            if (!TimeSystemControl.instance.OnClickToGetFreeBox1())
-                if (ConsumeManager.instance.DeductYuQue(chestCostMap[chestUi])) //如果时间开启不了，尝试扣除玉阙开启
-                    consume = 1; //消费玉阙
-                else return;//如果无法消费，取消请求
+            if (!TimeSystemControl.instance.IsFreeFourDaysChestAvailable())
+            {
+                if (!ConsumeManager.instance.DeductYuQue(chestCostMap[chestUi]))
+                {
+                    PlayerDataForGame.instance.ShowStringTips(DataTable.GetStringText(0));
+                    return;
+                }
+                consume = 1; //消费玉阙
+            }
         }
 
         if (chestUi == goldChest)
         {
             chestId = 2;
             if (!TimeSystemControl.instance.IsFreeWeeklyChestAvailable())
-                if (ConsumeManager.instance.DeductYuQue(chestCostMap[chestUi])) consume = 1; //消费玉阙
-                else return; //如果无法消费，取消请求
+            {
+                if (!ConsumeManager.instance.DeductYuQue(chestCostMap[chestUi]))//消费玉阙
+                {
+                    PlayerDataForGame.instance.ShowStringTips(DataTable.GetStringText(0));
+                    return;
+                }
+                consume = 1;
+            }
             UIManager.instance.ShowOrHideGuideObj(0, false);
         }
 
