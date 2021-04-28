@@ -20,7 +20,8 @@ public class AdManager : AdControllerBase
         var mainCanvas = GameObject.FindGameObjectWithTag(MainCanvas);
         DoNewAdController = gameObject.AddComponent<DoNewAdController>();
         AdmobController = gameObject.AddComponent<AdmobController>();
-        AdAgent = Instantiate(adAgentPrefab, mainCanvas.transform);
+        var ad = Instantiate(adAgentPrefab, mainCanvas.transform);
+        AdAgent = ad;
         AdAgent.Init(this);
         SceneManager.sceneLoaded += SceneLoadRelocateCanvas;
     }

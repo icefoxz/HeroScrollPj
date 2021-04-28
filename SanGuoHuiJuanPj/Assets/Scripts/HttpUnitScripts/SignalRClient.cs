@@ -225,10 +225,18 @@ public class SignalRClient : MonoBehaviour
         _actions[method] -= action;
     }
 
+#if UNITY_EDITOR
+    public bool RejectServer;
+#endif
     private void OnServerCall(string method, string content)
     {
 #if UNITY_EDITOR
-        DebugLog($"{method}: {content}");
+        DebugLog($"服务器请求{method}: {content}");
+        if(RejectServer)
+        {
+            DebugLog($"已拒绝服务器调用：{method}: {content}");
+            return;
+        }
 #endif
         if(! _actions.TryGetValue(method,out var action))return;
         var args = Json.Deserialize<object[]>(content);
@@ -246,6 +254,8 @@ public class SignalRClient : MonoBehaviour
     {
         try
         {
+            if (bag == default)
+                bag = ViewBag.Instance();
             var result = await _connection.InvokeCoreAsync(method, _stringType,
                 bag == null ? new object[0] : new object[] {Json.Serialize(bag)},
                 cancellationToken);
