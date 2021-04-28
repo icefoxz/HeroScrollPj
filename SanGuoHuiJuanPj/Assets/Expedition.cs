@@ -242,30 +242,6 @@ public class Expedition : MonoBehaviour
     {
         var playerUnlockProgress = PlayerDataForGame.instance.warsData.warUnlockSaveData.Single(w => w.warId == warId);
         if (playerUnlockProgress.isTakeReward) PlayerDataForGame.instance.ShowStringTips("首通宝箱已领取！");
-        //var reward = DataTable.War[warId].AchievementReward;
-        //if (reward != null)
-        //{
-        //    if (reward.YuanBao > 0) ConsumeManager.instance.AddYuanBao(reward.YuanBao);
-        //    if (reward.YvQue > 0) ConsumeManager.instance.AddYuQue(reward.YvQue);
-        //    if (reward.Stamina > 0) UIManager.instance.AddStamina(reward.Stamina);
-        //}
-        //else reward = new ConsumeResources();
-
-        //var card = DataTable.War[warId].AchievementCardProduce;
-
-        //var cards = new List<RewardsCardClass>();
-
-        //if (card != null)
-        //{
-        //    UIManager.instance.rewardManager.RewardCard((GameCardType)card.Type, card.CardId, card.Chips);
-        //    var rewardCard = new RewardsCardClass
-        //    {
-        //        cardType = card.Type, cardId = card.CardId, cardChips = card.Chips
-        //    };
-        //    cards.Add(rewardCard);
-        //    PlayerDataForGame.instance.isNeedSaveData = true;
-        //    LoadSaveData.instance.SaveGameData(2);
-        //}
         ApiPanel.instance.Invoke(vb =>
             {
                 var re = vb.GetResourceDto();

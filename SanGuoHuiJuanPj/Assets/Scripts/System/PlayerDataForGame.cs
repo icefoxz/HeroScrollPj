@@ -352,44 +352,6 @@ public class PlayerDataForGame : MonoBehaviour
         textTipsObj.SetActive(true);
     }
 
-    public void SetRedeemCount(RedeemTypes type, int count)
-    {
-        switch (type)
-        {
-            case RedeemTypes.JinNang:
-                pyData.DailyJinNangRedemptionCount = count;
-                break;
-            case RedeemTypes.JiuTan:
-                pyData.DailyJiuTanRedemptionCount = count;
-                break;
-            default:
-                throw new ArgumentOutOfRangeException(nameof(type), type, null);
-        }
-
-        isNeedSaveData = true;
-        LoadSaveData.instance.SaveGameData(1);
-    }
-
-    public void Redemption(RedeemTypes type)
-    {
-        switch (type)
-        {
-            case RedeemTypes.JinNang:
-                pyData.DailyJinNangRedemptionCount++;
-                pyData.LastJinNangRedeemTime = SystemTimer.instance.NowUnixTicks;
-                break;
-            case RedeemTypes.JiuTan:
-                pyData.DailyJiuTanRedemptionCount++;
-                pyData.LastJiuTanRedeemTime = SystemTimer.instance.NowUnixTicks;
-                break;
-            default:
-                throw new ArgumentOutOfRangeException(nameof(type), type, null);
-        }
-
-        isNeedSaveData = true;
-        LoadSaveData.instance.SaveGameData(1);
-    }
-
     public bool ConsumeZhanLing(int amt = 1)
     {
         var force = WarForceMap[WarTypes.Baye];
@@ -436,7 +398,7 @@ public class PlayerDataForGame : MonoBehaviour
         LoadSaveData.instance.SaveGameData(1);
     }
 
-    public void UpdateGameCards(GameCardDto[] gameCardList, TroopDto[] troops = null)
+    public void UpdateGameCards(GameCardDto[] gameCardList, TroopDto[] troops)
     {
         var cards = gameCardList.Select(NowLevelAndHadChip.Instance)
             .Where(c => c.IsOwning())

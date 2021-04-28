@@ -65,7 +65,7 @@ using UnityEngine.UI;
 
     private void RequestJinNang()
     {
-        if (TimeSystemControl.instance.OnClickToGetJinNang())
+        if (TimeSystemControl.instance.IsJinNangAvailable())
         {
             ApiPanel.instance.Invoke(OnOpenJinNang, OnJinNangFailed, EventStrings.Req_JinNang);
             return;
@@ -87,7 +87,7 @@ using UnityEngine.UI;
             playerDto);
     }
 
-    public void UpdateJiuTan(bool isReady,string jiuTanCount, string countDown)
+    public void UpdateJiuTan(bool isReady,int jiuTanCount, string countDown)
     {
         jiuTan.chestButton.gameObject.SetActive(isReady);
         jiuTan.chestButton.enabled = isReady;
@@ -95,7 +95,7 @@ using UnityEngine.UI;
         freeJiuTanAdButton.enabled = isReady;
         jiuTan.displayText.gameObject.SetActive(!isReady);//倒数文本
         jiuTan.lasting.gameObject.SetActive(!isReady);//倒数文本
-        jiuTan.UpdateUi(jiuTanCount, countDown);
+        jiuTan.UpdateUi(jiuTanCount.ToString(), countDown);
     }
 
     private bool isWatchingJiuTanAd;
@@ -147,14 +147,12 @@ using UnityEngine.UI;
             chestId = 0;
             //如果玩家元宝小于预设的酒坛花费或开酒坛失败(时间还未到)
             if (PlayerDataForGame.instance.pyData.YuanBao < openJiuTanYBNums ||
-                !TimeSystemControl.instance.OnClickToGetJiuTan())
+                !TimeSystemControl.instance.IsJiuTanAvailable())
             {
                 PlayerDataForGame.instance.ShowStringTips(DataTable.GetStringText(0));
                 AudioController0.instance.PlayAudioSource(0);
                 return;
             }
-
-            PlayerDataForGame.instance.Redemption(PlayerDataForGame.RedeemTypes.JiuTan); //标记已消费酒坛
 
             if (!isConsumeAd)
             {
@@ -175,7 +173,7 @@ using UnityEngine.UI;
             {
                 if (!ConsumeManager.instance.DeductYuQue(chestCostMap[chestUi]))
                 {
-                    PlayerDataForGame.instance.ShowStringTips(DataTable.GetStringText(0));
+                    PlayerDataForGame.instance.ShowStringTips(DataTable.GetStringText(2));
                     return;
                 }
                 consume = 1; //消费玉阙
@@ -189,7 +187,7 @@ using UnityEngine.UI;
             {
                 if (!ConsumeManager.instance.DeductYuQue(chestCostMap[chestUi]))//消费玉阙
                 {
-                    PlayerDataForGame.instance.ShowStringTips(DataTable.GetStringText(0));
+                    PlayerDataForGame.instance.ShowStringTips(DataTable.GetStringText(2));
                     return;
                 }
                 consume = 1;

@@ -365,6 +365,7 @@ public class SignalRClient : MonoBehaviour
     }
     private void StatusChanged(HubConnectionState status, string message)
     {
+        ApiPanel.SetBusy(status != HubConnectionState.Connected);
         Status = status; 
         OnStatusChanged?.Invoke(status);
         DebugLog(message);

@@ -160,8 +160,6 @@ public class UIManager : MonoBehaviour
         AudioController1.instance.ChangeBackMusic();
         Invoke(nameof(GetBackTiLiForFight), 2f);
 
-        ItemsRedemptionFunc();
-
         TimeSystemControl.instance.InitStaminaCount(PlayerDataForGame.instance.pyData.Stamina <
                                                     TimeSystemControl.instance.MaxStamina);
 
@@ -212,18 +210,6 @@ public class UIManager : MonoBehaviour
     public GameObject chooseBaYeEventImg;  //选择霸业地点的Img 
     [SerializeField]
     Text baYeGoldNumText;   //霸业金币数量 
-
-    /// <summary> 
-    /// 游戏物品获取次数计算函数 
-    /// </summary> 
-    public void ItemsRedemptionFunc()
-    {
-        if (!SystemTimer.IsToday(PlayerDataForGame.instance.pyData.LastJinNangRedeemTime))
-            PlayerDataForGame.instance.SetRedeemCount(PlayerDataForGame.RedeemTypes.JinNang, 0);
-        if (!SystemTimer.IsToday(PlayerDataForGame.instance.pyData.LastJiuTanRedeemTime))
-            PlayerDataForGame.instance.SetRedeemCount(PlayerDataForGame.RedeemTypes.JiuTan, 0);
-        //根据系统时间计算本地的天数是否是同一天 
-    }
 
     /// <summary> 
     /// Main场景(切换)初始化 
@@ -1483,6 +1469,8 @@ public class UIManager : MonoBehaviour
     /// <param name="waitTime">展示等待时间</param> 
     public void ShowRewardsThings(int yuanBao, int yvQue, int exp, int stamina, List<RewardsCardClass> rewardsCards, float waitTime)
     {
+        rewardsCards = rewardsCards.Select(c => new {GameCardInfo.GetInfo((GameCardType) c.cardType, c.cardId).Rare, c})
+            .OrderByDescending(c => c.c.cardType).ThenBy(c => c.Rare).Select(c => c.c).ToList();
         for (int i = 0; i < rewardsParent.childCount; i++)
         {
             if (rewardsParent.GetChild(i).gameObject.activeSelf)
@@ -1829,15 +1817,8 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    bool isJinNangReady = true;  //记录是否可以开启锦囊 
-
     //刷新锦囊入口的显示 
-    public void UpdateShowJinNangBtn(bool isReady)
-    {
-        if (isJinNangReady == isReady) return;
-        taoYuan.jinNangBtn.gameObject.SetActive(isReady);
-        isJinNangReady = isReady;
-    }
+    public void UpdateShowJinNangBtn(bool isReady) => taoYuan.jinNangBtn.gameObject.SetActive(isReady);
 
     [SerializeField]
     Button rtCloseBtn;  //兑换界面关闭按钮 
@@ -1886,7 +1867,8 @@ public class UIManager : MonoBehaviour
                 var rC = vb.GetRCode();
                 var py = vb.GetPlayerDataDto();
                 var cards = vb.GetPlayerGameCardDtos();
-                PlayerDataForGame.instance.UpdateGameCards(cards);
+                var troops = vb.GetPlayerTroopDtos();
+                PlayerDataForGame.instance.UpdateGameCards(cards, troops);
                 ConsumeManager.instance.SaveChangeUpdatePlayerData(py, 7);
                 OnSuccessRedeemed(rC, playerRecord, py);
             }, PlayerDataForGame.instance.ShowStringTips,

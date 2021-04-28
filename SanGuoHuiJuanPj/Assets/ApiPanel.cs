@@ -57,7 +57,7 @@ public class ApiPanel : MonoBehaviour
         SetBusy(false);
     }
 
-    private void SetBusy(bool busy)
+    public void SetBusy(bool busy)
     {
         UnityMainThread.thread.RunNextFrame(() =>
         {

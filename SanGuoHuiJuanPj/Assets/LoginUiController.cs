@@ -124,7 +124,7 @@ public class LoginUiController : MonoBehaviour
 
     private void InitChangePassword()
     {
-        changePassword.backBtn.onClick.AddListener(ResetWindows);
+        changePassword.backBtn.onClick.AddListener(()=>OnAction(ActionWindows.Info));
         changePassword.confirmBtn.onClick.AddListener(ChangePasswordApi);
     }
 

@@ -70,7 +70,6 @@ public class JinNangUI: MonoBehaviour
                 //if (staminaValue > 0)
                 //    TimeSystemControl.instance.AddTiLiNums(staminaValue);
                 ConsumeManager.instance.SaveChangeUpdatePlayerData(playerDataDto);
-                PlayerDataForGame.instance.Redemption(PlayerDataForGame.RedeemTypes.JinNang);
                 PlayerDataForGame.instance.ShowStringTips(DataTable.GetStringText(43));
                 continueBtn.onClick.RemoveAllListeners();
                 gameObject.SetActive(false);

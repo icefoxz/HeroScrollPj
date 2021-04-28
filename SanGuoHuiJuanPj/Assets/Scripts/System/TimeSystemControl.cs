@@ -20,8 +20,8 @@ public class TimeSystemControl : MonoBehaviour
     public SystemTimer SystemTimer;//系统时间的脚本引用(编辑器里引用)
     public int JinNangTimeGapSecs = 3600;//锦囊间隔时间
     public int JiuTanTimeGapSecs = 3600;//酒坛间隔时间
-    public int JinNangRedeemCountPerDay = 10;//锦囊一天可获取次数
-    public int JiuTanRedeemCountPerDay = 10;//酒坛一天可获取次数
+    public int JiuTanRedeemCountPerDay = 10;
+    public int JinNangRedeemCountPerDay = 10;
     #endregion
 
     public event Action OnHourly;
@@ -31,9 +31,7 @@ public class TimeSystemControl : MonoBehaviour
     int maxStamina;  //记录最大体力值
     public int MaxStamina => maxStamina;
 
-    bool isJiuTanReady;   //记录是否能开启宝箱
     bool isCanGetBox1;
-    bool isJNTimeValid;    //记录是否锦囊开启时间合法
 
     public bool IsCountdown { get; private set; }
     
@@ -208,22 +206,15 @@ public class TimeSystemControl : MonoBehaviour
         if (playerData == null) return;
         var nextOpenJiuTanTimeTicks = playerData.LastJiuTanRedeemTime + (JiuTanTimeGapSecs * 1000);
         var redeemCount = playerData.DailyJiuTanRedemptionCount;
-        var countAvailable = redeemCount < JiuTanRedeemCountPerDay;
+        var limitNotReach = redeemCount < JiuTanRedeemCountPerDay;
 
-        //如果当前时间大于下次开启时间
-        isJiuTanReady = nextOpenJiuTanTimeTicks <= SystemTimer.NowUnixTicks;
         if (GameSystem.CurrentScene != GameSystem.GameScene.MainScene) return;
-        var jiuTanCount = $"{JiuTanRedeemCountPerDay - redeemCount}";
-        if (!isJiuTanReady)
-        {
-            var displayText = string.Empty;
-            if (countAvailable)
-                displayText = TimeDisplayText(TimeSpan.FromMilliseconds(nextOpenJiuTanTimeTicks - SystemTimer.NowUnixTicks));
-            UIManager.instance.taoYuan.UpdateJiuTan(isJiuTanReady, jiuTanCount, displayText);
-            return;
-        }
-
-        UIManager.instance.taoYuan.UpdateJiuTan(isJiuTanReady, jiuTanCount, string.Empty);
+        var jiuTanCount = JiuTanRedeemCountPerDay - redeemCount;
+        var displayText = string.Empty;
+        if (limitNotReach)
+            displayText =
+                TimeDisplayText(TimeSpan.FromMilliseconds(nextOpenJiuTanTimeTicks - SystemTimer.NowUnixTicks));
+        UIManager.instance.taoYuan.UpdateJiuTan(IsJiuTanAvailable(), jiuTanCount, displayText);
     }
 
     private void CountdownFreeFourDaysChest()
@@ -263,44 +254,9 @@ public class TimeSystemControl : MonoBehaviour
     {
         var playerData = PlayerDataForGame.instance.pyData;
         if (playerData == null) return;
-        var nextOpenJNTimeTicks = playerData.LastJinNangRedeemTime + (JinNangTimeGapSecs * 1000);
-
-        if (!SystemTimer.IsToday(playerData.LastJinNangRedeemTime) && playerData.DailyJinNangRedemptionCount > 0)//如果上次获取时间不是今天
-            PlayerDataForGame.instance.SetRedeemCount(PlayerDataForGame.RedeemTypes.JinNang, 0);//如果获取次数大于0，重置获取次数
-
-        //如果下次开启时间小于现在，(时间过期)
-        isJNTimeValid = nextOpenJNTimeTicks < SystemTimer.NowUnixTicks;
-
+        if (playerData.DailyJinNangRedemptionCount >= 10) return;
         if (GameSystem.CurrentScene != GameSystem.GameScene.MainScene) return;
-        UIManager.instance.UpdateShowJinNangBtn(isJNTimeValid);
-    }
-
-    /// <summary>
-    /// 开启免费宝箱
-    /// </summary>
-    /// <returns></returns>
-    public bool OnClickToGetJiuTan()
-    {
-        if (!isJiuTanReady)
-        {
-            PlayerDataForGame.instance.ShowStringTips("尚未灌满酒坛");
-            return false;
-        }
-
-        var player = PlayerDataForGame.instance.pyData;
-        var jTRedeemCount = player.DailyJiuTanRedemptionCount;
-
-        //如果酒坛获取已达限制次数，尝试执行是否时间过了0点重置次数
-        if (jTRedeemCount >= JiuTanRedeemCountPerDay)
-        {
-            UIManager.instance.ItemsRedemptionFunc();
-            jTRedeemCount = player.DailyJiuTanRedemptionCount;
-        }
-
-        if (jTRedeemCount >= JiuTanRedeemCountPerDay) return false;
-        //Debug.Log("打开免费宝箱");
-        isJiuTanReady = false;
-        return true;
+        UIManager.instance?.UpdateShowJinNangBtn(IsJinNangAvailable());
     }
 
     public bool IsFreeWeeklyChestAvailable() => PlayerDataForGame.instance.pyData.LastWeekChestRedeemTime + Free298TimeSpan.TotalMilliseconds <
@@ -308,29 +264,14 @@ public class TimeSystemControl : MonoBehaviour
     public bool IsFreeFourDaysChestAvailable() => PlayerDataForGame.instance.pyData.LastFourDaysChestRedeemTime + Free198TimeSpan.TotalMilliseconds <
                                                 SysTime.UnixNow;
 
-    //开启锦囊
-    public bool OnClickToGetJinNang()
-    {
-        if (!isJNTimeValid) return false;
-        var player = PlayerDataForGame.instance.pyData;
-        var jNRedeemCount = player.DailyJinNangRedemptionCount;
-        //如果锦囊获取已达限制次数，尝试执行是否时间过了0点重置次数
-        if (jNRedeemCount >= JinNangRedeemCountPerDay)
-        {
-            UIManager.instance.ItemsRedemptionFunc();
-            jNRedeemCount = player.DailyJinNangRedemptionCount;
-        }
+    public bool IsJinNangAvailable() =>
+        PlayerDataForGame.instance.pyData.LastJinNangRedeemTime + JinNangTimeGapSecs * 1000 < SysTime.UnixNow &&
+        (!SysTime.IsToday(PlayerDataForGame.instance.pyData.LastJinNangRedeemTime) ||
+         PlayerDataForGame.instance.pyData.DailyJinNangRedemptionCount < JinNangRedeemCountPerDay);
 
-        Debug.Log(
-            $"{nameof(TimeSystemControl)}:{nameof(OnClickToGetJinNang)} 锦囊获取次数[{player.DailyJinNangRedemptionCount + 1}/{JinNangRedeemCountPerDay}]");
-        if (jNRedeemCount >= JinNangRedeemCountPerDay) return false;
-        //Debug.Log("打开锦囊");
-        isJNTimeValid = false;
-        if (UIManager.instance.JinNangQuota != null)
-            UIManager.instance.JinNangQuota.text = $"今日次数：{player.DailyJinNangRedemptionCount + 1}/{JinNangRedeemCountPerDay}";
-        return true;
-
-        //Debug.Log("宝箱免费开启时间未到");
-    }
+    public bool IsJiuTanAvailable() =>
+        PlayerDataForGame.instance.pyData.LastJiuTanRedeemTime + JiuTanTimeGapSecs * 1000 < SysTime.UnixNow &&
+        (!SysTime.IsToday(PlayerDataForGame.instance.pyData.LastJiuTanRedeemTime) ||
+         PlayerDataForGame.instance.pyData.DailyJiuTanRedemptionCount < JiuTanRedeemCountPerDay);
 
 }
