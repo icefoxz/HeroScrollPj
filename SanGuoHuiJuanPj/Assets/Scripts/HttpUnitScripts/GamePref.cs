@@ -5,11 +5,13 @@ public static class GamePref
     public static string Username => PlayerPrefs.GetString(AccountIdString);
     public static string Password => PlayerPrefs.GetString(PasswordString);
     public static string IsFirstPlay => PlayerPrefs.GetString(IsFirstPlayString);
+    public static bool IsUserAccountCompleted => PlayerPrefs.GetInt(IsUsersAccountComplete) == 0;
 
     private const string AccountIdString = "accountName";
     private const string PasswordString = "Password";
     public const string PhoneNumber = "Phone";
     public const string IsFirstPlayString = "IsFirstPlay";
+    public const string IsUsersAccountComplete = "IsUsersAccountComplete";
 
     public static void SetUsername(string username) => PlayerPrefs.SetString(AccountIdString,username);
 
@@ -39,4 +41,6 @@ public static class GamePref
             PlayerDataForGame.instance.GuideObjsShowed[6] = PlayerPrefs.GetInt(StringForGuide.guideShengJIZG);
         }
     }
+
+    public static void FlagDeviceReg(bool isFlag) => PlayerPrefs.SetInt(IsUsersAccountComplete, isFlag ? 1 : 0);
 }

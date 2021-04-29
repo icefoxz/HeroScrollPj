@@ -96,10 +96,12 @@ public class StartSceneToServerCS : MonoBehaviour
 
     }
 
-    private void OnLoggedIn(string username,int arrangement,int newReg)
+    private void OnLoggedIn(string username, string password, int arrangement, int newReg)
     {
         if (newReg > 0)
         {
+            var isDirectRegistered = string.IsNullOrEmpty(password);
+            GamePref.FlagDeviceReg(isDirectRegistered);
             GamePref.SetIsFirstPlay(true);
             PlayerDataForGame.instance.pyData = new PlayerData();
             PlayerDataForGame.instance.hstData = new HSTDataClass();
@@ -112,6 +114,7 @@ public class StartSceneToServerCS : MonoBehaviour
             GamePref.SetPassword(pwd);
             PlayerDataForGame.instance.acData.Password = pwd;
         }
+
         var usr = username;
         GamePref.SetUsername(usr);
         PlayerDataForGame.instance.acData.Username = usr;

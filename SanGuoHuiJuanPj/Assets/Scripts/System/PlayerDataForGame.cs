@@ -117,7 +117,16 @@ public class PlayerDataForGame : MonoBehaviour
     //计算出战总数量 
     public int TotalCardsEnlisted => fightHeroId.Count + fightTowerId.Count + fightTrapId.Count;
 
-    public LocalStamina Stamina { get; private set; }
+    public LocalStamina Stamina
+    {
+        get
+        {
+            if (stamina == null) GenerateLocalStamina();
+            return stamina;
+        }
+    }
+
+    private LocalStamina stamina;
 
     public WarReward WarReward { get; set; }
     public BaYeManager BaYeManager { get; set; }
@@ -341,6 +350,7 @@ public class PlayerDataForGame : MonoBehaviour
     private int[] guideObjsShowed = new int[7];
     
 
+
     /// <summary> 
     /// 场景底部文本提示 
     /// </summary> 
@@ -422,7 +432,11 @@ public class PlayerDataForGame : MonoBehaviour
     public void SendTroopToWarApi()
     {
         //todo: 暂时霸业不请求Api
-        if(WarType != WarTypes.Expedition)return;
+        if(WarType != WarTypes.Expedition)
+        {
+            WarReward = new WarReward(string.Empty, selectedWarId);
+            return;
+        }
         var cards = hstData.heroSaveData.Concat(hstData.towerSaveData).Concat(hstData.trapSaveData)
             .Enlist(CurrentWarForceId).Select(c => c.ToDto()).ToList();
         ApiPanel.instance.Invoke(vb =>
@@ -449,7 +463,7 @@ public class PlayerDataForGame : MonoBehaviour
 
     public void GenerateLocalStamina()
     {
-        Stamina = new LocalStamina(pyData.LastStaminaUpdateTicks, pyData.Stamina, secsPerStamina, staminaIncreaseLimit,
+        stamina = new LocalStamina(pyData.LastStaminaUpdateTicks, pyData.Stamina, secsPerStamina, staminaIncreaseLimit,
             staminaMax);
     }
 

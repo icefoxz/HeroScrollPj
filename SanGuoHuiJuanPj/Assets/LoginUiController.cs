@@ -26,15 +26,15 @@ public class LoginUiController : MonoBehaviour
     public ChangePwdUi changePassword;
     public RetrievePasswordUi forgetPassword;
     public ResetAccountUi resetAccount;
-    public UnityAction<string,int,int> OnLoggedInAction;
+    public UnityAction<string,string,int,int> OnLoggedInAction;
     public UnityAction OnResetAccountAction;
     public Image busyPanel;
 
 #if UNITY_EDITOR
     void Start()
     {
-        OnLoggedInAction += (username, arrangement, newReg) =>
-            XDebug.Log<LoginUiController>($"{nameof(OnLoggedInAction)} Invoke({username},{arrangement},{newReg})!");
+        OnLoggedInAction += (username, password,arrangement, newReg) =>
+            XDebug.Log<LoginUiController>($"{nameof(OnLoggedInAction)} Invoke({username},{password},{arrangement},{newReg})!");
         OnResetAccountAction += () => XDebug.Log<LoginUiController>($"{nameof(OnResetAccountAction)} Invoke()!");
     }
 #endif
@@ -130,6 +130,8 @@ public class LoginUiController : MonoBehaviour
 
     private void ChangePasswordApi()
     {
+        if (!IsPassPasswordLogic(changePassword.password, changePassword.rePassword, changePassword.message))
+            return;
         var viewBag = ViewBag.Instance().SetValues(GamePref.Username, GamePref.Password,
             SystemInfo.deviceUniqueIdentifier,
             changePassword.password.text);
@@ -146,7 +148,8 @@ public class LoginUiController : MonoBehaviour
 
     private void InitAccountInfo()
     {
-        accountInfo.backBtn.onClick.AddListener(ResetWindows);
+        accountInfo.message.gameObject.SetActive(!GamePref.IsUserAccountCompleted);
+        accountInfo.backBtn.onClick.AddListener(Close);
         accountInfo.changePasswordBtn.onClick.AddListener(()=>OnAction(ActionWindows.ChangePassword));
     }
 
@@ -156,8 +159,27 @@ public class LoginUiController : MonoBehaviour
         register.regBtn.onClick.AddListener(()=>AsyncInvoke(RegisterAccountApi));
     }
 
+    private static bool IsPassPasswordLogic(InputField password, InputField rePassword, Text message)
+    {
+        if (password.text.Length < 6)
+        {
+            message.text = "密码最少6个字符。";
+            return false;
+        }
+
+        if (password.text != rePassword.text)
+        {
+            message.text = "密码不匹配！";
+            return false;
+        }
+
+        return true;
+    }
+
     private async Task RegisterAccountApi()
     {
+        if(!IsPassPasswordLogic(register.password,register.rePassword,register.message))
+            return;
         var userInfo = await Http.PostAsync<UserInfo>(Server.PLAYER_REG_ACCOUNT_API,
             Json.Serialize(Server.GetUserInfo(register.username.text, register.password.text)));
         if(userInfo==null)
@@ -211,23 +233,24 @@ public class LoginUiController : MonoBehaviour
     {
         busyPanel.gameObject.SetActive(true);
         login.message.text = string.Empty;
-        SignalRClient.instance.UserLogin(LoginAction, login.username.text, login.password.text);
+        SignalRClient.instance.UserLogin((success, code, info) => LoginAction(success, code, info, login.password.text),
+            login.username.text, login.password.text);
     }
 
     private void DeviceLoginApi()
     {
         busyPanel.gameObject.SetActive(true);
         login.message.text = string.Empty;
-        SignalRClient.instance.DirectLogin(LoginAction);
+        SignalRClient.instance.DirectLogin((success, code, info) => LoginAction(success, code, info, string.Empty));
     }
 
-    private void LoginAction(bool success, int code, SignalRClient.SignalRConnectionInfo info)
+    private void LoginAction(bool success, int code, SignalRClient.SignalRConnectionInfo info,string password)
     {
         busyPanel.gameObject.SetActive(false);
         if (success)
         {
             UnityMainThread.thread.RunNextFrame(() =>
-                OnLoggedInAction.Invoke(info.Username, info.Arrangement, info.IsNewRegistered));
+                OnLoggedInAction.Invoke(info.Username, password, info.Arrangement, info.IsNewRegistered));
             return;
         }
         login.message.text = Server.ResponseMessage(code);
