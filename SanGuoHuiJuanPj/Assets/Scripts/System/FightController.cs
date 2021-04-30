@@ -4888,11 +4888,12 @@ public class FightController : MonoBehaviour
 
         if (getBoxsList.Count > 0)
         {
+            var warReward = PlayerDataForGame.instance.WarReward;
             for (int i = 0; i < getBoxsList.Count; i++)
             {
                 //PlayerDataForGame.instance.gbocData.fightBoxs.Add(getBoxsList[i]);
-                PlayerDataForGame.instance.WarReward.Chests.Add(getBoxsList[i]);
-                PlayerDataForGame.instance.getBackTiLiNums = PlayerDataForGame.instance.getBackTiLiNums - PlayerDataForGame.instance.boxForTiLiNums;
+                warReward.Chests.Add(getBoxsList[i]);
+                warReward.Stamina -= PlayerDataForGame.instance.boxForTiLiNums;
             }
 
             //PlayerDataForGame.instance.isNeedSaveData = true;

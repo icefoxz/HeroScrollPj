@@ -109,8 +109,6 @@ public class PlayerDataForGame : MonoBehaviour
     [HideInInspector]
     public int lastSenceIndex;  //上一个场景索引记录 
     [HideInInspector]
-    public int getBackTiLiNums;  //返还最大体力记录 
-    [HideInInspector]
     public int boxForTiLiNums;  //返还体力单个宝箱扣除体力数 
 
     private bool isRequestingSaveFile; //存档请求中
@@ -130,6 +128,7 @@ public class PlayerDataForGame : MonoBehaviour
 
     public WarReward WarReward { get; set; }
     public BaYeManager BaYeManager { get; set; }
+    public int StaminaReturnTemp { get; set; }
 
     private void Awake()
     {
@@ -148,7 +147,6 @@ public class PlayerDataForGame : MonoBehaviour
         asyncOp = null;
 
         lastSenceIndex = 0;
-        getBackTiLiNums = 0;
         isNeedSaveData = false;
         isHadNewSaveData = false;
 
@@ -434,18 +432,20 @@ public class PlayerDataForGame : MonoBehaviour
         //todo: 暂时霸业不请求Api
         if(WarType != WarTypes.Expedition)
         {
-            WarReward = new WarReward(string.Empty, selectedWarId);
+            WarReward = new WarReward(string.Empty, selectedWarId, 0);
             return;
         }
         var cards = hstData.heroSaveData.Concat(hstData.towerSaveData).Concat(hstData.trapSaveData)
             .Enlist(CurrentWarForceId).Select(c => c.ToDto()).ToList();
         ApiPanel.instance.Invoke(vb =>
             {
-                WarReward = new WarReward(vb.Values[0].ToString(), selectedWarId);
+                WarReward = new WarReward(vb.Values[0].ToString(), selectedWarId, StaminaReturnTemp);
+                StaminaReturnTemp = 0;
             }, msg =>
             {
                 ShowStringTips(msg);
-                WarReward = new WarReward(string.Empty, selectedWarId);
+                WarReward = new WarReward(string.Empty, selectedWarId,StaminaReturnTemp);
+                StaminaReturnTemp = 0;
             }, EventStrings.Req_TroopToCampaign,
             ViewBag.Instance().TroopDto(new TroopDto
             {
@@ -467,9 +467,5 @@ public class PlayerDataForGame : MonoBehaviour
             staminaMax);
     }
 
-    public void RetrieveStamina()
-    {
-        AddStamina(getBackTiLiNums);
-        getBackTiLiNums = 0;
-    }
+    public void RetrieveStaminaFromWarReward() => Stamina.AddStamina(WarReward.Stamina);
 }

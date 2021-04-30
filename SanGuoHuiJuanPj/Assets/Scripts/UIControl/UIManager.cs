@@ -525,17 +525,16 @@ public class UIManager : MonoBehaviour
     //获取战役返还的体力 
     private void GetBackTiLiForFight()
     {
-        if (PlayerDataForGame.instance.lastSenceIndex == 2 && PlayerDataForGame.instance.getBackTiLiNums > 0)
+        if (PlayerDataForGame.instance.lastSenceIndex == 2 && PlayerDataForGame.instance.WarReward.Stamina > 0)
         {
             cutTiLiTextObj.SetActive(false);
             cutTiLiTextObj.GetComponent<Text>().color = ColorDataStatic.deep_green;
-            cutTiLiTextObj.GetComponent<Text>().text = "+" + PlayerDataForGame.instance.getBackTiLiNums;
+            cutTiLiTextObj.GetComponent<Text>().text = "+" + PlayerDataForGame.instance.WarReward.Stamina;
             cutTiLiTextObj.SetActive(true);
-            PlayerDataForGame.instance.RetrieveStamina();
-            PlayerDataForGame.instance.ShowStringTips(string.Format(DataTable.GetStringText(25), PlayerDataForGame.instance.getBackTiLiNums));
+            PlayerDataForGame.instance.RetrieveStaminaFromWarReward();
+            PlayerDataForGame.instance.ShowStringTips(string.Format(DataTable.GetStringText(25), PlayerDataForGame.instance.WarReward.Stamina));
         }
         PlayerDataForGame.instance.lastSenceIndex = 1;
-        PlayerDataForGame.instance.getBackTiLiNums = 0;
     }
 
     public void GetBaYeProgressReward(int index)
@@ -648,7 +647,7 @@ public class UIManager : MonoBehaviour
                 cutTiLiTextObj.GetComponent<Text>().text = "-" + staminaCost;
                 cutTiLiTextObj.SetActive(true);
 
-                PlayerDataForGame.instance.getBackTiLiNums = staminaMap.MaxReturn;
+                PlayerDataForGame.instance.StaminaReturnTemp = staminaMap.MaxReturn;
                 PlayerDataForGame.instance.boxForTiLiNums = staminaMap.CostOfChest;
                 StartCoroutine(LateGoToFightScene());
             }

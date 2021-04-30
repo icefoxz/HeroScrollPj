@@ -13,10 +13,11 @@ public class WarReward
     public List<int> Chests { get; }
     public Dictionary<int,int> Ling { get; }
 
-    public WarReward(string token,int warId)
+    public WarReward(string token,int warId,int staminaTurn)
     {
         Token = token;
         WarId = warId;
+        Stamina = staminaTurn;
         Ling = new Dictionary<int, int>();
         Chests = new List<int>();
     }

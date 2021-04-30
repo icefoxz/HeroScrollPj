@@ -5879,14 +5879,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b1931b865eae02459bcf8175d2b4cdd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MessageHideInSecs: 5
-  UsernameField: {fileID: 329717602094662479}
-  PasswordField: {fileID: 329717602689679786}
-  ConfirmPwdField: {fileID: 329717602079916824}
-  ConfirmPwdLabel: {fileID: 329717603844383095}
-  SighUpBtn: {fileID: 329717603999806865}
-  LoginBtn: {fileID: 329717603448608554}
-  Message: {fileID: 329717603768523728}
 --- !u!114 &608547760
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9082,7 +9074,6 @@ GameObject:
   - component: {fileID: 848652621}
   - component: {fileID: 848652618}
   - component: {fileID: 848652620}
-  - component: {fileID: 848652619}
   m_Layer: 0
   m_Name: PlayerSaveData
   m_TagString: Untagged
@@ -9121,25 +9112,11 @@ MonoBehaviour:
   infoText: {fileID: 839418995}
   loadingImg: {fileID: 1971391717}
   lastSenceIndex: 0
-  getBackTiLiNums: 0
   boxForTiLiNums: 0
   textTipsObj: {fileID: 1422103114}
   selectedBaYeEventId: 0
   selectedCity: 0
   mainSceneTips: 
---- !u!114 &848652619
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 848652617}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2704049f9a11c1d4290edf44af92ad1b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  gameConfig: {fileID: 4900000, guid: 98923966283933e40a5fcb2a560a290d, type: 3}
 --- !u!114 &848652620
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -28416,8 +28393,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 355129016945272257}
   m_TextComponent: {fileID: 355129017125208292}
   m_Placeholder: {fileID: 355129018612397092}
-  m_ContentType: 0
-  m_InputType: 0
+  m_ContentType: 7
+  m_InputType: 2
   m_AsteriskChar: 42
   m_KeyboardType: 0
   m_LineType: 0
@@ -28433,7 +28410,7 @@ MonoBehaviour:
   m_CaretColor: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
   m_CustomCaretColor: 0
   m_SelectionColor: {r: 0.65882355, g: 0.80784315, b: 1, a: 0.7529412}
-  m_Text: 
+  m_Text: 123456
   m_CaretBlinkRate: 0.85
   m_CaretWidth: 1
   m_ReadOnly: 0
@@ -29260,7 +29237,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 
+  m_Text: '******'
 --- !u!224 &355129017125208293
 RectTransform:
   m_ObjectHideFlags: 0
@@ -36036,7 +36013,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 355129018612397094}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
   m_Name: 
@@ -39655,6 +39632,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8666491992791925660}
   - component: {fileID: 8666491992791925661}
+  - component: {fileID: 8666491992791925659}
   m_Layer: 0
   m_Name: System
   m_TagString: Untagged
@@ -39662,6 +39640,19 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &8666491992791925659
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8666491992791925658}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2704049f9a11c1d4290edf44af92ad1b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gameConfig: {fileID: 4900000, guid: 98923966283933e40a5fcb2a560a290d, type: 3}
 --- !u!4 &8666491992791925660
 Transform:
   m_ObjectHideFlags: 0
@@ -39700,7 +39691,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   loginUiController: {fileID: 1647348607714142001}
   timeSystemControl: {fileID: 107439208}
-  playerDataForGame: {fileID: 0}
+  playerDataForGame: {fileID: 848652618}
   systemCanvas: {fileID: 8666491991650979784}
 --- !u!224 &8666491992892725116
 RectTransform:

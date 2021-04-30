@@ -149,6 +149,8 @@ public class LoginUiController : MonoBehaviour
     private void InitAccountInfo()
     {
         accountInfo.message.gameObject.SetActive(!GamePref.IsUserAccountCompleted);
+        accountInfo.password.text = GamePref.IsUserAccountCompleted ? "123456" : string.Empty;
+
         accountInfo.backBtn.onClick.AddListener(Close);
         accountInfo.changePasswordBtn.onClick.AddListener(()=>OnAction(ActionWindows.ChangePassword));
     }

@@ -294,7 +294,7 @@ public class WarsUIManager : MonoBehaviour
         if (isWin)
         {
             //通关不返还体力
-            PlayerDataForGame.instance.getBackTiLiNums = 0;
+            PlayerDataForGame.instance.WarReward.Stamina = 0;
         }
         //如果是霸业
         if(PlayerDataForGame.instance.WarType == PlayerDataForGame.WarTypes.Baye)
@@ -339,7 +339,7 @@ public class WarsUIManager : MonoBehaviour
         } else if (PlayerDataForGame.instance.WarType == PlayerDataForGame.WarTypes.Expedition)
         {
             PlayerDataForGame.instance.UpdateWarUnlockProgress(passedGuanQiaNums);
-            reward.Stamina = PlayerDataForGame.instance.getBackTiLiNums;
+            reward.Stamina = PlayerDataForGame.instance.WarReward.Stamina;
             var ca = PlayerDataForGame.instance.warsData.GetCampaign(reward.WarId);
             //if (treasureChestNums > 0) rewardMap.Trade(2, treasureChestNums); //index2是宝箱图
             var viewBag = ViewBag.Instance()
@@ -1327,10 +1327,8 @@ public class WarsUIManager : MonoBehaviour
         Time.timeScale = 1;
         PlayAudioClip(13);
         isEnteredLevel = true;  //限制返回主城时还能进入关卡
-        if (!PlayerDataForGame.instance.isJumping)
-        {
-            PlayerDataForGame.instance.JumpSceneFun(1, false);
-        }
+        if (PlayerDataForGame.instance.isJumping) return;
+        PlayerDataForGame.instance.JumpSceneFun(1, false);
     }
 
     /// <summary>
