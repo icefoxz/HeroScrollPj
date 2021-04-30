@@ -132,6 +132,7 @@ public class ConsumeManager : MonoBehaviour
     public void SaveChangeUpdatePlayerData(PlayerDataDto player, int saveIndex = 1)
     {
         PlayerDataForGame.instance.pyData.CloneData(player);
+        PlayerDataForGame.instance.GenerateLocalStamina();
         PlayerDataForGame.instance.isNeedSaveData = true;
         LoadSaveData.instance.SaveGameData(saveIndex);
 

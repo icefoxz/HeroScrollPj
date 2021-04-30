@@ -22,6 +22,8 @@ public class GameSystem : MonoBehaviour
     public TimeSystemControl timeSystemControl;
     public PlayerDataForGame playerDataForGame;
     private List<UnityAction> SceneLoadActions { get; } = new List<UnityAction>();
+    public Configuration configuration;
+    public static Configuration Configuration { get; private set; }
 
     public static GameResources GameResources { get; private set; }
     public Canvas systemCanvas;
@@ -30,6 +32,7 @@ public class GameSystem : MonoBehaviour
     {
         instance = this;
         DontDestroyOnLoad(gameObject);
+        Configuration = configuration;
         LoginUi = loginUiController;
         TimeSystemControl = timeSystemControl;
     }
@@ -37,6 +40,7 @@ public class GameSystem : MonoBehaviour
     void Start()
     {
         SceneManager.sceneLoaded += SceneManagerOnSceneLoaded;
+        Configuration.Init();
         GameResources = new GameResources();
         GameResources.Init();
     }

@@ -349,7 +349,6 @@ public class LoadSaveData : MonoBehaviour
                         jsonStr2 = EncryptDecipherTool.DESDecrypt(jsonStr2);
                     jsonStr2 = InspectionAndCorrectionString(jsonStr2, new string[] { "true}]}", "false}]}" }, filePath2);
                     save2 = ArchiveCorrection(JsonConvert.DeserializeObject<WarsDataClass>(jsonStr2));
-                    if (save2.baYe == null) save2.baYe = new BaYeDataClass();
                     Debug.Log("读档成功");
 
                     //备份存档 
@@ -633,7 +632,6 @@ public class LoadSaveData : MonoBehaviour
             unlock.isTakeReward = false;
             warsSaveData.warUnlockSaveData.Add(unlock);
         }
-        warsSaveData.baYe = new BaYeDataClass();
         SaveByJson(warsSaveData);
         //////////////////////////////////////////////////////////////////////////////////////////// 
         isEncrypted = 1;
@@ -665,7 +663,7 @@ public class LoadSaveData : MonoBehaviour
     /// <summary> 
     /// 存储游戏 
     /// </summary> 
-    /// <param name="indexFun">默认0：全部存储，1：存储pyData，2：存储hstData，3：存储warsData，4：存储gbocData，5:py + war(霸业)，6:py + gboc，7:py + hst</param> 
+    /// <param name="indexFun">默认0：全部存储，1：存储pyData，2：存储hstData，3：存储warsData，4：存储gbocData，5:py + war(霸业)，6:py + gboc，7:py + hst，8:BaYe</param> 
     public void SaveGameData(int indexFun = 0)
     {
         if (PlayerDataForGame.instance.isNeedSaveData)

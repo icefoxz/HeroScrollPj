@@ -60,7 +60,7 @@ public class SignalRClient : MonoBehaviour
         //Login();
         _actions = new Dictionary<string, UnityAction<object[]>>();
         OnStatusChanged += s => DebugLog($"状态更新[{s}]!");
-        ServerPanel?.Init(this);
+        if(ServerPanel!=null) ServerPanel.Init(this);
         SubscribeAction(EventStrings.SR_UploadPy, OnServerCalledUpload);
         ApiPanel.Init(this);
     }
@@ -369,8 +369,8 @@ public class SignalRClient : MonoBehaviour
     private Task OnConnectionClose(Exception exception)
     {
         StatusChanged(_connection.State, exception.ToString());
-        if (_connection.State == HubConnectionState.Disconnected)
-            ServerPanel?.OnSignalRDisconnected();
+        if (_connection.State == HubConnectionState.Disconnected && ServerPanel!=null)
+            ServerPanel.OnSignalRDisconnected();
         return Task.CompletedTask;
     }
     private void StatusChanged(HubConnectionState status, string message)

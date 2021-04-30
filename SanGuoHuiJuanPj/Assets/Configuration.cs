@@ -11,7 +11,7 @@ public class Configuration : MonoBehaviour
 {
     public TextAsset gameConfig;
 
-    void Awake()
+    public void Init()
     {
         var json = EncryptDecipherTool.DESDecrypt(gameConfig.text);
         var serverFields = Json.Deserialize<ServerFields>(json);
@@ -21,6 +21,7 @@ public class Configuration : MonoBehaviour
 
 public class ServerFields
 {
+
     public ServerFields(ConfigAsset configAsset)
     {
         ServerUrl = configAsset.ServerUrl;
@@ -30,6 +31,9 @@ public class ServerFields
         PLAYER_SAVE_DATA_UPLOAD_API = configAsset.PLAYER_SAVE_DATA_UPLOAD_API;
         USER_LOGIN_API = configAsset.USER_LOGIN_API;
         SIGNALR_LOGIN_API = configAsset.SIGNALR_LOGIN_API;
+        REQUEST_USERNAME_API = configAsset.REQUEST_USERNAME_API;
+        DEVICE_LOGIN_API = configAsset.DEVICE_LOGIN_API;
+        RESET_GAMEPLAY_API = configAsset.RESET_GAMEPLAY_API;
     }
 
     public ServerFields() { }
@@ -41,4 +45,7 @@ public class ServerFields
     public string PLAYER_UPLOAD_COUNT_API { get; set; }
     public string USER_LOGIN_API { get; set; }
     public string SIGNALR_LOGIN_API { get; set; }
+    public string REQUEST_USERNAME_API { get; set; }
+    public string DEVICE_LOGIN_API { get; set; }
+    public string RESET_GAMEPLAY_API { get; set; }
 }

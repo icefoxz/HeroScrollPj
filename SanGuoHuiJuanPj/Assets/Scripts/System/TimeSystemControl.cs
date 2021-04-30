@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Net;
 using System.Text;
-using BasicFunc.Utls;
+using CorrelateLib;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
@@ -256,7 +256,7 @@ public class TimeSystemControl : MonoBehaviour
         if (playerData == null) return;
         if (playerData.DailyJinNangRedemptionCount >= 10) return;
         if (GameSystem.CurrentScene != GameSystem.GameScene.MainScene) return;
-        UIManager.instance?.UpdateShowJinNangBtn(IsJinNangAvailable());
+        if(UIManager.instance) UIManager.instance.UpdateShowJinNangBtn(IsJinNangAvailable());
     }
 
     public bool IsFreeWeeklyChestAvailable() => PlayerDataForGame.instance.pyData.LastWeekChestRedeemTime + Free298TimeSpan.TotalMilliseconds <

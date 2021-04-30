@@ -65,7 +65,7 @@ public class AdmobAgent : AdAgent
             OnLoad();
         else OnShow();
     }
-    protected new void OnLoad()
+    protected void OnLoad()
     {
         isBusy = true;
         proceedMessage.text = "请求广告中，请等待...";
@@ -74,7 +74,7 @@ public class AdmobAgent : AdAgent
         StartCoroutine(StartTimer());
     }
 
-    protected new void OnShow()
+    protected void OnShow()
     {
         isBusy = true;
         proceedMessage.text = "请求成功，请等待广告加载...";

@@ -160,7 +160,7 @@ public class UIManager : MonoBehaviour
         AudioController1.instance.ChangeBackMusic();
         Invoke(nameof(GetBackTiLiForFight), 2f);
 
-        TimeSystemControl.instance.InitStaminaCount(PlayerDataForGame.instance.pyData.Stamina <
+        TimeSystemControl.instance.InitStaminaCount(PlayerDataForGame.instance.Stamina.Value <
                                                     TimeSystemControl.instance.MaxStamina);
 
         //第一次进入主场景的时候初始化霸业管理器 
@@ -280,7 +280,7 @@ public class UIManager : MonoBehaviour
         {
             case BaYeManager.EventTypes.Story:
                 {
-                    var map = PlayerDataForGame.instance.warsData.baYe.storyMap;
+                    var map = PlayerDataForGame.instance.baYe.storyMap;
                     if (!map.TryGetValue(BaYeManager.instance.CurrentEventPoint, out var storyEvent))
                     {
                         PlayerDataForGame.instance.ShowStringTips("请选择有效的战斗点。");
@@ -289,9 +289,8 @@ public class UIManager : MonoBehaviour
                     if (selectedForce < 0) break;
                     if (!PlayerDataForGame.instance.ConsumeZhanLing()) return;//消费战令 
                     BaYeManager.instance.CacheCurrentStoryEvent();
-                    PlayerDataForGame.instance.warsData.baYe.storyMap.Remove(BaYeManager.instance.CurrentEventPoint);
-                    PlayerDataForGame.instance.isNeedSaveData = true;
-                    LoadSaveData.instance.SaveGameData(3);
+                    PlayerDataForGame.instance.baYe.storyMap.Remove(BaYeManager.instance.CurrentEventPoint);
+                    GamePref.SaveBaYe(PlayerDataForGame.instance.baYe);
                     StartBattle(storyEvent.WarId);
                     return;
                 }
@@ -301,7 +300,7 @@ public class UIManager : MonoBehaviour
                         e.CityId == PlayerDataForGame.instance.selectedCity);
                     if (city == null || selectedForce < 0) break;
                     var savedEvent =
-                        PlayerDataForGame.instance.warsData.baYe.data.SingleOrDefault(e => e.CityId == city.CityId);
+                        PlayerDataForGame.instance.baYe.data.SingleOrDefault(e => e.CityId == city.CityId);
                     var passes = 0;
                     if (savedEvent != null)
                         passes = savedEvent.PassedStages.Count(pass => pass);
@@ -344,7 +343,7 @@ public class UIManager : MonoBehaviour
         baYeWarButton.onClick.AddListener(StartBaYeFight);
         storyEventUiController.ResetUi();
         baYeWindowUi.Init();
-        var baYe = PlayerDataForGame.instance.warsData.baYe;
+        var baYe = PlayerDataForGame.instance.baYe;
         PlayerDataForGame.instance.selectedBaYeEventId = -1;
         PlayerDataForGame.instance.selectedCity = -1;
         //霸业经验条和宝箱初始化 
@@ -410,7 +409,7 @@ public class UIManager : MonoBehaviour
 
     public void ResetBaYeProgressAndGold()
     {
-        var baYe = PlayerDataForGame.instance.warsData.baYe;
+        var baYe = PlayerDataForGame.instance.baYe;
         var baYeReward = DataTable.BaYeTask.Values
             .Select(task => new { id = task.Id, exp = task.Exp, warChestId = task.WarChestTableId })
             .ToList();
@@ -539,7 +538,7 @@ public class UIManager : MonoBehaviour
 
     public void GetBaYeProgressReward(int index)
     {
-        var baYe = PlayerDataForGame.instance.warsData.baYe;
+        var baYe = PlayerDataForGame.instance.baYe;
         if (baYe.CurrentExp < DataTable.BaYeTask[index].Exp)
         {
             PlayerDataForGame.instance.ShowStringTips("当前经验不足以领取！");
@@ -561,7 +560,8 @@ public class UIManager : MonoBehaviour
             EventStrings.Req_WarChest,
             ViewBag.Instance().SetValues(warChestId, 3));
         baYeChestButtons[btnIndex].Open();
-        PlayerDataForGame.instance.warsData.baYe.openedChest[btnIndex] = true;
+        PlayerDataForGame.instance.baYe.openedChest[btnIndex] = true;
+        GamePref.SaveBaYe(PlayerDataForGame.instance.baYe);
         PlayerDataForGame.instance.isNeedSaveData = true;
         AudioController0.instance.ForcePlayAudio(0);
     }
@@ -602,7 +602,7 @@ public class UIManager : MonoBehaviour
             tiLiRecordTimer.text = recordStr;
         }
 
-        int nowStaminaNums = PlayerDataForGame.instance.pyData.Stamina;
+        int nowStaminaNums = PlayerDataForGame.instance.Stamina.Value;
         if (showTiLiNums != nowStaminaNums)
         {
             showTiLiNums = nowStaminaNums;
@@ -633,14 +633,14 @@ public class UIManager : MonoBehaviour
         {
             var staminaMap = expedition.SelectedWarStaminaCost;
             int staminaCost = staminaMap.Cost;
-            if (PlayerDataForGame.instance.pyData.Stamina >= staminaCost)
+            if (PlayerDataForGame.instance.Stamina.Value >= staminaCost)
             {
                 ShowOrHideGuideObj(3, false);
                 IsJumping = true;
                 AudioController0.instance.ChangeAudioClip(12);
                 AudioController0.instance.PlayAudioSource(0);
                 PlayerDataForGame.instance.AddStamina(-staminaCost);
-                showTiLiNums = PlayerDataForGame.instance.pyData.Stamina;
+                showTiLiNums = PlayerDataForGame.instance.Stamina.Value;
                 tiLiNumText.text = showTiLiNums + "/90";
                 cutTiLiTextObj.SetActive(false);
                 cutTiLiTextObj.GetComponent<Text>().color = ColorDataStatic.name_red;
@@ -901,7 +901,7 @@ public class UIManager : MonoBehaviour
         SortHSTData(PlayerDataForGame.instance.hstData.towerSaveData);
         SortHSTData(PlayerDataForGame.instance.hstData.trapSaveData);
         PlayerDataForGame.instance.RefreshEnlisted(indexChooseListForceId);
-        PlayerDataForGame.instance.hstData.heroSaveData.Concat(PlayerDataForGame.instance.hstData.towerSaveData).Concat(PlayerDataForGame.instance.hstData.trapSaveData).Select(c=>new{Card=c,Info=c.GetInfo()}).Where(c=>c.Info.ForceId == indexChooseListForceId).ToList().ForEach(c=>
+        PlayerDataForGame.instance.hstData.heroSaveData.Concat(PlayerDataForGame.instance.hstData.towerSaveData).Concat(PlayerDataForGame.instance.hstData.trapSaveData).Where(c=>c.IsOwning()).Select(c=>new{Card=c,Info=c.GetInfo()}).Where(c=>c.Info.ForceId == indexChooseListForceId).ToList().ForEach(c=>
         {
             if (c.Info.Type == GameCardType.Hero)
                 GenerateHeroUi(c.Card);
@@ -1306,7 +1306,7 @@ public class UIManager : MonoBehaviour
         //货币 
         yuanBaoNumText.text = PlayerDataForGame.instance.pyData.YuanBao.ToString();
         yvQueNumText.text = PlayerDataForGame.instance.pyData.YvQue.ToString();
-        showTiLiNums = PlayerDataForGame.instance.pyData.Stamina;
+        showTiLiNums = PlayerDataForGame.instance.Stamina.Value;
         tiLiNumText.text = showTiLiNums + "/90";
     }
 
@@ -1607,7 +1607,7 @@ public class UIManager : MonoBehaviour
                 break;
             case 4://霸业 
                 bayeBelowLevelPanel.gameObject.SetActive(PlayerDataForGame.instance.pyData.Level < 5);
-                if (!SystemTimer.IsToday(PlayerDataForGame.instance.warsData.baYe.lastBaYeActivityTime))
+                if (!SystemTimer.IsToday(PlayerDataForGame.instance.baYe.lastBaYeActivityTime))
                 {
                     BaYeManager.instance.Init();
                     InitBaYeFun();
@@ -2212,7 +2212,7 @@ public class UIManager : MonoBehaviour
             {
                 isShowQuitTips = true;
                 PlayerDataForGame.instance.ShowStringTips(DataTable.GetStringText(52));
-                Invoke("ResetQuitBool", 2f);
+                Invoke(nameof(ResetQuitBool), 2f);
             }
         }
     }

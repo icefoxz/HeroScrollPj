@@ -23,7 +23,7 @@ public class StoryEventUIController : MonoBehaviour
             if (b.content)
                 Destroy(b.content);
         });
-        var storyMap = PlayerDataForGame.instance.warsData.baYe.storyMap;
+        var storyMap = PlayerDataForGame.instance.baYe.storyMap;
         points = new Dictionary<int, StoryEventPoint>();
         for (int i = 0; i < storyEventPoints.Count; i++)
         {
@@ -39,7 +39,7 @@ public class StoryEventUIController : MonoBehaviour
 
     [SkipRename]public void OnStoryEventClick(int eventPoint)
     {
-        var sEvent = PlayerDataForGame.instance.warsData.baYe.storyMap[eventPoint];
+        var sEvent = PlayerDataForGame.instance.baYe.storyMap[eventPoint];
         OnClickAudioPlay(sEvent.Type);
         BaYeManager.instance.OnBaYeWarEventPointSelected(BaYeManager.EventTypes.Story, eventPoint);
         if ((BaYeManager.StoryEventTypes) sEvent.Type == BaYeManager.StoryEventTypes.讨伐)

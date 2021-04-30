@@ -1,8 +1,9 @@
 ﻿using System;
+using CorrelateLib;
 
 public class LocalStamina
 {
-    public long Seed { get; }
+    public long Seed { get; private set; }
     public int Value => DefaultValue + DynamicValue;
     public int DynamicValue { get; private set; }
     public TimeSpan Countdown { get; private set; }
@@ -14,6 +15,7 @@ public class LocalStamina
 
     public LocalStamina(long seed,int defaultValue, int secsPerStamina, int increaseLimit, int maxValue)
     {
+        if (seed == default) seed = SysTime.UnixNow;
         Seed = seed;
         DefaultValue = defaultValue;
         SecsPerStamina = secsPerStamina;
@@ -35,9 +37,16 @@ public class LocalStamina
 
     public void UpdateStamina(long timeTicks)
     {
-        if (IsStopIncrease) return;
+        if (IsStopIncrease)
+        {
+            Seed = timeTicks;
+            return;
+        }
         var elapsed = TimeSpan.FromMilliseconds(timeTicks - Seed);
         DynamicValue = (int)(elapsed.TotalSeconds / SecsPerStamina);
-        Countdown = TimeSpan.FromSeconds(elapsed.TotalSeconds % SecsPerStamina);
+        var remainder = 0;
+        if (elapsed.TotalSeconds >= 1)
+            remainder = (int)elapsed.TotalSeconds % SecsPerStamina;
+        Countdown = TimeSpan.FromSeconds(SecsPerStamina - remainder);
     }
 }

@@ -58,6 +58,7 @@ public class PlayerDataForGame : MonoBehaviour
     public PlayerData pyData;  //玩家基本信息 
     public GetBoxOrCodeData gbocData = new GetBoxOrCodeData();  //玩家宝箱与兑换码信息 
     public HSTDataClass hstData = new HSTDataClass(); //玩家武将士兵塔等信息 
+    public BaYeDataClass baYe = new BaYeDataClass();
 
     public WarsDataClass warsData
     {
@@ -370,7 +371,6 @@ public class PlayerDataForGame : MonoBehaviour
 
     public void SaveBaYeWarEvent()
     {
-        var baYe = warsData.baYe;
         if (baYe.data.Any(d => d.CityId == selectedCity)) return;
         var city = BaYeManager.instance.Map.Single(e => e.CityId == selectedCity);
         baYe.data.Add(new BaYeCityEvent
@@ -381,8 +381,7 @@ public class PlayerDataForGame : MonoBehaviour
             ExpList = city.ExpList,
             PassedStages = new bool[city.ExpList.Count]
         });
-        isNeedSaveData = true;
-        LoadSaveData.instance.SaveGameData(3);
+        GamePref.SaveBaYe(baYe);
     }
 
     public void UpdateWarUnlockProgress(int totalStagesPass)

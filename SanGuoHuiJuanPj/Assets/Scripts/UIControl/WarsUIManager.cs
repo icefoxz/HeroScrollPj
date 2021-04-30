@@ -65,7 +65,7 @@ public class WarsUIManager : MonoBehaviour
         get
         {
             if (PlayerDataForGame.instance.WarType == PlayerDataForGame.WarTypes.Baye)
-                return PlayerDataForGame.instance.warsData.baYe.gold;
+                return PlayerDataForGame.instance.baYe.gold;
             return goldForCity;
         }
         set
@@ -135,7 +135,7 @@ public class WarsUIManager : MonoBehaviour
                 GoldForCity = PlayerDataForGame.instance.zhanYiColdNums;
                 break;
             case PlayerDataForGame.WarTypes.Baye:
-                GoldForCity = PlayerDataForGame.instance.warsData.baYe.gold;
+                GoldForCity = PlayerDataForGame.instance.baYe.gold;
                 cityLevel = baYeDefaultLevel;
                 break;
             case PlayerDataForGame.WarTypes.None:
@@ -308,7 +308,7 @@ public class WarsUIManager : MonoBehaviour
             if (isWin)
             {
                 var baYeMgr = BaYeManager.instance;
-                var baYe = PlayerDataForGame.instance.warsData.baYe;
+                var baYe = PlayerDataForGame.instance.baYe;
                 if(baYeMgr.CurrentEventType == BaYeManager.EventTypes.City)
                 {
                     var cityEvent = baYe.data.Single(f => f.CityId == PlayerDataForGame.instance.selectedCity);
@@ -335,7 +335,7 @@ public class WarsUIManager : MonoBehaviour
                 }
             }
             //霸业的战斗金币传到主城
-            PlayerDataForGame.instance.warsData.baYe.gold = GoldForCity;
+            PlayerDataForGame.instance.baYe.gold = GoldForCity;
         } else if (PlayerDataForGame.instance.WarType == PlayerDataForGame.WarTypes.Expedition)
         {
             PlayerDataForGame.instance.UpdateWarUnlockProgress(passedGuanQiaNums);
@@ -364,6 +364,7 @@ public class WarsUIManager : MonoBehaviour
 
         PlayerDataForGame.instance.isNeedSaveData = true;
         LoadSaveData.instance.SaveGameData(3);
+        GamePref.SaveBaYe(PlayerDataForGame.instance.baYe);
         //gameOverObj.SetActive(true);
     }
 
@@ -1497,7 +1498,7 @@ public class WarsUIManager : MonoBehaviour
             {
                 isShowQuitTips = true;
                 PlayerDataForGame.instance.ShowStringTips(DataTable.GetStringText(52));
-                Invoke("ResetQuitBool", 2f);
+                Invoke(nameof(ResetQuitBool), 2f);
             }
         }
     }

@@ -49,22 +49,22 @@ public class BaYeManager : MonoBehaviour
 
     public void Init()
     {
-        var baYe = PlayerDataForGame.instance.warsData.baYe;
+        var baYe = GamePref.GetBaYe;
+        PlayerDataForGame.instance.baYe = baYe;
         var zhanLing = DataTable.PlayerLevelConfig[PlayerDataForGame.instance.pyData.Level].BaYeForceLings;
         var zhanLingMap = new Dictionary<int, int>();
         for (int i = 0; i < zhanLing.Length; i++) zhanLingMap.Add(i, zhanLing[i]);
         //如果没有霸业记录或是记录已经过期(不是今天)将初始化新的霸业记录
         if (baYe == null || !SystemTimer.IsToday(baYe.lastBaYeActivityTime))
         {
-            PlayerDataForGame.instance.warsData.baYe = new BaYeDataClass
+            PlayerDataForGame.instance.baYe = new BaYeDataClass
             {
                 lastBaYeActivityTime = SystemTimer.instance.NowUnixTicks,
                 gold = BaYeGoldDefault,
                 openedChest = new bool[UIManager.instance.baYeChestButtons.Length],
                 zhanLingMap = zhanLingMap
             };
-            PlayerDataForGame.instance.isNeedSaveData = true;
-            LoadSaveData.instance.SaveGameData(3);
+            GamePref.SaveBaYe(PlayerDataForGame.instance.baYe);
         }
         InitBaYeMap();
     }
@@ -81,7 +81,7 @@ public class BaYeManager : MonoBehaviour
                 var baYeEvent = GetBaYeEvent(baYeEventId, cityId);
                 return new BaYeCityEvent { CityId = cityId, EventId = baYeEventId, ExpList = baYeEvent.ExpList, WarIds = baYeEvent.WarIds};
             }).ToList();//根据权重随机战役id
-        var baYe = PlayerDataForGame.instance.warsData.baYe;
+        var baYe = PlayerDataForGame.instance.baYe;
         foreach (var baYeEvent in baYe.data)
             map[baYeEvent.CityId] = baYeEvent;
 
@@ -95,9 +95,9 @@ public class BaYeManager : MonoBehaviour
         if (isHourlyEventRegistered) return;
         isHourlyEventRegistered = true;
         TimeSystemControl.instance.OnHourly += GenerateBaYeStoryEvents;
-        if (SystemTimer.instance.Now - PlayerDataForGame.instance.warsData.baYe.lastStoryEventsRefreshHour >=
+        if (SystemTimer.instance.Now - PlayerDataForGame.instance.baYe.lastStoryEventsRefreshHour >=
 #if UNITY_EDITOR
-            TimeSpan.FromHours(0) //调试期间每次开启游戏都会刷新霸业
+            TimeSpan.FromHours(1) //调试期间每次开启游戏都会刷新霸业
 #else
             TimeSpan.FromHours(1)
 #endif
@@ -135,7 +135,7 @@ public class BaYeManager : MonoBehaviour
                 };
             })
             .ToDictionary(e => e.point, e => e.storyEvents.Pick());
-        PlayerDataForGame.instance.warsData.baYe.storyMap = eventPointStoryMap.ToDictionary(m => m.Key, m =>
+        PlayerDataForGame.instance.baYe.storyMap = eventPointStoryMap.ToDictionary(m => m.Key, m =>
         {
             var story = m.Value;
             var warId = DataTable.BaYeStoryEvent[story.Id].WarId;
@@ -153,10 +153,9 @@ public class BaYeManager : MonoBehaviour
                 ZhanLing = GetZhanLing(amount,story.ZhanLingRange.Item1, story.ZhanLingRange.Item2)
             };
         }).Where(kv => kv.Value.StoryId != 0).ToDictionary(kv => kv.Key, kv => kv.Value);
-        PlayerDataForGame.instance.warsData.baYe.lastStoryEventsRefreshHour =
+        PlayerDataForGame.instance.baYe.lastStoryEventsRefreshHour =
             SystemTimer.instance.Now.Date.AddHours(SystemTimer.instance.Now.Hour);
-        PlayerDataForGame.instance.isNeedSaveData = true;
-        LoadSaveData.instance.SaveGameData(3);
+        GamePref.SaveBaYe(PlayerDataForGame.instance.baYe);
         UIManager.instance.storyEventUiController.ResetUi();
         if(GameSystem.CurrentScene == GameSystem.GameScene.MainScene)
         {
@@ -198,7 +197,7 @@ public class BaYeManager : MonoBehaviour
                 break;
             case EventTypes.Story:
             {
-                var storyMap = PlayerDataForGame.instance.warsData.baYe.storyMap;
+                var storyMap = PlayerDataForGame.instance.baYe.storyMap;
                 if (!storyMap.ContainsKey(eventPoint))
                     throw XDebug.Throw<BaYeManager>("霸业故事点不存在!");
                 var sEvent = storyMap[eventPoint];
@@ -248,43 +247,39 @@ public class BaYeManager : MonoBehaviour
     }
     public void AddExp(int expIndex,int exp)
     {
-        if (PlayerDataForGame.instance.warsData.baYe.ExpData.ContainsKey(expIndex))
-            PlayerDataForGame.instance.warsData.baYe.ExpData[expIndex] += exp;
-        else PlayerDataForGame.instance.warsData.baYe.ExpData.Add(expIndex, exp);
-        PlayerDataForGame.instance.isNeedSaveData = true;
-        LoadSaveData.instance.SaveGameData(3);
+        if (PlayerDataForGame.instance.baYe.ExpData.ContainsKey(expIndex))
+            PlayerDataForGame.instance.baYe.ExpData[expIndex] += exp;
+        else PlayerDataForGame.instance.baYe.ExpData.Add(expIndex, exp);
+        GamePref.SaveBaYe(PlayerDataForGame.instance.baYe);
     }
 
     public void SetGold(int value)
     {
-        PlayerDataForGame.instance.warsData.baYe.gold = value > BaYeMaxGold ? BaYeMaxGold : value;
-        PlayerDataForGame.instance.isNeedSaveData = true;
-        LoadSaveData.instance.SaveGameData(3);
+        PlayerDataForGame.instance.baYe.gold = value > BaYeMaxGold ? BaYeMaxGold : value;
+        GamePref.SaveBaYe(PlayerDataForGame.instance.baYe);
     }
 
     public void AddGold(int gold)
     {
-        PlayerDataForGame.instance.warsData.baYe.gold += gold;
-        if (PlayerDataForGame.instance.warsData.baYe.gold > BaYeMaxGold)
-            PlayerDataForGame.instance.warsData.baYe.gold = BaYeMaxGold;
-        PlayerDataForGame.instance.isNeedSaveData = true;
-        LoadSaveData.instance.SaveGameData(3);
+        PlayerDataForGame.instance.baYe.gold += gold;
+        if (PlayerDataForGame.instance.baYe.gold > BaYeMaxGold)
+            PlayerDataForGame.instance.baYe.gold = BaYeMaxGold;
+        GamePref.SaveBaYe(PlayerDataForGame.instance.baYe);
     }
 
     public bool TradeZhanLing(int forceId, int amount)
     {
-        if (amount < 0 && PlayerDataForGame.instance.warsData.baYe.zhanLingMap[forceId] < -amount)
+        if (amount < 0 && PlayerDataForGame.instance.baYe.zhanLingMap[forceId] < -amount)
             return false; //如果数目是负数，并玩家数量小于数量返回交易失败
-        PlayerDataForGame.instance.warsData.baYe.zhanLingMap[forceId] += amount;
-        PlayerDataForGame.instance.isNeedSaveData = true;
-        LoadSaveData.instance.SaveGameData(3);
+        PlayerDataForGame.instance.baYe.zhanLingMap[forceId] += amount;
+        GamePref.SaveBaYe(PlayerDataForGame.instance.baYe);
         return true;
     }
 
     public void OnBayeStoryEventReward(BaYeStoryEvent storyEvent)
     {
         var expIndex = -1; //霸业故事事件送的expId一律 -1
-        var baYe = PlayerDataForGame.instance.warsData.baYe;
+        var baYe = PlayerDataForGame.instance.baYe;
         if (baYe.ExpData.ContainsKey(expIndex))
             baYe.ExpData[expIndex] += storyEvent.ExpReward;
         else baYe.ExpData.Add(expIndex, storyEvent.ExpReward);
@@ -304,17 +299,17 @@ public class BaYeManager : MonoBehaviour
             UIManager.instance.yuanBaoNumText.text = py.YvQue.ToString();
             UIManager.instance.yvQueNumText.text = py.YvQue.ToString();
         }
+        GamePref.SaveBaYe(PlayerDataForGame.instance.baYe);
         PlayerDataForGame.instance.isNeedSaveData = true;
         LoadSaveData.instance.SaveGameData(5);
     }
 
     public void SetExp(int expIndex,int exp)
     {
-        if (PlayerDataForGame.instance.warsData.baYe.ExpData.ContainsKey(expIndex))
-            PlayerDataForGame.instance.warsData.baYe.ExpData[expIndex] = exp;
-        else PlayerDataForGame.instance.warsData.baYe.ExpData.Add(expIndex, exp);
-        PlayerDataForGame.instance.isNeedSaveData = true;
-        LoadSaveData.instance.SaveGameData(3);
+        if (PlayerDataForGame.instance.baYe.ExpData.ContainsKey(expIndex))
+            PlayerDataForGame.instance.baYe.ExpData[expIndex] = exp;
+        else PlayerDataForGame.instance.baYe.ExpData.Add(expIndex, exp);
+        GamePref.SaveBaYe(PlayerDataForGame.instance.baYe);
     }
 
     //当霸业故事事件被触发
@@ -360,9 +355,8 @@ public class BaYeManager : MonoBehaviour
                 XDebug.LogError<BaYeManager>($"未知故事事件类型={sEvent.Type}!");
                 throw new ArgumentOutOfRangeException();
         }
-        PlayerDataForGame.instance.warsData.baYe.storyMap.Remove(eventPoint);
-        PlayerDataForGame.instance.isNeedSaveData = true;
-        LoadSaveData.instance.SaveGameData(3);
+        PlayerDataForGame.instance.baYe.storyMap.Remove(eventPoint);
+        GamePref.SaveBaYe(PlayerDataForGame.instance.baYe);
 
         void OnReward(BaYeStoryEvent se)
         {
@@ -434,5 +428,5 @@ public class BaYeManager : MonoBehaviour
         }
     }
 
-    public void CacheCurrentStoryEvent() => CachedStoryEvent = PlayerDataForGame.instance.warsData.baYe.storyMap[CurrentEventPoint];
+    public void CacheCurrentStoryEvent() => CachedStoryEvent = PlayerDataForGame.instance.baYe.storyMap[CurrentEventPoint];
 }

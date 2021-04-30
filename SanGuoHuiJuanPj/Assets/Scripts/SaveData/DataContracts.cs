@@ -240,8 +240,6 @@ public class WarsDataClass
 {
     //战役解锁进度
     public List<UnlockWarCount> warUnlockSaveData;
-    public BaYeDataClass baYe = new BaYeDataClass();
-
     public UnlockWarCount GetCampaign(int warId)
     {
         var war = warUnlockSaveData.FirstOrDefault(w => w.warId == warId);

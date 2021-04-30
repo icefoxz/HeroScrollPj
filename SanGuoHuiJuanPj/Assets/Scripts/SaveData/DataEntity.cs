@@ -29,7 +29,6 @@ public class UserSaveArchive : IUserSaveArchive
         };
         var war = new WarsDataClass
         {
-            baYe = w.baYe,
             warUnlockSaveData = w.warUnlockSaveData.Where(o => o.unLockCount > 0).ToList()
         };
         var reward = new GetBoxOrCodeData

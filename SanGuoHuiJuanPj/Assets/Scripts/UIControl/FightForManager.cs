@@ -19,9 +19,7 @@ public class FightForManager : MonoBehaviour
     GameObject enemyCardPosPre;    //敌方卡牌位置预制件
     [SerializeField]
     GameObject playerCardPosPre;    //我方卡牌位置预制件
-    [SerializeField]
     public Transform enemyCardsBox;    //敌方卡牌父级
-    [SerializeField]
     public Transform playerCardsBox;    //我方卡牌父级
     [SerializeField]
     GameObject fightCardPre;    //战斗卡牌预制件

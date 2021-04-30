@@ -22,8 +22,9 @@ public static class Server
     public static string DEVICE_LOGIN_API { get; private set; } 
     public static string RESET_GAMEPLAY_API { get; private set; } 
 #else
+    private static string ServerUrl { get; set; } = "https://heroscrollpjapi1.azurewebsites.net/api/";
     //private static string ServerUrl { get; set; } = "https://heroscrollpjtestserver0.azurewebsites.net/api/";
-    private static string ServerUrl { get; set; } = "https://herotestfuncapi.azurewebsites.net/api/";
+    //private static string ServerUrl { get; set; } = "https://herotestfuncapi.azurewebsites.net/api/";
     //private static string ServerUrl { get; set; } = "http://localhost:7071/api/";
     public static string PLAYER_SAVE_DATA_UPLOAD_API { get; private set; } = "UploadSaveData";
     public static string INSTANCE_ID_API { get; private set; } = "GenerateUserId";
@@ -47,10 +48,13 @@ public static class Server
         ServerUrl = fields.ServerUrl;
         PLAYER_SAVE_DATA_UPLOAD_API = fields.PLAYER_SAVE_DATA_UPLOAD_API;
         INSTANCE_ID_API = fields.INSTANCE_ID_API;
+        REQUEST_USERNAME_API = fields.REQUEST_USERNAME_API;
         PLAYER_REG_ACCOUNT_API = fields.PLAYER_REG_ACCOUNT_API;
         PLAYER_UPLOAD_COUNT_API = fields.PLAYER_UPLOAD_COUNT_API;
         USER_LOGIN_API = fields.USER_LOGIN_API;
         SIGNALR_LOGIN_API = fields.SIGNALR_LOGIN_API;
+        DEVICE_LOGIN_API = fields.DEVICE_LOGIN_API;
+        RESET_GAMEPLAY_API = fields.RESET_GAMEPLAY_API;
 #endif
     }
 
@@ -112,11 +116,14 @@ public static class Server
 
     public static UserInfo GetUserInfo(string username,string password)
     {
+        var phone = string.Empty;
+        if (PlayerDataForGame.instance != null && PlayerDataForGame.instance.acData != null)
+            phone = PlayerDataForGame.instance.acData.Phone;
         return new UserInfo
         {
             DeviceId = SystemInfo.deviceUniqueIdentifier,
             Password = password,
-            Phone = PlayerDataForGame.instance?.acData?.Phone,
+            Phone = phone,
             Username = username,
             GameVersion = float.Parse(Application.version)
         };

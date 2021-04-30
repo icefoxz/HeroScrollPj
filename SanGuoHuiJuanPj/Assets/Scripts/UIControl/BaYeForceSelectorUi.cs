@@ -31,7 +31,7 @@ public class BaYeForceSelectorUi : ForceSelectorUi
 
     public void UpdateZhanLing()
     {
-        var baYe = PlayerDataForGame.instance.warsData.baYe;
+        var baYe = PlayerDataForGame.instance.baYe;
         foreach (var pair in Data)
         {
             var forceId = pair.Key;

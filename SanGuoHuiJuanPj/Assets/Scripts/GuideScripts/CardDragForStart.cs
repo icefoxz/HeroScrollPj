@@ -129,10 +129,10 @@ public class CardDragForStart : MonoBehaviour
 
             GameObject go = _eventData.pointerCurrentRaycast.gameObject;    //释放时鼠标透过拖动的Image后的物体
             //是否拖放在 战斗格子 或 卡牌上
-            if (go != null && (go.tag == "CardPos" || go.tag == "PyCard"))
+            if (go != null && (go.CompareTag("CardPos") || go.CompareTag("PyCard")))
             {
                 //放在 战斗格子上
-                if (go.tag == "CardPos")
+                if (go.CompareTag("CardPos"))
                 {
                     //拖动牌原位置 在上阵位
                     if (posIndex != -1)
@@ -178,7 +178,7 @@ public class CardDragForStart : MonoBehaviour
                     }
                 }
                 //放在 卡牌上
-                if (go.tag == "PyCard")
+                if (go.CompareTag("PyCard"))
                 {
                     int goIndexPos = go.GetComponent<CardDragForStart>().posIndex;
                     //目的地 卡牌在上阵位 并且 不是上锁卡牌
