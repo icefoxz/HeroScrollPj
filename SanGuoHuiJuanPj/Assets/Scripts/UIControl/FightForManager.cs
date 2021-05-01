@@ -197,10 +197,10 @@ public class FightForManager : MonoBehaviour
 
         FightController.instance.InitStartFight();
 
-        var py = PlayerDataForGame.instance.pyData;
         //调整游戏速度
-        Time.timeScale = py.WarTimeScale;
-        speedBtnText.text = Multiply + py.WarTimeScale;
+        var speed = GamePref.PrefWarSpeed;
+        Time.timeScale = speed;
+        speedBtnText.text = Multiply + speed;
     }
 
     //主动塔行动
@@ -1392,12 +1392,13 @@ public class FightForManager : MonoBehaviour
     //改变游戏速度
     public void ChangeTimeScale()
     {
-        var py = PlayerDataForGame.instance.pyData;
-        py.WarTimeScale *= 2;
-        if (py.WarTimeScale > 2)
-            py.WarTimeScale = 0.5f;
-        Time.timeScale = py.WarTimeScale;
-        speedBtnText.text = Multiply + py.WarTimeScale;
+        var warScale = GamePref.PrefWarSpeed;
+        warScale *= 2;
+        if (warScale> 2)
+            warScale = 1;
+        GamePref.SetPrefWarSpeed(warScale);
+        Time.timeScale = warScale;
+        speedBtnText.text = Multiply + warScale;
     }
 
     [SerializeField]

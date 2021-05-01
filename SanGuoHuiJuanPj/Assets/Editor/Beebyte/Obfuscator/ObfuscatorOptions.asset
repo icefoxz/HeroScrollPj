@@ -205,7 +205,7 @@ MonoBehaviour:
   includeProtectedFields: 1
   includeProtectedProperties: 0
   includeProtectedEvents: 0
-  enabled: 0
+  enabled: 1
   onlyObfuscatedSpecifiedNamespaces: 0
   skipNamespacesRecursively: 1
   obfuscateSpecifiedNamespacesRecursively: 1

@@ -258,7 +258,7 @@ namespace qtools.qhierarchy.phelper
 
         private void setupObjectList(QObjectList objectList)
         {
-            if (objectList.tag == "EditorOnly") objectList.tag = "Untagged";
+            if (objectList.CompareTag("EditorOnly")) objectList.tag = "Untagged";
             MonoScript monoScript = MonoScript.FromMonoBehaviour(objectList);
             if (MonoImporter.GetExecutionOrder(monoScript) != -10000)                    
                 MonoImporter.SetExecutionOrder(monoScript, -10000);

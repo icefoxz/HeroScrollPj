@@ -12,8 +12,6 @@ public class LoadSaveData : MonoBehaviour
     public static LoadSaveData instance;
 
     [HideInInspector]
-    public string IsPlayMusicStr = "IsPlayMusicStr";    //PlayerPrefs 0静音1播放 
-    [HideInInspector]
     public int firstForceId;    //传递记录初始势力 
     [HideInInspector]
     public bool isLoadingSaveData;  //标记是否在加载存档 
@@ -38,15 +36,7 @@ public class LoadSaveData : MonoBehaviour
         isHadSaveData = IsSaveFilesExist();
         if(AudioController0.instance)
         {
-            if (isHadSaveData)
-            {
-                AudioController0.instance.isPlayMusic = PlayerPrefs.GetInt(IsPlayMusicStr); //游戏音乐开关标签 
-            }
-            else
-            {
-                PlayerPrefs.SetInt(IsPlayMusicStr, 1);
-                AudioController0.instance.isPlayMusic = 1;
-            }
+            AudioController0.instance.MusicSwitch(GamePref.PrefMusicPlay);
         }
 
         isEncrypted = float.Parse(Application.version) < 1.9f ? PlayerPrefs.GetInt(ISNEEDENCRYPT) : 1;
@@ -474,7 +464,7 @@ public class LoadSaveData : MonoBehaviour
         //设置游戏音乐开关标签 
         if(AudioController0.instance)
         {
-            AudioController0.instance.isPlayMusic = PlayerPrefs.GetInt(IsPlayMusicStr);
+            AudioController0.instance.MusicSwitch(GamePref.PrefMusicPlay);
         }
 
         isLoadingSaveData = false;
@@ -636,9 +626,6 @@ public class LoadSaveData : MonoBehaviour
         //////////////////////////////////////////////////////////////////////////////////////////// 
         isEncrypted = 1;
         PlayerPrefs.SetInt(ISNEEDENCRYPT, isEncrypted);
-
-        PlayerPrefs.SetInt(IsPlayMusicStr, 1);
-
         GamePref.SetIsFirstPlay(true);
 
         isHadSaveData = true;

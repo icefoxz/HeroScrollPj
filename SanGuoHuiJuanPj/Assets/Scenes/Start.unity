@@ -12604,7 +12604,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b5fbd3829056d59498182d7407c7ea4a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  IsPlayMusicStr: IsPlayMusicStr
   firstForceId: 0
   isLoadingSaveData: 0
   isHadSaveData: 0
@@ -19968,6 +19967,84 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 1617406554}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1636172961
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1636172962}
+  - component: {fileID: 1636172964}
+  - component: {fileID: 1636172963}
+  m_Layer: 5
+  m_Name: Text
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1636172962
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1636172961}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 355129017716170551}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 100, y: -72.99998}
+  m_SizeDelta: {x: 899.99615, y: 75.00006}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1636172963
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1636172961}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 0.5754717, g: 0, b: 0, a: 1}
+  m_RaycastTarget: 1
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_FontData:
+    m_Font: {fileID: 12800000, guid: 65585f9679c2fd944a2bde26e0fc65e2, type: 3}
+    m_FontSize: 40
+    m_FontStyle: 0
+    m_BestFit: 1
+    m_MinSize: 4
+    m_MaxSize: 40
+    m_Alignment: 4
+    m_AlignByGeometry: 0
+    m_RichText: 1
+    m_HorizontalOverflow: 0
+    m_VerticalOverflow: 0
+    m_LineSpacing: 1
+  m_Text: "(\u5F53\u524D\u4E3A\u6E38\u5BA2\u767B\u5F55\uFF0C\u4E3A\u4FDD\u8BC1\u8D26\u53F7\u5B89\u5168\uFF0C\u8BF7\u524D\u5F80\u4FEE\u6539\u5BC6\u7801)"
+--- !u!222 &1636172964
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1636172961}
+  m_CullTransparentMesh: 0
 --- !u!1 &1636646078
 GameObject:
   m_ObjectHideFlags: 0
@@ -27605,7 +27682,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!222 &355129016640249155
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -31495,6 +31572,7 @@ RectTransform:
   - {fileID: 355129017564231943}
   - {fileID: 355129017093206645}
   - {fileID: 355129018018982989}
+  - {fileID: 1636172962}
   m_Father: {fileID: 355129017391322775}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -32799,7 +32877,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "\uFF08\u5F53\u524D\u4E3A\u6E38\u5BA2\u767B\u5F55\uFF0C\u4E3A\u4FDD\u8BC1\u8D26\u53F7\u5B89\u5168\uFF0C\u8BF7\u524D\u5F80\u4FEE\u6539\u5BC6\u7801\uFF09"
+  m_Text: "(\u5F53\u524D\u4E3A\u6E38\u5BA2\u767B\u5F55\uFF0C\u4E3A\u4FDD\u8BC1\u8D26\u53F7\u5B89\u5168\uFF0C\u8BF7\u524D\u5F80\u4FEE\u6539\u5BC6\u7801)"
 --- !u!224 &355129018018982989
 RectTransform:
   m_ObjectHideFlags: 0
@@ -32836,7 +32914,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!222 &355129018050589611
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -36486,6 +36564,7 @@ MonoBehaviour:
   forgetPassword: {fileID: 2831074124479724097}
   resetAccount: {fileID: 5767794549055674036}
   busyPanel: {fileID: 2959938475829698428}
+  DeviceIsBound: "\u8BBE\u5907\u5DF2\u7ED1\u5B9A\u4E86\u8D26\u53F7\uFF0C\u8BF7\u7528\u8BBE\u5907\u767B\u5F55\u4FEE\u6539\u8D26\u53F7\u4FE1\u606F!"
 --- !u!114 &2831074124479724097
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -37583,7 +37662,7 @@ MonoBehaviour:
   message: {fileID: 355129018018982988}
   username: {fileID: 355129017093206644}
   password: {fileID: 355129016945272258}
-  warningMessage: {fileID: 355129018018982990}
+  warningMessage: {fileID: 1636172961}
   changePasswordBtn: {fileID: 355129016608873471}
   backBtn: {fileID: 355129016761306470}
 --- !u!114 &7156958777392060213
@@ -38509,11 +38588,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_UiScaleMode: 0
+  m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
-  m_ReferenceResolution: {x: 800, y: 600}
-  m_ScreenMatchMode: 0
+  m_ReferenceResolution: {x: 1080, y: 2160}
+  m_ScreenMatchMode: 1
   m_MatchWidthOrHeight: 0
   m_PhysicalUnit: 3
   m_FallbackScreenDPI: 96

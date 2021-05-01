@@ -16,9 +16,6 @@ public class AudioController0 : MonoBehaviour
 
     bool isPlaying;
 
-    [HideInInspector]
-    public int isPlayMusic; 
-
     private void Awake()
     {
         if (instance != null)
@@ -76,7 +73,7 @@ public class AudioController0 : MonoBehaviour
     /// <param name="delayedTime">延迟时间</param>
     public void PlayAudioSource(float delayedTime)
     {
-        if (isPlayMusic != 1)
+        if (!GamePref.PrefMusicPlay)
             return;
 
         if (!isPlaying) StartCoroutine(StartPlaying(delayedTime));
@@ -98,5 +95,11 @@ public class AudioController0 : MonoBehaviour
         int rand = Random.Range(1, 8);
         ChangeAudioClip(rand);
         PlayAudioSource(0);
+    }
+
+    public void MusicSwitch(bool isPlayMusic)
+    {
+        if(isPlayMusic) audioSource.Play();
+        else audioSource.Pause();
     }
 }

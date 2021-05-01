@@ -3436,7 +3436,7 @@ public class FightController : MonoBehaviour
         AudioController0.instance.audioSource.volume *= 0.75f;
         audioSource.clip = WarsUIManager.instance.audioClipsFightEffect[clipIndex];
         audioSource.volume = WarsUIManager.instance.audioVolumeFightEffect[clipIndex];
-        if (AudioController0.instance.isPlayMusic != 1)
+        if (!GamePref.PrefMusicPlay)
             return;
         audioSource.PlayDelayed(delayedTime);
     }

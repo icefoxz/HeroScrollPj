@@ -172,7 +172,7 @@ public class WarsUIManager : MonoBehaviour
     void OnApplicationPause(bool pause)
     {
         if (pause)return;
-        Time.timeScale = currentEvent == EventTypes.Battle ? PlayerDataForGame.instance.pyData.WarTimeScale : 1f;
+        Time.timeScale = currentEvent == EventTypes.Battle ? GamePref.PrefWarSpeed : 1f;
     }
 
     //初始化关卡
@@ -527,9 +527,7 @@ public class WarsUIManager : MonoBehaviour
         AudioController1.instance.isNeedPlayLongMusic = true;
         AudioController1.instance.ChangeAudioClip(audioClipsFightBack[bgmIndex], audioVolumeFightBack[bgmIndex]);
         AudioController1.instance.PlayLongBackMusInit();
-
         FightForManager.instance.InitEnemyCardForFight(fightId);
-
         eventsWindows[0].SetActive(true);
     }
 
@@ -1413,38 +1411,25 @@ public class WarsUIManager : MonoBehaviour
     public void OpenSettingWinInit()
     {
         PlayAudioClip(13);
-        if (AudioController0.instance.isPlayMusic != 1)
-        {
-            musicBtnText.text = DataTable.GetStringText(41);
-        }
-        else
-        {
-            musicBtnText.text = DataTable.GetStringText(42);
-        }
+        musicBtnText.text = DataTable.GetStringText(GamePref.PrefMusicPlay ? 42 : 41);
     }
-
-    //开关音乐
+    
+    //开关音乐 
     public void OpenOrCloseMusic()
     {
-        if (AudioController0.instance.isPlayMusic != 1)
+        var musicSwitch = !GamePref.PrefMusicPlay;
+        GamePref.SetPrefMusic(musicSwitch);
+        AudioController0.instance.MusicSwitch(musicSwitch);
+        AudioController1.instance.MusicSwitch(musicSwitch);
+        //打开 
+        
+        if (GamePref.PrefMusicPlay)
         {
-            //打开
-            PlayerPrefs.SetInt(LoadSaveData.instance.IsPlayMusicStr, 1);
-            AudioController0.instance.isPlayMusic = 1;
-            AudioController1.instance.audioSource.Play();
             musicBtnText.text = DataTable.GetStringText(42);
             PlayAudioClip(13);
+            return;
         }
-        else
-        {
-            //关闭
-            PlayerPrefs.SetInt(LoadSaveData.instance.IsPlayMusicStr, 0);
-            AudioController0.instance.isPlayMusic = 0;
-            AudioController0.instance.audioSource.Pause();
-            AudioController1.instance.audioSource.Pause();
-            FightController.instance.audioSource.Pause();
-            musicBtnText.text = DataTable.GetStringText(41);
-        }
+        musicBtnText.text = DataTable.GetStringText(41);
     }
 
     [SerializeField]

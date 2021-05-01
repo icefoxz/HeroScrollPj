@@ -20,6 +20,7 @@ public class JinNangUI: MonoBehaviour
     public Text continueText;
     public Text jinNangContent;
     public Text characterName;
+    public Text JinNangQuota;
     private PlayerDataDto playerDataDto;
 
     public void OnReward(string content, Color contentColor, string character, int staminaValue, int yuanBaoValue,string token,PlayerDataDto playerData)
@@ -37,6 +38,7 @@ public class JinNangUI: MonoBehaviour
         characterName.color = Opacity(characterName.color, 0);
         jinNangContent.text = content;
         jinNangContent.color = Opacity(contentColor, 0);
+        JinNangQuota.text = $"今日次数：{playerDataDto.DailyJinNangRedemptionCount}/10";
         characterName.text = character;
         window.DOFade(1, 0.5f).OnComplete(() =>
         {

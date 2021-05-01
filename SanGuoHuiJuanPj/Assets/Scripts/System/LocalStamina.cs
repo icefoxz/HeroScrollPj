@@ -26,11 +26,12 @@ public class LocalStamina
     public void AddStamina(int value)
     {
         DynamicValue += value;
-        ResolveLimit();
+        Resolve();
     }
 
-    private void ResolveLimit()
+    private void Resolve()
     {
+        Seed = SysTime.UnixNow;
         if (Value <= MaxValue) return;
         DynamicValue = MaxValue - DefaultValue;
     }

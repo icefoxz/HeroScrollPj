@@ -56,7 +56,7 @@ public class AudioController1 : MonoBehaviour
     //随机背景小音乐
     private void PlayRandomBackClip()
     {
-        if (AudioController0.instance.isPlayMusic != 1)
+        if (!GamePref.PrefMusicPlay)
             return;
 
         audioTimer += Time.deltaTime;
@@ -101,7 +101,7 @@ public class AudioController1 : MonoBehaviour
         isPlayRandom = false;
         audioSource.loop = true;
 
-        if (AudioController0.instance.isPlayMusic != 1)
+        if (!GamePref.PrefMusicPlay)
             return;
         audioSource.Play();
     }
@@ -111,9 +111,15 @@ public class AudioController1 : MonoBehaviour
     {
         //Debug.Log("AudioController1.PlayAudioSource()");
 
-        if (AudioController0.instance.isPlayMusic != 1)
+        if (!GamePref.PrefMusicPlay)
             return;
 
         audioSource.PlayDelayed(delayedTime);
+    }
+
+    public void MusicSwitch(bool isPlay)
+    {
+        if(isPlay)audioSource.Play();
+        else audioSource.Pause();
     }
 }

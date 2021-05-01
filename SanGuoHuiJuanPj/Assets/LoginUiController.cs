@@ -29,7 +29,7 @@ public class LoginUiController : MonoBehaviour
     public UnityAction<string,string,int,int> OnLoggedInAction;
     public UnityAction OnResetAccountAction;
     public Image busyPanel;
-
+    public string DeviceIsBound = @"设备已绑定了账号，请用设备登录修改账号信息!";
 #if UNITY_EDITOR
     void Start()
     {
@@ -216,7 +216,7 @@ public class LoginUiController : MonoBehaviour
             OnAction(ActionWindows.Register);
             if (user == null)
             {
-                register.message.text = "设备已绑定了账号，请用设备登录修改账号信息!";
+                register.message.text = DeviceIsBound;
                 register.ShowPasswordUi(false);
                 return;
             }

@@ -3225,7 +3225,7 @@ public class FightControlForStart : MonoBehaviour
         else
         {
             AudioController0.instance.audioSource.volume = AudioController0.instance.audioSource.volume * 0.75f;
-            if (AudioController0.instance.isPlayMusic != 1)
+            if (!GamePref.PrefMusicPlay)
                 return;
             audioSource.PlayDelayed(delayedTime);
         }

@@ -43,6 +43,8 @@ public class GameSystem : MonoBehaviour
         Configuration.Init();
         GameResources = new GameResources();
         GameResources.Init();
+        AudioController0.instance.MusicSwitch(GamePref.PrefMusicPlay);
+        AudioController1.instance.MusicSwitch(GamePref.PrefMusicPlay);
     }
 
     public static void InitGameDependencyComponents()
