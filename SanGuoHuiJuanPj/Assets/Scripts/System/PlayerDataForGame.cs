@@ -18,10 +18,6 @@ public class PlayerDataForGame : MonoBehaviour
     public int secsPerStamina = 600;
     private int staminaIncreaseLimit = 90;
     //修复v1.89无限刷霸业宝箱3的Bug 
-    //玉阙检查值 
-    public int Bug1_9YvQueCheck = 5000;
-    //玉阙修正数量 
-    public int Bug1_9YvQueSet = 4999;
     [Serializable]
     public enum WarTypes
     {
@@ -465,6 +461,4 @@ public class PlayerDataForGame : MonoBehaviour
         stamina = new LocalStamina(pyData.LastStaminaUpdateTicks, pyData.Stamina, secsPerStamina, staminaIncreaseLimit,
             staminaMax);
     }
-
-    public void RetrieveStaminaFromWarReward() => Stamina.AddStamina(WarReward.Stamina);
 }

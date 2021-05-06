@@ -107,7 +107,7 @@ public class GetBoxOrCodeData
     //战役宝箱
     public List<int> fightBoxs;
     //兑换码
-    public List<RedemptionCodeGot> redemptionCodeGotList;
+    public List<string> redemptionCodeGotList = new List<string>();
 }
 [Skip]
 public class RedemptionCodeGot

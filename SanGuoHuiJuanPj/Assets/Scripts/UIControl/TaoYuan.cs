@@ -147,7 +147,7 @@ using UnityEngine.UI;
             chestId = 0;
             //如果玩家元宝小于预设的酒坛花费或开酒坛失败(时间还未到)
             if (PlayerDataForGame.instance.pyData.YuanBao < openJiuTanYBNums ||
-                !TimeSystemControl.instance.IsJiuTanAvailable())
+                !TimeSystemControl.instance.IsJiuTanAvailable(SysTime.IsToday(PlayerDataForGame.instance.pyData.LastJiuTanRedeemTime)))
             {
                 PlayerDataForGame.instance.ShowStringTips(DataTable.GetStringText(0));
                 AudioController0.instance.PlayAudioSource(0);
@@ -222,11 +222,6 @@ using UnityEngine.UI;
 
     public void OnChestRecallAction(PlayerDataDto player, TaoYuanChestUI chestUi)
     {
-        if (chestUi == jiuTan)
-        {
-            chestUi.value.text = (10 - player.DailyJiuTanRedemptionCount).ToString();
-        }
-
         chestUi.SetChest(true); //UI，打开箱子
         AudioController0.instance.ChangeAudioClip(0);
         AudioController0.instance.PlayAudioSource(0);

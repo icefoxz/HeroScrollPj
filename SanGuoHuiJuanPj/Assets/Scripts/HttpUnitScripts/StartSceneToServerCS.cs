@@ -100,23 +100,22 @@ public class StartSceneToServerCS : MonoBehaviour
     {
         if (newReg > 0)
         {
-            var isDirectRegistered = string.IsNullOrEmpty(password);
-            GamePref.FlagDeviceReg(isDirectRegistered);
             GamePref.SetIsFirstPlay(true);
             PlayerDataForGame.instance.pyData = new PlayerData();
             PlayerDataForGame.instance.hstData = new HSTDataClass();
             PlayerDataForGame.instance.gbocData = new GetBoxOrCodeData();
             PlayerDataForGame.instance.warsData = new WarsDataClass();
         }
-        else
-        {
-            var pwd = GameSystem.LoginUi.login.password.text;
-            GamePref.SetPassword(pwd);
-            PlayerDataForGame.instance.acData.Password = pwd;
-        }
 
         var usr = username;
         GamePref.SetUsername(usr);
+        var pwdEmpty = string.IsNullOrEmpty(password);
+        if(!pwdEmpty)
+        {
+            GamePref.FlagDeviceReg(username);
+            GamePref.SetPassword(password);
+            PlayerDataForGame.instance.acData.Password = password;
+        }
         PlayerDataForGame.instance.acData.Username = usr;
         PlayerDataForGame.instance.Arrangement = arrangement;
 

@@ -34,7 +34,7 @@ public class UserSaveArchive : IUserSaveArchive
         var reward = new GetBoxOrCodeData
         {
             fightBoxs = b.fightBoxs,
-            redemptionCodeGotList = b.redemptionCodeGotList.Where(r => r.isGot).ToList()
+            redemptionCodeGotList = b.redemptionCodeGotList
         };
         Username = userInfo.Username;
         Password = userInfo.Password;

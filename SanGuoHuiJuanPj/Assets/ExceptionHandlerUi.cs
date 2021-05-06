@@ -15,12 +15,15 @@ public class ExceptionHandlerUi : MonoBehaviour
 
     public void OnLogReceived(string condition, string stacktrace, LogType type)
     {
-        if (type == LogType.Error || type == LogType.Exception)
+        switch (type)
         {
-            gameObject.SetActive(true);
-            ExceptionMessage.text = condition;
-            StackTrace.text = stacktrace;
-            Time.timeScale = 0;
+            case LogType.Error:
+            case LogType.Exception:
+                gameObject.SetActive(true);
+                ExceptionMessage.text = condition;
+                StackTrace.text = $"v+{Application.version}\n{stacktrace}";
+                Time.timeScale = 0;
+                break;
         }
     }
 

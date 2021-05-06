@@ -539,7 +539,6 @@ public class UIManager : MonoBehaviour
             cutTiLiTextObj.GetComponent<Text>().color = ColorDataStatic.deep_green;
             cutTiLiTextObj.GetComponent<Text>().text = "+" + PlayerDataForGame.instance.WarReward.Stamina;
             cutTiLiTextObj.SetActive(true);
-            PlayerDataForGame.instance.RetrieveStaminaFromWarReward();
             PlayerDataForGame.instance.ShowStringTips(string.Format(DataTable.GetStringText(25), PlayerDataForGame.instance.WarReward.Stamina));
         }
         PlayerDataForGame.instance.lastSenceIndex = 1;
@@ -1836,23 +1835,7 @@ public class UIManager : MonoBehaviour
             return;
         }
 
-        var rCode = DataTable.RCode.Values.FirstOrDefault(c => c.Code == code);
-        if(rCode == null)
-        {
-            ShowMessage(49);
-            return;
-        }
-
-        var now = TimeSystemControl.instance.SystemTimer.Now.LocalDateTime;
-        if (!rCode.Lasting.IsTableTimeInRange(now))
-        {
-            ShowMessage(47);
-            return;
-        }
-
-        var playerRecord = PlayerDataForGame.instance.gbocData.redemptionCodeGotList
-            .FirstOrDefault(c => c.id == rCode.Id);
-        var isRedeemed = playerRecord != null && playerRecord.isGot;
+        var isRedeemed = PlayerDataForGame.instance.gbocData.redemptionCodeGotList.Contains(code);
 
         if (isRedeemed)
         {
@@ -1868,9 +1851,9 @@ public class UIManager : MonoBehaviour
                 var troops = vb.GetPlayerTroopDtos();
                 PlayerDataForGame.instance.UpdateGameCards(cards, troops);
                 ConsumeManager.instance.SaveChangeUpdatePlayerData(py, 7);
-                OnSuccessRedeemed(rC, playerRecord, py);
+                OnSuccessRedeemed(rC, py);
             }, PlayerDataForGame.instance.ShowStringTips,
-            EventStrings.Req_RCode, ViewBag.Instance().SetValue(rCode.Code));
+            EventStrings.Req_RCode, ViewBag.Instance().SetValue(code));
 
         void ShowMessage(int textId)
         {
@@ -1880,18 +1863,11 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    private void OnSuccessRedeemed(RCodeTable rCode, RedemptionCodeGot playerRecord,PlayerDataDto playerData)
+    private void OnSuccessRedeemed(RCodeTable rCode, PlayerDataDto playerData)
     {
         var rewards = rCode.Cards.Select(c => new RewardsCardClass
             {cardId = c.CardId, cardChips = c.Chips, cardType = c.Type}).ToList();
-
-        if (playerRecord == null)
-        {
-            playerRecord = new RedemptionCodeGot {id = rCode.Id};
-            PlayerDataForGame.instance.gbocData.redemptionCodeGotList.Add(playerRecord);
-        }
-
-        playerRecord.isGot = true;
+        PlayerDataForGame.instance.gbocData.redemptionCodeGotList.Add(rCode.Code);
         ConsumeManager.instance.SaveChangeUpdatePlayerData(playerData, 0);
 
         rtInputField.text = "";

@@ -9095,8 +9095,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   staminaMax: 1000
   secsPerStamina: 600
-  Bug1_9YvQueCheck: 10000
-  Bug1_9YvQueSet: 0
   WarType: 0
   isNeedSaveData: 0
   isHadNewSaveData: 0

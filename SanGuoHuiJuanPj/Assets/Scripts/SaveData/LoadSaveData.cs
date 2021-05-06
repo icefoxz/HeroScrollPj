@@ -205,19 +205,6 @@ public class LoadSaveData : MonoBehaviour
         //} 
     }
 
-    public void ReplaceRedeemCode(List<RedemptionCodeGot> list)
-    {
-        var gbocPath = AppDebugClass.gbocDataString;
-        var text = File.ReadAllText(gbocPath);
-        var json = EncryptDecipherTool.DESDecrypt(text);
-        var gbocData = Json.Deserialize<GetBoxOrCodeData>(json);
-        PlayerDataForGame.instance.isHadNewSaveData = true;
-        gbocData.redemptionCodeGotList = list;
-        PlayerDataForGame.instance.gbocData = gbocData;
-        PlayerDataForGame.instance.isNeedSaveData = true;
-        SaveByJson(gbocData);
-    }
-
     /// <summary> 
     /// 读档json 
     /// </summary> 
@@ -276,7 +263,7 @@ public class LoadSaveData : MonoBehaviour
                             }
                             {
                                 save3.fightBoxs = save.fightBoxs;
-                                save3.redemptionCodeGotList = save.redemptionCodeGotList;
+                                save3.redemptionCodeGotList = new List<string>();
                                 SaveByJson(save3);
                             }
                         }
@@ -301,7 +288,7 @@ public class LoadSaveData : MonoBehaviour
                             }
                             {
                                 save3.fightBoxs = save00.fightBoxs;
-                                save3.redemptionCodeGotList = save00.redemptionCodeGotList;
+                                save3.redemptionCodeGotList = new List<string>();
                                 SaveByJson(save3);
                             }
                         }
@@ -323,7 +310,7 @@ public class LoadSaveData : MonoBehaviour
                         if (isEncrypted != 0)
                             jsonStr3 = EncryptDecipherTool.DESDecrypt(jsonStr3);
                         jsonStr3 = InspectionAndCorrectionString(jsonStr3, new string[] { "}]}" }, filePath3);
-                        save3 = ArchiveCorrection(JsonConvert.DeserializeObject<GetBoxOrCodeData>(jsonStr3));
+                        save3 = JsonConvert.DeserializeObject<PrivateCodeData>(jsonStr3).ToNewSave();
                     }
 
                     //武将士兵塔数据读档 
@@ -354,7 +341,7 @@ public class LoadSaveData : MonoBehaviour
                         PlayerPrefs.SetInt(ISNEEDENCRYPT, isEncrypted);
                     }
                 }
-                catch (System.Exception e)
+                catch (Exception e)
                 {
                     Debug.LogError("读档失败 " + e.ToString());
 
@@ -363,90 +350,85 @@ public class LoadSaveData : MonoBehaviour
                     filePath2 = AppDebugClass.warUnlockDataString1;
                     filePath3 = AppDebugClass.gbocDataString1;
 
-                    //尝试获取备份存档 
-                    try
+                    if (File.Exists(AppDebugClass.playerDataString1))
                     {
-                        if (File.Exists(AppDebugClass.playerDataString1))
+                        jsonStr = File.ReadAllText(AppDebugClass.playerDataString1);
+                        jsonStr = InspectionAndCorrectionString(jsonStr, new string[] {"true}]}", "false}]}"},
+                            AppDebugClass.playerDataString1);
+                        save = JsonConvert.DeserializeObject<ObsoletedPlayerData>(jsonStr);
                         {
-                            jsonStr = File.ReadAllText(AppDebugClass.playerDataString1);
-                            jsonStr = InspectionAndCorrectionString(jsonStr, new string[] { "true}]}", "false}]}" }, AppDebugClass.playerDataString1);
-                            save = JsonConvert.DeserializeObject<ObsoletedPlayerData>(jsonStr);
+                            save0.Level = save.level;
+                            save0.Exp = save.exp;
+                            save0.YuanBao = save.yuanbao;
+                            save0.YvQue = save.yvque;
+                            save0.ForceId = save.forceId;
+                            SaveByJson(save0);
+                        }
+                        {
+                            save3.fightBoxs = save.fightBoxs;
+                            save3.redemptionCodeGotList = new List<string>();
+                            SaveByJson(save3);
+                        }
+                        File.Delete(AppDebugClass.playerDataString1);
+                        if (File.Exists(filePath))
+                        {
+                            File.Delete(filePath);
+                        }
+                    }
+                    else
+                    {
+                        if (File.Exists(AppDebugClass.pyDataString1))
+                        {
+                            jsonStr = File.ReadAllText(AppDebugClass.pyDataString1);
+                            jsonStr = InspectionAndCorrectionString(jsonStr, new string[] {"true}]}", "false}]}"},
+                                AppDebugClass.pyDataString1);
+                            save00 = JsonConvert.DeserializeObject<ObsoletedPyData>(jsonStr);
                             {
-                                save0.Level = save.level;
-                                save0.Exp = save.exp;
-                                save0.YuanBao = save.yuanbao;
-                                save0.YvQue = save.yvque;
-                                save0.ForceId = save.forceId;
+                                save0.Level = save00.level;
+                                save0.Exp = save00.exp;
+                                save0.YuanBao = save00.yuanbao;
+                                save0.YvQue = save00.yvque;
+                                save0.ForceId = save00.forceId;
                                 SaveByJson(save0);
                             }
                             {
-                                save3.fightBoxs = save.fightBoxs;
-                                save3.redemptionCodeGotList = save.redemptionCodeGotList;
+                                save3.fightBoxs = save00.fightBoxs;
+                                save3.redemptionCodeGotList = new List<string>();
                                 SaveByJson(save3);
                             }
-                            File.Delete(AppDebugClass.playerDataString1);
-                            if (File.Exists(filePath))
+                            File.Delete(AppDebugClass.pyDataString1);
+                            if (File.Exists(filePath00))
                             {
-                                File.Delete(filePath);
+                                File.Delete(filePath00);
                             }
                         }
                         else
                         {
-                            if (File.Exists(AppDebugClass.pyDataString1))
-                            {
-                                jsonStr = File.ReadAllText(AppDebugClass.pyDataString1);
-                                jsonStr = InspectionAndCorrectionString(jsonStr, new string[] { "true}]}", "false}]}" }, AppDebugClass.pyDataString1);
-                                save00 = JsonConvert.DeserializeObject<ObsoletedPyData>(jsonStr);
-                                {
-                                    save0.Level = save00.level;
-                                    save0.Exp = save00.exp;
-                                    save0.YuanBao = save00.yuanbao;
-                                    save0.YvQue = save00.yvque;
-                                    save0.ForceId = save00.forceId;
-                                    SaveByJson(save0);
-                                }
-                                {
-                                    save3.fightBoxs = save00.fightBoxs;
-                                    save3.redemptionCodeGotList = save00.redemptionCodeGotList;
-                                    SaveByJson(save3);
-                                }
-                                File.Delete(AppDebugClass.pyDataString1);
-                                if (File.Exists(filePath00))
-                                {
-                                    File.Delete(filePath00);
-                                }
-                            }
-                            else
-                            {
-                                jsonStr0 = File.ReadAllText(filePath0);
-                                if (isEncrypted != 0)
-                                    jsonStr0 = EncryptDecipherTool.DESDecrypt(jsonStr0);
-                                save0 = JsonConvert.DeserializeObject<PlayerData>(jsonStr0);
+                            jsonStr0 = File.ReadAllText(filePath0);
+                            if (isEncrypted != 0)
+                                jsonStr0 = EncryptDecipherTool.DESDecrypt(jsonStr0);
+                            save0 = JsonConvert.DeserializeObject<PlayerData>(jsonStr0);
 
-                                jsonStr3 = File.ReadAllText(filePath3);
-                                if (isEncrypted != 0)
-                                    jsonStr3 = EncryptDecipherTool.DESDecrypt(jsonStr3);
-                                save3 = ArchiveCorrection(JsonConvert.DeserializeObject<GetBoxOrCodeData>(jsonStr3));
-                            }
+                            jsonStr3 = File.ReadAllText(filePath3);
+                            if (isEncrypted != 0)
+                                jsonStr3 = EncryptDecipherTool.DESDecrypt(jsonStr3);
+                            save3 = JsonConvert.DeserializeObject<PrivateCodeData>(jsonStr3).ToNewSave();
                         }
-                        jsonStr1 = File.ReadAllText(filePath1);
-                        if (isEncrypted != 0)
-                            jsonStr1 = EncryptDecipherTool.DESDecrypt(jsonStr1);
-                        jsonStr1 = InspectionAndCorrectionString(jsonStr1, new string[] { ":0}]}" }, filePath1);
-                        save1 = ArchiveCorrection(JsonConvert.DeserializeObject<HSTDataClass>(jsonStr1));
-
-                        jsonStr2 = File.ReadAllText(filePath2);
-                        if (isEncrypted != 0)
-                            jsonStr2 = EncryptDecipherTool.DESDecrypt(jsonStr2);
-                        jsonStr2 = InspectionAndCorrectionString(jsonStr2, new string[] { "true}]}", "false}]}" }, filePath2);
-                        save2 = ArchiveCorrection(JsonConvert.DeserializeObject<WarsDataClass>(jsonStr2));
-
-                        Debug.Log("读取备份存档成功");
                     }
-                    catch (System.Exception ex)
-                    {
-                        Debug.LogError("备份存档损坏 " + ex.ToString());
-                    }
+
+                    jsonStr1 = File.ReadAllText(filePath1);
+                    if (isEncrypted != 0)
+                        jsonStr1 = EncryptDecipherTool.DESDecrypt(jsonStr1);
+                    jsonStr1 = InspectionAndCorrectionString(jsonStr1, new string[] {":0}]}"}, filePath1);
+                    save1 = ArchiveCorrection(JsonConvert.DeserializeObject<HSTDataClass>(jsonStr1));
+
+                    jsonStr2 = File.ReadAllText(filePath2);
+                    if (isEncrypted != 0)
+                        jsonStr2 = EncryptDecipherTool.DESDecrypt(jsonStr2);
+                    jsonStr2 = InspectionAndCorrectionString(jsonStr2, new string[] {"true}]}", "false}]}"}, filePath2);
+                    save2 = ArchiveCorrection(JsonConvert.DeserializeObject<WarsDataClass>(jsonStr2));
+
+                    Debug.Log("读取备份存档成功");
                 }
 
                 //存档数据提取到游戏中 
@@ -540,30 +522,6 @@ public class LoadSaveData : MonoBehaviour
         return save;
     }
     //玩家宝箱与兑换码存档修正 
-    private GetBoxOrCodeData ArchiveCorrection(GetBoxOrCodeData save)
-    {
-        bool isNeedSaveDate = false;
-        //兑换码存档 
-        int nowDataCount = save.redemptionCodeGotList.Count;
-        int jsonDataCount = DataTable.RCode.Count;
-        if (nowDataCount < jsonDataCount)
-        {
-            isNeedSaveDate = true;
-            for (int i = nowDataCount; i < jsonDataCount; i++)
-            {
-                RedemptionCodeGot redemptionCodeGot = new RedemptionCodeGot();
-                redemptionCodeGot.id = i;
-                redemptionCodeGot.isGot = false;
-                save.redemptionCodeGotList.Add(redemptionCodeGot);
-            }
-        }
-        if (isNeedSaveDate)
-        {
-            SaveByJson(save);
-            //Debug.Log("玩家个人数据存档修正"); 
-        }
-        return save;
-    }
 
     /// <summary> 
     /// 游戏数据初次存档 
@@ -584,14 +542,7 @@ public class LoadSaveData : MonoBehaviour
         //////////////////////////////////////////////////////////////////////////////////////// 
         GetBoxOrCodeData gbocSaveData = new GetBoxOrCodeData();
         gbocSaveData.fightBoxs = new List<int>();
-        gbocSaveData.redemptionCodeGotList = new List<RedemptionCodeGot>();
-        for (int i = 0; i < DataTable.RCode.Count; i++)
-        {
-            RedemptionCodeGot redemptionCodeGot = new RedemptionCodeGot();
-            redemptionCodeGot.id = i;
-            redemptionCodeGot.isGot = false;
-            gbocSaveData.redemptionCodeGotList.Add(redemptionCodeGot);
-        }
+        gbocSaveData.redemptionCodeGotList = new List<string>();
         SaveByJson(gbocSaveData);
         //////////////////////////////////////////////////////////////////////////////////////// 
         HSTDataClass hstSaveData = new HSTDataClass
@@ -730,5 +681,20 @@ public class LoadSaveData : MonoBehaviour
         }
         //Debug.Log(jsonStr); 
         return jsonStr;
+    }
+
+    private class PrivateCodeData
+    {
+        //战役宝箱
+        public List<int> fightBoxs;
+        //兑换码
+        public List<RedemptionCodeGot> redemptionCodeGotList;
+
+        public GetBoxOrCodeData ToNewSave()
+        {
+            var list = DataTable.RCode.Join(redemptionCodeGotList, r => r.Key, c => c.id, (r, _) => r.Value.Code).ToList();
+            return new GetBoxOrCodeData
+                {fightBoxs = fightBoxs, redemptionCodeGotList = list};
+        }
     }
 }

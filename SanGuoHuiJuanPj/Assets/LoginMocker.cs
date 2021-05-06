@@ -44,4 +44,6 @@ public class LoginMocker : MonoBehaviour
             EventStrings.Req_WarReward, viewBag);
 
     }
+
+    public void ResetAccount() => Controller.OnAction(LoginUiController.ActionWindows.ResetAccount);
 }

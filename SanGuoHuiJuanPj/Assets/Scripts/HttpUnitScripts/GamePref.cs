@@ -18,7 +18,7 @@ public static class GamePref
     }
     public static bool PrefMusicPlay => PlayerPrefs.GetInt(PlayerMusicOffPrefs) == 0;
 
-    public static bool IsUserAccountCompleted => PlayerPrefs.GetInt(IsUsersAccountComplete) == 0;
+    public static bool IsUserAccountCompleted => PlayerPrefs.GetString(AccountCompleteUsername) == Username;
     public static BaYeDataClass GetBaYe
     {
         get
@@ -34,7 +34,7 @@ public static class GamePref
     private const string PasswordString = "Password";
     public const string PhoneNumber = "Phone";
     public const string IsFirstPlayString = "IsFirstPlay";
-    public const string IsUsersAccountComplete = "IsUsersAccountComplete";
+    public const string AccountCompleteUsername = "IsUsersAccountComplete";
     public const string BaYeSave = "BaYeSave";
 
     public static void SetUsername(string username) => PlayerPrefs.SetString(AccountIdString,username);
@@ -68,6 +68,6 @@ public static class GamePref
 
     public static void SetPrefWarSpeed(float speed) => PlayerPrefs.SetFloat(PlayerWarSpeedPrefs, speed);
     public static void SetPrefMusic(bool isPlay) => PlayerPrefs.SetInt(PlayerMusicOffPrefs, isPlay ? 0 : 1);
-    public static void FlagDeviceReg(bool isFlag) => PlayerPrefs.SetInt(IsUsersAccountComplete, isFlag ? 1 : 0);
+    public static void FlagDeviceReg(string username) => PlayerPrefs.SetString(AccountCompleteUsername, username);
     public static void SaveBaYe(BaYeDataClass save) => PlayerPrefs.SetString(BaYeSave, Json.Serialize(save));
 }

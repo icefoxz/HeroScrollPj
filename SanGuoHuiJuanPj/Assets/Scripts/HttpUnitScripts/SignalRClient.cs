@@ -30,14 +30,15 @@ public class SignalRClient : MonoBehaviour
     /// </summary>
     public HubConnectionState Status;
 
-    public int ServerTimeOutMinutes = 3;
+    public int ServerTimeOutMinutes = 10;
     public int KeeAliveIntervalSecs = 20;
     public int HandShakeTimeoutSecs = 20;
     public ServerPanel ServerPanel;
     public event UnityAction<HubConnectionState> OnStatusChanged;
     public static SignalRClient instance;
     private CancellationTokenSource cancellationTokenSource;
-    private static HubConnection _connection;
+
+    private static HubConnection _hub;
     private Dictionary<string, UnityAction<object[]>> _actions;
     private static readonly Type _stringType = typeof(string);
     private bool isBusy;
@@ -67,9 +68,9 @@ public class SignalRClient : MonoBehaviour
 
     async void OnApplicationQuit()
     {
-        if (_connection == null)return;
-        await _connection.StopAsync();
-        await _connection.DisposeAsync();
+        if (_hub == null)return;
+        await _hub.StopAsync();
+        await _hub.DisposeAsync();
     }
 
     /// <summary>
@@ -78,12 +79,10 @@ public class SignalRClient : MonoBehaviour
     /// <param name="recallAction">( isSuccess, statusCode, arrangement )</param>
     /// <param name="username"></param>
     /// <param name="password"></param>
-    public async void UserLogin(UnityAction<bool,int ,SignalRConnectionInfo> recallAction, string username = null,
-        string password = null)
+    public async void UserLogin(UnityAction<bool,int ,SignalRConnectionInfo> recallAction, string username,
+        string password)
     {
         if (isBusy) return;
-        if (username == null) username = PlayerDataForGame.instance.acData.Username;
-        if (password == null) password = PlayerDataForGame.instance.acData.Password;
         cancellationTokenSource = new CancellationTokenSource();
         cancellationTokenSource.Token.Register(() => OnConnectionClose(XDebug.Throw<SignalRClient>("取消连接！")));
         var response = await Http.PostAsync(Server.SIGNALR_LOGIN_API,
@@ -166,8 +165,7 @@ public class SignalRClient : MonoBehaviour
             unLockCount = w.UnlockProgress
         }).ToList();
         PlayerDataForGame.instance.UpdateGameCards(gameCardList, troops);
-        PlayerDataForGame.instance.gbocData.redemptionCodeGotList = redeemedList.Join(DataTable.RCode.Values, c => c,
-            r => r.Code, (_, r) => new RedemptionCodeGot {id = r.Id, isGot = true}).ToList();
+        PlayerDataForGame.instance.gbocData.redemptionCodeGotList = redeemedList.ToList();
         PlayerDataForGame.instance.gbocData.fightBoxs = warChestList.ToList();
         PlayerDataForGame.instance.isNeedSaveData = true;
         LoadSaveData.instance.SaveGameData();
@@ -177,35 +175,43 @@ public class SignalRClient : MonoBehaviour
     {
         try
         {
-            if (_connection != null)
+            if(_hub==null)
             {
-                ResetConnection();
-                await _connection.DisposeAsync();
+                _hub = new HubConnectionBuilder()
+                    .WithUrl(connectionInfo.Url, cfg =>
+                        cfg.AccessTokenProvider = () => Task.Run(() => connectionInfo.AccessToken, cancellationToken))
+                    .WithAutomaticReconnect(new TimeSpan[]
+                    {
+                        TimeSpan.FromSeconds(1), 
+                        TimeSpan.FromSeconds(2), 
+                        TimeSpan.FromSeconds(4),
+                        TimeSpan.FromSeconds(5),
+                        TimeSpan.FromSeconds(5),
+                        TimeSpan.FromSeconds(5),
+                        TimeSpan.FromSeconds(5),
+                        TimeSpan.FromSeconds(5),
+                        TimeSpan.FromSeconds(5),
+                        TimeSpan.FromSeconds(5)
+                    })
+                    .Build();
+                _hub.ServerTimeout = TimeSpan.FromMinutes(ServerTimeOutMinutes);
+                _hub.KeepAliveInterval = TimeSpan.FromSeconds(KeeAliveIntervalSecs);
+                _hub.HandshakeTimeout = TimeSpan.FromSeconds(HandShakeTimeoutSecs);
+                _hub.Closed += OnConnectionClose;
+                _hub.Reconnected += OnReconnected;
+                _hub.Reconnecting += OnReconnecting;
+                _hub.On<string, string>(EventStrings.Server_Call, OnServerCall);
             }
-            _connection = new HubConnectionBuilder()
-                .WithUrl(connectionInfo.Url, cfg =>
-                    cfg.AccessTokenProvider = () => Task.Run(() => connectionInfo.AccessToken, cancellationToken))
-                .WithAutomaticReconnect(new TimeSpan[]
-                {
-                    TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(2), TimeSpan.FromSeconds(4), TimeSpan.FromSeconds(5),
-                    TimeSpan.FromSeconds(5)
-                })
-                .Build();
-            _connection.ServerTimeout = TimeSpan.FromMinutes(ServerTimeOutMinutes);
-            _connection.KeepAliveInterval = TimeSpan.FromSeconds(KeeAliveIntervalSecs);
-            _connection.HandshakeTimeout = TimeSpan.FromSeconds(HandShakeTimeoutSecs);
-            _connection.Closed += OnConnectionClose;
-            _connection.Reconnected += OnReconnected;
-            _connection.Reconnecting += OnReconnecting;
-            _connection.On<string, string>(EventStrings.Server_Call, OnServerCall);
-            await _connection.StartAsync(cancellationToken);
-            StatusChanged(_connection.State,$"Host:{connectionInfo.Url},\nToken:{connectionInfo.AccessToken}\n连接成功！");
+
+            if (_hub.State == HubConnectionState.Connected) throw new InvalidOperationException("Hub is connected!");
+            await _hub.StartAsync(cancellationToken);
+            StatusChanged(_hub.State,$"Host:{connectionInfo.Url},\nToken:{connectionInfo.AccessToken}\n连接成功！");
             cancellationTokenSource = null;
             Application.quitting += Disconnect;
         }
         catch (Exception e)
         {
-            StatusChanged(_connection?.State ?? HubConnectionState.Disconnected, $"连接失败！{e}");
+            StatusChanged(_hub?.State ?? HubConnectionState.Disconnected, $"连接失败！{e}");
             return false;
         }
         return true;
@@ -256,7 +262,7 @@ public class SignalRClient : MonoBehaviour
         {
             if (bag == default)
                 bag = ViewBag.Instance();
-            var result = await _connection.InvokeCoreAsync(method, _stringType,
+            var result = await _hub.InvokeCoreAsync(method, _stringType,
                 bag == null ? new object[0] : new object[] {Json.Serialize(bag)},
                 cancellationToken);
             return result?.ToString();
@@ -264,7 +270,7 @@ public class SignalRClient : MonoBehaviour
         catch (Exception e)
         {
 #if UNITY_EDITOR
-            XDebug.LogError<SignalRClient>($"{method}:{e.Message}");
+            XDebug.LogError<SignalRClient>($"svr_{method}:{e.Message}");
             throw;
 #endif
             return null;
@@ -276,27 +282,16 @@ public class SignalRClient : MonoBehaviour
     /// </summary>
     public async void Disconnect()
     {
-        if (_connection.State == HubConnectionState.Disconnected)
+        if (_hub.State == HubConnectionState.Disconnected)
             return;
 
         if (cancellationTokenSource!=null && cancellationTokenSource.IsCancellationRequested == false)
         {
             cancellationTokenSource.Cancel();
-            ResetConnection();
             return;
         }
-        if (_connection.State == HubConnectionState.Disconnected) return;
-        await _connection.StopAsync();
-        ResetConnection();
-    }
-
-    private void ResetConnection()
-    {
-        Application.quitting -= Disconnect;
-        if (_connection == null) return;
-        _connection.Closed -= OnConnectionClose;
-        _connection.Reconnected -= OnReconnected;
-        _connection.Reconnecting -= OnReconnecting;
+        if (_hub.State == HubConnectionState.Disconnected) return;
+        await _hub.StopAsync();
     }
 
     #region Upload
@@ -305,10 +300,8 @@ public class SignalRClient : MonoBehaviour
     {
         var saved = PlayerDataForGame.instance;
         var playerData = saved.pyData;
-        var redeemCodeIds = saved.gbocData.redemptionCodeGotList.Where(c => c.isGot)
-            .Select(c => c.id).ToList();
         var warChest = saved.gbocData.fightBoxs.ToArray();
-        var redeemedCodes = redeemCodeIds.Join(DataTable.RCode, id => id, d => d.Key, (_, d) => d.Value.Code).ToArray();
+        var redeemedCodes = saved.gbocData.redemptionCodeGotList.ToArray();
         var token = args[0];
         var campaign = saved.warsData.warUnlockSaveData.Select(w => new WarCampaignDto
                 {WarId = w.warId, IsFirstRewardTaken = w.isTakeReward, UnlockProgress = w.unLockCount})
@@ -350,7 +343,7 @@ public class SignalRClient : MonoBehaviour
     /// </summary>
     private Task OnReconnecting(Exception exception)
     {
-        StatusChanged(_connection.State, exception.ToString());
+        StatusChanged(_hub.State, exception.ToString());
         return Task.CompletedTask;
     }
 
@@ -359,7 +352,7 @@ public class SignalRClient : MonoBehaviour
     /// </summary>
     private Task OnReconnected(string msg)
     {
-        StatusChanged(_connection.State, msg);
+        StatusChanged(_hub.State, msg);
         return Task.CompletedTask;
     }
 
@@ -368,8 +361,8 @@ public class SignalRClient : MonoBehaviour
     /// </summary>
     private Task OnConnectionClose(Exception exception)
     {
-        StatusChanged(_connection.State, exception.ToString());
-        if (_connection.State == HubConnectionState.Disconnected && ServerPanel!=null)
+        StatusChanged(_hub.State, exception.ToString());
+        if (_hub.State == HubConnectionState.Disconnected && ServerPanel!=null)
             ServerPanel.OnSignalRDisconnected();
         return Task.CompletedTask;
     }

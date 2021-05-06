@@ -674,7 +674,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1110003846}
-        m_MethodName: OnRequestWarReward
+        m_MethodName: ResetAccount
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -873,7 +873,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "\u6D4B\u8BD5\u8BF7\u6C42"
+  m_Text: "\u91CD\u7F6E\u8D26\u53F7"
 --- !u!222 &1541558940
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2015,6 +2015,7 @@ MonoBehaviour:
   loginUiController: {fileID: 8504718804684192871}
   timeSystemControl: {fileID: 6978989965852507966}
   playerDataForGame: {fileID: 6978989966585328156}
+  configuration: {fileID: 6978989966585328157}
   systemCanvas: {fileID: 1774359882042954910}
 --- !u!1 &1774359881036421324
 GameObject:
@@ -10780,7 +10781,7 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
-  m_Interactable: 0
+  m_Interactable: 1
   m_TargetGraphic: {fileID: 5590996840273032041}
   m_TextComponent: {fileID: 5590996839843097139}
   m_Placeholder: {fileID: 5590996840279333256}
@@ -11391,7 +11392,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b5fbd3829056d59498182d7407c7ea4a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  IsPlayMusicStr: IsPlayMusicStr
   firstForceId: 0
   isLoadingSaveData: 0
   isHadSaveData: 0
@@ -12310,7 +12310,6 @@ MonoBehaviour:
   - 1
   - 1
   - 0.4
-  isPlayMusic: 0
 --- !u!4 &6978989966100966680
 Transform:
   m_ObjectHideFlags: 0
@@ -12659,8 +12658,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   staminaMax: 1000
   secsPerStamina: 600
-  Bug1_9YvQueCheck: 10000
-  Bug1_9YvQueSet: 0
   WarType: 0
   isNeedSaveData: 0
   isHadNewSaveData: 0
@@ -12676,7 +12673,6 @@ MonoBehaviour:
   infoText: {fileID: 6978989966592876325}
   loadingImg: {fileID: 6978989965594138547}
   lastSenceIndex: 0
-  getBackTiLiNums: 0
   boxForTiLiNums: 0
   textTipsObj: {fileID: 6978989965070010652}
   selectedBaYeEventId: 0
@@ -15252,3 +15248,4 @@ MonoBehaviour:
   forgetPassword: {fileID: 5157646934129369367}
   resetAccount: {fileID: 3517602613424410082}
   busyPanel: {fileID: 5316932813765149738}
+  DeviceIsBound: "\u8BBE\u5907\u5DF2\u7ED1\u5B9A\u4E86\u8D26\u53F7\uFF0C\u8BF7\u7528\u8BBE\u5907\u767B\u5F55\u4FEE\u6539\u8D26\u53F7\u4FE1\u606F!"

@@ -141,6 +141,7 @@ public class LoginUiController : MonoBehaviour
                 GamePref.SetPassword(changePassword.password.text);
                 Close();
                 PlayerDataForGame.instance.ShowStringTips("密码修改成功！");
+                GamePref.FlagDeviceReg(changePassword.username.text);
             }, PlayerDataForGame.instance.ShowStringTips,
             EventStrings.Req_ChangePassword,
             viewBag);
@@ -148,7 +149,7 @@ public class LoginUiController : MonoBehaviour
 
     private void InitAccountInfo()
     {
-        accountInfo.message.gameObject.SetActive(!GamePref.IsUserAccountCompleted);
+        accountInfo.warningMessage.gameObject.SetActive(GamePref.IsUserAccountCompleted);
         accountInfo.password.text = GamePref.IsUserAccountCompleted ? "123456" : string.Empty;
 
         accountInfo.backBtn.onClick.AddListener(Close);
@@ -209,18 +210,18 @@ public class LoginUiController : MonoBehaviour
 
     private async Task RequestUsernameToRegister()
     {
-        var user = await Http.PostAsync<UserInfo>(Server.REQUEST_USERNAME_API,
+        var response = await Http.PostAsync(Server.REQUEST_USERNAME_API,
             Json.Serialize(Server.GetUserInfo(null, null)));
+        var uJson = await response.Content.ReadAsStringAsync();
+        var user = Json.Deserialize<UserInfo>(uJson);
+        var isSuccess = response.IsSuccessStatusCode;
         UnityMainThread.thread.RunNextFrame(() =>
         {
             OnAction(ActionWindows.Register);
-            if (user == null)
-            {
-                register.message.text = DeviceIsBound;
-                register.ShowPasswordUi(false);
-                return;
-            }
             register.username.text = user.Username;
+            if (isSuccess) return;
+            register.message.text = DeviceIsBound;
+            register.ShowPasswordUi(false);
         });
     }
 

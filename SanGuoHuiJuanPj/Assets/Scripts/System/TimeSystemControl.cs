@@ -17,33 +17,34 @@ public class TimeSystemControl : MonoBehaviour
     private string timeWebPath0 = "http://api.m.taobao.com/rest/api3.do?api=mtop.common.getTimestamp";
 
     #region UnityEditor
-    public SystemTimer SystemTimer;//系统时间的脚本引用(编辑器里引用)
-    public int JinNangTimeGapSecs = 3600;//锦囊间隔时间
-    public int JiuTanTimeGapSecs = 3600;//酒坛间隔时间
+
+    public SystemTimer SystemTimer; //系统时间的脚本引用(编辑器里引用)
+    public int JinNangTimeGapSecs = 3600; //锦囊间隔时间
+    public int JiuTanTimeGapSecs = 3600; //酒坛间隔时间
     public int JiuTanRedeemCountPerDay = 10;
     public int JinNangRedeemCountPerDay = 10;
+
     #endregion
 
     public event Action OnHourly;
-    private DateTimeOffset hour;//现在时间(小时制，只会跨小时不会跨分钟)
+    private DateTimeOffset hour; //现在时间(小时制，只会跨小时不会跨分钟)
     public int NowHour => hour.Hour;
 
-    int maxStamina;  //记录最大体力值
+    int maxStamina; //记录最大体力值
     public int MaxStamina => maxStamina;
 
     bool isCanGetBox1;
 
     public bool IsCountdown { get; private set; }
-    
+
     //鸡坛相关存档字符
     public static string openCKTime0_str = "openCKTime0"; //12点
     public static string openCKTime1_str = "openCKTime1"; //17点
     public static string openCKTime2_str = "openCKTime2"; //21点
 
-    [HideInInspector]
-    public bool isFInGame;  //记录当天首次进入游戏
-    private static string dayOfyearStr = "dayOfyearStr";        //存放上次进入游戏是哪一天
-    private static string yearStr = "yearStr";                  //存放上次进入游戏是哪一年
+    [HideInInspector] public bool isFInGame; //记录当天首次进入游戏
+    private static string dayOfyearStr = "dayOfyearStr"; //存放上次进入游戏是哪一天
+    private static string yearStr = "yearStr"; //存放上次进入游戏是哪一年
 
     public TimeSpan Free198TimeSpan { get; private set; }
     public TimeSpan Free298TimeSpan { get; private set; }
@@ -57,9 +58,10 @@ public class TimeSystemControl : MonoBehaviour
     }
 
     private bool isInit;
+
     public void Init()
     {
-        if(isInit)return;
+        if (isInit) return;
         isInit = true;
         StartGameToInitOpenTime();
     }
@@ -67,11 +69,11 @@ public class TimeSystemControl : MonoBehaviour
     //每次进入游戏对开启时间进行初始化
     private void StartGameToInitOpenTime()
     {
-        JiuTanTimeGapSecs = DataTable.GetGameValue(0);  //宝箱开启时间
+        JiuTanTimeGapSecs = DataTable.GetGameValue(0); //宝箱开启时间
         Free198TimeSpan = TimeSpan.FromSeconds(DataTable.GetGameValue(1));
         Free298TimeSpan = TimeSpan.FromSeconds(DataTable.GetGameValue(2));
 
-        maxStamina = DataTable.ResourceConfig[2].NewPlayerValue;//startValue
+        maxStamina = DataTable.ResourceConfig[2].NewPlayerValue; //startValue
     }
 
     private void Update()
@@ -191,9 +193,9 @@ public class TimeSystemControl : MonoBehaviour
 
     private void UpdateStamina()
     {
-        if(PlayerDataForGame.instance.Stamina==null)return;
+        if (PlayerDataForGame.instance.Stamina == null) return;
         var stamina = PlayerDataForGame.instance.Stamina;
-        stamina.UpdateStamina(SysTime.UnixNow);
+        stamina.UpdateStamina();
         if (GameSystem.CurrentScene == GameSystem.GameScene.MainScene)
             UIManager.instance.UpdateShowTiLiInfo(stamina.IsStopIncrease
                 ? TimeDisplayText()
@@ -209,12 +211,13 @@ public class TimeSystemControl : MonoBehaviour
         var limitNotReach = redeemCount < JiuTanRedeemCountPerDay;
 
         if (GameSystem.CurrentScene != GameSystem.GameScene.MainScene) return;
-        var jiuTanCount = JiuTanRedeemCountPerDay - redeemCount;
+        var lastRedeemIsToday = SysTime.IsToday(PlayerDataForGame.instance.pyData.LastJiuTanRedeemTime);
+        var jiuTanCount = lastRedeemIsToday ? JiuTanRedeemCountPerDay - redeemCount : JinNangRedeemCountPerDay;
         var displayText = string.Empty;
         if (limitNotReach)
             displayText =
                 TimeDisplayText(TimeSpan.FromMilliseconds(nextOpenJiuTanTimeTicks - SystemTimer.NowUnixTicks));
-        UIManager.instance.taoYuan.UpdateJiuTan(IsJiuTanAvailable(), jiuTanCount, displayText);
+        UIManager.instance.taoYuan.UpdateJiuTan(IsJiuTanAvailable(lastRedeemIsToday), jiuTanCount, displayText);
     }
 
     private void CountdownFreeFourDaysChest()
@@ -222,20 +225,21 @@ public class TimeSystemControl : MonoBehaviour
         if (GameSystem.CurrentScene != GameSystem.GameScene.MainScene) return;
 
         var py = PlayerDataForGame.instance.pyData;
-        
+
         var nextOpenTimeTick = (long) (py.LastFourDaysChestRedeemTime + Free198TimeSpan.TotalMilliseconds);
         if (nextOpenTimeTick < SysTime.UnixNow)
         {
             UIManager.instance.taoYuan.copperChest.UpdateChest(string.Empty, true);
             return;
         }
+
         UIManager.instance.taoYuan.copperChest.UpdateChest(TimeDisplayText(SysTime.UnixNow, nextOpenTimeTick),
             false);
     }
 
     private void CountdownFreeWeeklyChest()
     {
-        if(GameSystem.CurrentScene != GameSystem.GameScene.MainScene)return;
+        if (GameSystem.CurrentScene != GameSystem.GameScene.MainScene) return;
 
         var py = PlayerDataForGame.instance.pyData;
 
@@ -256,22 +260,37 @@ public class TimeSystemControl : MonoBehaviour
         if (playerData == null) return;
         if (playerData.DailyJinNangRedemptionCount >= 10) return;
         if (GameSystem.CurrentScene != GameSystem.GameScene.MainScene) return;
-        if(UIManager.instance) UIManager.instance.UpdateShowJinNangBtn(IsJinNangAvailable());
+        if (UIManager.instance) UIManager.instance.UpdateShowJinNangBtn(IsJinNangAvailable());
     }
 
-    public bool IsFreeWeeklyChestAvailable() => PlayerDataForGame.instance.pyData.LastWeekChestRedeemTime + Free298TimeSpan.TotalMilliseconds <
-                                                SysTime.UnixNow;
-    public bool IsFreeFourDaysChestAvailable() => PlayerDataForGame.instance.pyData.LastFourDaysChestRedeemTime + Free198TimeSpan.TotalMilliseconds <
-                                                SysTime.UnixNow;
+    public bool IsFreeWeeklyChestAvailable() =>
+        PlayerDataForGame.instance.pyData.LastWeekChestRedeemTime + Free298TimeSpan.TotalMilliseconds <
+        SysTime.UnixNow;
 
-    public bool IsJinNangAvailable() =>
-        PlayerDataForGame.instance.pyData.LastJinNangRedeemTime + JinNangTimeGapSecs * 1000 < SysTime.UnixNow &&
-        (!SysTime.IsToday(PlayerDataForGame.instance.pyData.LastJinNangRedeemTime) ||
-         PlayerDataForGame.instance.pyData.DailyJinNangRedemptionCount < JinNangRedeemCountPerDay);
+    public bool IsFreeFourDaysChestAvailable() => PlayerDataForGame.instance.pyData.LastFourDaysChestRedeemTime +
+                                                  Free198TimeSpan.TotalMilliseconds <
+                                                  SysTime.UnixNow;
 
-    public bool IsJiuTanAvailable() =>
-        PlayerDataForGame.instance.pyData.LastJiuTanRedeemTime + JiuTanTimeGapSecs * 1000 < SysTime.UnixNow &&
-        (!SysTime.IsToday(PlayerDataForGame.instance.pyData.LastJiuTanRedeemTime) ||
-         PlayerDataForGame.instance.pyData.DailyJiuTanRedemptionCount < JiuTanRedeemCountPerDay);
+    public bool IsJinNangAvailable()
+    {
+        var lastRedeemTimeGapIsInRange = SysTime.UnixNow <
+                                         PlayerDataForGame.instance.pyData.LastJinNangRedeemTime +
+                                         JinNangTimeGapSecs * 1000;
+        if (lastRedeemTimeGapIsInRange) return false;
+        var lastRedeemIsToday = SysTime.IsToday(PlayerDataForGame.instance.pyData.LastJinNangRedeemTime);
+        var jinNangRedeemLimitNotReach =
+            PlayerDataForGame.instance.pyData.DailyJinNangRedemptionCount < JinNangRedeemCountPerDay;
+        return !lastRedeemIsToday || jinNangRedeemLimitNotReach;
+    }
 
+    public bool IsJiuTanAvailable(bool lastRedeemIsToday)
+    {
+        var lastRedeemTimeGapIsInRange = SysTime.UnixNow <
+                                         PlayerDataForGame.instance.pyData.LastJiuTanRedeemTime +
+                                         JiuTanTimeGapSecs * 1000;
+        if (lastRedeemTimeGapIsInRange) return false;
+        var jiuTanRedeemLimitNotReach =
+            PlayerDataForGame.instance.pyData.DailyJiuTanRedemptionCount < JiuTanRedeemCountPerDay;
+        return !lastRedeemIsToday || jiuTanRedeemLimitNotReach;
+    }
 }
