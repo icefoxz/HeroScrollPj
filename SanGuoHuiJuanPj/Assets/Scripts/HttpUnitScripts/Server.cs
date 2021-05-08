@@ -22,10 +22,10 @@ public static class Server
     public static string DEVICE_LOGIN_API { get; private set; } 
     public static string RESET_GAMEPLAY_API { get; private set; } 
 #else
-    private static string ServerUrl { get; set; } = "https://heroscrollpjapi1.azurewebsites.net/api/";
+    //private static string ServerUrl { get; set; } = "https://heroscrollpjapi1.azurewebsites.net/api/";
     //private static string ServerUrl { get; set; } = "https://heroscrollpjtestserver0.azurewebsites.net/api/";
     //private static string ServerUrl { get; set; } = "https://herotestfuncapi.azurewebsites.net/api/";
-    //private static string ServerUrl { get; set; } = "http://localhost:7071/api/";
+    private static string ServerUrl { get; set; } = "http://localhost:7071/api/";
     public static string PLAYER_SAVE_DATA_UPLOAD_API { get; private set; } = "UploadSaveData";
     public static string INSTANCE_ID_API { get; private set; } = "GenerateUserId";
     public static string REQUEST_USERNAME_API { get; private set; } = "RequestUsername";

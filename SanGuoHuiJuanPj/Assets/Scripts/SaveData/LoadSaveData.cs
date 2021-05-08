@@ -310,7 +310,7 @@ public class LoadSaveData : MonoBehaviour
                         if (isEncrypted != 0)
                             jsonStr3 = EncryptDecipherTool.DESDecrypt(jsonStr3);
                         jsonStr3 = InspectionAndCorrectionString(jsonStr3, new string[] { "}]}" }, filePath3);
-                        save3 = JsonConvert.DeserializeObject<PrivateCodeData>(jsonStr3).ToNewSave();
+                        save3 = Json.Deserialize<PrivateCodeData>(jsonStr3)?.ToNewSave();
                     }
 
                     //武将士兵塔数据读档 
@@ -364,11 +364,13 @@ public class LoadSaveData : MonoBehaviour
                             save0.ForceId = save.forceId;
                             SaveByJson(save0);
                         }
+                        if (save3 != null)
                         {
                             save3.fightBoxs = save.fightBoxs;
                             save3.redemptionCodeGotList = new List<string>();
                             SaveByJson(save3);
                         }
+
                         File.Delete(AppDebugClass.playerDataString1);
                         if (File.Exists(filePath))
                         {
@@ -392,9 +394,12 @@ public class LoadSaveData : MonoBehaviour
                                 SaveByJson(save0);
                             }
                             {
-                                save3.fightBoxs = save00.fightBoxs;
-                                save3.redemptionCodeGotList = new List<string>();
-                                SaveByJson(save3);
+                                if(save3!=null)
+                                {
+                                    save3.fightBoxs = save00.fightBoxs;
+                                    save3.redemptionCodeGotList = new List<string>();
+                                    SaveByJson(save3);
+                                }
                             }
                             File.Delete(AppDebugClass.pyDataString1);
                             if (File.Exists(filePath00))
@@ -412,7 +417,7 @@ public class LoadSaveData : MonoBehaviour
                             jsonStr3 = File.ReadAllText(filePath3);
                             if (isEncrypted != 0)
                                 jsonStr3 = EncryptDecipherTool.DESDecrypt(jsonStr3);
-                            save3 = JsonConvert.DeserializeObject<PrivateCodeData>(jsonStr3).ToNewSave();
+                            save3 = Json.Deserialize<PrivateCodeData>(jsonStr3).ToNewSave();
                         }
                     }
 
@@ -594,7 +599,7 @@ public class LoadSaveData : MonoBehaviour
         PlayerDataForGame.instance.pyData = save;
         PlayerDataForGame.instance.hstData = save1;
         PlayerDataForGame.instance.warsData = save2;
-        PlayerDataForGame.instance.gbocData = save3;
+        if(save3!=null) PlayerDataForGame.instance.gbocData = save3;
         PlayerDataForGame.instance.isHadNewSaveData = true;
     }
 
@@ -692,7 +697,7 @@ public class LoadSaveData : MonoBehaviour
 
         public GetBoxOrCodeData ToNewSave()
         {
-            var list = DataTable.RCode.Join(redemptionCodeGotList, r => r.Key, c => c.id, (r, _) => r.Value.Code).ToList();
+            var list = DataTable.RCode.Join(redemptionCodeGotList.Where(r=>r.isGot), r => r.Key, c => c.id, (r, _) => r.Value.Code).ToList();
             return new GetBoxOrCodeData
                 {fightBoxs = fightBoxs, redemptionCodeGotList = list};
         }

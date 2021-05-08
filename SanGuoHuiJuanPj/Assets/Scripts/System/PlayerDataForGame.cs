@@ -435,6 +435,8 @@ public class PlayerDataForGame : MonoBehaviour
         ApiPanel.instance.Invoke(vb =>
             {
                 WarReward = new WarReward(vb.Values[0].ToString(), selectedWarId, StaminaReturnTemp);
+                var troop = vb.GetTroopDto();
+                UpdateTroopEnlist(troop);
                 StaminaReturnTemp = 0;
             }, msg =>
             {
@@ -447,6 +449,33 @@ public class PlayerDataForGame : MonoBehaviour
                 EnList = cards.GroupBy(c => c.Type, c => c.CardId).ToDictionary(c => c.Key, c => c.ToArray()),
                 ForceId = CurrentWarForceId
             }).SetValues(selectedWarId, UIManager.instance.expedition.CurrentMode.Id));
+    }
+
+    private void UpdateTroopEnlist(TroopDto troop)
+    {
+        var isContainHero = troop.EnList.ContainsKey(GameCardType.Hero);
+        var isContainTower = troop.EnList.ContainsKey(GameCardType.Tower);
+        var isContainTrap = troop.EnList.ContainsKey(GameCardType.Trap);
+        foreach (var h in hstData.heroSaveData.Where(h => h.GetForceId() == troop.ForceId))
+        {
+            h.isFight = isContainHero
+                ? troop.EnList[GameCardType.Hero].Any(id => h.id == id) ? 1 : 0
+                : 0;
+        }
+        foreach (var t in hstData.towerSaveData.Where(h => h.GetForceId() == troop.ForceId))
+        {
+            t.isFight = isContainTower
+                ? troop.EnList[GameCardType.Tower].Any(id => t.id == id) ? 1 : 0
+                : 0;
+        }
+
+        foreach (var t in hstData.trapSaveData.Where(h => h.GetForceId() == troop.ForceId))
+        {
+            t.isFight = isContainTrap
+                ? troop.EnList[GameCardType.Trap].Any(id => t.id == id) ? 1 : 0
+                : 0;
+        }
+        RefreshEnlisted(troop.ForceId);
     }
 
     public void RefreshEnlisted(int forceId)

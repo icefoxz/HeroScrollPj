@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Beebyte.Obfuscator;
 
+[Skip]
 public class CardManager
 {
     /// <summary>

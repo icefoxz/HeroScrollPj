@@ -13,13 +13,17 @@ public static class GameSystemExtension
         var pick = Random.Range(0, list.Count);
         return list[pick];
     }
+
     /// <summary>
     /// 上阵
     /// </summary>
     /// <param name="cards"></param>
     /// <param name="forceId">军团Id</param>
     /// <returns></returns>
-    public static IEnumerable<NowLevelAndHadChip> Enlist(this IEnumerable<NowLevelAndHadChip> cards,int forceId)=> cards.Where(card =>
+    public static IEnumerable<NowLevelAndHadChip> Enlist(this IEnumerable<NowLevelAndHadChip> cards, int forceId) =>
+        cards.Where(card => GetForceId(card) == forceId && card.level > 0 && card.isFight > 0);
+
+    public static int GetForceId(this NowLevelAndHadChip card)
     {
         //单位类型0武将 1士兵 2塔 3陷阱 4技能
         int force = -1;
@@ -35,8 +39,8 @@ public static class GameSystemExtension
                 force = DataTable.Trap[card.id].ForceId;
                 break;
         }
-        return force == forceId && card.level > 0 && card.isFight > 0;
-    });
+        return force;
+    }
 
     public static NowLevelAndHadChip GetOrInstance(this List<NowLevelAndHadChip> cards, int cardId, int cardType, int level) =>
         cards.GetOrInstance(cardId, (GameCardType) cardType,level);

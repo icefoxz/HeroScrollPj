@@ -301,7 +301,7 @@ public class SignalRClient : MonoBehaviour
         var saved = PlayerDataForGame.instance;
         var playerData = saved.pyData;
         var warChest = saved.gbocData.fightBoxs.ToArray();
-        var redeemedCodes = saved.gbocData.redemptionCodeGotList.ToArray();
+        var redeemedCodes = new string[0];//saved.gbocData.redemptionCodeGotList.ToArray();
         var token = args[0];
         var campaign = saved.warsData.warUnlockSaveData.Select(w => new WarCampaignDto
                 {WarId = w.warId, IsFirstRewardTaken = w.isTakeReward, UnlockProgress = w.unLockCount})

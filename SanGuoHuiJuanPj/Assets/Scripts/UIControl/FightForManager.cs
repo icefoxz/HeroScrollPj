@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Beebyte.Obfuscator;
 using UnityEngine;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
@@ -72,7 +73,7 @@ public class FightForManager : MonoBehaviour
         new int[2]{ 14,16},             //19
     };
 
-    private GameResources GameResources;
+    private GameResources GameResources = GameSystem.GameResources;
 
     private void Awake()
     {
@@ -88,10 +89,8 @@ public class FightForManager : MonoBehaviour
     }
 
     // Start is called before the first frame update
-    void Start()
+    public void Init()
     {
-        GameResources = new GameResources();
-        GameResources.Init();
         oneDisY = Screen.height / (1920 / gridLayoutGroup.cellSize.y) / 9;
         float xFlo = (1920f / 1080f) / ((float)Screen.height / Screen.width);
         floDisY = 2 * oneDisY * xFlo;
@@ -100,9 +99,8 @@ public class FightForManager : MonoBehaviour
         CardManager.ResetJiBan(FightController.instance.playerJiBanAllTypes);
 
         CreatePlayerHomeCard();
-        UpdateFightNumTextShow();
     }
-
+    [SkipRename]
     private void CreatePlayerHomeCard()
     {
         FightCardData playerHomeData = new FightCardData();
@@ -116,6 +114,7 @@ public class FightForManager : MonoBehaviour
         playerHomeData.activeUnit = false;
         playerHomeData.fightState = new FightState();
         playerFightCardsDatas[17] = playerHomeData;
+        UpdateFightNumTextShow(WarsUIManager.instance.maxHeroNums);
     }
 
     /// <summary>
@@ -1348,25 +1347,26 @@ public class FightForManager : MonoBehaviour
     /// <summary>
     /// 更新上阵数量显示
     /// </summary>
-    public void UpdateFightNumTextShow()
+    public void UpdateFightNumTextShow(int maxCards)
     {
-        heroNumText.text = string.Format(DataTable.GetStringText(24), nowHeroNums, WarsUIManager.instance.maxHeroNums);
+        heroNumText.text = string.Format(DataTable.GetStringText(24), nowHeroNums,maxCards);
     }
 
     //是否能成功上阵
     public bool ChangeNumsSuccess(bool isAdd)
     {
+        var maxCard = WarsUIManager.instance.maxHeroNums;
         if (isAdd)
         {
-            if (nowHeroNums < WarsUIManager.instance.maxHeroNums)
+            if (nowHeroNums < maxCard)
             {
                 nowHeroNums++;
-                UpdateFightNumTextShow();
+                UpdateFightNumTextShow(maxCard);
                 return true;
             }
             else
             {
-                nowHeroNums = WarsUIManager.instance.maxHeroNums;
+                nowHeroNums = maxCard;
                 return false;
             }
         }
@@ -1375,7 +1375,7 @@ public class FightForManager : MonoBehaviour
             if (nowHeroNums > 0)
             {
                 nowHeroNums--;
-                UpdateFightNumTextShow();
+                UpdateFightNumTextShow(maxCard);
             }
             else
             {

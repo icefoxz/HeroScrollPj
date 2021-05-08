@@ -78,6 +78,10 @@ public class FightController : MonoBehaviour
         {
             instance = this;
         }
+    }
+
+    public void Init()
+    {
         gunMuCards = new List<FightCardData>();
         gunShiCards = new List<FightCardData>();
 
@@ -4307,7 +4311,7 @@ public class FightController : MonoBehaviour
                     Destroy(FightForManager.instance.playerFightCardsDatas[i].cardObj);
                     FightForManager.instance.playerFightCardsDatas[i] = null;
                     FightForManager.instance.nowHeroNums--;
-                    FightForManager.instance.UpdateFightNumTextShow();
+                    FightForManager.instance.UpdateFightNumTextShow(WarsUIManager.instance.maxHeroNums);
                 }
             }
         }

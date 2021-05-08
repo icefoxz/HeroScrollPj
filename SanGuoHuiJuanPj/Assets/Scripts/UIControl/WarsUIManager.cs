@@ -167,6 +167,9 @@ public class WarsUIManager : MonoBehaviour
         InitCardListShow();
 
         InitGuanQiaShow();
+        FightController.instance.Init();
+        FightForManager.instance.Init();
+
     }
 
     void OnApplicationPause(bool pause)
@@ -1313,7 +1316,8 @@ public class WarsUIManager : MonoBehaviour
                 upLevelBtn.transform.GetChild(1).GetComponent<Text>().text = DataTable.GetStringText(61);
                 PlayerDataForGame.instance.ShowStringTips(DataTable.GetStringText(62));
             }
-            FightForManager.instance.UpdateFightNumTextShow();
+
+            FightForManager.instance.UpdateFightNumTextShow(maxHeroNums);
             PlayAudioClip(19);
         }
     }

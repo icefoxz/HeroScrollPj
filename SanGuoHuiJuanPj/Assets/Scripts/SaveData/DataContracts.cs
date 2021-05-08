@@ -105,7 +105,7 @@ public interface IUserSaveArchive
 public class GetBoxOrCodeData
 {
     //战役宝箱
-    public List<int> fightBoxs;
+    public List<int> fightBoxs = new List<int>();
     //兑换码
     public List<string> redemptionCodeGotList = new List<string>();
 }
