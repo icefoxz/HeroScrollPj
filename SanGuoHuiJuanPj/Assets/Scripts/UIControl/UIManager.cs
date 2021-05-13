@@ -29,8 +29,6 @@ public class UIManager : MonoBehaviour
     [SerializeField]
     GameObject zhuChengHeroContentObj;  //主城卡牌集合框 
     [SerializeField]
-    GameObject heroCardCityPre; //主城武将卡牌prefab 
-    [SerializeField]
     GameObject playerInfoObj;   //玩家信息obj 
     [SerializeField]
     public Text yuanBaoNumText;        //元宝数量Text 
@@ -38,22 +36,6 @@ public class UIManager : MonoBehaviour
     public Text yvQueNumText;          //玉阙数量Text 
     [SerializeField]
     Text tiLiNumText;           //体力数量Text 
-    [SerializeField]
-    Text cardsListTitle;         //主城卡牌列表标题 
-    [SerializeField]
-    Text cardsNumsTitle;         //主城卡牌列表中的单位数量 
-    [SerializeField]
-    Image changeCardsListBtn;         //主城卡牌列表切换按钮势力图片 
-    [SerializeField]
-    Image changeCardsListNameImg;     //主城卡牌列表切换按钮势力文字图片 
-    [SerializeField]
-    GameObject showCardObj;     //上部展示的卡牌 
-    [SerializeField]
-    Transform infoTran;         //上部展示的信息栏 
-    [SerializeField]
-    GameObject heChengBtn;      //合成按钮obj 
-    [SerializeField]
-    GameObject heImgObj;        //合成文字图片 
     [SerializeField]
     GameObject rewardsShowObj;  //奖品展示UI 
     [SerializeField]
@@ -64,11 +46,6 @@ public class UIManager : MonoBehaviour
     GameObject warsChooseListObj;   //战役选择列表obj 
     [SerializeField]
     GameObject warsChooseBtnPreObj;   //战役选择按钮obj 
-
-    [SerializeField]
-    GameObject holdOrFightBtn;      //出战或回城切换按钮obj 
-    [SerializeField]
-    GameObject sellCardBtn;      //出售按钮obj 
     [SerializeField]
     Text tiLiRecordTimer;   //体力恢复倒计时 
     [SerializeField]
@@ -77,6 +54,7 @@ public class UIManager : MonoBehaviour
     public GameObject[] boxBtnObjs;    //宝箱obj 
     public Expedition expedition;//战役 
     public TaoYuan taoYuan;//桃园 
+    public Barrack Barrack;//主营
 
     [SerializeField]
     Transform rewardsParent;    //奖品父级 
@@ -85,19 +63,10 @@ public class UIManager : MonoBehaviour
 
     private int needYuanBaoNums;    //记录所需元宝数 
 
-    Image lastSelectImg;    //对上一个选择的卡牌selectImg的标记 
-    NowLevelAndHadChip selectCardData;  //记录选择的卡牌存档数据 
-
     public bool IsJumping { get; private set; } //记录界面是否进行跳转 
-
-    private int minInitCardCount = 20;  //卡牌池基础数量 
-    private List<GameObject> heroCardPoolList = new List<GameObject>();     //卡牌池 
 
     [SerializeField]
     Transform chonseWarDifTran; //难度选择父级 
-
-    [SerializeField]
-    GameObject upStarEffectObj; //升星特效 
 
     [SerializeField]
     GameObject[] guideObjs; // 指引objs 0:桃园宝箱 1:战役宝箱 2:合成 3:开始战役 
@@ -113,6 +82,7 @@ public class UIManager : MonoBehaviour
 
     [SerializeField]
     GameObject cutTiLiTextObj;  //扣除体力动画Obj 
+
 
     //public ForceSelectorUi warForceSelectorUi;//战役势力选择器 
     //private int lastAvailableStageIndex;//最远可战的战役索引 
@@ -149,8 +119,6 @@ public class UIManager : MonoBehaviour
         }
         IsJumping = false;
         needYuanBaoNums = 0;
-        indexChooseListForceId = 0;
-        selectCardData = new NowLevelAndHadChip();
         rewardManager = gameObject.AddComponent<RewardManager>();
     }
 
@@ -170,11 +138,9 @@ public class UIManager : MonoBehaviour
             PlayerDataForGame.instance.BaYeManager.Init();
         }
 
-        InitHeroCardPooling();
-
         InitializationPlayerInfo();
         expedition.Init();
-
+        Barrack.Init(MergeCard,OnClickForSellCard,OnCardEnlist);
         InitChickenOpenTs();
         InitChickenBtnFun();
         InitJiBanForMainFun();
@@ -479,9 +445,10 @@ public class UIManager : MonoBehaviour
                 Transform tran = jibanHeroBoxTran.GetChild(i);
                 GameObject obj = tran.GetChild(0).gameObject;
                 //名字 
-                ShowNameTextRules(obj.transform.GetChild(2).GetComponent<Text>(), hero.Name);
+                NameTextSizeAlignment(obj.transform.GetChild(2).GetComponent<Text>(), hero.Name);
                 //名字颜色根据稀有度 
-                obj.transform.GetChild(2).GetComponent<Text>().color = NameColorChoose(hero.Rarity);
+                obj.transform.GetChild(2).GetComponent<Text>().color =
+                    GameCardInfo.GetInfo((GameCardType) card.CardType, card.CardId).GetNameColor();
                 //卡牌 
                 obj.transform.GetChild(1).GetComponent<Image>().sprite =
                     GameResources.HeroImg[hero.Id];
@@ -680,468 +647,402 @@ public class UIManager : MonoBehaviour
         PlayerDataForGame.instance.JumpSceneFun(2, false, () => PlayerDataForGame.instance.WarReward != null);
     }
 
-    //刷新上阵数量的显示 
-    private void UpdateCardNumsShow()
-    {
-        cardsListTitle.text = "出战";
-        cardsNumsTitle.text = PlayerDataForGame.instance.TotalCardsEnlisted + "/" + DataTable.PlayerLevelConfig[PlayerDataForGame.instance.pyData.Level].CardLimit;
-    }
+    ///// <summary> 
+    ///// 延时刷新列表置顶 
+    ///// </summary> 
+    //IEnumerator LateToChangeViewShow(float startTime)
+    //{
+    //    yield return new WaitForSeconds(startTime);
 
-    //是否展示卡牌详情显示 
-    private void ShowOrHideInfo(bool isShow)
-    {
-        showCardObj.SetActive(isShow);
-        infoTran.gameObject.SetActive(isShow);
-        heChengBtn.SetActive(isShow);
-        holdOrFightBtn.SetActive(isShow);
-        sellCardBtn.SetActive(isShow);
-    }
+    //    //Debug.Log("----列表大小控制"); 
 
-    public int indexChooseListForceId = 0; //标记主城展示哪个势力的id 
+    //    int showCardCount = 0;
+    //    for (int i = 0; i < zhuChengHeroContentObj.transform.childCount; i++)
+    //    {
+    //        if (zhuChengHeroContentObj.transform.GetChild(i).gameObject.activeSelf)
+    //            showCardCount++;
+    //    }
 
-    /// <summary> 
-    /// 改变武将列表和辅助列表显示 
-    /// </summary> 
-    public void ChangeScrollView()
-    {
-        AudioController0.instance.RandomPlayGuZhengAudio();//播放随机音效 
-
-        indexChooseListForceId++;
-        if (indexChooseListForceId > DataTable.PlayerLevelConfig[PlayerDataForGame.instance.pyData.Level].UnlockForces)
-        {
-            indexChooseListForceId = 0;
-        }
-        changeCardsListBtn.sprite = Resources.Load("Image/shiLi/Flag/" + indexChooseListForceId, typeof(Sprite)) as Sprite;
-        changeCardsListNameImg.sprite = Resources.Load("Image/shiLi/Name/" + indexChooseListForceId, typeof(Sprite)) as Sprite;
-        RefreshCardList();
-        UpdateCardNumsShow();
-        StartCoroutine(LateToChangeViewShow(0));
-    }
-
-    /// <summary> 
-    /// 延时刷新列表置顶 
-    /// </summary> 
-    IEnumerator LateToChangeViewShow(float startTime)
-    {
-        yield return new WaitForSeconds(startTime);
-
-        //Debug.Log("----列表大小控制"); 
-
-        int showCardCount = 0;
-        for (int i = 0; i < zhuChengHeroContentObj.transform.childCount; i++)
-        {
-            if (zhuChengHeroContentObj.transform.GetChild(i).gameObject.activeSelf)
-                showCardCount++;
-        }
-
-        //列表大小控制 
-        if (showCardCount >= 16)
-        {
-            zhuChengHeroContentObj.GetComponent<ContentSizeFitter>().verticalFit = ContentSizeFitter.FitMode.MinSize;
-        }
-        else
-        {
-            zhuChengHeroContentObj.GetComponent<ContentSizeFitter>().verticalFit = ContentSizeFitter.FitMode.Unconstrained;
-            //zhuChengHeroContentObj.GetComponent<RectTransform>().anchorMin = new Vector2(0, 0); 
-            //zhuChengHeroContentObj.GetComponent<RectTransform>().anchorMax = new Vector2(1, 1); 
-            zhuChengHeroContentObj.GetComponent<RectTransform>().offsetMin = new Vector2(0, 0);
-            zhuChengHeroContentObj.GetComponent<RectTransform>().offsetMax = new Vector2(1, 1);
-        }
-        zhuChengHeroContentObj.transform.parent.parent.GetComponent<ScrollRect>().DOVerticalNormalizedPos(1f, 0.2f);
-        //zhuChengHeroContentObj.transform.parent.parent.GetComponent<ScrollRect>().listView.localPosition = Vector2.left; 
-    }
+    //    //列表大小控制 
+    //    if (showCardCount >= 16)
+    //    {
+    //        zhuChengHeroContentObj.GetComponent<ContentSizeFitter>().verticalFit = ContentSizeFitter.FitMode.MinSize;
+    //    }
+    //    else
+    //    {
+    //        zhuChengHeroContentObj.GetComponent<ContentSizeFitter>().verticalFit = ContentSizeFitter.FitMode.Unconstrained;
+    //        //zhuChengHeroContentObj.GetComponent<RectTransform>().anchorMin = new Vector2(0, 0); 
+    //        //zhuChengHeroContentObj.GetComponent<RectTransform>().anchorMax = new Vector2(1, 1); 
+    //        zhuChengHeroContentObj.GetComponent<RectTransform>().offsetMin = new Vector2(0, 0);
+    //        zhuChengHeroContentObj.GetComponent<RectTransform>().offsetMax = new Vector2(1, 1);
+    //    }
+    //    zhuChengHeroContentObj.transform.parent.parent.GetComponent<ScrollRect>().DOVerticalNormalizedPos(1f, 0.2f);
+    //    //zhuChengHeroContentObj.transform.parent.parent.GetComponent<ScrollRect>().listView.localPosition = Vector2.left; 
+    //}
 
     /// <summary> 
     /// 显示单个辅助 
     /// </summary> 
-    private void GenerateFuZhuUi(NowLevelAndHadChip card)
-    {
-        var info = card.GetInfo();
-        GameObject obj = GetHeroCardFromPool();
-        //名字 
-        ShowNameTextRules(obj.transform.GetChild(3).GetComponent<Text>(), info.Name);
-        //名字颜色根据稀有度 
-        obj.transform.GetChild(3).GetComponent<Text>().color = NameColorChoose(info.Rare);
-        //卡牌 
-        obj.transform.GetChild(1).GetComponent<Image>().sprite = GameResources.FuZhuImg[info.ImageId];
-        //兵种框 
-        obj.transform.GetChild(5).GetComponent<Image>().sprite = GameResources.ClassImg[1];
-        //兵种名 
-        obj.transform.GetChild(5).GetComponentInChildren<Text>().text = info.Short;
-        //边框 
-        FrameChoose(info.Rare, obj.transform.GetChild(6).GetComponent<Image>());
-        //碎片 
-        if (card.level < DataTable.CardLevel.Keys.Max())
-        {
-            var consume = DataTable.CardLevel[card.level + 1].ChipsConsume;
-            obj.transform.GetChild(2).GetComponent<Text>().text = card.chips + "/" + consume;
-            obj.transform.GetChild(2).GetComponent<Text>().color = card.chips >= consume ? ColorDataStatic.deep_green : Color.white;
-        }
-        else
-        {
-            obj.transform.GetChild(2).GetComponent<Text>().text = "";
-        }
-        if (card.level > 0)
-        {
-            obj.transform.GetChild(4).GetComponent<Image>().enabled = true;
-            //设置星级展示 
-            obj.transform.GetChild(4).GetComponent<Image>().sprite = GameResources.GradeImg[card.level];
-            obj.transform.GetChild(8).gameObject.SetActive(false);
-            //出战标记 
-            if (card.isFight > 0)
-            {
-                PlayerDataForGame.instance.EnlistCard(card, true);
-                obj.transform.GetChild(7).gameObject.SetActive(true);
-            }
-            else
-            {
-                obj.transform.GetChild(7).gameObject.SetActive(false);
-            }
-        }
-        else
-        {
-            obj.transform.GetChild(4).GetComponent<Image>().enabled = false;
-            obj.transform.GetChild(7).gameObject.SetActive(false);
-            obj.transform.GetChild(8).gameObject.SetActive(true);
-        }
-        obj.GetComponent<Button>().onClick.RemoveAllListeners();
-        obj.GetComponent<Button>().onClick.AddListener(delegate ()
-        {
-            OnClickFuZhuCardFun(info, card, obj.transform.GetChild(9).GetComponent<Image>());
-        });
-    }
+    //private void GenerateFuZhuUi(NowLevelAndHadChip card)
+    //{
+    //    var info = card.GetInfo();
+    //    GameObject obj = GetHeroCardFromPool();
+    //    //名字 
+    //    ShowNameTextRules(obj.transform.GetChild(3).GetComponent<Text>(), info.Name);
+    //    //名字颜色根据稀有度 
+    //    obj.transform.GetChild(3).GetComponent<Text>().color = NameColorChoose(info.Rare);
+    //    //卡牌 
+    //    obj.transform.GetChild(1).GetComponent<Image>().sprite = GameResources.FuZhuImg[info.ImageId];
+    //    //兵种框 
+    //    obj.transform.GetChild(5).GetComponent<Image>().sprite = GameResources.ClassImg[1];
+    //    //兵种名 
+    //    obj.transform.GetChild(5).GetComponentInChildren<Text>().text = info.Short;
+    //    //边框 
+    //    FrameChoose(info.Rare, obj.transform.GetChild(6).GetComponent<Image>());
+    //    //碎片 
+    //    if (card.level < DataTable.CardLevel.Keys.Max())
+    //    {
+    //        var consume = DataTable.CardLevel[card.level + 1].ChipsConsume;
+    //        obj.transform.GetChild(2).GetComponent<Text>().text = card.chips + "/" + consume;
+    //        obj.transform.GetChild(2).GetComponent<Text>().color = card.chips >= consume ? ColorDataStatic.deep_green : Color.white;
+    //    }
+    //    else
+    //    {
+    //        obj.transform.GetChild(2).GetComponent<Text>().text = "";
+    //    }
+    //    if (card.level > 0)
+    //    {
+    //        obj.transform.GetChild(4).GetComponent<Image>().enabled = true;
+    //        //设置星级展示 
+    //        obj.transform.GetChild(4).GetComponent<Image>().sprite = GameResources.GradeImg[card.level];
+    //        obj.transform.GetChild(8).gameObject.SetActive(false);
+    //        //出战标记 
+    //        if (card.isFight > 0)
+    //        {
+    //            PlayerDataForGame.instance.EnlistCard(card, true);
+    //            obj.transform.GetChild(7).gameObject.SetActive(true);
+    //        }
+    //        else
+    //        {
+    //            obj.transform.GetChild(7).gameObject.SetActive(false);
+    //        }
+    //    }
+    //    else
+    //    {
+    //        obj.transform.GetChild(4).GetComponent<Image>().enabled = false;
+    //        obj.transform.GetChild(7).gameObject.SetActive(false);
+    //        obj.transform.GetChild(8).gameObject.SetActive(true);
+    //    }
+    //    obj.GetComponent<Button>().onClick.RemoveAllListeners();
+    //    obj.GetComponent<Button>().onClick.AddListener(delegate ()
+    //    {
+    //        OnClickFuZhuCardFun(info, card, obj.transform.GetChild(9).GetComponent<Image>());
+    //    });
+    //}
 
-    /// <summary> 
-    /// 点击辅助卡牌的方法 
-    /// </summary> 
-    private void OnClickFuZhuCardFun(GameCardInfo info,NowLevelAndHadChip card, Image selectImg)
-    {
-        PlayOnClickMusic();
+    ///// <summary> 
+    ///// 点击辅助卡牌的方法 
+    ///// </summary> 
+    //private void OnClickFuZhuCardFun(GameCardInfo info, NowLevelAndHadChip card, Image selectImg)
+    //{
+    //    PlayOnClickMusic();
 
-        //名字 
-        infoTran.GetChild(0).GetComponent<Text>().text = info.Name;
-        //名字颜色 
-        infoTran.GetChild(0).GetComponent<Text>().color = NameColorChoose(info.Rare);
-        //属性 为空 
-        infoTran.GetChild(1).GetComponent<Text>().text = "";
-        infoTran.GetChild(2).GetComponent<Text>().text = "";
-        //介绍 
-        infoTran.GetChild(3).GetComponent<Text>().text = info.Intro;
-        //名字 
-        ShowNameTextRules(showCardObj.transform.GetChild(3).GetComponent<Text>(), info.Name);
-        //名字颜色 
-        showCardObj.transform.GetChild(3).GetComponent<Text>().color = NameColorChoose(info.Rare);
-        //卡牌 
-        showCardObj.transform.GetChild(1).GetComponent<Image>().sprite = GameResources.FuZhuImg[info.ImageId];
-        //兵种框 
-        showCardObj.transform.GetChild(5).GetComponent<Image>().sprite = GameResources.ClassImg[1];
-        //兵种名 
-        showCardObj.transform.GetChild(5).GetComponentInChildren<Text>().text = info.Short;
-        //边框 
-        FrameChoose(info.Rare, showCardObj.transform.GetChild(6).GetComponent<Image>());
-        //碎片 
-        if (card.level < DataTable.CardLevel.Keys.Max())
-        {
-            var consume = DataTable.CardLevel[card.level + 1].ChipsConsume;
-            showCardObj.transform.GetChild(2).GetComponent<Text>().text = card.chips + "/" + consume;
-            showCardObj.transform.GetChild(2).GetComponent<Text>().color =
-                card.chips >= consume ? ColorDataStatic.deep_green : Color.black;
-        }
-        else
-        {
-            showCardObj.transform.GetChild(2).GetComponent<Text>().text = "";
-        }
+    //    //名字 
+    //    infoTran.GetChild(0).GetComponent<Text>().text = info.Name;
+    //    //名字颜色 
+    //    infoTran.GetChild(0).GetComponent<Text>().color = NameColorChoose(info.Rare);
+    //    //属性 为空 
+    //    infoTran.GetChild(1).GetComponent<Text>().text = "";
+    //    infoTran.GetChild(2).GetComponent<Text>().text = "";
+    //    //介绍 
+    //    infoTran.GetChild(3).GetComponent<Text>().text = info.Intro;
+    //    //名字 
+    //    ShowNameTextRules(showCardObj.transform.GetChild(3).GetComponent<Text>(), info.Name);
+    //    //名字颜色 
+    //    showCardObj.transform.GetChild(3).GetComponent<Text>().color = NameColorChoose(info.Rare);
+    //    //卡牌 
+    //    showCardObj.transform.GetChild(1).GetComponent<Image>().sprite = GameResources.FuZhuImg[info.ImageId];
+    //    //兵种框 
+    //    showCardObj.transform.GetChild(5).GetComponent<Image>().sprite = GameResources.ClassImg[1];
+    //    //兵种名 
+    //    showCardObj.transform.GetChild(5).GetComponentInChildren<Text>().text = info.Short;
+    //    //边框 
+    //    FrameChoose(info.Rare, showCardObj.transform.GetChild(6).GetComponent<Image>());
+    //    //碎片 
+    //    if (card.level < DataTable.CardLevel.Keys.Max())
+    //    {
+    //        var consume = DataTable.CardLevel[card.level + 1].ChipsConsume;
+    //        showCardObj.transform.GetChild(2).GetComponent<Text>().text = card.chips + "/" + consume;
+    //        showCardObj.transform.GetChild(2).GetComponent<Text>().color =
+    //            card.chips >= consume ? ColorDataStatic.deep_green : Color.black;
+    //    }
+    //    else
+    //    {
+    //        showCardObj.transform.GetChild(2).GetComponent<Text>().text = "";
+    //    }
 
-        int goldPrice = GetGoldPrice(card);
-        sellCardBtn.transform.GetChild(0).GetComponent<Text>().text = goldPrice.ToString();
-        sellCardBtn.GetComponent<Button>().onClick.RemoveAllListeners();
-        sellCardBtn.GetComponent<Button>().onClick.AddListener(delegate ()
-        {
-            OnClickForSellCard(card);
-        });
-        sellCardBtn.SetActive(true);
+    //    int goldPrice = GetGoldPrice(card);
+    //    sellCardBtn.transform.GetChild(0).GetComponent<Text>().text = goldPrice.ToString();
+    //    sellCardBtn.GetComponent<Button>().onClick.RemoveAllListeners();
+    //    sellCardBtn.GetComponent<Button>().onClick.AddListener(delegate ()
+    //    {
+    //        OnClickForSellCard(card);
+    //    });
+    //    sellCardBtn.SetActive(true);
 
-        if (card.level > 0)
-        {
-            showCardObj.transform.GetChild(4).GetComponent<Image>().enabled = true;
-            //设置星级展示 
-            showCardObj.transform.GetChild(4).GetComponent<Image>().sprite = GameResources.GradeImg[card.level];
-            //出战相关设置 
-            holdOrFightBtn.SetActive(true);
-            if (card.isFight > 0)
-            {
-                showCardObj.transform.GetChild(7).gameObject.SetActive(true);
-                holdOrFightBtn.GetComponentInChildren<Text>().text = DataTable.GetStringText(30);
-            }
-            else
-            {
-                showCardObj.transform.GetChild(7).gameObject.SetActive(false);
-                holdOrFightBtn.GetComponentInChildren<Text>().text = DataTable.GetStringText(31);
-            }
-        }
-        else
-        {
-            holdOrFightBtn.SetActive(false);
-            showCardObj.transform.GetChild(7).gameObject.SetActive(false);
-            showCardObj.transform.GetChild(4).GetComponent<Image>().enabled = false;
-        }
-        //选择框处理 
-        if (lastSelectImg != null)
-        {
-            lastSelectImg.enabled = false;
-        }
-        lastSelectImg = selectImg;
-        lastSelectImg.enabled = true;
+    //    if (card.level > 0)
+    //    {
+    //        showCardObj.transform.GetChild(4).GetComponent<Image>().enabled = true;
+    //        //设置星级展示 
+    //        showCardObj.transform.GetChild(4).GetComponent<Image>().sprite = GameResources.GradeImg[card.level];
+    //        //出战相关设置 
+    //        holdOrFightBtn.SetActive(true);
+    //        if (card.isFight > 0)
+    //        {
+    //            showCardObj.transform.GetChild(7).gameObject.SetActive(true);
+    //            holdOrFightBtn.GetComponentInChildren<Text>().text = DataTable.GetStringText(30);
+    //        }
+    //        else
+    //        {
+    //            showCardObj.transform.GetChild(7).gameObject.SetActive(false);
+    //            holdOrFightBtn.GetComponentInChildren<Text>().text = DataTable.GetStringText(31);
+    //        }
+    //    }
+    //    else
+    //    {
+    //        holdOrFightBtn.SetActive(false);
+    //        showCardObj.transform.GetChild(7).gameObject.SetActive(false);
+    //        showCardObj.transform.GetChild(4).GetComponent<Image>().enabled = false;
+    //    }
+    //    //选择框处理 
+    //    if (lastSelectImg != null)
+    //    {
+    //        lastSelectImg.enabled = false;
+    //    }
+    //    lastSelectImg = selectImg;
+    //    lastSelectImg.enabled = true;
 
-        selectCardData = card;
+    //    selectCardData = card;
 
-        CalculatedNeedYuanBao(card.level);
-    }
-
-    /// <summary> 
-    /// 创建并展示单位列表 
-    /// </summary> 
-    private void RefreshCardList()
-    {
-        TakeBackHeroCardPooling();
-        var total = 0;
-        SortHSTData(PlayerDataForGame.instance.hstData.heroSaveData);   //  排序 
-        SortHSTData(PlayerDataForGame.instance.hstData.towerSaveData);
-        SortHSTData(PlayerDataForGame.instance.hstData.trapSaveData);
-        PlayerDataForGame.instance.RefreshEnlisted(indexChooseListForceId);
-        PlayerDataForGame.instance.hstData.heroSaveData.Concat(PlayerDataForGame.instance.hstData.towerSaveData).Concat(PlayerDataForGame.instance.hstData.trapSaveData).Where(c=>c.IsOwning()).Select(c=>new{Card=c,Info=c.GetInfo()}).Where(c=>c.Info.ForceId == indexChooseListForceId).ToList().ForEach(c=>
-        {
-            if (c.Info.Type == GameCardType.Hero)
-                GenerateHeroUi(c.Card);
-            else GenerateFuZhuUi(c.Card);
-            total++;
-        });
-
-        if (total <= 0)
-        {
-            ShowOrHideInfo(false);
-            return;
-        }
-
-        StartCoroutine(LiteUpdateListChooseFirst(0));
-        ShowOrHideInfo(true);
-    }
-
-    /// <summary> 
-    /// 名字显示规则 
-    /// </summary> 
-    /// <param name="nameText"></param> 
-    /// <param name="str"></param> 
-    public void ShowNameTextRules(Text nameText, string str)
-    {
-        nameText.text = str;
-        switch (str.Length)
-        {
-            case 1:
-                nameText.fontSize = 50;
-                nameText.lineSpacing = 1.1f;
-                break;
-            case 2:
-                nameText.fontSize = 50;
-                nameText.lineSpacing = 1.1f;
-                break;
-            case 3:
-                nameText.fontSize = 50;
-                nameText.lineSpacing = 0.9f;
-                break;
-            case 4:
-                nameText.fontSize = 45;
-                nameText.lineSpacing = 0.8f;
-                break;
-            default:
-                nameText.fontSize = 45;
-                nameText.lineSpacing = 0.8f;
-                break;
-        }
-    }
-
-    /// <summary> 
-    /// 显示单个武将 
-    /// </summary> 
-    /// <param name="card"></param> 
-    private void GenerateHeroUi(NowLevelAndHadChip card)
-    {
-        var info = card.GetInfo();
-        GameObject obj = GetHeroCardFromPool();
-        //名字 
-        ShowNameTextRules(obj.transform.GetChild(3).GetComponent<Text>(), info.Name);
-        //名字颜色根据稀有度 
-        obj.transform.GetChild(3).GetComponent<Text>().color = NameColorChoose(info.Rare);
-        //卡牌 
-        obj.transform.GetChild(1).GetComponent<Image>().sprite = GameResources.HeroImg[info.Id];
-        //兵种名 
-        obj.transform.GetChild(5).GetComponentInChildren<Text>().text = info.Short;
-        //兵种框 
-        obj.transform.GetChild(5).GetComponent<Image>().sprite = GameResources.ClassImg[0];
-        //边框 
-        FrameChoose(info.Rare, obj.transform.GetChild(6).GetComponent<Image>());
-        //碎片 
-        if (card.level < DataTable.CardLevel.Keys.Max())
-        {
-            var chipsConsume = DataTable.CardLevel[card.level + 1].ChipsConsume;
-            obj.transform.GetChild(2).GetComponent<Text>().text = card.chips + "/" + chipsConsume;
-            obj.transform.GetChild(2).GetComponent<Text>().color =
-                card.chips >= chipsConsume ? ColorDataStatic.deep_green : Color.white;
-        }
-        else
-        {
-            obj.transform.GetChild(2).GetComponent<Text>().text = "";
-        }
-        if (card.level > 0)
-        {
-            obj.transform.GetChild(4).GetComponent<Image>().enabled = true;
-            obj.transform.GetChild(8).gameObject.SetActive(false);
-            //设置星级展示 
-            obj.transform.GetChild(4).GetComponent<Image>().sprite = GameResources.GradeImg[card.level];
-            obj.transform.GetChild(7).gameObject.SetActive(false);
-            if (card.isFight > 0) //出战标记 
-            {
-                PlayerDataForGame.instance.EnlistCard(card, true);
-                obj.transform.GetChild(7).gameObject.SetActive(true);
-            }
-            else
-            {
-                obj.transform.GetChild(7).gameObject.SetActive(false);
-            }
-        }
-        else
-        {
-            obj.transform.GetChild(4).GetComponent<Image>().enabled = false;
-            obj.transform.GetChild(7).gameObject.SetActive(false);
-            obj.transform.GetChild(8).gameObject.SetActive(true);
-        }
-        obj.GetComponent<Button>().onClick.RemoveAllListeners();
-        obj.GetComponent<Button>().onClick.AddListener(delegate ()
-        {
-            OnClickHeroCardFun(card, obj.transform.GetChild(9).GetComponent<Image>());
-        });
-    }
+    //    CalculatedNeedYuanBao(card.level);
+    //}
+    ///// <summary> 
+    ///// 显示单个武将 
+    ///// </summary> 
+    ///// <param name="card"></param> 
+    //private void GenerateHeroUi(NowLevelAndHadChip card)
+    //{
+    //    var info = card.GetInfo();
+    //    GameObject obj = GetHeroCardFromPool();
+    //    //名字 
+    //    ShowNameTextRules(obj.transform.GetChild(3).GetComponent<Text>(), info.Name);
+    //    //名字颜色根据稀有度 
+    //    obj.transform.GetChild(3).GetComponent<Text>().color = NameColorChoose(info.Rare);
+    //    //卡牌 
+    //    obj.transform.GetChild(1).GetComponent<Image>().sprite = GameResources.HeroImg[info.Id];
+    //    //兵种名 
+    //    obj.transform.GetChild(5).GetComponentInChildren<Text>().text = info.Short;
+    //    //兵种框 
+    //    obj.transform.GetChild(5).GetComponent<Image>().sprite = GameResources.ClassImg[0];
+    //    //边框 
+    //    FrameChoose(info.Rare, obj.transform.GetChild(6).GetComponent<Image>());
+    //    //碎片 
+    //    if (card.level < DataTable.CardLevel.Keys.Max())
+    //    {
+    //        var chipsConsume = DataTable.CardLevel[card.level + 1].ChipsConsume;
+    //        obj.transform.GetChild(2).GetComponent<Text>().text = card.chips + "/" + chipsConsume;
+    //        obj.transform.GetChild(2).GetComponent<Text>().color =
+    //            card.chips >= chipsConsume ? ColorDataStatic.deep_green : Color.white;
+    //    }
+    //    else
+    //    {
+    //        obj.transform.GetChild(2).GetComponent<Text>().text = "";
+    //    }
+    //    if (card.level > 0)
+    //    {
+    //        obj.transform.GetChild(4).GetComponent<Image>().enabled = true;
+    //        obj.transform.GetChild(8).gameObject.SetActive(false);
+    //        //设置星级展示 
+    //        obj.transform.GetChild(4).GetComponent<Image>().sprite = GameResources.GradeImg[card.level];
+    //        obj.transform.GetChild(7).gameObject.SetActive(false);
+    //        if (card.isFight > 0) //出战标记 
+    //        {
+    //            PlayerDataForGame.instance.EnlistCard(card, true);
+    //            obj.transform.GetChild(7).gameObject.SetActive(true);
+    //        }
+    //        else
+    //        {
+    //            obj.transform.GetChild(7).gameObject.SetActive(false);
+    //        }
+    //    }
+    //    else
+    //    {
+    //        obj.transform.GetChild(4).GetComponent<Image>().enabled = false;
+    //        obj.transform.GetChild(7).gameObject.SetActive(false);
+    //        obj.transform.GetChild(8).gameObject.SetActive(true);
+    //    }
+    //    obj.GetComponent<Button>().onClick.RemoveAllListeners();
+    //    obj.GetComponent<Button>().onClick.AddListener(delegate ()
+    //    {
+    //        OnClickHeroCardFun(card, obj.transform.GetChild(9).GetComponent<Image>());
+    //    });
+    //}
 
     /// <summary> 
     /// 点击武将卡牌的方法 
     /// </summary> 
     /// <param name="card"></param> 
-    private void OnClickHeroCardFun(NowLevelAndHadChip card, Image selectImg)
+    //private void OnClickHeroCardFun(NowLevelAndHadChip card, Image selectImg)
+    //{
+    //    PlayOnClickMusic();
+    //    var info = card.GetInfo();
+    //    //Debug.Log("点击的武将id：" + heroData.id); 
+    //    //武将名字 
+    //    infoTran.GetChild(0).GetComponent<Text>().text = info.Name;
+    //    //武将名字颜色 
+    //    infoTran.GetChild(0).GetComponent<Text>().color = info.GetNameColor();
+    //    //武将属性 
+    //    infoTran.GetChild(1).GetComponent<Text>().text = , damages[card.level > 0 ? card.level - 1 : 0]);
+    //    var hps = DataTable.Hero[card.id].Hps;
+    //    infoTran.GetChild(2).GetComponent<Text>().text = string.Format(DataTable.GetStringText(33), hps[card.level > 0 ? card.level - 1 : 0]);
+    //    //武将介绍 
+    //    infoTran.GetChild(3).GetComponent<Text>().text = info.Intro;
+
+    //    //名字 
+    //    ShowNameTextRules(showCardObj.transform.GetChild(3).GetComponent<Text>(), info.Name);
+    //    //名字颜色 
+    //    showCardObj.transform.GetChild(3).GetComponent<Text>().color = NameColorChoose(info.Rare);
+    //    //卡牌 
+    //    showCardObj.transform.GetChild(1).GetComponent<Image>().sprite = GameResources.HeroImg[card.id];
+    //    //兵种名 
+    //    showCardObj.transform.GetChild(5).GetComponentInChildren<Text>().text = info.Short;
+    //    //兵种框 
+    //    showCardObj.transform.GetChild(5).GetComponent<Image>().sprite = GameResources.ClassImg[0];
+    //    //边框 
+    //    FrameChoose(info.Rare, showCardObj.transform.GetChild(6).GetComponent<Image>());
+    //    //碎片 
+    //    if (card.level < DataTable.CardLevel.Keys.Max())
+    //    {
+    //        var consumeChips = DataTable.CardLevel[card.level + 1].ChipsConsume;
+    //        showCardObj.transform.GetChild(2).GetComponent<Text>().text = card.chips + "/" + consumeChips;
+    //        showCardObj.transform.GetChild(2).GetComponent<Text>().color = card.chips >= consumeChips ? ColorDataStatic.deep_green : Color.black;
+    //    }
+    //    else
+    //    {
+    //        showCardObj.transform.GetChild(2).GetComponent<Text>().text = "";
+    //    }
+
+    //    int goldPrice = GetGoldPrice(card);
+    //    sellCardBtn.transform.GetChild(0).GetComponent<Text>().text = goldPrice.ToString();
+    //    sellCardBtn.GetComponent<Button>().onClick.RemoveAllListeners();
+    //    sellCardBtn.GetComponent<Button>().onClick.AddListener(() => OnClickForSellCard(card));
+    //    sellCardBtn.SetActive(true);
+
+    //    if (card.level > 0)
+    //    {
+    //        showCardObj.transform.GetChild(4).GetComponent<Image>().enabled = true;
+    //        //设置星级展示 
+    //        showCardObj.transform.GetChild(4).GetComponent<Image>().sprite = GameResources.GradeImg[card.level];
+    //        //出战相关设置 
+    //        holdOrFightBtn.SetActive(true);
+    //        if ()
+    //        {
+    //            showCardObj.transform.GetChild(7).gameObject.SetActive(true);
+    //            holdOrFightBtn.GetComponentInChildren<Text>().text = ;
+    //        }
+    //        else
+    //        {
+    //            showCardObj.transform.GetChild(7).gameObject.SetActive(false);
+    //            holdOrFightBtn.GetComponentInChildren<Text>().text = ;
+    //        }
+    //    }
+    //    else
+    //    {
+    //        //sellCardBtn.SetActive(false); 
+    //        holdOrFightBtn.SetActive(false);
+    //        showCardObj.transform.GetChild(7).gameObject.SetActive(false);
+    //        showCardObj.transform.GetChild(4).GetComponent<Image>().enabled = false;
+    //    }
+    //    //选择框处理 
+    //    if (lastSelectImg != null)
+    //    {
+    //        lastSelectImg.enabled = false;
+    //    }
+    //    lastSelectImg = selectImg;
+    //    lastSelectImg.enabled = true;
+
+    //    selectCardData = card;
+
+    //    CalculatedNeedYuanBao(card.level);
+    //}
+
+        /// <summary> 
+    /// 合成卡牌 
+    /// </summary> 
+    private void MergeCard(NowLevelAndHadChip card)
     {
-        PlayOnClickMusic();
-        var info = card.GetInfo();
-        //Debug.Log("点击的武将id：" + heroData.id); 
-        //武将名字 
-        infoTran.GetChild(0).GetComponent<Text>().text = info.Name;
-        //武将名字颜色 
-        infoTran.GetChild(0).GetComponent<Text>().color = NameColorChoose(info.Rare);
-        //武将属性 
-        var damages = DataTable.Hero[card.id].Damages;
-        infoTran.GetChild(1).GetComponent<Text>().text = string.Format(DataTable.GetStringText(32), damages[card.level > 0 ? card.level - 1 : 0]);
-        var hps = DataTable.Hero[card.id].Hps;
-        infoTran.GetChild(2).GetComponent<Text>().text = string.Format(DataTable.GetStringText(33), hps[card.level > 0 ? card.level - 1 : 0]);
-        //武将介绍 
-        infoTran.GetChild(3).GetComponent<Text>().text = info.Intro;
+        var nextLevel = DataTable.CardLevel[card.level + 1];
+        var isChipsEnough = card.chips >= nextLevel.ChipsConsume;
+        var isYanBaoEnough = PlayerDataForGame.instance.pyData.YuanBao >= nextLevel.YuanBaoConsume;
 
-        //名字 
-        ShowNameTextRules(showCardObj.transform.GetChild(3).GetComponent<Text>(), info.Name);
-        //名字颜色 
-        showCardObj.transform.GetChild(3).GetComponent<Text>().color = NameColorChoose(info.Rare);
-        //卡牌 
-        showCardObj.transform.GetChild(1).GetComponent<Image>().sprite = GameResources.HeroImg[card.id];
-        //兵种名 
-        showCardObj.transform.GetChild(5).GetComponentInChildren<Text>().text = info.Short;
-        //兵种框 
-        showCardObj.transform.GetChild(5).GetComponent<Image>().sprite = GameResources.ClassImg[0];
-        //边框 
-        FrameChoose(info.Rare, showCardObj.transform.GetChild(6).GetComponent<Image>());
-        //碎片 
-        if (card.level < DataTable.CardLevel.Keys.Max())
+        if (!isChipsEnough || !isYanBaoEnough || !ConsumeManager.instance.DeductYuanBao(nextLevel.YuanBaoConsume))
         {
-            var consumeChips = DataTable.CardLevel[card.level + 1].ChipsConsume;
-            showCardObj.transform.GetChild(2).GetComponent<Text>().text = card.chips + "/" + consumeChips;
-            showCardObj.transform.GetChild(2).GetComponent<Text>().color = card.chips >= consumeChips ? ColorDataStatic.deep_green : Color.black;
-        }
-        else
-        {
-            showCardObj.transform.GetChild(2).GetComponent<Text>().text = "";
+            PlayerDataForGame.instance.ShowStringTips(isYanBaoEnough
+                ? DataTable.GetStringText(36)
+                : DataTable.GetStringText(37));
+            UIManager.instance.PlayOnClickMusic();
+            return;
         }
 
-        int goldPrice = GetGoldPrice(card);
-        sellCardBtn.transform.GetChild(0).GetComponent<Text>().text = goldPrice.ToString();
-        sellCardBtn.GetComponent<Button>().onClick.RemoveAllListeners();
-        sellCardBtn.GetComponent<Button>().onClick.AddListener(() => OnClickForSellCard(card));
-        sellCardBtn.SetActive(true);
-
-        if (card.level > 0)
-        {
-            showCardObj.transform.GetChild(4).GetComponent<Image>().enabled = true;
-            //设置星级展示 
-            showCardObj.transform.GetChild(4).GetComponent<Image>().sprite = GameResources.GradeImg[card.level];
-            //出战相关设置 
-            holdOrFightBtn.SetActive(true);
-            if (card.isFight > 0)
+        ApiPanel.instance.Invoke(vb =>
             {
-                showCardObj.transform.GetChild(7).gameObject.SetActive(true);
-                holdOrFightBtn.GetComponentInChildren<Text>().text = DataTable.GetStringText(30);
-            }
-            else
-            {
-                showCardObj.transform.GetChild(7).gameObject.SetActive(false);
-                holdOrFightBtn.GetComponentInChildren<Text>().text = DataTable.GetStringText(31);
-            }
-        }
-        else
-        {
-            //sellCardBtn.SetActive(false); 
-            holdOrFightBtn.SetActive(false);
-            showCardObj.transform.GetChild(7).gameObject.SetActive(false);
-            showCardObj.transform.GetChild(4).GetComponent<Image>().enabled = false;
-        }
-        //选择框处理 
-        if (lastSelectImg != null)
-        {
-            lastSelectImg.enabled = false;
-        }
-        lastSelectImg = selectImg;
-        lastSelectImg.enabled = true;
+                var player = vb.GetPlayerDataDto();
+                var dto = vb.GetGameCardDto();
+                NowLevelAndHadChip ca;
+                var hst = PlayerDataForGame.instance.hstData;
+                switch (dto.Type)
+                {
+                    case GameCardType.Hero:
+                        ca = hst.heroSaveData.First(c => c.id == dto.CardId);
+                        break;
+                    case GameCardType.Tower:
+                        ca = hst.towerSaveData.First(c => c.id == dto.CardId);
+                        break;
+                    case GameCardType.Trap:
+                        ca = hst.trapSaveData.First(c => c.id == dto.CardId);
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
 
-        selectCardData = card;
-        
-        CalculatedNeedYuanBao(card.level);
+                ca.chips = dto.Chips;
+                ca.level = dto.Level;
+                ConsumeManager.instance.SaveChangeUpdatePlayerData(player, 7);
+                Barrack.RefreshCardList();
+                Barrack.PointDesk.PlayUpgradeEffect();
+                AudioController0.instance.ChangeAudioClip(16);
+                AudioController0.instance.PlayAudioSource(0);
+                //UpdateLevelCardUi();
+                UIManager.instance.ShowOrHideGuideObj(2, false);
+            }, PlayerDataForGame.instance.ShowStringTips,
+            EventStrings.Req_CardMerge,
+            ViewBag.Instance().SetValues(new object[] {card.id, card.typeIndex}));
     }
 
-    //出售卡牌可得金币 
-    private int GetGoldPrice(NowLevelAndHadChip heroData)
+    private void OnCardEnlist(NowLevelAndHadChip card)
     {
-        var info = heroData.GetInfo();
-        int chips = heroData.chips + DataTable.CardLevel.Where(lv => lv.Key <= heroData.level).Sum(kv => kv.Value.ChipsConsume);
-        int golds = 0;
-        switch (info.Rare)
-        {
-            case 1:
-                golds = 10;
-                break;
-            case 2:
-                golds = 20;
-                break;
-            case 3:
-                golds = 50;
-                break;
-            case 4:
-                golds = 100;
-                break;
-            case 5:
-                golds = 200;
-                break;
-            case 6:
-                golds = 500;
-                break;
-            default:
-                break;
-        }
-        return golds * chips;
+        ApiPanel.instance.Invoke(vb =>
+            {
+                var troop = vb.GetTroopDto();
+                PlayerDataForGame.instance.UpdateTroopEnlist(troop);
+                Barrack.RefreshCardList();
+            }, PlayerDataForGame.instance.ShowStringTips,
+            EventStrings.Req_TroopEnlist,
+            ViewBag.Instance()
+                .SetValues(Barrack.SelectedForce, card.isFight > 0)
+                .GameCardDto(card.ToDto()));
     }
+
 
     //出售卡牌 
     private void OnClickForSellCard(NowLevelAndHadChip gameCard)
@@ -1176,49 +1077,12 @@ public class UIManager : MonoBehaviour
             gameCard.chips = 0;
             gameCard.level = 0;
             gameCard.isFight = 0;
-            ChangeScrollView();
             PlayerDataForGame.instance.EnlistCard(gameCard, false);
-            UpdateCardNumsShow();
+            Barrack.RefreshCardList();
             queRenWindows.SetActive(false);
         }
     }
 
-    /// <summary> 
-    /// 匹配稀有度的颜色 
-    /// </summary> 
-    /// <returns></returns> 
-    public Color NameColorChoose(int rarity)
-    {
-        Color color = new Color();
-        switch (rarity)
-        {
-            case 1:
-                color = ColorDataStatic.name_gray;
-                break;
-            case 2:
-                color = ColorDataStatic.name_green;
-                break;
-            case 3:
-                color = ColorDataStatic.name_blue;
-                break;
-            case 4:
-                color = ColorDataStatic.name_purple;
-                break;
-            case 5:
-                color = ColorDataStatic.name_orange;
-                break;
-            case 6:
-                color = ColorDataStatic.name_red;
-                break;
-            case 7:
-                color = ColorDataStatic.name_black;
-                break;
-            default:
-                color = ColorDataStatic.name_gray;
-                break;
-        }
-        return color;
-    }
 
     // <summary> 
     /// 匹配稀有度边框 
@@ -1287,10 +1151,8 @@ public class UIManager : MonoBehaviour
     public void InitializationPlayerInfo()
     {
         RefreshPlayerInfoUi();
-        RefreshCardList();
-        UpdateCardNumsShow();
-
-        StartCoroutine(LateToChangeViewShow(0));
+        Barrack.RefreshCardList();
+        //StartCoroutine(LateToChangeViewShow(0));
     }
 
     public void RefreshPlayerInfoUi()
@@ -1316,153 +1178,6 @@ public class UIManager : MonoBehaviour
         yvQueNumText.text = PlayerDataForGame.instance.pyData.YvQue.ToString();
         showTiLiNums = PlayerDataForGame.instance.Stamina.Value;
         tiLiNumText.text = showTiLiNums + "/90";
-    }
-
-    //得到合成所需元宝 
-    private void CalculatedNeedYuanBao(int nowLevel)
-    {
-        if (nowLevel == 0) ShowOrHideGuideObj(2, true);
-        heImgObj.SetActive(nowLevel == 0);
-        if (nowLevel < DataTable.CardLevel.Keys.Max())
-        {
-            needYuanBaoNums = DataTable.CardLevel[nowLevel + 1].YuanBaoConsume;
-            heChengBtn.transform.GetComponentInChildren<Text>().text = "" + needYuanBaoNums;
-            heChengBtn.SetActive(true);
-        }
-        else
-        {
-            heChengBtn.SetActive(false);
-        }
-    }
-
-    /// <summary> 
-    /// 合成卡牌 
-    /// </summary> 
-    public void SynthesizeCard()
-    {
-        var nextLevel = DataTable.CardLevel[selectCardData.level + 1];
-        var isChipsEnough = selectCardData.chips >= nextLevel.ChipsConsume;
-        var isYanBaoEnough = PlayerDataForGame.instance.pyData.YuanBao >= nextLevel.YuanBaoConsume;
-
-        if (!isChipsEnough || !isYanBaoEnough || !ConsumeManager.instance.DeductYuanBao(nextLevel.YuanBaoConsume))
-        {
-            PlayerDataForGame.instance.ShowStringTips(isYanBaoEnough
-                ? DataTable.GetStringText(36)
-                : DataTable.GetStringText(37));
-            PlayOnClickMusic();
-            return;
-        }
-
-        ApiPanel.instance.Invoke(vb =>
-            {
-                var player = vb.GetPlayerDataDto();
-                var dto = vb.GetGameCardDto();
-                NowLevelAndHadChip card;
-                var hst = PlayerDataForGame.instance.hstData;
-                switch (dto.Type)
-                {
-                    case GameCardType.Hero:
-                        card = hst.heroSaveData.First(c => c.id == dto.CardId);
-                        break;
-                    case GameCardType.Tower:
-                        card = hst.towerSaveData.First(c => c.id == dto.CardId);
-                        break;
-                    case GameCardType.Trap:
-                        card = hst.trapSaveData.First(c => c.id == dto.CardId);
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
-
-                card.chips = dto.Chips;
-                card.level = dto.Level;
-                ConsumeManager.instance.SaveChangeUpdatePlayerData(player, 7);
-                StartCoroutine(PlayCardUpgradeEffect());
-                AudioController0.instance.ChangeAudioClip(16);
-                AudioController0.instance.PlayAudioSource(0);
-                UpdateLevelCardUi();
-                ShowOrHideGuideObj(2, false);
-            }, PlayerDataForGame.instance.ShowStringTips,
-            EventStrings.Req_CardMerge,
-            ViewBag.Instance().SetValues(new object[] {selectCardData.id, selectCardData.typeIndex}));
-    }
-
-    //隐藏升星特效 
-    IEnumerator PlayCardUpgradeEffect()
-    {
-        upStarEffectObj.SetActive(false);
-        upStarEffectObj.SetActive(true);
-        yield return new WaitForSeconds(1.7f);
-        upStarEffectObj.SetActive(false);
-    }
-
-    /// <summary> 
-    /// 出战或回城设置方法 
-    /// </summary> 
-    public void ChuZhanOrStaySetFun()
-    {
-        Transform listCard = lastSelectImg.transform.parent;
-        if (selectCardData.isFight > 0)
-        {
-            if (PlayerDataForGame.instance.EnlistCard(selectCardData, false))
-            {
-                listCard.GetChild(7).gameObject.SetActive(false);
-                showCardObj.transform.GetChild(7).gameObject.SetActive(false);
-                holdOrFightBtn.GetComponentInChildren<Text>().text = DataTable.GetStringText(31);
-                selectCardData.isFight = 0;
-                AudioController0.instance.ChangeAudioClip(15);
-                AudioController0.instance.PlayAudioSource(0);
-            }
-            else
-            {
-                PlayOnClickMusic();
-            }
-        }
-        else
-        {
-            if (PlayerDataForGame.instance.EnlistCard(selectCardData, true))
-            {
-                listCard.GetChild(7).gameObject.SetActive(true);
-                showCardObj.transform.GetChild(7).gameObject.SetActive(true);
-                holdOrFightBtn.GetComponentInChildren<Text>().text = DataTable.GetStringText(30);
-                selectCardData.isFight = 1;
-                AudioController0.instance.ChangeAudioClip(14);
-                AudioController0.instance.PlayAudioSource(0);
-            }
-            else
-            {
-                PlayerDataForGame.instance.ShowStringTips(DataTable.GetStringText(38));
-
-                PlayOnClickMusic();
-            }
-        }
-        UpdateCardNumsShow();
-        //LoadSaveData.instance.SaveByJson(PlayerDataForGame.instance.hstData); 
-        PlayerDataForGame.instance.isNeedSaveData = true;
-        LoadSaveData.instance.SaveGameData(2);
-    }
-
-    //升级卡牌后更新显示 
-    private void UpdateLevelCardUi()
-    {
-        //Debug.Log("selectCardData.Level: " + selectCardData.Level); 
-        Transform listCard = lastSelectImg.transform.parent;
-        if (selectCardData.level < DataTable.CardLevel.Keys.Max())
-        {
-            var consume = DataTable.CardLevel[selectCardData.level + 1].ChipsConsume;
-            listCard.GetChild(2).GetComponent<Text>().text = selectCardData.chips + "/" + consume;
-            listCard.GetChild(2).GetComponent<Text>().color =
-                selectCardData.chips >= consume ? ColorDataStatic.deep_green : Color.white;
-        }
-        else
-        {
-            listCard.GetChild(2).GetComponent<Text>().text = "";
-        }
-        listCard.GetChild(4).GetComponent<Image>().enabled = true;
-        //设置星级展示 
-        listCard.GetChild(4).GetComponent<Image>().sprite = GameResources.GradeImg[selectCardData.level];
-        listCard.GetChild(8).gameObject.SetActive(false);
-        listCard.GetComponent<Button>().onClick.Invoke();
     }
 
     /// <summary> 
@@ -1523,7 +1238,7 @@ public class UIManager : MonoBehaviour
         taoYuan.CloseAllChests();
         rewardsShowObj.SetActive(true);
         //刷新主城列表 
-        ChangeScrollView();
+        Barrack.RefreshCardList();
         rewardsShowObj.transform.GetComponentInChildren<ScrollRect>().horizontalNormalizedPosition = 0f;
         yield return new WaitForSeconds(1f);
         rewardsShowObj.transform.GetComponentInChildren<ScrollRect>().DOHorizontalNormalizedPos(1f, 1f);
@@ -1571,8 +1286,8 @@ public class UIManager : MonoBehaviour
         {
             Transform cardTran = obj.transform.GetChild(4);
             cardTran.GetComponent<Image>().sprite = info.Type == GameCardType.Hero ? GameResources.HeroImg[info.Id] : GameResources.FuZhuImg[info.ImageId];
-            ShowNameTextRules(cardTran.GetChild(0).GetComponent<Text>(), info.Name);
-            cardTran.GetChild(0).GetComponent<Text>().color = NameColorChoose(info.Rare);
+            NameTextSizeAlignment(cardTran.GetChild(0).GetComponent<Text>(), info.Name);
+            cardTran.GetChild(0).GetComponent<Text>().color = info.GetNameColor();
             cardTran.GetChild(1).GetComponent<Image>().sprite = info.Type == GameCardType.Hero ? GameResources.ClassImg[0] : GameResources.ClassImg[1];
             cardTran.GetChild(1).GetChild(0).GetComponentInChildren<Text>().text = info.Short;
             FrameChoose(info.Rare, cardTran.GetChild(2).GetComponent<Image>());
@@ -1580,6 +1295,40 @@ public class UIManager : MonoBehaviour
 
         obj.transform.GetChild(5).GetComponent<Text>().text = "×" + rewardsCard.cardChips;
     }
+
+    /// <summary> 
+    /// 名字显示规则 
+    /// </summary> 
+    /// <param name="nameText"></param> 
+    /// <param name="str"></param> 
+    public void NameTextSizeAlignment(Text nameText, string str)
+    {
+        nameText.text = str;
+        switch (str.Length)
+        {
+            case 1:
+                nameText.fontSize = 50;
+                nameText.lineSpacing = 1.1f;
+                break;
+            case 2:
+                nameText.fontSize = 50;
+                nameText.lineSpacing = 1.1f;
+                break;
+            case 3:
+                nameText.fontSize = 50;
+                nameText.lineSpacing = 0.9f;
+                break;
+            case 4:
+                nameText.fontSize = 45;
+                nameText.lineSpacing = 0.8f;
+                break;
+            default:
+                nameText.fontSize = 45;
+                nameText.lineSpacing = 0.8f;
+                break;
+        }
+    }
+
 
     /// <summary> 
     /// 主城界面切换 
@@ -1677,15 +1426,6 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    //用于刷新列表后选择第一个单位 
-    IEnumerator LiteUpdateListChooseFirst(float startTime)
-    {
-        yield return new WaitForSeconds(startTime);
-        if (zhuChengHeroContentObj.transform.childCount > 0)
-        {
-            zhuChengHeroContentObj.transform.GetChild(0).GetComponent<Button>().onClick.Invoke();
-        }
-    }
 
     /// <summary> 
     /// 获取玩家经验 
@@ -1727,56 +1467,10 @@ public class UIManager : MonoBehaviour
             playerInfoObj.transform.GetChild(2).GetChild(1).GetComponent<Text>().text = string.Format(DataTable.GetStringText(35), PlayerDataForGame.instance.pyData.Level);
             playerInfoObj.transform.GetChild(0).GetChild(2).GetComponent<Text>().text = PlayerDataForGame.instance.pyData.Exp + "/" + DataTable.PlayerLevelConfig[PlayerDataForGame.instance.pyData.Level + 1].Exp;
         }
-        UpdateCardNumsShow();
+        Barrack.RefreshCardList();
         //LoadSaveData.instance.SaveByJson(PlayerDataForGame.instance.pyData); 
         PlayerDataForGame.instance.isNeedSaveData = true;
         LoadSaveData.instance.SaveGameData(1);
-    }
-
-    /// <summary> 
-    /// 初始化卡牌池 
-    /// </summary> 
-    private void InitHeroCardPooling()
-    {
-        for (int i = 0; i < minInitCardCount; i++)
-        {
-            GameObject go = Instantiate(heroCardCityPre, zhuChengHeroContentObj.transform);
-            go.SetActive(false);
-            heroCardPoolList.Add(go);
-        }
-    }
-
-    /// <summary> 
-    /// 从卡牌池中获取空卡牌 
-    /// </summary> 
-    /// <returns></returns> 
-    private GameObject GetHeroCardFromPool()
-    {
-        foreach (GameObject item in heroCardPoolList)
-        {
-            if (!item.activeSelf)
-            {
-                item.SetActive(true);
-                return item;
-            }
-        }
-        GameObject go = Instantiate(heroCardCityPre, zhuChengHeroContentObj.transform);
-        heroCardPoolList.Add(go);
-        return go;
-    }
-
-    /// <summary> 
-    /// 回收卡牌池 
-    /// </summary> 
-    private void TakeBackHeroCardPooling()
-    {
-        for (int i = 0; i < heroCardPoolList.Count; i++)
-        {
-            if (heroCardPoolList[i].activeSelf)
-            {
-                heroCardPoolList[i].SetActive(false);
-            }
-        }
     }
 
     //播放点击音效 
@@ -1849,7 +1543,7 @@ public class UIManager : MonoBehaviour
                 var py = vb.GetPlayerDataDto();
                 var cards = vb.GetPlayerGameCardDtos();
                 var troops = vb.GetPlayerTroopDtos();
-                PlayerDataForGame.instance.UpdateGameCards(cards, troops);
+                PlayerDataForGame.instance.UpdateGameCards(troops, cards);
                 ConsumeManager.instance.SaveChangeUpdatePlayerData(py, 7);
                 OnSuccessRedeemed(rC, py);
             }, PlayerDataForGame.instance.ShowStringTips,

@@ -164,7 +164,7 @@ public class SignalRClient : MonoBehaviour
             isTakeReward = w.IsFirstRewardTaken,
             unLockCount = w.UnlockProgress
         }).ToList();
-        PlayerDataForGame.instance.UpdateGameCards(gameCardList, troops);
+        PlayerDataForGame.instance.UpdateGameCards(troops, gameCardList);
         PlayerDataForGame.instance.gbocData.redemptionCodeGotList = redeemedList.ToList();
         PlayerDataForGame.instance.gbocData.fightBoxs = warChestList.ToList();
         PlayerDataForGame.instance.isNeedSaveData = true;
@@ -215,6 +215,23 @@ public class SignalRClient : MonoBehaviour
             return false;
         }
         return true;
+    }
+
+    public async void ReconnectServer(UnityAction<bool> onReconnectAction)
+    {
+        if(_hub.State != HubConnectionState.Disconnected)return;
+        try
+        {
+            await _hub.StartAsync();
+            onReconnectAction?.Invoke(true);
+        }
+        catch (Exception e)
+        {
+#if UNITY_EDITOR
+            DebugLog(e.ToString());
+#endif
+            onReconnectAction?.Invoke(false);
+        }
     }
 
     public void SubscribeAction(string method, UnityAction<object[]> action)
@@ -362,8 +379,6 @@ public class SignalRClient : MonoBehaviour
     private Task OnConnectionClose(Exception exception)
     {
         StatusChanged(_hub.State, exception.ToString());
-        if (_hub.State == HubConnectionState.Disconnected && ServerPanel!=null)
-            ServerPanel.OnSignalRDisconnected();
         return Task.CompletedTask;
     }
     private void StatusChanged(HubConnectionState status, string message)

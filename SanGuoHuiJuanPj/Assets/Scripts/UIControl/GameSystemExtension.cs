@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using UnityEngine;
 using Random = UnityEngine.Random;
 
 public static class GameSystemExtension
@@ -101,6 +102,37 @@ public static class GameSystemExtension
     }
 
     public static GameCardInfo GetInfo(this NowLevelAndHadChip card) => GameCardInfo.GetInfo(card);
+
+    public static int GetValue(this NowLevelAndHadChip card)
+    {
+        var info = card.GetInfo();
+        int chips = card.chips + DataTable.CardLevel.Where(lv => lv.Key <= card.level).Sum(kv => kv.Value.ChipsConsume);
+        int golds = 0;
+        switch (info.Rare)
+        {
+            case 1:
+                golds = 10;
+                break;
+            case 2:
+                golds = 20;
+                break;
+            case 3:
+                golds = 50;
+                break;
+            case 4:
+                golds = 100;
+                break;
+            case 5:
+                golds = 200;
+                break;
+            case 6:
+                golds = 500;
+                break;
+            default:
+                break;
+        }
+        return golds * chips;
+    }
 
 }
 
@@ -221,6 +253,29 @@ public class GameCardInfo
 
     public int GetDamage(int level) => damageMap[level];
     public int GetHp(int level) => hpsMap[level];
+
+    public Color GetNameColor()
+    {
+        switch (Rare)
+        {
+            case 1:
+                return ColorDataStatic.name_gray;
+            case 2:
+                return ColorDataStatic.name_green;
+            case 3:
+                return ColorDataStatic.name_blue;
+            case 4:
+                return ColorDataStatic.name_purple;
+            case 5:
+                return ColorDataStatic.name_orange;
+            case 6:
+                return ColorDataStatic.name_red;
+            case 7:
+                return ColorDataStatic.name_black;
+            default:
+                return ColorDataStatic.name_gray;
+        }
+    }
 }
 
 /// <summary>

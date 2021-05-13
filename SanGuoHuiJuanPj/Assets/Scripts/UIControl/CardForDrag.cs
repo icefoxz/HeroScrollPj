@@ -20,11 +20,10 @@ public class CardForDrag : MonoBehaviour
     /// </summary>
     private ScrollRect _scrollRect;
 
-    void Awake()
+    public void Init(Transform heroCardLisTransform,ScrollRect heroScrollRect)
     {
-        _herosCardList = WarsUIManager.instance.herosCardListTran;
-
-        _scrollRect = WarsUIManager.instance.herosCardListScrollRect;
+        _herosCardList = heroCardLisTransform;
+        _scrollRect = heroScrollRect;
     }
 
 

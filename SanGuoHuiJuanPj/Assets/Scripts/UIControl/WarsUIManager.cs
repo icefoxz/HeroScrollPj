@@ -172,11 +172,11 @@ public class WarsUIManager : MonoBehaviour
 
     }
 
-    void OnApplicationPause(bool pause)
-    {
-        if (pause)return;
-        Time.timeScale = currentEvent == EventTypes.Battle ? GamePref.PrefWarSpeed : 1f;
-    }
+    //void OnApplicationPause(bool pause)
+    //{
+    //    if (pause)return;
+    //    Time.timeScale = currentEvent == EventTypes.Battle ? GamePref.PrefWarSpeed : 1f;
+    //}
 
     //初始化关卡
     private void InitGuanQiaShow()
@@ -1166,7 +1166,9 @@ public class WarsUIManager : MonoBehaviour
         var re = GameResources;
         var info = card.GetInfo();
         GameObject obj = Instantiate(cardForWarListPres, heroCardListObj.transform);
-        obj.GetComponent<CardForDrag>().posIndex = -1;
+        var cardDrag = obj.GetComponent<CardForDrag>();
+        cardDrag.Init(herosCardListTran, herosCardListScrollRect);
+        cardDrag.posIndex = -1;
         obj.transform.GetChild(1).GetComponent<Image>().sprite =
             info.Type == GameCardType.Hero ? re.HeroImg[card.id] : re.FuZhuImg[info.ImageId];
         ShowNameTextRules(obj.transform.GetChild(3).GetComponent<Text>(), info.Name);

@@ -220,56 +220,56 @@ public class PlayerDataForGame : MonoBehaviour
         loadingImg.DOFade(0, fadeSpeed).OnComplete(() => loadingImg.gameObject.SetActive(false));
     }
 
-    private int scaleWidth = 0;
-    private int scaleHeight = 0;
-    public void setDesignContentScale()
-    {
-        //#if UNITY_ANDROID 
-        if (scaleWidth == 0 && scaleHeight == 0)
-        {
-            var width = Screen.currentResolution.width * 1f;
-            var height = Screen.currentResolution.height * 1f;
-            float designWidth = 1080;
-            float designHeight = 1920;
-            float s1 = designWidth / designHeight;
-            float s2 = width / height;
-            if (s1 < s2)
-            {
-                designWidth = Mathf.FloorToInt(designHeight * s2);
-            }
-            else if (s1 > s2)
-            {
-                designHeight = Mathf.FloorToInt(designWidth / s2);
-            }
-            float contentScale = designWidth / width;
-            if (contentScale < 1.0f)
-            {
-                scaleWidth = (int)designWidth;
-                scaleHeight = (int)designHeight;
-            }
-        }
-        if (scaleWidth > 0 && scaleHeight > 0)
-        {
-            if (scaleWidth % 2 == 0)
-            {
-                scaleWidth += 1;
-            }
-            else
-            {
-                scaleWidth -= 1;
-            }
-            Screen.SetResolution(scaleWidth, scaleHeight, true);
-        }
-        //#endif 
-    }
+    //private int scaleWidth = 0;
+    //private int scaleHeight = 0;
+    //public void setDesignContentScale()
+    //{
+    //    //#if UNITY_ANDROID 
+    //    if (scaleWidth == 0 && scaleHeight == 0)
+    //    {
+    //        var width = Screen.currentResolution.width * 1f;
+    //        var height = Screen.currentResolution.height * 1f;
+    //        float designWidth = 1080;
+    //        float designHeight = 1920;
+    //        float s1 = designWidth / designHeight;
+    //        float s2 = width / height;
+    //        if (s1 < s2)
+    //        {
+    //            designWidth = Mathf.FloorToInt(designHeight * s2);
+    //        }
+    //        else if (s1 > s2)
+    //        {
+    //            designHeight = Mathf.FloorToInt(designWidth / s2);
+    //        }
+    //        float contentScale = designWidth / width;
+    //        if (contentScale < 1.0f)
+    //        {
+    //            scaleWidth = (int)designWidth;
+    //            scaleHeight = (int)designHeight;
+    //        }
+    //    }
+    //    if (scaleWidth > 0 && scaleHeight > 0)
+    //    {
+    //        if (scaleWidth % 2 == 0)
+    //        {
+    //            scaleWidth += 1;
+    //        }
+    //        else
+    //        {
+    //            scaleWidth -= 1;
+    //        }
+    //        Screen.SetResolution(scaleWidth, scaleHeight, true);
+    //    }
+    //    //#endif 
+    //}
 
-    void OnApplicationPause(bool paused)
-    {
-        if (paused) return;
-        setDesignContentScale();
-    }
+    //void OnApplicationPause(bool paused)
+    //{
+    //    if (paused) return;
+    //    setDesignContentScale();
+    //}
 
-    
+
 
     /// <summary> 
     /// 添加或删除卡牌id到出战列表 
@@ -294,16 +294,20 @@ public class PlayerDataForGame : MonoBehaviour
                 throw new ArgumentOutOfRangeException();
         }
 
-        if(isAdd)
+        if (isAdd)
         {
-            if (TotalCardsEnlisted >= cardLimit) return false;
+            if (TotalCardsEnlisted >= cardLimit)
+            {
+                ShowStringTips(DataTable.GetStringText(38));
+                return false;
+            }
+
             if (!cardList.Contains(card.id))
                 cardList.Add(card.id);
-            return true;
         }
+        else if (cardList.Contains(card.id)) cardList.Remove(card.id);
 
-        if (cardList.Contains(card.id))
-            cardList.Remove(card.id);
+        card.isFight = isAdd ? 1 : 0;
         return true;
     }
 
@@ -401,7 +405,7 @@ public class PlayerDataForGame : MonoBehaviour
         LoadSaveData.instance.SaveGameData(1);
     }
 
-    public void UpdateGameCards(GameCardDto[] gameCardList, TroopDto[] troops)
+    public void UpdateGameCards(TroopDto[] troops, GameCardDto[] gameCardList)
     {
         var cards = gameCardList.Select(NowLevelAndHadChip.Instance)
             .Where(c => c.IsOwning())
@@ -451,7 +455,7 @@ public class PlayerDataForGame : MonoBehaviour
             }).SetValues(selectedWarId, UIManager.instance.expedition.CurrentMode.Id));
     }
 
-    private void UpdateTroopEnlist(TroopDto troop)
+    public void UpdateTroopEnlist(TroopDto troop)
     {
         var isContainHero = troop.EnList.ContainsKey(GameCardType.Hero);
         var isContainTower = troop.EnList.ContainsKey(GameCardType.Tower);
@@ -490,4 +494,16 @@ public class PlayerDataForGame : MonoBehaviour
         stamina = new LocalStamina(pyData.LastStaminaUpdateTicks, pyData.Stamina, secsPerStamina, staminaIncreaseLimit,
             staminaMax);
     }
+
+    public IEnumerable<GameCardDto> GetLocalDtos()
+    {
+        return GenerateDtoList(hstData.heroSaveData)
+            .Concat(GenerateDtoList(hstData.towerSaveData))
+            .Concat(GenerateDtoList(hstData.trapSaveData)).ToArray();
+
+        IEnumerable<GameCardDto> GenerateDtoList(IEnumerable<NowLevelAndHadChip> list) => list
+            .Where(c => c.IsOwning()).Select(c => new GameCardDto(c.CardId, c.Type, c.Level, c.Chips));
+
+    }
+
 }

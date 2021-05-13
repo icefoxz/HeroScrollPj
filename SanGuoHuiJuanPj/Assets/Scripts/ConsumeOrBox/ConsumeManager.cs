@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Assets;
 using Assets.Scripts.Utl;
 using CorrelateLib;
@@ -140,11 +141,17 @@ public class ConsumeManager : MonoBehaviour
             UIManager.instance.RefreshPlayerInfoUi();
     }
 
-    public void SaveUpdatePlayerTroops(PlayerDataDto player, TroopDto[] troops,GameCardDto[] gameCards)
+    public void SaveUpdatePlayerTroops(PlayerDataDto player, TroopDto[] troops, GameCardDto[] gameCards)
     {
-        PlayerDataForGame.instance.UpdateGameCards(gameCards, troops);
+        if (gameCards == null)
+        {
+            gameCards = PlayerDataForGame.instance.GetLocalDtos().ToArray();
+        }
+        PlayerDataForGame.instance.UpdateGameCards(troops, gameCards);
         SaveChangeUpdatePlayerData(player, 7);
         if (UIManager.instance != null)
             UIManager.instance.RefreshPlayerInfoUi();
+
     }
+
 }
