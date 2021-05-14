@@ -14,6 +14,7 @@ using UnityEngine.UI;
 [Skip]public class TaoYuan : MonoBehaviour
 {
     public int openJiuTanYBNums;   //开酒坛所需元宝
+    public int maxZhanYiChests = 100;//战役宝箱上限
     public Button freeJiuTanAdButton;//开酒坛的免费按键
     private bool isConsumeAd;//是否消费了广告
     public JiuTanUI jiuTan;//酒坛
@@ -48,13 +49,17 @@ using UnityEngine.UI;
                 continue;
             }
             //如果是战役宝箱
-            var zyChestCount = PlayerDataForGame.instance.gbocData.fightBoxs.Count; //战役宝箱数量
-            chest.value.text = chest.value.text = zyChestCount.ToString();
-            chest.chestButton.enabled = zyChestCount > 0;
+            UpdateZhanYiChest(PlayerDataForGame.instance.gbocData.fightBoxs.Count); //战役宝箱数量
             continue;
         }
 
         jinNangBtn.onClick.AddListener(RequestJinNang);
+    }
+
+    private void UpdateZhanYiChest(int chestCount)
+    {
+        zhanYiChest.UpdateUi(chestCount.ToString(), maxZhanYiChests.ToString());
+        zhanYiChest.chestButton.enabled = chestCount > 0;
     }
 
     private void OnJinNangFailed(string arg)
@@ -209,9 +214,8 @@ using UnityEngine.UI;
             chestId = PlayerDataForGame.instance.gbocData.fightBoxs[0]; //获取叠在最上面的奖励id
             PlayerDataForGame.instance.gbocData.fightBoxs.Remove(chestId); //存档移除奖励
             var chestCount = PlayerDataForGame.instance.gbocData.fightBoxs.Count; //剩余的宝箱数量
-            chestUi.value.text = chestCount.ToString(); //改变宝箱数量
+            UpdateZhanYiChest(chestCount);//改变宝箱数量
             UIManager.instance.ShowOrHideGuideObj(1, false);
-            chestUi.chestButton.enabled = chestCount > 0;
         }
 
         ApiPanel.instance.Invoke(viewBag =>

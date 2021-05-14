@@ -116,7 +116,7 @@ public class RedemptionCodeGot
     public bool isGot;  //是否领取过
 }
 [Skip]
-public class NowLevelAndHadChip : IGameCard//card
+public class NowLevelAndHadChip : IGameCard,IComparable<NowLevelAndHadChip>
 {
     public static NowLevelAndHadChip Instance(GameCardDto dto)
     {
@@ -149,6 +149,37 @@ public class NowLevelAndHadChip : IGameCard//card
         set => chips = value;
     }
     public int Type => typeIndex;
+
+    public int CompareTo(NowLevelAndHadChip other)
+    {
+        if (ReferenceEquals(this, other)) return 0;
+        if (ReferenceEquals(null, other)) return 1;
+        var levelComparison = level.CompareTo(other.level);
+        if (levelComparison != 0) return levelComparison;
+        var rareComparison = GetRare(this).CompareTo(GetRare(other));
+        if (rareComparison != 0) return rareComparison;
+        var typeIndexComparison = typeIndex.CompareTo(other.typeIndex);
+        if (typeIndexComparison != 0) return typeIndexComparison;
+        var chipsComparison = chips.CompareTo(other.chips);
+        if (chipsComparison != 0) return chipsComparison;
+        return id.CompareTo(other.id);
+
+        int GetRare(NowLevelAndHadChip c)
+        {
+            switch ((GameCardType) c.typeIndex)
+            {
+                case GameCardType.Hero:
+                    return DataTable.Hero[c.id].Rarity;
+                case GameCardType.Tower:
+                    return DataTable.Tower[c.id].Rarity;
+                case GameCardType.Trap:
+                    return DataTable.Trap[c.id].Rarity;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
+    }
 }
 /// <summary>
 /// 武将，士兵，塔等 信息存档数据类
