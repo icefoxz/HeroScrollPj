@@ -218,57 +218,6 @@ public class PlayerDataForGame : MonoBehaviour
         loadingImg.DOFade(0, fadeSpeed).OnComplete(() => loadingImg.gameObject.SetActive(false));
     }
 
-    //private int scaleWidth = 0;
-    //private int scaleHeight = 0;
-    //public void setDesignContentScale()
-    //{
-    //    //#if UNITY_ANDROID 
-    //    if (scaleWidth == 0 && scaleHeight == 0)
-    //    {
-    //        var width = Screen.currentResolution.width * 1f;
-    //        var height = Screen.currentResolution.height * 1f;
-    //        float designWidth = 1080;
-    //        float designHeight = 1920;
-    //        float s1 = designWidth / designHeight;
-    //        float s2 = width / height;
-    //        if (s1 < s2)
-    //        {
-    //            designWidth = Mathf.FloorToInt(designHeight * s2);
-    //        }
-    //        else if (s1 > s2)
-    //        {
-    //            designHeight = Mathf.FloorToInt(designWidth / s2);
-    //        }
-    //        float contentScale = designWidth / width;
-    //        if (contentScale < 1.0f)
-    //        {
-    //            scaleWidth = (int)designWidth;
-    //            scaleHeight = (int)designHeight;
-    //        }
-    //    }
-    //    if (scaleWidth > 0 && scaleHeight > 0)
-    //    {
-    //        if (scaleWidth % 2 == 0)
-    //        {
-    //            scaleWidth += 1;
-    //        }
-    //        else
-    //        {
-    //            scaleWidth -= 1;
-    //        }
-    //        Screen.SetResolution(scaleWidth, scaleHeight, true);
-    //    }
-    //    //#endif 
-    //}
-
-    //void OnApplicationPause(bool paused)
-    //{
-    //    if (paused) return;
-    //    setDesignContentScale();
-    //}
-
-
-
     /// <summary> 
     /// 添加或删除卡牌id到出战列表 
     /// </summary> 
