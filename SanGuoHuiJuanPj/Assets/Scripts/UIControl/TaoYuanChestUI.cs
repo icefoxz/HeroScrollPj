@@ -16,7 +16,7 @@ public class TaoYuanChestUI : MonoBehaviour
         closed.gameObject.SetActive(!isOpen);
     }
 
-    public void UpdateUi(string valueText, string lastingText)
+    public virtual void UpdateUi(string valueText, string lastingText)
     {
         lasting.text = lastingText;
         value.text = valueText;

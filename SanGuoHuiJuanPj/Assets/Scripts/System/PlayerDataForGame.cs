@@ -137,7 +137,10 @@ public class PlayerDataForGame : MonoBehaviour
         {
             instance = this;
         }
+    }
 
+    public virtual void Init()
+    {
         selectedWarId = -1;
         isJumping = false;
         loadPro = 0;
@@ -149,17 +152,12 @@ public class PlayerDataForGame : MonoBehaviour
 
         garbageStationObjs = new List<GameObject>();
         StartCoroutine(FadeTransitionEffect(0));
-
     }
 
     private void Update()
     {
         if (!isJumping) return;
         loadPro = asyncOp?.progress??0.3f; //获取加载进度,最大为0.9 
-        if (loadPro >= 0.9f)
-        {
-            loadPro = 1;
-        }
         loadingText.text = string.Format(DataTable.GetStringText(63), (int)(loadPro * 100));
         if (loadPro < 1) return;
         if (LoadSaveData.instance.isLoadingSaveData) return;

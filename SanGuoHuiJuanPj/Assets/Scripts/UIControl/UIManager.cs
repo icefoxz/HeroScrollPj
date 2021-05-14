@@ -26,6 +26,7 @@ public class UIManager : MonoBehaviour
 
     public Pages currentPage;
     public Image waitWhileImpress;//敬请期待 
+    public ZhanLingUi ZhanLingUi;
     [SerializeField]
     GameObject zhuChengHeroContentObj;  //主城卡牌集合框 
     [SerializeField]
@@ -34,8 +35,6 @@ public class UIManager : MonoBehaviour
     public Text yuanBaoNumText;        //元宝数量Text 
     [SerializeField]
     public Text yvQueNumText;          //玉阙数量Text 
-    [SerializeField]
-    Text tiLiNumText;           //体力数量Text 
     [SerializeField]
     GameObject rewardsShowObj;  //奖品展示UI 
     [SerializeField]
@@ -46,8 +45,6 @@ public class UIManager : MonoBehaviour
     GameObject warsChooseListObj;   //战役选择列表obj 
     [SerializeField]
     GameObject warsChooseBtnPreObj;   //战役选择按钮obj 
-    [SerializeField]
-    Text tiLiRecordTimer;   //体力恢复倒计时 
     [SerializeField]
     GameObject queRenWindows;   //操作确认窗口 
     //[SerializeField] 
@@ -80,12 +77,6 @@ public class UIManager : MonoBehaviour
     [SerializeField]
     Text chickenCloseText;  //烧鸡关闭时间Text 
 
-    [SerializeField]
-    GameObject cutTiLiTextObj;  //扣除体力动画Obj 
-
-
-    //public ForceSelectorUi warForceSelectorUi;//战役势力选择器 
-    //private int lastAvailableStageIndex;//最远可战的战役索引 
     public BaYeForceSelectorUi baYeForceSelectorUi;//战役势力选择器 
     public BaYeProgressUI baYeProgressUi; //霸业经验条 
     public ChestUI[] baYeChestButtons; //霸业宝箱 
@@ -445,7 +436,7 @@ public class UIManager : MonoBehaviour
                 Transform tran = jibanHeroBoxTran.GetChild(i);
                 GameObject obj = tran.GetChild(0).gameObject;
                 //名字 
-                NameTextSizeAlignment(obj.transform.GetChild(2).GetComponent<Text>(), hero.Name);
+                GameCardUi.NameTextSizeAlignment(obj.transform.GetChild(2).GetComponent<Text>(), hero.Name);
                 //名字颜色根据稀有度 
                 obj.transform.GetChild(2).GetComponent<Text>().color =
                     GameCardInfo.GetInfo((GameCardType) card.CardType, card.CardId).GetNameColor();
@@ -502,11 +493,9 @@ public class UIManager : MonoBehaviour
     {
         if (PlayerDataForGame.instance.lastSenceIndex == 2 && PlayerDataForGame.instance.WarReward.Stamina > 0)
         {
-            cutTiLiTextObj.SetActive(false);
-            cutTiLiTextObj.GetComponent<Text>().color = ColorDataStatic.deep_green;
-            cutTiLiTextObj.GetComponent<Text>().text = "+" + PlayerDataForGame.instance.WarReward.Stamina;
-            cutTiLiTextObj.SetActive(true);
-            PlayerDataForGame.instance.ShowStringTips(string.Format(DataTable.GetStringText(25), PlayerDataForGame.instance.WarReward.Stamina));
+            var rewardStamina = PlayerDataForGame.instance.WarReward.Stamina;
+            ZhanLingUi.UpdateUi();
+            ZhanLingUi.ShowEffect(rewardStamina);
         }
         PlayerDataForGame.instance.lastSenceIndex = 1;
     }
@@ -567,22 +556,11 @@ public class UIManager : MonoBehaviour
         return player;
     }
 
-    int showTiLiNums = 0;
-
     //刷新体力相关的内容显示 
-    public void UpdateShowTiLiInfo(string recordStr)
+    public void UpdateShowTiLiInfo(string staminaText)
     {
-        if (recordStr != tiLiRecordTimer.text)
-        {
-            tiLiRecordTimer.text = recordStr;
-        }
-
-        int nowStaminaNums = PlayerDataForGame.instance.Stamina.Value;
-        if (showTiLiNums != nowStaminaNums)
-        {
-            showTiLiNums = nowStaminaNums;
-            tiLiNumText.text = nowStaminaNums + "/90";
-        }
+        ZhanLingUi.UpdateCountdown(staminaText);
+        ZhanLingUi.UpdateUi();
     }
 
     /// <summary> 
@@ -615,13 +593,8 @@ public class UIManager : MonoBehaviour
                 AudioController0.instance.ChangeAudioClip(12);
                 AudioController0.instance.PlayAudioSource(0);
                 PlayerDataForGame.instance.AddStamina(-staminaCost);
-                showTiLiNums = PlayerDataForGame.instance.Stamina.Value;
-                tiLiNumText.text = showTiLiNums + "/90";
-                cutTiLiTextObj.SetActive(false);
-                cutTiLiTextObj.GetComponent<Text>().color = ColorDataStatic.name_red;
-                cutTiLiTextObj.GetComponent<Text>().text = "-" + staminaCost;
-                cutTiLiTextObj.SetActive(true);
-
+                ZhanLingUi.UpdateUi();
+                ZhanLingUi.ShowEffect(-staminaCost);
                 PlayerDataForGame.instance.StaminaReturnTemp = staminaMap.MaxReturn;
                 PlayerDataForGame.instance.boxForTiLiNums = staminaMap.CostOfChest;
                 StartCoroutine(LateGoToFightScene());
@@ -1176,8 +1149,7 @@ public class UIManager : MonoBehaviour
         //货币 
         yuanBaoNumText.text = PlayerDataForGame.instance.pyData.YuanBao.ToString();
         yvQueNumText.text = PlayerDataForGame.instance.pyData.YvQue.ToString();
-        showTiLiNums = PlayerDataForGame.instance.Stamina.Value;
-        tiLiNumText.text = showTiLiNums + "/90";
+        ZhanLingUi.UpdateUi();
     }
 
     /// <summary> 
@@ -1286,7 +1258,7 @@ public class UIManager : MonoBehaviour
         {
             Transform cardTran = obj.transform.GetChild(4);
             cardTran.GetComponent<Image>().sprite = info.Type == GameCardType.Hero ? GameResources.HeroImg[info.Id] : GameResources.FuZhuImg[info.ImageId];
-            NameTextSizeAlignment(cardTran.GetChild(0).GetComponent<Text>(), info.Name);
+            GameCardUi.NameTextSizeAlignment(cardTran.GetChild(0).GetComponent<Text>(), info.Name);
             cardTran.GetChild(0).GetComponent<Text>().color = info.GetNameColor();
             cardTran.GetChild(1).GetComponent<Image>().sprite = info.Type == GameCardType.Hero ? GameResources.ClassImg[0] : GameResources.ClassImg[1];
             cardTran.GetChild(1).GetChild(0).GetComponentInChildren<Text>().text = info.Short;
@@ -1295,40 +1267,6 @@ public class UIManager : MonoBehaviour
 
         obj.transform.GetChild(5).GetComponent<Text>().text = "×" + rewardsCard.cardChips;
     }
-
-    /// <summary> 
-    /// 名字显示规则 
-    /// </summary> 
-    /// <param name="nameText"></param> 
-    /// <param name="str"></param> 
-    public void NameTextSizeAlignment(Text nameText, string str)
-    {
-        nameText.text = str;
-        switch (str.Length)
-        {
-            case 1:
-                nameText.fontSize = 50;
-                nameText.lineSpacing = 1.1f;
-                break;
-            case 2:
-                nameText.fontSize = 50;
-                nameText.lineSpacing = 1.1f;
-                break;
-            case 3:
-                nameText.fontSize = 50;
-                nameText.lineSpacing = 0.9f;
-                break;
-            case 4:
-                nameText.fontSize = 45;
-                nameText.lineSpacing = 0.8f;
-                break;
-            default:
-                nameText.fontSize = 45;
-                nameText.lineSpacing = 0.8f;
-                break;
-        }
-    }
-
 
     /// <summary> 
     /// 主城界面切换 

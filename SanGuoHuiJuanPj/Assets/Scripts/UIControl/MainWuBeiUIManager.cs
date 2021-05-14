@@ -131,7 +131,7 @@ public class MainWuBeiUIManager : MonoBehaviour
                     GiveGameObjEventForHoldOn(obj.transform.GetChild(0).gameObject,
                         info.Name + ":\n" + info.Intro);
                     //名字
-                    UIManager.instance.NameTextSizeAlignment(obj.transform.GetChild(0).GetChild(0).GetComponent<Text>(), info.Name);
+                    GameCardUi.NameTextSizeAlignment(obj.transform.GetChild(0).GetChild(0).GetComponent<Text>(), info.Name);
                     obj.transform.GetChild(0).GetChild(0).GetComponent<Text>().color = info.GetNameColor();
                     //星级
                     obj.transform.GetChild(0).GetChild(1).GetComponent<Image>().sprite = Resources.Load("Image/gradeImage/" + PlayerDataForGame.instance.hstData.heroSaveData[i].maxLevel, typeof(Sprite)) as Sprite;
@@ -228,7 +228,7 @@ public class MainWuBeiUIManager : MonoBehaviour
                 GiveGameObjEventForHoldOn(obj.transform.GetChild(0).gameObject,
                     info.Name + ":\n" + info.Intro);
                 //名字
-                UIManager.instance.NameTextSizeAlignment(obj.transform.GetChild(0).GetChild(0).GetComponent<Text>(), info.Name);
+                GameCardUi.NameTextSizeAlignment(obj.transform.GetChild(0).GetChild(0).GetComponent<Text>(), info.Name);
                 obj.transform.GetChild(0).GetChild(0).GetComponent<Text>().color = info.GetNameColor();
                 //星级
                 obj.transform.GetChild(0).GetChild(1).GetComponent<Image>().sprite = GameResources.GradeImg[card.maxLevel];
@@ -274,7 +274,7 @@ public class MainWuBeiUIManager : MonoBehaviour
                 obj.transform.GetChild(0).GetComponent<Image>().sprite = GameResources.FuZhuImg[info.ImageId];
                 GiveGameObjEventForHoldOn(obj.transform.GetChild(0).gameObject, info.Name + ":\n" + info.Intro);
                 //名字
-                UIManager.instance.NameTextSizeAlignment(obj.transform.GetChild(0).GetChild(0).GetComponent<Text>(), info.Name);
+                GameCardUi.NameTextSizeAlignment(obj.transform.GetChild(0).GetChild(0).GetComponent<Text>(), info.Name);
                 obj.transform.GetChild(0).GetChild(0).GetComponent<Text>().color = info.GetNameColor();
                 //星级
                 obj.transform.GetChild(0).GetChild(1).GetComponent<Image>().sprite = GameResources.GradeImg[card.maxLevel];
