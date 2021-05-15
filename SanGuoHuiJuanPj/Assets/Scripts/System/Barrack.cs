@@ -24,11 +24,6 @@ public class Barrack : MonoBehaviour
         PointDesk.Init();
         PointDesk.OnMergeCard.AddListener(onCardMerge);
         PointDesk.OnCardSell.AddListener(onCardSell);
-        //PointDesk.OnEnlistCall.AddListener(card =>
-        //{
-        //    PointDesk.SelectCard(card);
-        //    RefreshCardList();
-        //});
         PointDesk.OnEnlistCall.AddListener(onCardEnlist);
     }
 
