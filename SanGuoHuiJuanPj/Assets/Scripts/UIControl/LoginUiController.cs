@@ -215,11 +215,17 @@ public class LoginUiController : MonoBehaviour
         var uJson = await response.Content.ReadAsStringAsync();
         var user = Json.Deserialize<UserInfo>(uJson);
         var isSuccess = response.IsSuccessStatusCode;
+
+        if (!isSuccess)
+        {
+            OnLoginPageErrorDisplay((int)response.StatusCode);
+            return;
+        }
+
         UnityMainThread.thread.RunNextFrame(() =>
         {
             OnAction(ActionWindows.Register);
             register.username.text = user.Username;
-            if (isSuccess) return;
             register.message.text = DeviceIsBound;
             register.ShowPasswordUi(false);
         });
@@ -256,6 +262,11 @@ public class LoginUiController : MonoBehaviour
                 OnLoggedInAction.Invoke(info.Username, password, info.Arrangement, info.IsNewRegistered));
             return;
         }
+        OnLoginPageErrorDisplay(code);
+    }
+
+    private void OnLoginPageErrorDisplay(int code)
+    {
         login.message.text = Server.ResponseMessage(code);
     }
 
