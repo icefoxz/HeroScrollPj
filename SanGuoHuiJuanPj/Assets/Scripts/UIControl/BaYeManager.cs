@@ -28,7 +28,7 @@ public class BaYeManager : MonoBehaviour
     public int BaYeGoldDefault = 30; //霸业初始金币
     public int BaYeMaxGold = 75; //霸业金币上限
     private List<BaYeCityEvent> map;
-    private Dictionary<int, int[]> storyEventSet;//数据表缓存
+    private Dictionary<int, int[]> eventPointAndStoriesMap;//数据表缓存
     public bool isShowTips;//是否弹出文字
     public string tipsText;//弹出文字内容
 
@@ -88,7 +88,7 @@ public class BaYeManager : MonoBehaviour
         //初始化故事事件
         //事件点初始化
         var now = DateTime.Now;
-        storyEventSet = DataTable.BaYeStoryPool.Values
+        eventPointAndStoriesMap = DataTable.BaYeStoryPool.Values
             .Where(m => DataTable.BaYeStoryEvent[m.EventId].Time.IsTableTimeInRange(now))
             .ToDictionary(m=>m.EventId,m=>m.BaYeStoryTableIds); //读取数据表转化城key=事件点,value=事件列
 
@@ -117,7 +117,7 @@ public class BaYeManager : MonoBehaviour
         //储存在霸业存档里
         //事件点和故事信息
         var eventPointStoryMap = DataTable.PlayerLevelConfig[PlayerDataForGame.instance.pyData.Level].BaYeStoryPoints
-            .Join(storyEventSet, pId => pId, se => se.Key, (point, s) => new {point, storyIds = s.Value})
+            .Join(eventPointAndStoriesMap, pId => pId, se => se.Key, (point, s) => new {point, storyIds = s.Value})
             .Select(s =>
             {
                 return new
@@ -152,7 +152,7 @@ public class BaYeManager : MonoBehaviour
                 WarId = warId,
                 ZhanLing = GetZhanLing(amount,story.ZhanLingRange.Item1, story.ZhanLingRange.Item2)
             };
-        }).Where(kv => kv.Value.StoryId != 0).ToDictionary(kv => kv.Key, kv => kv.Value);
+        }).ToDictionary(kv => kv.Key, kv => kv.Value);
         PlayerDataForGame.instance.baYe.lastStoryEventsRefreshHour =
             SystemTimer.instance.Now.Date.AddHours(SystemTimer.instance.Now.Hour);
         GamePref.SaveBaYe(PlayerDataForGame.instance.baYe);

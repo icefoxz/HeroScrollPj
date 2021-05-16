@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Beebyte.Obfuscator;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -23,7 +24,7 @@ public class StoryEventUIController : MonoBehaviour
             if (b.content)
                 Destroy(b.content);
         });
-        var storyMap = PlayerDataForGame.instance.baYe.storyMap;
+        var storyMap = PlayerDataForGame.instance.baYe.storyMap.Where(kv => kv.Value.Type != 0).ToDictionary(s=>s.Key,s=>s.Value);//类型0：无事件
         points = new Dictionary<int, StoryEventPoint>();
         for (int i = 0; i < storyEventPoints.Count; i++)
         {

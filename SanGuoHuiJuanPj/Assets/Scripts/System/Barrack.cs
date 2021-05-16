@@ -49,9 +49,6 @@ public class Barrack : MonoBehaviour
             PointDesk.SetForce(SelectedForce);
         }
 
-        PlayerDataForGame.instance.hstData.heroSaveData.Sort(); //  排序 
-        PlayerDataForGame.instance.hstData.towerSaveData.Sort();
-        PlayerDataForGame.instance.hstData.trapSaveData.Sort();
         PlayerDataForGame.instance.RefreshEnlisted(SelectedForce);
         ResetCardPool();
         if (_cardPool.Count == 0) return;
@@ -76,6 +73,7 @@ public class Barrack : MonoBehaviour
             .Select(c => new {Card = c, Info = c.GetInfo()}).Where(c => c.Info.ForceId == SelectedForce)
             .Select(c => c.Card)
             .ToList();
+        cards.Sort();
         cards.ForEach(InstanceGameCardUi);
     }
 
