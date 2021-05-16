@@ -31,8 +31,8 @@ public class SignalRClient : MonoBehaviour
     public HubConnectionState Status;
 
     public int ServerTimeOutMinutes = 10;
-    public int KeeAliveIntervalSecs = 20;
-    public int HandShakeTimeoutSecs = 20;
+    public int KeeAliveIntervalSecs = 600;
+    public int HandShakeTimeoutSecs = 10;
     public ServerPanel ServerPanel;
     public event UnityAction<HubConnectionState> OnStatusChanged;
     public static SignalRClient instance;
@@ -186,12 +186,6 @@ public class SignalRClient : MonoBehaviour
                         TimeSpan.FromSeconds(2), 
                         TimeSpan.FromSeconds(4),
                         TimeSpan.FromSeconds(5),
-                        TimeSpan.FromSeconds(5),
-                        TimeSpan.FromSeconds(5),
-                        TimeSpan.FromSeconds(5),
-                        TimeSpan.FromSeconds(5),
-                        TimeSpan.FromSeconds(5),
-                        TimeSpan.FromSeconds(5)
                     })
                     .Build();
                 _hub.ServerTimeout = TimeSpan.FromMinutes(ServerTimeOutMinutes);

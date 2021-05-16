@@ -21185,7 +21185,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 292, y: -1046}
+  m_AnchoredPosition: {x: 291.75, y: -1046.3334}
   m_SizeDelta: {x: 583.5, y: 418.53336}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &799804011
@@ -28940,7 +28940,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 292, y: -628}
+  m_AnchoredPosition: {x: 291.75, y: -627.80005}
   m_SizeDelta: {x: 583.5, y: 418.53336}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &889036024
@@ -30808,10 +30808,10 @@ RectTransform:
   m_Father: {fileID: 1988070288}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: -0.000000056514033, y: 0.12437496}
-  m_AnchorMax: {x: 0.99999994, y: 0.59901035}
-  m_AnchoredPosition: {x: 0.5, y: 0.5}
-  m_SizeDelta: {x: 1, y: 1}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0.99999994, y: 0.5985417}
+  m_AnchoredPosition: {x: 0.5, y: 115.29999}
+  m_SizeDelta: {x: 1, y: -226.68701}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &952533745
 MonoBehaviour:
@@ -30828,7 +30828,7 @@ MonoBehaviour:
   m_Content: {fileID: 1397829329}
   m_Horizontal: 0
   m_Vertical: 1
-  m_MovementType: 2
+  m_MovementType: 1
   m_Elasticity: 0.1
   m_Inertia: 1
   m_DecelerationRate: 0.135
@@ -33185,7 +33185,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 292, y: -209}
+  m_AnchoredPosition: {x: 291.75, y: -209.26666}
   m_SizeDelta: {x: 583.5, y: 418.53336}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1050866441
@@ -72886,7 +72886,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 540, y: -473.99997}
+  m_AnchoredPosition: {x: 540, y: -474}
   m_SizeDelta: {x: 1080, y: 181.68571}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &2001671056
@@ -75922,6 +75922,8 @@ MonoBehaviour:
   - {fileID: 1568880348}
   - {fileID: 837245473}
   - {fileID: 1375432844}
+  - {fileID: 1524819452}
+  - {fileID: 1514691918}
 --- !u!114 &284325001118043206
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -78517,6 +78519,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MaxValue: 90
+  HightColor: {r: 0.6666667, g: 0, b: 0, a: 1}
+  NormalColor: {r: 0, g: 0, b: 0, a: 1}
   ValueText: {fileID: 112484846}
   MaxText: {fileID: 1751469960805701399}
   EffectText: {fileID: 1832992515}
@@ -79103,6 +79107,8 @@ MonoBehaviour:
   lasting: {fileID: 2738951530887509125}
   opened: {fileID: 2738951530899661001}
   closed: {fileID: 2738951529445767097}
+  HighlightColor: {r: 0.6666667, g: 0, b: 0, a: 1}
+  NormalColor: {r: 0, g: 0, b: 0, a: 1}
 --- !u!222 &1985926345075409731
 CanvasRenderer:
   m_ObjectHideFlags: 0

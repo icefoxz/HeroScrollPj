@@ -3,6 +3,8 @@ using UnityEngine.UI;
 
 public class ZhanYiChestUi : TaoYuanChestUI
 {
+    public Color HighlightColor = new Color(170,0,0);
+    public Color NormalColor = Color.black;
     public override void UpdateUi(string valueText, string max)
     {
         var isHighlight = int.Parse(valueText) >= int.Parse(max);
@@ -14,12 +16,12 @@ public class ZhanYiChestUi : TaoYuanChestUI
         {
             if (highlight)
             {
-                com.color = Color.red;
+                com.color = HighlightColor;
                 com.fontStyle = FontStyle.Bold;
             }
             else
             {
-                com.color = Color.black;
+                com.color = NormalColor;
                 com.fontStyle = FontStyle.Normal;
             }
         }

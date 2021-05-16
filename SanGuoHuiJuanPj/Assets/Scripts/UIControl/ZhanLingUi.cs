@@ -5,6 +5,8 @@ using UnityEngine.UI;
 public class ZhanLingUi : MonoBehaviour
 {
     public int MaxValue = 90;
+    public Color HightColor = new Color(170, 0, 0);
+    public Color NormalColor = Color.black;
     private int _value;
     public Text ValueText;
     public Text MaxText;
@@ -30,13 +32,13 @@ public class ZhanLingUi : MonoBehaviour
         ValueText.fontStyle = FontStyle.Normal;
         MaxText.fontStyle = FontStyle.Normal;
         ValueText.text = _value.ToString();
-        ValueText.color = Color.black;
-        MaxText.color = Color.black;
+        ValueText.color = NormalColor;
+        MaxText.color = NormalColor;
         if (_value < MaxValue) return;
         Countdown.text = string.Empty;
         ValueText.fontStyle = FontStyle.Bold;
-        ValueText.color = Color.red;
-        MaxText.color = Color.red;
+        ValueText.color = HightColor;
+        MaxText.color = HightColor;
         MaxText.fontStyle = FontStyle.Bold;
     }
 
