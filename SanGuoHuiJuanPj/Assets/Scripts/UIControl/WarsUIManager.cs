@@ -115,7 +115,7 @@ public class WarsUIManager : MonoBehaviour
         isPointMoveNow = false;
     }
 
-    void Start()
+    public void Init()
     {
         StartCoroutine(Initialize());
     }

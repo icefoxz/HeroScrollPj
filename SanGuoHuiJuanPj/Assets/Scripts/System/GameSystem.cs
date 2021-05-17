@@ -28,6 +28,9 @@ public class GameSystem : MonoBehaviour
 
     public static GameResources GameResources { get; private set; }
     public Canvas systemCanvas;
+    public static bool IsInit { get; private set; }
+    public static UnityAction OnWarSceneInit;
+    public static UnityAction OnMainSceneInit;
 
     void Awake()
     {
@@ -48,6 +51,7 @@ public class GameSystem : MonoBehaviour
         AudioController1.instance.MusicSwitch(GamePref.PrefMusicPlay);
         playerDataForGame.Init();
         InitScene((GameScene)SceneManager.GetActiveScene().buildIndex);
+        IsInit = true;
     }
 
     public static void InitGameDependencyComponents()
@@ -55,7 +59,7 @@ public class GameSystem : MonoBehaviour
         TimeSystemControl.Init();
     }
 
-    private void InitScene(GameScene  scene)
+    private void InitScene(GameScene scene)
     {
         CurrentScene = scene;
         switch (CurrentScene)
@@ -64,9 +68,11 @@ public class GameSystem : MonoBehaviour
                 OnStartSceneLoaded();
                 break;
             case GameScene.MainScene:
+                OnMainSceneInit?.Invoke();
                 OnMainSceneLoaded();
                 break;
             case GameScene.WarScene:
+                OnWarSceneInit?.Invoke();
                 OnWarSceneLoaded();
                 break;
             default:
@@ -84,6 +90,8 @@ public class GameSystem : MonoBehaviour
 
     private void OnWarSceneLoaded()
     {
+        WarsUIManager.instance.Init();
+        EffectsPoolingControl.instance.Init();
     }
 
     private void OnMainSceneLoaded() => UIManager.instance.Init();

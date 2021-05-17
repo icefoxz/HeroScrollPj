@@ -95,7 +95,7 @@ using UnityEngine;
 
     private void Awake()
     {
-        if (instance != null)
+        if (instance != null && instance != this)
         {
             Destroy(gameObject);
         }
