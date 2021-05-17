@@ -16,7 +16,6 @@ public class WarDataMocker : MonoBehaviour
     [Tooltip("是否选择客制化卡牌组合")]public bool isCustomCard;//是否客制化卡牌
     [Tooltip("只有选存档才会有效")]public ForceFlags force;
     public PlayerDataMock playerData;
-    public AdmobAgent adManager;
     [Header("这里是客制化卡牌，必须点了客制化才会使用")]
     public MyCard[] heroes;
     public MyCard[] towers;
@@ -24,17 +23,22 @@ public class WarDataMocker : MonoBehaviour
     public GameResources gameResources = new GameResources();
 
 #if UNITY_EDITOR
-    private void Start()
+    private void Awake()
     {
-        gameResources.Init();
-        DataTable.instance = gameObject.GetComponent<DataTable>();
-        Instantiate(adManager);
-        gameObject.AddComponent<LoadSaveData>();
-        playerData.Init();
-        LoadSaveData.instance.LoadByJson();
-        playerData.selectedWarId = warId;
-        playerData.zhanYiColdNums = gold;
-        WarsUIManager.instance.cityLevel = cityLevel;
+        StartCoroutine(Init());
+        GameSystem.OnWarSceneInit += () =>
+        {
+            playerData.WarReward = new WarReward("test", warId, 0);
+            playerData.WarType = PlayerDataForGame.WarTypes.Expedition;
+            playerData.selectedWarId = warId;
+            playerData.zhanYiColdNums = gold;
+            WarsUIManager.instance.cityLevel = cityLevel;
+        };
+    }
+
+    IEnumerator Init()
+    {
+        yield return new WaitUntil(() => GameSystem.IsInit);
         PrepareCards();
     }
 #endif
@@ -42,7 +46,6 @@ public class WarDataMocker : MonoBehaviour
     private void PrepareCards()
     {
         var hst = PlayerDataForGame.instance.hstData;
-        PlayerDataForGame.instance.WarReward = new WarReward("test", 0, 0);
         var hfMap = DataTable.Hero.Values.Select(card =>
         {
             var id = card.Id;

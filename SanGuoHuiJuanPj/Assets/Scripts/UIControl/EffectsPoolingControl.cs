@@ -31,7 +31,7 @@ public class EffectsPoolingControl : MonoBehaviour
         }
     }
 
-    private void Start()
+    public void Init()
     {
         InitializedEffectsObj();
         InitializedIconsObj();
