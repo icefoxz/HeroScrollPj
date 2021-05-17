@@ -278,7 +278,11 @@ public class PlayerDataForGame : MonoBehaviour
                     Destroy(garbageStationObjs[i]);
                 }
             }
+#if UNITY_EDITOR
+            
+            XDebug.Log<PlayerDataForGame>($"清除垃圾池,物件={garbageStationObjs.Count}");
             garbageStationObjs.Clear();
+#endif
         }
         catch (Exception e)
         {

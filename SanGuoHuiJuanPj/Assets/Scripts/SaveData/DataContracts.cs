@@ -290,9 +290,35 @@ public class WarsDataClass
 #endregion
 
 #region 游戏内容相关类
+
+public class DeskReward
+{
+    private readonly List<CardReward> cards;
+    public int YuanBao { get; }
+    public int YuQue { get; }
+    public int Exp { get; }
+    public int Stamina { get; }
+
+    public IReadOnlyList<CardReward> Cards => cards;
+
+    public DeskReward()
+    {
+        
+    }
+    public DeskReward(int yuanBao, int yuQue, int exp, int stamina, List<CardReward> cards)
+    {
+        YuanBao = yuanBao;
+        YuQue = yuQue;
+        Exp = exp;
+        Stamina = stamina;
+        this.cards = cards.Select(c => new {GameCardInfo.GetInfo((GameCardType) c.cardType, c.cardId).Rare, c})
+            .OrderByDescending(c => c.c.cardType).ThenBy(c => c.Rare).Select(c => c.c).ToList();
+    }
+}
+
 [Skip]
 //宝箱卡片类
-public class RewardsCardClass
+public class CardReward
 {
     public int cardType;
     public int cardId;
