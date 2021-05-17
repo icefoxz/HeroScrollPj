@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Net;
 using System.Threading.Tasks;
 using Assets.Scripts.Utl;
 using CorrelateLib;
@@ -213,15 +214,15 @@ public class LoginUiController : MonoBehaviour
         var response = await Http.PostAsync(Server.REQUEST_USERNAME_API,
             Json.Serialize(Server.GetUserInfo(null, null)));
         var uJson = await response.Content.ReadAsStringAsync();
-        var user = Json.Deserialize<UserInfo>(uJson);
         var isSuccess = response.IsSuccessStatusCode;
 
-        if (!isSuccess)
+        if (!isSuccess && response.StatusCode != HttpStatusCode.Unauthorized)
         {
             OnLoginPageErrorDisplay((int)response.StatusCode);
             return;
         }
 
+        var user = Json.Deserialize<UserInfo>(uJson);
         UnityMainThread.thread.RunNextFrame(() =>
         {
             OnAction(ActionWindows.Register);
