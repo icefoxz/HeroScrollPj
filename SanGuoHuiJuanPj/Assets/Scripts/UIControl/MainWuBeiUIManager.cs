@@ -29,7 +29,7 @@ public class MainWuBeiUIManager : MonoBehaviour
     GameObject detailsObj;  //详细信息显示栏
 
     List<GameObject> wuBeiCardList = new List<GameObject>();
-    private GameResources GameResources = new GameResources();
+    private GameResources GameResources = GameResources.Instance;
     private void Awake()
     {
         if (instance == null)
@@ -38,9 +38,8 @@ public class MainWuBeiUIManager : MonoBehaviour
         }
     }
 
-    private void Start()
+    public void Init()
     {
-        GameResources.Init();
         InitializedCardsContentTran();
         InitArmsBtnListFun();
     }

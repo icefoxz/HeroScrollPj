@@ -114,7 +114,7 @@ public class UIManager : MonoBehaviour
     }
 
     // Start is called before the first frame update 
-    void Start()
+    public void Init()
     {
         AudioController1.instance.ChangeBackMusic();
         Invoke(nameof(GetBackTiLiForFight), 2f);

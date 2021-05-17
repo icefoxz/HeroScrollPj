@@ -51,7 +51,7 @@ public class PlayerDataForGame : MonoBehaviour
     public UserInfo acData = new UserInfo();  //玩家账户信息 
     public int Arrangement { get; set; }//服务器账号标记
 
-    public PlayerData pyData;  //玩家基本信息 
+    [HideInInspector]public PlayerData pyData;  //玩家基本信息 
     public GetBoxOrCodeData gbocData = new GetBoxOrCodeData();  //玩家宝箱与兑换码信息 
     public HSTDataClass hstData = new HSTDataClass(); //玩家武将士兵塔等信息 
     public BaYeDataClass baYe = new BaYeDataClass();
