@@ -53,6 +53,9 @@ public class GameCardCityUiOperation : MonoBehaviour
         Enlisted.gameObject.SetActive(ui.Card.isFight > 0);
     }
 
+    public void OffEnlisted() => Enlisted.gameObject.SetActive(false);
+    public void OffChipValue() => Chips.gameObject.SetActive(false);
+
     public void SetDisable(bool disable) => Disabled.gameObject.SetActive(disable);
 
     public void ResetUi()

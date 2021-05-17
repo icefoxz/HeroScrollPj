@@ -270,12 +270,14 @@ public class Expedition : MonoBehaviour
                 }
                 playerUnlockProgress.isTakeReward = true;
                 ConsumeManager.instance.SaveChangeUpdatePlayerData(py, 0);
-                UIManager.instance.ShowRewardsThings(re.YuanBao, re.YuQue, 0, re.Stamina,
-                    reCard == null ? new List<RewardsCardClass>() :
-                    new List<RewardsCardClass>
-                    {
-                        new RewardsCardClass {cardId = reCard.CardId, cardChips = reCard.Chips, cardType = (int) reCard.Type}
-                    }, 0);
+                UIManager.instance.ShowRewardsThings(new DeskReward(re.YuanBao, re.YuQue, 0, re.Stamina,
+                    reCard == null
+                        ? new List<CardReward>()
+                        : new List<CardReward>
+                        {
+                            new CardReward
+                                {cardId = reCard.CardId, cardChips = reCard.Chips, cardType = (int) reCard.Type}
+                        }), 0);
             }, PlayerDataForGame.instance.ShowStringTips,
             EventStrings.Req_Achievement,
             ViewBag.Instance().SetValue(playerUnlockProgress.warId));

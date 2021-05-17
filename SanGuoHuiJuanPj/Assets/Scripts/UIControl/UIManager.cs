@@ -35,8 +35,10 @@ public class UIManager : MonoBehaviour
     public Text yuanBaoNumText;        //元宝数量Text 
     [SerializeField]
     public Text yvQueNumText;          //玉阙数量Text 
-    [SerializeField]
-    GameObject rewardsShowObj;  //奖品展示UI 
+
+    public RewardWindowUi RewardWindow; //奖励窗口
+    //[SerializeField]
+    //GameObject rewardsShowObj;  //奖品展示UI 
     [SerializeField]
     GameObject[] zhuChengInterFaces;    //主城切换页面0桃园1主城2战役3霸业4对战 
     [SerializeField]
@@ -53,10 +55,10 @@ public class UIManager : MonoBehaviour
     public TaoYuan taoYuan;//桃园 
     public Barrack Barrack;//主营
 
-    [SerializeField]
-    Transform rewardsParent;    //奖品父级 
-    [SerializeField]
-    GameObject rewardObj;       //奖品预制件 
+    //[SerializeField]
+    //Transform rewardsParent;    //奖品父级 
+    //[SerializeField]
+    //GameObject rewardObj;       //奖品预制件 
 
     private int needYuanBaoNums;    //记录所需元宝数 
 
@@ -534,13 +536,13 @@ public class UIManager : MonoBehaviour
     {
         var warChest = bag.GetWarChest();
         var player = bag.GetPlayerDataDto();
-        var rewards = new List<RewardsCardClass>();
+        var rewards = new List<CardReward>();
         foreach (var chestCard in warChest.Cards)
         {
             var type = (GameCardType) chestCard.Key;
             chestCard.Value.ForEach(c =>
             {
-                var card = new RewardsCardClass
+                var card = new CardReward
                 {
                     cardId = c[0],
                     cardChips = c[1],
@@ -551,7 +553,7 @@ public class UIManager : MonoBehaviour
             });
         }
 
-        ShowRewardsThings(warChest.YuanBao, warChest.YvQue, warChest.Exp, 0, rewards, 1.5f); //显示奖励窗口
+        ShowRewardsThings(new DeskReward(warChest.YuanBao, warChest.YvQue, warChest.Exp, 0, rewards), 1.5f); //显示奖励窗口
         ConsumeManager.instance.SaveChangeUpdatePlayerData(player, 0);
         return player;
     }
@@ -1154,118 +1156,18 @@ public class UIManager : MonoBehaviour
 
     /// <summary> 
     /// 展示奖励 
-    /// </summary> 
-    /// <param name="yuanBao">元宝</param> 
-    /// <param name="yvQue">玉阙</param> 
-    /// <param name="exp">经验</param> 
-    /// <param name="stamina">体力</param> 
-    /// <param name="rewardsCards">卡牌奖励</param> 
+    /// </summary>
+    /// <param name="reward"></param>
     /// <param name="waitTime">展示等待时间</param> 
-    public void ShowRewardsThings(int yuanBao, int yvQue, int exp, int stamina, List<RewardsCardClass> rewardsCards, float waitTime)
+    public void ShowRewardsThings(DeskReward reward, float waitTime)
     {
-        rewardsCards = rewardsCards.Select(c => new {GameCardInfo.GetInfo((GameCardType) c.cardType, c.cardId).Rare, c})
-            .OrderByDescending(c => c.c.cardType).ThenBy(c => c.Rare).Select(c => c.c).ToList();
-        for (int i = 0; i < rewardsParent.childCount; i++)
-        {
-            if (rewardsParent.GetChild(i).gameObject.activeSelf)
-            {
-                for (int j = 0; j < 5; j++)
-                {
-                    if (rewardsParent.GetChild(i).GetChild(j).gameObject.activeSelf)
-                    {
-                        rewardsParent.GetChild(i).GetChild(j).gameObject.SetActive(false);
-                    }
-                }
-                rewardsParent.GetChild(i).gameObject.SetActive(false);
-            }
-        }
-
-        //rewardsShowObj.transform.GetChild(0).GetChild(0).GetComponent<Text>().text = str; 
-        if (yuanBao > 0)
-        {
-            ShowOneReward(0, new RewardsCardClass() { cardChips = yuanBao });
-        }
-        if (yvQue > 0)
-        {
-            ShowOneReward(1, new RewardsCardClass() { cardChips = yvQue });
-        }
-        if (exp > 0)
-        {
-            ShowOneReward(2, new RewardsCardClass() { cardChips = exp });
-        }
-        if (stamina > 0)
-        {
-            ShowOneReward(3, new RewardsCardClass() { cardChips = stamina });
-        }
-        for (int i = 0; i < rewardsCards.Count; i++)
-        {
-            ShowOneReward(4, rewardsCards[i]);
-        }
-        StartCoroutine(OpenRewardsWindows(waitTime));
-    }
-    //展示奖品 
-    IEnumerator OpenRewardsWindows(float startTime)
-    {
-        yield return new WaitForSeconds(startTime);
-        taoYuan.CloseAllChests();
-        rewardsShowObj.SetActive(true);
         //刷新主城列表 
-        Barrack.RefreshCardList();
-        rewardsShowObj.transform.GetComponentInChildren<ScrollRect>().horizontalNormalizedPosition = 0f;
-        yield return new WaitForSeconds(1f);
-        rewardsShowObj.transform.GetComponentInChildren<ScrollRect>().DOHorizontalNormalizedPos(1f, 1f);
-
-        yield return new WaitForSeconds(1f);
-        PlayerDataForGame.instance.ClearGarbageStationObj();
-    }
-
-    //获取单个奖品展示框 
-    private GameObject FindShowRewardsBox()
-    {
-        GameObject go = new GameObject();
-        PlayerDataForGame.garbageStationObjs.Add(go);
-
-        for (int i = 0; i < rewardsParent.childCount; i++)
+        RewardWindow.ShowReward(reward, waitTime, () =>
         {
-            go = rewardsParent.GetChild(i).gameObject;
-            if (!go.activeSelf)
-            {
-                go.SetActive(true);
-                return go;
-            }
-        }
-        go = Instantiate(rewardObj, rewardsParent);
-
-        return go;
-    }
-
-    /// <summary> 
-    /// 展示单个奖品 
-    /// </summary> 
-    /// <param name="rewardType">0元宝,1玉阙,2经验,3体力,4卡牌</param> 
-    /// <param name="rewardsCard"></param> 
-    private void ShowOneReward(int rewardType, RewardsCardClass rewardsCard)
-    {
-        if (rewardsCard.cardChips <= 0)
-        {
-            return;
-        }
-
-        GameObject obj = FindShowRewardsBox();
-        var info = new NowLevelAndHadChip().Instance((GameCardType)rewardsCard.cardType,rewardsCard.cardId, 0).GetInfo();
-        obj.transform.GetChild(rewardType).gameObject.SetActive(true);
-        if (rewardType == 4)
-        {
-            Transform cardTran = obj.transform.GetChild(4);
-            cardTran.GetComponent<Image>().sprite = info.Type == GameCardType.Hero ? GameResources.HeroImg[info.Id] : GameResources.FuZhuImg[info.ImageId];
-            GameCardUi.NameTextSizeAlignment(cardTran.GetChild(0).GetComponent<Text>(), info.Name);
-            cardTran.GetChild(0).GetComponent<Text>().color = info.GetNameColor();
-            cardTran.GetChild(1).GetComponent<Image>().sprite = info.Type == GameCardType.Hero ? GameResources.ClassImg[0] : GameResources.ClassImg[1];
-            cardTran.GetChild(1).GetChild(0).GetComponentInChildren<Text>().text = info.Short;
-            FrameChoose(info.Rare, cardTran.GetChild(2).GetComponent<Image>());
-        }
-
-        obj.transform.GetChild(5).GetComponent<Text>().text = "×" + rewardsCard.cardChips;
+            Barrack.RefreshCardList();
+            taoYuan.CloseAllChests();
+            PlayerDataForGame.instance.ClearGarbageStationObj();
+        });
     }
 
     /// <summary> 
@@ -1497,7 +1399,7 @@ public class UIManager : MonoBehaviour
 
     private void OnSuccessRedeemed(RCodeTable rCode, PlayerDataDto playerData)
     {
-        var rewards = rCode.Cards.Select(c => new RewardsCardClass
+        var rewards = rCode.Cards.Select(c => new CardReward
             {cardId = c.CardId, cardChips = c.Chips, cardType = c.Type}).ToList();
         PlayerDataForGame.instance.gbocData.redemptionCodeGotList.Add(rCode.Code);
         ConsumeManager.instance.SaveChangeUpdatePlayerData(playerData, 0);
@@ -1507,7 +1409,7 @@ public class UIManager : MonoBehaviour
         rtCloseBtn.onClick.Invoke();
         AudioController0.instance.ChangeAudioClip(0);
         AudioController0.instance.PlayAudioSource(0);
-        ShowRewardsThings(rCode.YuanBao, rCode.YuQue, 0, rCode.TiLi, rewards, 0);
+        ShowRewardsThings(new DeskReward(rCode.YuanBao, rCode.YuQue, 0, rCode.TiLi, rewards), 0);
     }
 
     ///////////////////////////鸡坛相关///////////////////////////////// 

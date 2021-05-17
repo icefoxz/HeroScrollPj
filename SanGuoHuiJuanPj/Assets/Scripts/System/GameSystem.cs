@@ -98,6 +98,7 @@ public class GameSystem : MonoBehaviour
 
     private void OnStartSceneLoaded() 
     {
+        EffectsPoolingControl.instance.Init();
     }
 
     public void RegNextSceneLoadAction(UnityAction action) => SceneLoadActions.Add(action);

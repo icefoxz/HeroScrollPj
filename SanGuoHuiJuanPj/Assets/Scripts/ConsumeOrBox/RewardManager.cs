@@ -26,16 +26,16 @@ public class RewardManager : MonoBehaviour
         return UnityEngine.Random.Range(yuanBao.Min, yuanBao.ExcMax);
     }
 
-    public List<RewardsCardClass> GetCards(int chestId, bool isZyBox)
+    public List<CardReward> GetCards(int chestId, bool isZyBox)
     {
         return RandomPickBaseOnStrategy(GameCardType.Trap, DataTable.WarChest[chestId].Trap.ToList())
             .Concat(RandomPickBaseOnStrategy(GameCardType.Tower, DataTable.WarChest[chestId].Tower.ToList()))
             .Concat(RandomPickBaseOnStrategy(GameCardType.Hero, DataTable.WarChest[chestId].Hero.ToList())).ToList();
 
         //private method
-        List<RewardsCardClass> RandomPickBaseOnStrategy(GameCardType gameCardType,List<CardRandomProduction> items)
+        List<CardReward> RandomPickBaseOnStrategy(GameCardType gameCardType,List<CardRandomProduction> items)
         {
-            var list = new List<RewardsCardClass>();
+            var list = new List<CardReward>();
             items.ForEach(r =>
             {
                 if (r.Ratio >= UnityEngine.Random.Range(0, 101))
@@ -46,7 +46,7 @@ public class RewardManager : MonoBehaviour
                     var pick = rewardCards.Pick();
                     var chips = UnityEngine.Random.Range(r.MinChips, r.ExcMaxChips);
                     RewardCard(type, pick.cardId, chips);
-                    list.Add(new RewardsCardClass
+                    list.Add(new CardReward
                     {
                         cardId = pick.cardId,
                         cardType = (int) gameCardType,
