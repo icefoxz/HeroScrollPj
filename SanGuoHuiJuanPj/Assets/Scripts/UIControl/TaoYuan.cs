@@ -116,7 +116,7 @@ using UnityEngine.UI;
         freeJiuTanAdButton.enabled = false;
         jiuTan.chestButton.enabled = false;
 
-        AdAgent.instance.BusyRetry(() =>
+        AdAgentBase.instance.BusyRetry(() =>
         {
             int index = openJiuTanYBNums;
             openJiuTanYBNums = 0;

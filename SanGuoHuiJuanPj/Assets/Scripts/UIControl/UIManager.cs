@@ -1455,7 +1455,7 @@ public class UIManager : MonoBehaviour
         AudioController0.instance.ChangeAudioClip(13);
         OpenOrCloseChickenBtn(false);
         if (chickenId == 1)
-            AdAgent.instance.BusyRetry(InvokeApi
+            AdAgentBase.instance.BusyRetry(InvokeApi
                 , () =>
                 {
                     PlayerDataForGame.instance.ShowStringTips(DataTable.GetStringText(6));

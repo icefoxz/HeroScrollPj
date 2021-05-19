@@ -847,7 +847,7 @@ public class WarsUIManager : MonoBehaviour
                     mercenaryCost = 0;
                     getBtnTran.GetChild(1).gameObject.SetActive(false);
                     getBtnTran.GetChild(2).gameObject.SetActive(true);
-                    adBtn.onClick.AddListener(() => AdAgent.instance.BusyRetry(() =>
+                    adBtn.onClick.AddListener(() => AdAgentBase.instance.BusyRetry(() =>
                     {
                         adBtn.enabled = false;
                         //if (!AdController.instance.ShowVideo(
@@ -963,7 +963,7 @@ public class WarsUIManager : MonoBehaviour
     {
         Button adBtn = eventsWindows[3].transform.GetChild(0).GetChild(5).GetComponent<Button>();
         adBtn.enabled = false;
-        AdAgent.instance.BusyRetry(() =>
+        AdAgentBase.instance.BusyRetry(() =>
         {
             adBtn.gameObject.SetActive(false);
             UpdateQiYvWoods();

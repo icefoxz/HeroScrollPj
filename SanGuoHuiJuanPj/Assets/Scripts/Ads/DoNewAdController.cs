@@ -12,8 +12,8 @@ public class DoNewAdController : AdControllerBase
 {
     private static DoNewAdController instance;
 
-    public override AdAgent.States Status => status;
-    public AdAgent.States status;
+    public override AdAgentBase.States Status => status;
+    public AdAgentBase.States status;
 
     public AdModes Mode => mode;
     public AdModes mode;
@@ -32,7 +32,7 @@ public class DoNewAdController : AdControllerBase
     void Awake()
     {
         SDK.apiType = SDK.ApiType.Release;
-        status = AdAgent.States.None;
+        status = AdAgentBase.States.None;
     }
 
 #if UNITY_EDITOR
@@ -41,7 +41,7 @@ public class DoNewAdController : AdControllerBase
     void Update()//这个仅仅用在编辑器
     {
         if(!isWaitingStateChange)return;
-        if (status == AdAgent.States.Loaded)
+        if (status == AdAgentBase.States.Loaded)
         {
             isWaitingStateChange = false;
             OnCached.Invoke();

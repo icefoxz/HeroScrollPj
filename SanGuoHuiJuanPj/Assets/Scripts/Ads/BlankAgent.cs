@@ -1,7 +1,7 @@
 ﻿using Assets.Scripts.Utl;
 using UnityEngine.Events;
 
-public class BlankAgent : AdAgent
+public class BlankAgent : AdAgentBase
 {
     protected AdControllerBase controller;
     protected UnityAction<bool,string> callBackAction;

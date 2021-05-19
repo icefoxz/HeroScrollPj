@@ -9,7 +9,7 @@ public class TestAd : MonoBehaviour
 {
     public Text reportText;
 
-    public void Load() => AdAgent.instance.BusyRetry((msg)=>
+    public void Load() => AdAgentBase.instance.BusyRetry((msg)=>
     {
         Debug.Log($"Ad call reward = {msg}");
         reportText.text += $"Call : {msg}\n";

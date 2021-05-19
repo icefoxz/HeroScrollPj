@@ -1,74 +1,106 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.Advertisements;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 
+/// <summary>
+/// 广告源控制器
+/// </summary>
 public class AdManager : AdControllerBase
 {
-    public AdAgent adAgentPrefab;
+    [Serializable]public enum Ads
+    {
+        Unity,
+        Admob,
+        DoNew
+    }
+    public AdAgentBase adAgent;
     public int AdmobRetry = 3;
     private bool isInit;
-    public AdAgent AdAgent { get; private set; }
+    public Ads Ad;
+    public AdAgentBase AdAgent => adAgent;
     public DoNewAdController DoNewAdController { get; private set; }
     public AdmobController AdmobController { get; private set; }
-    public const string MainCanvas = "MainCanvas";
-    public override AdAgent.States Status => AdmobController.Status;
+    public UnityAdController UnityAdController { get; private set; }
+    public override AdAgentBase.States Status => AdmobController.Status;
+
+    private Dictionary<Ads, AdControllerBase> Controllers
+    {
+        get
+        {
+            if (_controllers == null)
+            {
+                _controllers = new Dictionary<Ads, AdControllerBase>
+                {
+                    {(Ads)0,UnityAdController},
+                    {Ads.Admob,AdmobController},
+                    {Ads.DoNew,DoNewAdController}
+                };
+            }
+
+            return _controllers;
+        }
+    }
+
+    private Dictionary<Ads, AdControllerBase> _controllers;
 
     void Start()
     {
         if (isInit) throw XDebug.Throw<AdManager>("Duplicate init!");
         isInit = true;
-        var mainCanvas = GameObject.FindGameObjectWithTag(MainCanvas);
         DoNewAdController = gameObject.AddComponent<DoNewAdController>();
         AdmobController = gameObject.AddComponent<AdmobController>();
-        var ad = Instantiate(adAgentPrefab, mainCanvas.transform);
-        AdAgent = ad;
+        AdmobController.Init(AdmobCallBack);
+        UnityAdController = gameObject.AddComponent<UnityAdController>();
+        UnityAdController.Init();
         AdAgent.Init(this);
-        SceneManager.sceneLoaded += SceneLoadRelocateCanvas;
     }
 
-    private void SceneLoadRelocateCanvas(Scene scene, LoadSceneMode mode)
+    private IEnumerator DelayedInit()
     {
-        if (scene.buildIndex == 0) return;
-        var mainCanvas = GameObject.FindGameObjectWithTag(MainCanvas);
-        if (AdAgent != null) return;
-        AdAgent = Instantiate(adAgentPrefab, mainCanvas.transform);
-        AdAgent.Init(this);
+        yield return new WaitForSeconds(3);
+        ResolveAdvertisement();
     }
 
     public override void RequestShow(UnityAction<bool, string> requestAction)
     {
         admobRetryCount = 0;
-        if (isAdmobLoaded)
-        {
-            AdmobController.RequestShow((success,msg) =>
-            {
-                requestAction(success, msg);
-                StartRequestAdmob();
-            });
-            return;
-        }
-        DoNewAdController.RequestShow((success,msg) =>
+        var controller = Controllers[Ad];
+        controller.RequestShow((success, msg) =>
         {
             requestAction(success, msg);
-            StartRequestAdmob();
+            ResolveAdvertisement();
         });
     }
 
     public override void RequestLoad(UnityAction<bool, string> loadingAction) => loadingAction(true, string.Empty);
 
     #region 封装内部请求admob
-    private bool isAdmobLoaded;
     private int admobRetryCount;
 
-    private void StartRequestAdmob() => AdmobController.RequestLoad(AdmobCallBack);
+    private void ResolveAdvertisement()
+    {
+        if(!AdmobController.IsReady) AdmobController.OnLoadAd(AdmobCallBack);
+    }
 
     private void AdmobCallBack(bool success, string message)
     {
-        isAdmobLoaded = success;
-        if (success) return;
+        if (success)
+        {
+            foreach (var item in Controllers)
+            {
+                if(item.Value.Status != AdAgentBase.States.Loaded)continue;
+                Ad = item.Key;
+                break;
+            }
+            return;
+        }
         admobRetryCount++;
         if(admobRetryCount>=AdmobRetry)return;
-        StartRequestAdmob();
+        ResolveAdvertisement();
     }
     #endregion
 }
