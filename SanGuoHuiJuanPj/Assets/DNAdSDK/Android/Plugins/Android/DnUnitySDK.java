@@ -322,7 +322,7 @@ public class DnUnitySDK {
 
     /**
      * 请求激励视频的方法
-     * 这个方法名已经被我改了，因为原名[requestRewardVideo]获取不到。
+     * 这个方法名已经被我改了，因为原名[requestRewardVideo]获取不到。@Leo
      * @param positionId
      * @param rewardVideoCallBack
      * @return
@@ -386,12 +386,12 @@ public class DnUnitySDK {
 
     /**
      * 请求激励视频的方法
-     *
+     * 这个方法名已经被我改了，因为原名[requestRVPload]获取不到。@Leo
      * @param positionId
      * @param rewardVideoPloadCallBack
      * @return
      */
-    public void requestRVPload(final String positionId, final RewardVideoPloadCallBack rewardVideoPloadCallBack) {
+    public void requestLoadVideo(final String positionId, final RewardVideoPloadCallBack rewardVideoPloadCallBack) {
         final Activity unityActivity = getActivity();
         unityActivity.runOnUiThread(new Runnable() {
             @Override
@@ -455,10 +455,10 @@ public class DnUnitySDK {
 
     /**
      * 预加载激励视频显示方法
-     *
+     * 这个方法名已经被我改了，因为原名[requestRewardVideo]获取不到。@Leo
      * @param positionId
      */
-    public void requestRewardVideo(final String positionId) {
+    public void requestShowVideo(final String positionId) {
         final Activity unityActivity = getActivity();
         unityActivity.runOnUiThread(new Runnable() {
             @Override

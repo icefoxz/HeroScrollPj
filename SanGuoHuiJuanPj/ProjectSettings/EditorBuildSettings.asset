@@ -15,6 +15,9 @@ EditorBuildSettings:
     path: Assets/Scenes/War.unity
     guid: ec2eccffb89fa9e4b8c7f9a16f94b0ac
   - enabled: 0
-    path: Assets/Scenes/SignalRTest.unity
-    guid: fdd669282d0b58c4da7b9b2bbcc8858f
+    path: 
+    guid: 00000000000000000000000000000000
+  - enabled: 0
+    path: Assets/Scenes/zTest_Ad.unity
+    guid: 023fb6f4da60dca439f2e00f7b3e5dec
   m_configObjects: {}

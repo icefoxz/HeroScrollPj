@@ -30,7 +30,7 @@ namespace Donews.mediation
         {
             AndroidRVPloadCallback callback = new AndroidRVPloadCallback(listener);
             RewardedVideoAd ad = new RewardedVideoAd(callback, placeId);
-            SDK.DnSdkObj.Call("requestRVPload", placeId, callback);
+            SDK.DnSdkObj.Call("requestLoadVideo", placeId, callback);
             return ad;
         }
 
@@ -41,7 +41,7 @@ namespace Donews.mediation
         {
             //using (var javaObj = SDK.InstanceDnAdObject())
             //    javaObj.Call("requestRVPloadShow", placeId);
-            SDK.DnSdkObj.Call("requestRVPloadShow", placeId);
+            SDK.DnSdkObj.Call("requestShowVideo", placeId);
         }
 
         //激励视频预加载回调接口 采用接口回调方式进行交互

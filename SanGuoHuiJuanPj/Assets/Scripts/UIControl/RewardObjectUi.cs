@@ -66,6 +66,7 @@ public class RewardObjectUi : MonoBehaviour
         CardUi.Set(card, GameCardUi.CardModes.Desk);
         CardUi.CityOperation.OffChipValue();
         CardUi.CityOperation.OffEnlisted();
+        CardUi.SetLevel(0);
         Value.text = card.Chips.ToString();
     }
 

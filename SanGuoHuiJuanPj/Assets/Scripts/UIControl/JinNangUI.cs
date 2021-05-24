@@ -83,7 +83,7 @@ public class JinNangUI: MonoBehaviour
                 //背景按钮无效
                 continueBtn.enabled = false;
                 doubleAdBtn.enabled = false;
-                AdAgent.instance.BusyRetry(()=>OnSuccessDoubleReward(yuanBaoValue,staminaValue,token), () =>
+                AdAgentBase.instance.BusyRetry(()=>OnSuccessDoubleReward(yuanBaoValue,staminaValue,token), () =>
                 {
                     PlayerDataForGame.instance.ShowStringTips(DataTable.GetStringText(6));
                     continueBtn.enabled = true;

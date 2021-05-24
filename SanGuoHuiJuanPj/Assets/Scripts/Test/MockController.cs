@@ -6,13 +6,13 @@ public class MockController : AdControllerBase
 {
     private UnityAction<bool, string> showAction;
     private UnityAction<bool, string> loadAction;
-    public AdAgent adAgentPrefab;
-    public override AdAgent.States Status => status;
-    public AdAgent.States status;
+    public AdAgentBase adAgentBasePrefab;
+    public override AdAgentBase.States Status => status;
+    public AdAgentBase.States status;
     void Start()
     {
         var mainCanvas = GameObject.FindGameObjectWithTag("MainCanvas");
-        var adAgent = Instantiate(adAgentPrefab, mainCanvas.transform);
+        var adAgent = Instantiate(adAgentBasePrefab, mainCanvas.transform);
         adAgent.Init(this);
     }
 
@@ -23,7 +23,7 @@ public class MockController : AdControllerBase
     public void OnLoad(bool isLoad) => loadAction(isLoad, string.Empty);
     public void OnShow(bool isShow) => showAction(isShow, string.Empty);
 
-    public void OnCall() => AdAgent.instance.CallAd((success, msg) =>
+    public void OnCall() => AdAgentBase.instance.CallAd((success, msg) =>
     {
         UnityMainThread.thread.RunNextFrame(() => Debug.Log($"Call:{success} & {msg}"));
     });

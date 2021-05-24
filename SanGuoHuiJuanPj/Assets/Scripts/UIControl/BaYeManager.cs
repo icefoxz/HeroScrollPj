@@ -365,7 +365,7 @@ public class BaYeManager : MonoBehaviour
             OnBayeStoryEventReward(se);
             UIManager.instance.baYeWindowUi.ShowAdButton(adBtn =>
             {
-                AdAgent.instance.CallAd((success, msg) =>
+                AdAgentBase.instance.CallAd((success, msg) =>
                 {
                     if (success)
                     {

@@ -86,5 +86,4 @@ public class GameCardCityUiOperation : MonoBehaviour
         ResetUi();
         gameObject.SetActive(false);
     }
-
 }
