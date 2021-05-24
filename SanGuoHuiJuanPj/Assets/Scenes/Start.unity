@@ -19942,7 +19942,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 0, y: 47.99994}
+  m_AnchoredPosition: {x: 0, y: 48}
   m_SizeDelta: {x: 800, y: 158.59998}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1759886712
@@ -26381,7 +26381,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.07753097, y: 0.073577054}
   m_AnchorMax: {x: 0.94522876, y: 0.28230324}
-  m_AnchoredPosition: {x: 0.5, y: 0.49990845}
+  m_AnchoredPosition: {x: 0.5, y: 0.49987793}
   m_SizeDelta: {x: 1, y: 0.99998474}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1358790747555969129
@@ -38562,7 +38562,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   adAgent: {fileID: 584438891945089840}
   AdmobRetry: 3
-  Ad: 0
+  Series: 010000000000000002000000
+  UnityRatio: 3
+  AdmobRatio: 3
+  DoNewRatio: 2
 --- !u!114 &8452379115138372992
 MonoBehaviour:
   m_ObjectHideFlags: 0

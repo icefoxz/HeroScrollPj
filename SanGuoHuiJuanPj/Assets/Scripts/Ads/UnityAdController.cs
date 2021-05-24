@@ -16,9 +16,9 @@ public class UnityAdController : AdControllerBase,IUnityAdsListener
     private const string GameId = "3997035";
     private const string PlacementId = "rewardedVideo";
 #if UNITY_EDITOR
-    private bool isDevTest = false;
-#else
     private bool isDevTest = true;
+#else
+    private bool isDevTest = false;
 #endif
     private UnityAction<bool, string> recallAction;
 
