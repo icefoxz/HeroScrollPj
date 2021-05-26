@@ -73,19 +73,18 @@ public class AdManager : AdControllerBase
     {
         admobRetryCount = 0;
         var controller = Queue.Dequeue();
+        var count = 0;
         if (controller.Status != AdAgentBase.States.Loaded)
         {
-            AdControllerBase tryResolveController = null;
             do
             {
-                tryResolveController = Queue.Dequeue(true);
-                if (controller != tryResolveController) continue;//如果广告控制器未重复会一直找
+                controller = Queue.Dequeue();
+                count++;
+                if (count < 10) continue;//如果广告控制器未重复会一直找
                 requestAction.Invoke(false, "无广告源!");//广告控制器重复了
-                ControllersAdResolve();
                 return;
-            } while (tryResolveController.Status != AdAgentBase.States.Loaded); //循环直到到下一个已准备的广告源
-
-            controller = tryResolveController;
+            } while (controller.Status != AdAgentBase.States.Loaded); //循环直到到下一个已准备的广告源
+            ControllersAdResolve();
         }
         PlayerDataForGame.instance.ShowStringTips($"广告源:{Controllers.First(c=>c.Value.Item2 == controller).Key}");
         controller.RequestShow((success, msg) =>
@@ -124,7 +123,7 @@ public class QueueByRatio<T>
 {
     private Dictionary<T, int> data;
     private Queue<T> queue;
-    public int Count { get; private set; }
+    public int Count => queue.Count;
     public T Current { get; private set; }
 
     public QueueByRatio(params (int, T)[] controllers)
@@ -133,14 +132,20 @@ public class QueueByRatio<T>
         queue = new Queue<T>(controllers.Select(c => c.Item2));
     }
 
+    private List<T> SetQueue()
+    {
+        var max = data.Values.Max();
+        var list = new List<T>();
+        for (var i = 0; i < max; i++)
+            list.AddRange(data.Where(item => item.Value > i).Select(item => item.Key));
+        return list;
+    }
+
     public T Dequeue(bool forceChange = false)
     {
-        Count--;
-        if (!forceChange && Count > 0) return Current;
-        var current = Current;
+        if (queue.Count == 0)
+            queue = new Queue<T>(SetQueue());
         Current = queue.Dequeue();
-        Count = data[Current];
-        if (current != null) queue.Enqueue(current);
         return Current;
     }
 }

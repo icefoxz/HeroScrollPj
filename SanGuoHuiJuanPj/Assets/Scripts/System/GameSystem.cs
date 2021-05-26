@@ -75,8 +75,6 @@ public class GameSystem : MonoBehaviour
                 OnWarSceneInit?.Invoke();
                 OnWarSceneLoaded();
                 break;
-            default:
-                throw new ArgumentOutOfRangeException();
         }
     }
 
