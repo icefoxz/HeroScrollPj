@@ -1,4 +1,5 @@
-// Copyright (C) 2020 Google LLC.
+#if UNITY_IOS
+// Copyright (C) 2015 Google, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,30 +13,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using UnityEngine;
 using System;
 
-public class DummyAdBehaviour : MonoBehaviour
+// This attribute is used on static functions and it allows Mono's Ahead of Time Compiler
+// to generate the code necessary to support native iOS code calling back into C# code.
+public sealed class MonoPInvokeCallbackAttribute : Attribute
 {
-    public void PauseGame()
-    {
-        Time.timeScale = 0;
-        Debug.Log("Pause Game");
-    }
-
-    public void ResumeGame()
-    {
-        Time.timeScale = 1;
-        Debug.Log("Resume Game");
-    }
-
-    public GameObject ShowAd(GameObject dummyAd, Vector3 position)
-    {
-       return Instantiate(dummyAd, position, Quaternion.identity) as GameObject;
-    }
-
-    public void DestroyAd(GameObject dummyAd)
-    {
-        Destroy(dummyAd);
-    }
+    public MonoPInvokeCallbackAttribute(Type type) {}
 }
+#endif
