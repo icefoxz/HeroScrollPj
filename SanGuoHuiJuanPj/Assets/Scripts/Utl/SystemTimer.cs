@@ -92,7 +92,7 @@ public class SystemTimer : MonoBehaviour
         StartCoroutine(SynchronizeDateTime());
     }
 
-    private void Start()
+    public void Init()
     {
         InitClockMap();
     }

@@ -172,6 +172,9 @@ public class FightForManager : MonoBehaviour
             {
                 var chessman = enemies[i];
                 if (chessman == null) continue;
+                if (chessman.Star <= 0)
+                    throw new InvalidOperationException(
+                        $"卡牌初始化异常，[{chessman.CardId}.{chessman.CardType}]等级为{chessman.Star}!");
                 FightCardData data = CreateEnemyFightUnit(1, true, chessman);
                 data.posIndex = i;
                 data.isPlayerCard = false;

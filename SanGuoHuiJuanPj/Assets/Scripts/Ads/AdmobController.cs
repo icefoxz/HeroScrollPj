@@ -28,25 +28,18 @@ public class AdmobController : AdControllerBase
         OnLoadAd(admobCallBack);
     }
 
-    private int retryCounter;
-
     IEnumerator OnRetryLoadingAction(Action<bool, string> admobCallBack)
     {
         _status = AdAgentBase.States.Loading;
-        RequestLoad((success, _) => { _status = success ? AdAgentBase.States.Loaded : AdAgentBase.States.FailedToLoad; });
+        RequestLoad(
+            (success, _) => { _status = success ? AdAgentBase.States.Loaded : AdAgentBase.States.FailedToLoad; });
         yield return new WaitWhile(() => _status == AdAgentBase.States.Loading);
-        if(_status == AdAgentBase.States.Loaded)
+        if (_status == AdAgentBase.States.Loaded)
         {
-            retryCounter = 0;
             admobCallBack?.Invoke(true, string.Empty);
             yield return null;
         }
-        if (retryCounter >= Retries)
-        {
-            admobCallBack?.Invoke(false, string.Empty);
-            yield return null;
-        }
-        retryCounter++;
+        admobCallBack?.Invoke(false, string.Empty);
     }
 
     public void OnLoadAd(Action<bool, string> admobCallBack)

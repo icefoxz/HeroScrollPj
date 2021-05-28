@@ -16,7 +16,7 @@ public class StoryEventUIController : MonoBehaviour
 
     public void ResetUi()
     {
-        if(SceneManager.GetActiveScene().buildIndex != 1)return;//如果不是主场景不更新。
+        if(GameSystem.CurrentScene != GameSystem.GameScene.MainScene)return;//如果不是主场景不更新。
         storyEventPoints.ForEach(b =>
         {
             if (!b) return;

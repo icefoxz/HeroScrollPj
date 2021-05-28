@@ -5,7 +5,7 @@ public class AcInfoUi : SignInBaseUi
 {
     public InputField username;
     public InputField password;
-    public GameObject warningMessage;
+    //public GameObject warningMessage;
     public Button changePasswordBtn;
     public Button backBtn;
 

@@ -24,7 +24,9 @@ public class UnityAdController : AdControllerBase,IUnityAdsListener
 
     public void Init()
     {
+#if !UNITY_EDITOR
         Advertisement.Initialize(GameId, isDevTest);
+#endif
         Advertisement.AddListener(this);
     }
 

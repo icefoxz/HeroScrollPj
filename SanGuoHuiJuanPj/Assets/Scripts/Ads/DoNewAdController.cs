@@ -66,6 +66,20 @@ public class DoNewAdController : AdControllerBase
         }
     }
 
+    public void RequestDirectShow(UnityAction<bool, string> onCallBackAction)
+    {
+        try
+        {
+            DirectPlayRewardVideoAd.RequestAd(onCallBackAction);
+        }
+        catch (Exception e)
+        {
+            onCallBackAction(false, e.ToString());
+            PlayerDataForGame.instance.ShowStringTips("视频加载失败!");
+        }
+
+    }
+
     private AndroidJavaObject currentActivity;
 
     public class RewardAdListener : IRewardedVideoAdListener

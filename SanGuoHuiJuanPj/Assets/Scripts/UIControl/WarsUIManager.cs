@@ -1333,7 +1333,7 @@ public class WarsUIManager : MonoBehaviour
         PlayAudioClip(13);
         isEnteredLevel = true;  //限制返回主城时还能进入关卡
         if (PlayerDataForGame.instance.isJumping) return;
-        PlayerDataForGame.instance.JumpSceneFun(1, false);
+        PlayerDataForGame.instance.JumpSceneFun(GameSystem.GameScene.MainScene, false);
     }
 
     /// <summary>

@@ -63,6 +63,7 @@ public class TimeSystemControl : MonoBehaviour
     {
         if (isInit) return;
         isInit = true;
+        SystemTimer.instance.Init();
         StartGameToInitOpenTime();
     }
 

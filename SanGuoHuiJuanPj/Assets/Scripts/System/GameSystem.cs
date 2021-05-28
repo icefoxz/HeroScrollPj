@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using Assets.Scripts.Utl;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
@@ -9,6 +10,7 @@ public class GameSystem : MonoBehaviour
 {
     public enum GameScene
     {
+        PreloadScene,
         StartScene,
         MainScene,
         WarScene
@@ -24,6 +26,7 @@ public class GameSystem : MonoBehaviour
     public PlayerDataForGame playerDataForGame;
     private List<UnityAction> SceneLoadActions { get; } = new List<UnityAction>();
     public Configuration configuration;
+    public DataTable dataTable;
     public static Configuration Configuration { get; private set; }
 
     public static GameResources GameResources { get; private set; }
@@ -31,27 +34,46 @@ public class GameSystem : MonoBehaviour
     public static bool IsInit { get; private set; }
     public static UnityAction OnWarSceneInit;
     public static UnityAction OnMainSceneInit;
+    private Queue<Func<bool>> InitQueue;
 
     void Awake()
     {
         instance = this;
         DontDestroyOnLoad(gameObject);
+    }
+
+    public void Init()
+    {
+        Screen.sleepTimeout = SleepTimeout.NeverSleep;
         Configuration = configuration;
         LoginUi = loginUiController;
         TimeSystemControl = timeSystemControl;
+        SceneManager.sceneLoaded += SceneManagerOnSceneLoaded;
+        InitQueue = new Queue<Func<bool>>();
+        InitEnqueue(dataTable.Init);
+        InitEnqueue(Configuration.Init);
+        InitEnqueue(() =>
+        {
+            GameResources = new GameResources();
+            GameResources.Init();
+        });
+        InitEnqueue(() => AudioController0.instance.MusicSwitch(GamePref.PrefMusicPlay));
+        InitEnqueue(() => AudioController1.instance.MusicSwitch(GamePref.PrefMusicPlay));
+        InitEnqueue(() =>
+        {
+            playerDataForGame.Init();
+            IsInit = true;
+        });
+        StartCoroutine(InitCo());
     }
 
-    void Start()
+    IEnumerator InitCo()
     {
-        SceneManager.sceneLoaded += SceneManagerOnSceneLoaded;
-        Configuration.Init();
-        GameResources = new GameResources();
-        GameResources.Init();
-        AudioController0.instance.MusicSwitch(GamePref.PrefMusicPlay);
-        AudioController1.instance.MusicSwitch(GamePref.PrefMusicPlay);
-        playerDataForGame.Init();
-        InitScene((GameScene)SceneManager.GetActiveScene().buildIndex);
-        IsInit = true;
+        while (InitQueue.Count > 0)
+        {
+            var action = InitQueue.Dequeue();
+            yield return new WaitUntil(action.Invoke);
+        }
     }
 
     public static void InitGameDependencyComponents()
@@ -75,6 +97,11 @@ public class GameSystem : MonoBehaviour
                 OnWarSceneInit?.Invoke();
                 OnWarSceneLoaded();
                 break;
+            case GameScene.PreloadScene:
+                //OnBeginSceneLoaded();
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
         }
     }
 
@@ -94,9 +121,25 @@ public class GameSystem : MonoBehaviour
 
     private void OnMainSceneLoaded() => UIManager.instance.Init();
 
-    private void OnStartSceneLoaded() 
+    private void OnStartSceneLoaded()
     {
-        EffectsPoolingControl.instance.Init();
+        InitEnqueue(EffectsPoolingControl.instance.Init);
+        InitEnqueue(StartSceneUIManager.instance.Init);
+        InitEnqueue(StartSceneToServerCS.instance.Init);
+        InitEnqueue(BarrageUiController.instance.Init);
+        InitEnqueue(FightForManagerForStart.instance.Init);
+        InitEnqueue(FightControlForStart.instance.Init);
+        StartCoroutine(InitCo());
+    }
+
+    private void InitEnqueue(Action action)
+    {
+        InitQueue.Enqueue(Func);
+        bool Func()
+        {
+            action.Invoke();
+            return true;
+        }
     }
 
     public void RegNextSceneLoadAction(UnityAction action) => SceneLoadActions.Add(action);

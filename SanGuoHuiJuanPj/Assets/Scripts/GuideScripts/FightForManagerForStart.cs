@@ -108,16 +108,16 @@ public class FightForManagerForStart : MonoBehaviour
         {
             instance = this;
         }
+    }
+
+    // Start is called before the first frame update
+    public void Init()
+    {
         playerCardsDatas = new List<FightCardData>();
         enemyFightCardsDatas = new FightCardData[20];
         playerFightCardsDatas = new FightCardData[20];
         Input.multiTouchEnabled = false;    //限制多指拖拽
         _isDragItem = false;
-    }
-
-    // Start is called before the first frame update
-    void Start()
-    {
         GameResources = new GameResources();
         GameResources.Init();
         oneDisY = Screen.height / (1920 / gridLayoutGroup.cellSize.y) / 9;

@@ -81,12 +81,14 @@ public class AdManager : AdControllerBase
                 controller = Queue.Dequeue();
                 count++;
                 if (count < 10) continue;//如果广告控制器未重复会一直找
-                requestAction.Invoke(false, "无广告源!");//广告控制器重复了
+                DoNewAdController.RequestDirectShow(requestAction);
+                ControllersAdResolve();
+                //requestAction.Invoke(false, "无广告源!");//广告控制器重复了
                 return;
             } while (controller.Status != AdAgentBase.States.Loaded); //循环直到到下一个已准备的广告源
             ControllersAdResolve();
         }
-        PlayerDataForGame.instance.ShowStringTips($"广告源:{Controllers.First(c=>c.Value.Item2 == controller).Key}");
+        //PlayerDataForGame.instance.ShowStringTips($"广告源:{Controllers.First(c=>c.Value.Item2 == controller).Key}");
         controller.RequestShow((success, msg) =>
         {
             requestAction(success, msg);
@@ -101,8 +103,12 @@ public class AdManager : AdControllerBase
 
     private void ControllersAdResolve()
     {
-        if(!AdmobController.IsReady) AdmobController.OnLoadAd(AdmobRetryCallBack);
-        if(DoNewAdController.status != AdAgentBase.States.Loaded) DoNewAdController.RequestLoad(null);
+#if !UNITY_EDITOR
+        if(AdmobController.Status != AdAgentBase.States.Loading ||
+           AdmobController.Status != AdAgentBase.States.Loaded) AdmobController.OnLoadAd(AdmobRetryCallBack);
+        if(DoNewAdController.Status != AdAgentBase.States.Loaded ||
+           DoNewAdController.Status != AdAgentBase.States.Loading) DoNewAdController.RequestLoad(null);
+#endif
     }
 
     private void AdmobRetryCallBack(bool success, string message)

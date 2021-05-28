@@ -82,6 +82,10 @@ public class FightControlForStart : MonoBehaviour
         {
             instance = this;
         }
+    }
+
+    public void Init()
+    {
         gunMuCards = new List<FightCardData>();
         gunShiCards = new List<FightCardData>();
 
