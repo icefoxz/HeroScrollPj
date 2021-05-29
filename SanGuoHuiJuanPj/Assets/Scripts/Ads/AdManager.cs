@@ -104,10 +104,13 @@ public class AdManager : AdControllerBase
     private void ControllersAdResolve()
     {
 #if !UNITY_EDITOR
-        if(AdmobController.Status != AdAgentBase.States.Loading ||
-           AdmobController.Status != AdAgentBase.States.Loaded) AdmobController.OnLoadAd(AdmobRetryCallBack);
-        if(DoNewAdController.Status != AdAgentBase.States.Loaded ||
-           DoNewAdController.Status != AdAgentBase.States.Loading) DoNewAdController.RequestLoad(null);
+        if(AdmobController.Status == AdAgentBase.States.Closed ||
+           AdmobController.Status == AdAgentBase.States.FailedToLoad ||
+           AdmobController.Status == AdAgentBase.States.None)
+            AdmobController.OnLoadAd(AdmobRetryCallBack);
+        if(DoNewAdController.Status == AdAgentBase.States.Closed ||
+           DoNewAdController.Status == AdAgentBase.States.FailedToLoad ||
+           DoNewAdController.Status == AdAgentBase.States.None) DoNewAdController.RequestLoad(null);
 #endif
     }
 

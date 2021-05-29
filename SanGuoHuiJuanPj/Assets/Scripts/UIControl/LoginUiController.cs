@@ -11,6 +11,7 @@ using UnityEngine.UI;
 
 public class LoginUiController : MonoBehaviour
 {
+    const string DeviceLoginString = "ClientIsDeviceLogin";
     [Serializable]
     public enum ActionWindows
     {
@@ -251,11 +252,12 @@ public class LoginUiController : MonoBehaviour
     {
         busyPanel.gameObject.SetActive(true);
         login.message.text = string.Empty;
-        SignalRClient.instance.DirectLogin((success, code, info) => LoginAction(success, code, info, string.Empty));
+        SignalRClient.instance.DirectLogin((success, code, info) => LoginAction(success, code, info, DeviceLoginString));
     }
 
     private void LoginAction(bool success, int code, SignalRClient.SignalRConnectionInfo info,string password)
     {
+        GamePref.FlagClientLoginMethod(password == DeviceLoginString);
         busyPanel.gameObject.SetActive(false);
         if (success)
         {

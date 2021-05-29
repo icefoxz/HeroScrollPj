@@ -17,6 +17,10 @@ public static class GamePref
         }
     }
     public static bool PrefMusicPlay => PlayerPrefs.GetInt(PlayerMusicOffPrefs) == 0;
+    /// <summary>
+    /// 0 = 密码登录, 1 = 设备登录
+    /// </summary>
+    public static int ClientLoginMethod => PlayerPrefs.GetInt(LoginMethod);
 
     public static bool IsUserAccountCompleted => PlayerPrefs.GetString(AccountCompleteUsername) == Username;
     public static BaYeDataClass GetBaYe
@@ -36,6 +40,7 @@ public static class GamePref
     public const string IsFirstPlayString = "IsFirstPlay";
     public const string AccountCompleteUsername = "IsUsersAccountComplete";
     public const string BaYeSave = "BaYeSave";
+    public const string LoginMethod = "LoginMethod";
 
     public static void SetUsername(string username) => PlayerPrefs.SetString(AccountIdString,username);
 
@@ -70,4 +75,5 @@ public static class GamePref
     public static void SetPrefMusic(bool isPlay) => PlayerPrefs.SetInt(PlayerMusicOffPrefs, isPlay ? 0 : 1);
     public static void FlagDeviceReg(string username) => PlayerPrefs.SetString(AccountCompleteUsername, username);
     public static void SaveBaYe(BaYeDataClass save) => PlayerPrefs.SetString(BaYeSave, Json.Serialize(save));
+    public static void FlagClientLoginMethod(bool isDeviceLogin) => PlayerPrefs.SetInt(LoginMethod, isDeviceLogin ? 1 : 0);
 }

@@ -11,13 +11,14 @@ using UnityEngine.UI;
 public class PreLoadController : MonoBehaviour
 {
     public SplashImage[] SplashImages;
-    public Image DisplayImage;
+    //public Image DisplayImage;
     public Image FadeImage;
     public GameSystem GameSystemPrefab;
     public GameObject CoroutineObj;
     void Start()
     {
-        DisplayImage.gameObject.SetActive(false);
+        //DisplayImage.gameObject.SetActive(false);
+        FadeImage.gameObject.SetActive(true);
         StartCoroutine(Initialization());
     }
 
@@ -32,16 +33,15 @@ public class PreLoadController : MonoBehaviour
         var co1 = CoroutineObj.AddComponent<CoObj>();
         co1.Set(GameSystemInit);
         co1.StartAction();
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(0.1f);
         foreach (var sp in spList)
         {
-            if(!DisplayImage.gameObject.activeSelf)
-                DisplayImage.gameObject.SetActive(true);
-            DisplayImage.sprite = sp.Image;
+            sp.Image.gameObject.SetActive(true);
             FadeImage.DOFade(0, sp.Duration);
             yield return new WaitForSeconds(sp.Duration);
             FadeImage.DOFade(1, sp.Duration);
             yield return new WaitForSeconds(sp.Duration);
+            sp.Image.gameObject.SetActive(false);
         }
 
         yield return new WaitUntil(() => GameSystem.IsInit);
@@ -50,16 +50,22 @@ public class PreLoadController : MonoBehaviour
         SceneManager.LoadScene((int) GameSystem.GameScene.StartScene);
     }
 
-    private void GameSystemInit()
+    private async void GameSystemInit()
+    {
+        var gs = await InstantiateGameSystem();
+        gs.Init();
+    }
+
+    private Task<GameSystem> InstantiateGameSystem()
     {
         var gs = Instantiate(GameSystemPrefab);
-        gs.Init();
+        return Task.FromResult(gs);
     }
 }
 
 [Serializable]
 public class SplashImage
 {
-    public Sprite Image;
+    public Image Image;
     [Range(1,5)] public int Duration = 2;
 }

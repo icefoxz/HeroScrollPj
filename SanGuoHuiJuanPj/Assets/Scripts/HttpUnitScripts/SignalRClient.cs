@@ -175,27 +175,34 @@ public class SignalRClient : MonoBehaviour
     {
         try
         {
-            if(_hub==null)
+
+            if (_hub != null)
             {
-                _hub = new HubConnectionBuilder()
-                    .WithUrl(connectionInfo.Url, cfg =>
-                        cfg.AccessTokenProvider = () => Task.Run(() => connectionInfo.AccessToken, cancellationToken))
-                    .WithAutomaticReconnect(new TimeSpan[]
-                    {
-                        TimeSpan.FromSeconds(1), 
-                        TimeSpan.FromSeconds(2), 
-                        TimeSpan.FromSeconds(4),
-                        TimeSpan.FromSeconds(5),
-                    })
-                    .Build();
-                _hub.ServerTimeout = TimeSpan.FromMinutes(ServerTimeOutMinutes);
-                _hub.KeepAliveInterval = TimeSpan.FromSeconds(KeeAliveIntervalSecs);
-                _hub.HandshakeTimeout = TimeSpan.FromSeconds(HandShakeTimeoutSecs);
-                _hub.Closed += OnConnectionClose;
-                _hub.Reconnected += OnReconnected;
-                _hub.Reconnecting += OnReconnecting;
-                _hub.On<string, string>(EventStrings.Server_Call, OnServerCall);
+                _hub.Closed -= OnConnectionClose;
+                _hub.Reconnected -= OnReconnected;
+                _hub.Reconnecting -= OnReconnecting;
+                Application.quitting -= Disconnect;
+                _hub = null;
             }
+
+            _hub = new HubConnectionBuilder()
+                .WithUrl(connectionInfo.Url, cfg =>
+                    cfg.AccessTokenProvider = () => Task.Run(() => connectionInfo.AccessToken, cancellationToken))
+                .WithAutomaticReconnect(new TimeSpan[]
+                {
+                    TimeSpan.FromSeconds(1),
+                    TimeSpan.FromSeconds(2),
+                    TimeSpan.FromSeconds(5),
+                    TimeSpan.FromSeconds(10),
+                })
+                .Build();
+            _hub.ServerTimeout = TimeSpan.FromMinutes(ServerTimeOutMinutes);
+            _hub.KeepAliveInterval = TimeSpan.FromSeconds(KeeAliveIntervalSecs);
+            _hub.HandshakeTimeout = TimeSpan.FromSeconds(HandShakeTimeoutSecs);
+            _hub.Closed += OnConnectionClose;
+            _hub.Reconnected += OnReconnected;
+            _hub.Reconnecting += OnReconnecting;
+            _hub.On<string, string>(EventStrings.Server_Call, OnServerCall);
 
             if (_hub.State == HubConnectionState.Connected) throw new InvalidOperationException("Hub is connected!");
             await _hub.StartAsync(cancellationToken);

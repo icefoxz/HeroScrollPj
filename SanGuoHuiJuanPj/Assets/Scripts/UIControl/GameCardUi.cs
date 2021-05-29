@@ -102,13 +102,7 @@ public class GameCardUi : MonoBehaviour
         Name.color = info.GetNameColor();
     }
 
-    public void SetLevel(int level)
-    {
-        Level.gameObject.SetActive(level > 0);
-        if (!Level.gameObject.activeSelf)
-            return;
-        Level.sprite = GameResources.Instance.GradeImg[level];
-    }
+    public void SetLevel(int level) => Level.sprite = GameResources.Instance.GradeImg[level];
 
     /// <summary> 
     /// 名字显示规则 

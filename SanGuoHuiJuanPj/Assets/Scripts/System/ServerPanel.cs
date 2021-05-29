@@ -17,19 +17,11 @@ public class ServerPanel : MonoBehaviour
     {
         SignalR = signalR;
         SignalR.SubscribeAction(EventStrings.SC_Disconnect,ServerCallDisconnect);
-        SignalR.OnStatusChanged += Instance_OnStatusChanged;
-        SignalR.OnStatusChanged += UpdateReconnectBtn;
-        reconnectButton.onClick.AddListener(TryReconnect);
+        SignalR.OnStatusChanged += OnStatusChanged;
+        reconnectButton.onClick.AddListener(ReconnectOnDisconnected);
         gameObject.SetActive(false);
         MaintenanceOrTimeoutMessage(false);
         SetException();
-    }
-
-    private void TryReconnect()
-    {
-        if(isConnecting)return;
-        isConnecting = true;
-        SignalRClient.instance.ReconnectServer(null);
     }
 
     public void SetException(string exception = null)
@@ -51,20 +43,28 @@ public class ServerPanel : MonoBehaviour
         SetException(code.ToString());
     }
 
-    private void Instance_OnStatusChanged(HubConnectionState state)
+    private void OnStatusChanged(HubConnectionState state)
     {
         StopAllCoroutines();
         gameObject.SetActive(state != HubConnectionState.Connected);
         UpdateReconnectBtn(state);
-        if (state == HubConnectionState.Connecting || state == HubConnectionState.Reconnecting)
-            StartCoroutine(Counting(state));
+        switch (state)
+        {
+            case HubConnectionState.Connecting:
+            case HubConnectionState.Reconnecting:
+                StartCoroutine(Counting(state));
+                return;
+            case HubConnectionState.Disconnected:
+                ReconnectOnDisconnected();
+                break;
+        }
     }
 
     //当服务器强制离线
     private void ServerCallDisconnect(object[] arg)
     {
         SignalR.Disconnect();
-        Instance_OnStatusChanged(HubConnectionState.Disconnected);
+        OnStatusChanged(HubConnectionState.Disconnected);
         MaintenanceOrTimeoutMessage(true);
     }
 
@@ -88,7 +88,21 @@ public class ServerPanel : MonoBehaviour
     void OnApplicationFocus(bool isFocus)
     {
         if(!isFocus)return;
-        if(SignalR.Status == HubConnectionState.Disconnected)
-            SignalR.ReconnectServer(null);
+        if(SignalR.Status == HubConnectionState.Disconnected) ReconnectOnDisconnected();
+    }
+
+    private void ReconnectOnDisconnected() => SignalR.ReconnectServer(OnRetryConnectToServer);
+
+    private void OnRetryConnectToServer(bool success)
+    {
+        if(success)return;
+        if (GamePref.ClientLoginMethod == 1) SignalR.DirectLogin(ReLoginToServer);
+        else SignalR.UserLogin(ReLoginToServer, GamePref.Username, GamePref.Password);
+    }
+
+    private void ReLoginToServer(bool success, int code, SignalRClient.SignalRConnectionInfo connectionInfo)
+    {
+        var msg = success ? "重连成功！" : $"连接失败,错误码：{code}";
+        PlayerDataForGame.instance.ShowStringTips(msg);
     }
 }
