@@ -84,21 +84,31 @@ public class Expedition : MonoBehaviour
         InitWarsListInfo(lastAvailableStageIndex, true);
 
         //远征关卡
-        
-        var yuanZhengMode = DataTable.GameMode[YuanZhengIndex];
-        indexWarModeMap.Add(YuanZhengIndex, yuanZhengMode);
-        var isYuanZhengUnlock = IsWarUnlock(yuanZhengMode);
-        yuanZhengButton.gameObject.SetActive(isYuanZhengUnlock);
-        if (isYuanZhengUnlock)
         {
+            var yuanZhengMode = DataTable.GameMode[YuanZhengIndex];
+            indexWarModeMap.Add(YuanZhengIndex, yuanZhengMode);
+            var isYuanZhengUnlock = IsWarUnlock(yuanZhengMode);
+            yuanZhengButton.gameObject.SetActive(true);
             var textUi = yuanZhengButton.GetComponentInChildren<Text>();
-            textUi.text = yuanZhengMode.Title;
-            textUi.color = Color.white;
-            yuanZhengButton.GetComponent<Button>().onClick.AddListener(() =>
+            textUi.color = isYuanZhengUnlock ? Color.white : Color.gray;
+            if (isYuanZhengUnlock)
             {
-                InitWarsListInfo(YuanZhengIndex);
-                UIManager.instance.PlayOnClickMusic();
-            });
+                textUi.text = yuanZhengMode.Title;
+                textUi.color = Color.white;
+                yuanZhengButton.GetComponent<Button>().onClick.AddListener(() =>
+                {
+                    InitWarsListInfo(YuanZhengIndex);
+                    UIManager.instance.PlayOnClickMusic();
+                });
+            }
+            else
+            {
+                yuanZhengButton.GetComponent<Button>().onClick.AddListener(() =>
+                {
+                    PlayerDataForGame.instance.ShowStringTips(yuanZhengMode.Intro);
+                    UIManager.instance.PlayOnClickMusic();
+                });
+            }
         }
 
         bool IsWarUnlock(GameModeTable warMode)

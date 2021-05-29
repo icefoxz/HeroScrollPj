@@ -7,12 +7,26 @@ using UnityEngine.UI;
 
 public class BarrageUiController : MonoBehaviour
 {
+    public static BarrageUiController instance;
     public BarrageUi Prefab;
     public Transform[] Rows;
     public List<BarrageUi> List { get; } = new List<BarrageUi>();
     private Dictionary<Transform, List<BarrageUi>> rowMap;
 
-    void Start()
+    private void Awake()
+    {
+        if (instance != null)
+        {
+            Destroy(gameObject);
+        }
+        else
+        {
+            instance = this;
+        }
+    }
+
+
+    public void Init()
     {
         rowMap = Rows.ToDictionary(r => r, _ => new List<BarrageUi>());
     }

@@ -151,7 +151,7 @@ public class PlayerDataForGame : MonoBehaviour
         isHadNewSaveData = false;
 
         garbageStationObjs = new List<GameObject>();
-        StartCoroutine(FadeTransitionEffect(0));
+        StartCoroutine(InitFade());
     }
 
     private void Update()
@@ -165,20 +165,29 @@ public class PlayerDataForGame : MonoBehaviour
         isJumping = false;
     }
 
+    IEnumerator InitFade()
+    {
+        yield return new WaitUntil(() => GameSystem.CurrentScene == GameSystem.GameScene.StartScene);
+        loadingText.gameObject.SetActive(false);
+        infoText.gameObject.SetActive(false);
+        loadingImg.gameObject.SetActive(true);
+        loadingImg.DOFade(0, fadeSpeed).OnComplete(() => loadingImg.gameObject.SetActive(false));
+    }
+
     /// <summary> 
     /// 跳转场景 
-    /// </summary> 
-    /// <param name="sceneIndex"></param> 
+    /// </summary>
+    /// <param name="scene"></param>
     /// <param name="isRequestSyncData">是否请求同步存档</param>
     /// <param name="untilTrue">加载锁，直到返回true才会转换场景</param> 
-    public void JumpSceneFun(int sceneIndex, bool isRequestSyncData, Func<bool> untilTrue = null)
+    public void JumpSceneFun(GameSystem.GameScene scene, bool isRequestSyncData, Func<bool> untilTrue = null)
     {
         if (isJumping) return;
         loadingImg.DOPause();
-        StartCoroutine(ShowTransitionEffect(sceneIndex, isRequestSyncData, untilTrue));
+        StartCoroutine(ShowTransitionEffect(scene, isRequestSyncData, untilTrue));
     }
 
-    IEnumerator ShowTransitionEffect(int sceneIndex, bool isRequestSyncData,Func<bool> untilTrue)
+    IEnumerator ShowTransitionEffect(GameSystem.GameScene scene, bool isRequestSyncData,Func<bool> untilTrue)
     {
         isJumping = true;
         if(isRequestSyncData)
@@ -203,7 +212,7 @@ public class PlayerDataForGame : MonoBehaviour
         infoText.gameObject.SetActive(true);
         yield return new WaitWhile(() => isRequestingSaveFile);//这里阻塞下个场景初始化逻辑。等待存档加载完毕
         if (untilTrue != null) yield return new WaitUntil(untilTrue);
-        asyncOp = SceneManager.LoadSceneAsync(sceneIndex, LoadSceneMode.Single);//异步加载场景，Single:不保留现有场景 
+        asyncOp = SceneManager.LoadSceneAsync((int)scene, LoadSceneMode.Single);//异步加载场景，Single:不保留现有场景 
         yield return new WaitUntil(() => asyncOp.isDone);
         StartCoroutine(FadeTransitionEffect(fadeSpeed));
     }
@@ -268,26 +277,19 @@ public class PlayerDataForGame : MonoBehaviour
     /// </summary> 
     public void ClearGarbageStationObj()
     {
-        //Debug.Log("GameObject垃圾池数量：" + garbageStationObjs.Count); 
-        try
+        for (int i = garbageStationObjs.Count - 1; i >= 0; i--)
         {
-            for (int i = garbageStationObjs.Count - 1; i >= 0; i--)
+            if (garbageStationObjs[i] != null)
             {
-                if (garbageStationObjs[i] != null)
-                {
-                    Destroy(garbageStationObjs[i]);
-                }
+                Destroy(garbageStationObjs[i]);
             }
+        }
 #if UNITY_EDITOR
-            
-            XDebug.Log<PlayerDataForGame>($"清除垃圾池,物件={garbageStationObjs.Count}");
-            garbageStationObjs.Clear();
+
+        XDebug.Log<PlayerDataForGame>($"清除垃圾池,物件={garbageStationObjs.Count}");
+        garbageStationObjs.Clear();
 #endif
-        }
-        catch (Exception e)
-        {
-            Debug.LogError(e.ToString());
-        }
+
     }
 
     [SerializeField]

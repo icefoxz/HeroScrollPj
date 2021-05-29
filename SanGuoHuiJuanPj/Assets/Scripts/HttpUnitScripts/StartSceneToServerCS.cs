@@ -59,7 +59,7 @@ public class StartSceneToServerCS : MonoBehaviour
         }
     }
 
-    private void Start()
+    public void Init()
     {
         //InfoButtonOnClickFun();//旧按键方法取消
         StartButton.gameObject.SetActive(false);
@@ -121,7 +121,7 @@ public class StartSceneToServerCS : MonoBehaviour
 
         GameSystem.InitGameDependencyComponents();
         GameSystem.LoginUi.Close();
-        StartSceneUIManager.instance.LoadingScene(1, true);
+        StartSceneUIManager.instance.LoadingScene(GameSystem.GameScene.MainScene, true);
     }
 
     private async void BusyFunc(Func<Task> task)

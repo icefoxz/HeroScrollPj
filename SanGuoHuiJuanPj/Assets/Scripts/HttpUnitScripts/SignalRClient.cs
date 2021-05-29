@@ -225,6 +225,7 @@ public class SignalRClient : MonoBehaviour
             DebugLog(e.ToString());
 #endif
             onReconnectAction?.Invoke(false);
+            PlayerDataForGame.instance.ShowStringTips("服务器尝试链接失败，请联系管理员！");
         }
     }
 

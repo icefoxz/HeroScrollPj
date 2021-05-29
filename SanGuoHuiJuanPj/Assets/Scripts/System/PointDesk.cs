@@ -19,6 +19,8 @@ public class PointDesk : MonoBehaviour
     [SerializeField]Text Hp;
     [SerializeField]Text Info;
     [SerializeField]Button CardMergeBtn;
+    [SerializeField]Image MergeImg;
+    [SerializeField]Image UpgradeImg;
     [SerializeField]Text MergeCost;
     [SerializeField]Button CardSellBtn;
     [SerializeField]Text SellingPrice;
@@ -90,6 +92,9 @@ public class PointDesk : MonoBehaviour
 
     private void UpdateMergeInfo(NowLevelAndHadChip card)
     {
+        var isFragment = card.Level == 0;
+        MergeImg.gameObject.SetActive(isFragment);
+        UpgradeImg.gameObject.SetActive(!isFragment);
         var isMax = card.Level >= DataTable.CardLevel.Keys.Max();
         CardMergeBtn.gameObject.SetActive(!isMax);
         if (isMax) return;

@@ -35,7 +35,7 @@ public class StartSceneUIManager : MonoBehaviour
         isPlayedStory = false;
     }
 
-    private void Start()
+    public void Init()
     {
         InitPictureContentShow();
     }
@@ -108,8 +108,7 @@ public class StartSceneUIManager : MonoBehaviour
     /// <summary>
     /// 跳转场景
     /// </summary>
-    /// <param name="sceneBuildIndex">场景索引</param>
-    public void LoadingScene(int sceneBuildIndex, bool isRequestSyncData)
+    public void LoadingScene(GameSystem.GameScene scene, bool isRequestSyncData)
     {
         if (isJumping)
             return;
@@ -117,7 +116,7 @@ public class StartSceneUIManager : MonoBehaviour
         AudioController0.instance.ChangeAudioClip(12);
         AudioController0.instance.PlayAudioSource(0);
         TimeSystemControl.instance.InitIsTodayFirstLoadingGame();
-        PlayerDataForGame.instance.JumpSceneFun(sceneBuildIndex, isRequestSyncData);
+        PlayerDataForGame.instance.JumpSceneFun(scene, isRequestSyncData);
     }
 
     /// <summary>

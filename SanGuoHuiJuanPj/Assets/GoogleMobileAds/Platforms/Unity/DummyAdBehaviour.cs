@@ -17,9 +17,6 @@ using System;
 
 public class DummyAdBehaviour : MonoBehaviour
 {
-    private const string SystemCanvas = "SystemCanvas";
-    public int SortOrder = 101;
-
     public void PauseGame()
     {
         Time.timeScale = 0;
@@ -34,10 +31,7 @@ public class DummyAdBehaviour : MonoBehaviour
 
     public GameObject ShowAd(GameObject dummyAd, Vector3 position)
     {
-        var obj = Instantiate(dummyAd, position, Quaternion.identity) as GameObject;
-        var canvas = obj.GetComponent<Canvas>();
-        canvas.sortingOrder = 101;
-        return obj;
+       return Instantiate(dummyAd, position, Quaternion.identity) as GameObject;
     }
 
     public void DestroyAd(GameObject dummyAd)
