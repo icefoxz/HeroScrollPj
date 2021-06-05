@@ -16,7 +16,8 @@ public class AdManager : AdControllerBase
     {
         Unity,
         Admob,
-        DoNew
+        DoNew,
+        MoPub
     }
 
     public AdAgentBase adAgent;
@@ -26,12 +27,14 @@ public class AdManager : AdControllerBase
     public DoNewAdController DoNewAdController { get; private set; }
     public AdmobController AdmobController { get; private set; }
     public UnityAdController UnityAdController { get; private set; }
+    public MoPubController MoPubController { get; private set; }
     public override AdAgentBase.States Status => AdmobController.Status;
     [Header("广告播放顺序")]public Ads[] Series;
     [Header("广告源比率")]
-    public int UnityRatio = 3;
-    public int AdmobRatio = 3;
+    public int UnityRatio = 1;
+    public int AdmobRatio = 1;
     public int DoNewRatio = 2;
+    public int MoPubRatio = 1;
     private QueueByRatio<AdControllerBase> Queue;
 
     private Dictionary<Ads, (int, AdControllerBase)> Controllers
@@ -44,7 +47,8 @@ public class AdManager : AdControllerBase
                 {
                     {Ads.Unity, (UnityRatio, UnityAdController)},
                     {Ads.Admob, (AdmobRatio, AdmobController)},
-                    {Ads.DoNew, (DoNewRatio, DoNewAdController)}
+                    {Ads.DoNew, (DoNewRatio, DoNewAdController)},
+                    {Ads.MoPub, (MoPubRatio, MoPubController)}
                 };
             }
 
@@ -63,6 +67,8 @@ public class AdManager : AdControllerBase
         AdmobController.Init(AdmobRetryCallBack);
         UnityAdController = gameObject.AddComponent<UnityAdController>();
         UnityAdController.Init();
+        MoPubController = gameObject.AddComponent<MoPubController>();
+        MoPubController.Init();
         Queue = new QueueByRatio<AdControllerBase>(
             Series.Join(Controllers,ad=>ad,c=>c.Key,(_,c)=>c.Value).ToArray()
         );
@@ -111,6 +117,9 @@ public class AdManager : AdControllerBase
         if(DoNewAdController.Status == AdAgentBase.States.Closed ||
            DoNewAdController.Status == AdAgentBase.States.FailedToLoad ||
            DoNewAdController.Status == AdAgentBase.States.None) DoNewAdController.RequestLoad(null);
+        if(MoPubController.Status == AdAgentBase.States.Closed ||
+           MoPubController.Status == AdAgentBase.States.FailedToLoad ||
+           MoPubController.Status == AdAgentBase.States.None) MoPubController.RequestLoad(null);
 #endif
     }
 

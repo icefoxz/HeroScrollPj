@@ -39,7 +39,7 @@ public class SignalRClient : MonoBehaviour
     private CancellationTokenSource cancellationTokenSource;
 
     private static HubConnection _hub;
-    private Dictionary<string, UnityAction<object[]>> _actions;
+    private Dictionary<string, UnityAction<string>> _actions;
     private static readonly Type _stringType = typeof(string);
     private bool isBusy;
     public ApiPanel ApiPanel;
@@ -59,7 +59,7 @@ public class SignalRClient : MonoBehaviour
     private void Start()
     {
         //Login();
-        _actions = new Dictionary<string, UnityAction<object[]>>();
+        _actions = new Dictionary<string, UnityAction<string>>();
         OnStatusChanged += s => DebugLog($"状态更新[{s}]!");
         if(ServerPanel!=null) ServerPanel.Init(this);
         SubscribeAction(EventStrings.SR_UploadPy, OnServerCalledUpload);
@@ -236,14 +236,14 @@ public class SignalRClient : MonoBehaviour
         }
     }
 
-    public void SubscribeAction(string method, UnityAction<object[]> action)
+    public void SubscribeAction(string method, UnityAction<string> action)
     {
         if (!_actions.ContainsKey(method))
             _actions.Add(method, default);
         _actions[method] += action;
     }
 
-    public void UnSubscribeAction(string method, UnityAction<object[]> action)
+    public void UnSubscribeAction(string method, UnityAction<string> action)
     {
         if (!_actions.ContainsKey(method))
             throw XDebug.Throw<SignalRClient>($"Method[{method}] not registered!");
@@ -264,8 +264,7 @@ public class SignalRClient : MonoBehaviour
         }
 #endif
         if(! _actions.TryGetValue(method,out var action))return;
-        var args = Json.Deserialize<object[]>(content);
-        action?.Invoke(args);
+        action?.Invoke(content);
     }
 
     public async void Invoke(string method, UnityAction<string> recallAction , IViewBag bag = default,
@@ -315,7 +314,7 @@ public class SignalRClient : MonoBehaviour
 
     #region Upload
 
-    private async void OnServerCalledUpload(object[] args)
+    private async void OnServerCalledUpload(string args)
     {
         var saved = PlayerDataForGame.instance;
         var playerData = saved.pyData;

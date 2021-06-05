@@ -1,26 +1,56 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using Microsoft.AspNetCore.SignalR.Client;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class ServerPanel : MonoBehaviour
 {
+    enum States
+    {
+        None,
+        ServerMaintenance,
+        TimeOut,
+        Other
+    }
     private int count;
     public Button reconnectButton;
+    public Button exitButton;
     public Text serverMaintenance;
     public Text requestTimeOut;
+    public Text Message;
     public Text exceptionMsg;
     private SignalRClient SignalR;
-    private bool isConnecting;
+    private bool isDisconnectRequested = false;
+
+    private Dictionary<Text, States> StateSet
+    {
+        get
+        {
+            if (stSet == null)
+            {
+                stSet = new Dictionary<Text, States>
+                {
+                    {Message, States.Other},
+                    {serverMaintenance, States.ServerMaintenance},
+                    {requestTimeOut, States.TimeOut}
+                };
+            }
+            return stSet;
+        }
+    }
+    private Dictionary<Text, States> stSet; 
 
     public void Init(SignalRClient signalR)
     {
         SignalR = signalR;
-        SignalR.SubscribeAction(EventStrings.SC_Disconnect,ServerCallDisconnect);
+        SignalR.SubscribeAction(EventStrings.SC_Disconnect, ServerCallDisconnect);
         SignalR.OnStatusChanged += OnStatusChanged;
         reconnectButton.onClick.AddListener(ReconnectOnDisconnected);
+        exitButton.onClick.AddListener(Application.Quit);
+        exitButton.gameObject.SetActive(false);
         gameObject.SetActive(false);
-        MaintenanceOrTimeoutMessage(false);
+        UiShow(States.None);
         SetException();
     }
 
@@ -30,15 +60,16 @@ public class ServerPanel : MonoBehaviour
         exceptionMsg.text = exception;
     }
 
-    private void MaintenanceOrTimeoutMessage(bool isMaintenance)
+    private void UiShow(States state)
     {
-        serverMaintenance.gameObject.SetActive(isMaintenance);
-        requestTimeOut.gameObject.SetActive(!isMaintenance);
+        foreach (var ui in StateSet)
+        {
+            ui.Key.gameObject.SetActive(ui.Value == state);
+        }
     }
 
     private void OnConnectAction(bool isConnected, int code, SignalRClient.SignalRConnectionInfo info)
     {
-        isConnecting = false;
         gameObject.SetActive(!isConnected);
         SetException(code.ToString());
     }
@@ -61,11 +92,20 @@ public class ServerPanel : MonoBehaviour
     }
 
     //当服务器强制离线
-    private void ServerCallDisconnect(object[] arg)
+    private void ServerCallDisconnect(string arg)
     {
+        isDisconnectRequested = true;
+        exitButton.gameObject.SetActive(true);
         SignalR.Disconnect();
+        StopAllCoroutines();
         OnStatusChanged(HubConnectionState.Disconnected);
-        MaintenanceOrTimeoutMessage(true);
+        var state = States.ServerMaintenance;
+        if (!string.IsNullOrWhiteSpace(arg))
+        {
+            Message.text = arg;
+            state = States.Other;
+        }
+        UiShow(state);
     }
 
     private void UpdateReconnectBtn(HubConnectionState status)
@@ -91,7 +131,10 @@ public class ServerPanel : MonoBehaviour
         if(SignalR.Status == HubConnectionState.Disconnected) ReconnectOnDisconnected();
     }
 
-    private void ReconnectOnDisconnected() => SignalR.ReconnectServer(OnRetryConnectToServer);
+    private void ReconnectOnDisconnected()
+    {
+        if(!isDisconnectRequested) SignalR.ReconnectServer(OnRetryConnectToServer);
+    }
 
     private void OnRetryConnectToServer(bool success)
     {

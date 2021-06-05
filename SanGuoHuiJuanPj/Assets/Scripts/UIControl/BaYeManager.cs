@@ -291,17 +291,18 @@ public class BaYeManager : MonoBehaviour
         {
             baYe.zhanLingMap.Trade(ling.Key, ling.Value, true);
         }
-        var py = PlayerDataForGame.instance.pyData;
-        if (storyEvent.YvQueReward > 0) py.YvQue += storyEvent.YvQueReward;
-        if (storyEvent.YuanBaoReward > 0) py.YuanBao += storyEvent.YuanBaoReward;
-        if(GameSystem.CurrentScene == GameSystem.GameScene.MainScene)
-        {
-            UIManager.instance.yuanBaoNumText.text = py.YvQue.ToString();
-            UIManager.instance.yvQueNumText.text = py.YvQue.ToString();
-        }
+        //todo 霸业暂时没有元宝和玉阙的事件，所以不再更新玉阙和元宝
+        //var py = PlayerDataForGame.instance.pyData;
+        //if (storyEvent.YvQueReward > 0) py.YvQue += storyEvent.YvQueReward;
+        //if (storyEvent.YuanBaoReward > 0) py.YuanBao += storyEvent.YuanBaoReward;
+        //if(GameSystem.CurrentScene == GameSystem.GameScene.MainScene)
+        //{
+        //    UIManager.instance.yuanBaoNumText.text = py.YvQue.ToString();
+        //    UIManager.instance.yvQueNumText.text = py.YvQue.ToString();
+        //}
         GamePref.SaveBaYe(PlayerDataForGame.instance.baYe);
-        PlayerDataForGame.instance.isNeedSaveData = true;
-        LoadSaveData.instance.SaveGameData(5);
+        //PlayerDataForGame.instance.isNeedSaveData = true;
+        //LoadSaveData.instance.SaveGameData(5);
     }
 
     public void SetExp(int expIndex,int exp)
