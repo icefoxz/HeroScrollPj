@@ -590,16 +590,19 @@ public class UIManager : MonoBehaviour
             int staminaCost = staminaMap.Cost;
             if (PlayerDataForGame.instance.Stamina.Value >= staminaCost)
             {
-                ShowOrHideGuideObj(3, false);
-                IsJumping = true;
-                AudioController0.instance.ChangeAudioClip(12);
-                AudioController0.instance.PlayAudioSource(0);
-                PlayerDataForGame.instance.AddStamina(-staminaCost);
-                ZhanLingUi.UpdateUi();
-                ZhanLingUi.ShowEffect(-staminaCost);
-                PlayerDataForGame.instance.StaminaReturnTemp = staminaMap.MaxReturn;
-                PlayerDataForGame.instance.boxForTiLiNums = staminaMap.CostOfChest;
-                StartCoroutine(LateGoToFightScene());
+                if (PlayerDataForGame.instance.TryAddStamina(-staminaCost))
+                {
+
+                    ShowOrHideGuideObj(3, false);
+                    IsJumping = true;
+                    AudioController0.instance.ChangeAudioClip(12);
+                    AudioController0.instance.PlayAudioSource(0);
+                    ZhanLingUi.UpdateUi();
+                    ZhanLingUi.ShowEffect(-staminaCost);
+                    PlayerDataForGame.instance.StaminaReturnTemp = staminaMap.MaxReturn;
+                    PlayerDataForGame.instance.boxForTiLiNums = staminaMap.CostOfChest;
+                    StartCoroutine(LateGoToFightScene());
+                }
             }
             else
             {

@@ -345,17 +345,19 @@ public class PlayerDataForGame : MonoBehaviour
         LoadSaveData.instance.SaveGameData(3);
     }
 
-    public void AddStamina(int stamina)
+    public bool TryAddStamina(int sta)
     {
-        Stamina.AddStamina(stamina);
-        pyData.Stamina += stamina;
+        Stamina.AddStamina(sta);
+        pyData.Stamina += sta;
         if (pyData.Stamina < 0)
         {
-            throw new InvalidOperationException($"体力小于0! stamina = ({stamina})");
-            pyData.Stamina = 0;
+            ApiPanel.instance.SyncSaved(null);
+            return false;
+            //throw new InvalidOperationException($"体力小于0! stamina = ({stamina})");
         }
         isNeedSaveData = true;
         LoadSaveData.instance.SaveGameData(1);
+        return true;
     }
 
     public void UpdateGameCards(TroopDto[] troops, GameCardDto[] gameCardList)
