@@ -137,7 +137,7 @@ public class GameSystem : MonoBehaviour
         StartCoroutine(InitCo());
     }
 
-    private void InitEnqueue(Action action)
+    protected void InitEnqueue(Action action)
     {
         InitQueue.Enqueue(Func);
         bool Func()

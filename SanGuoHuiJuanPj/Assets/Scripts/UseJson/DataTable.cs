@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using CorrelateLib;
 using UnityEngine;
 
     public class DataTable : MonoBehaviour
@@ -51,7 +52,12 @@ using UnityEngine;
         public static IReadOnlyDictionary<int, BaYeStoryPoolTable> BaYeStoryPool{get; private set;}            
         public static IReadOnlyDictionary<int, BaYeStoryEventTable> BaYeStoryEvent{get; private set;}          
         public static IReadOnlyDictionary<int, BaYeTvTable> BaYeTv{get; private set;}                          
-        public static IReadOnlyDictionary<int, BaYeNameTable> BaYeName{get; private set;}                      
+        public static IReadOnlyDictionary<int, BaYeNameTable> BaYeName{get; private set;}
+        public static IReadOnlyDictionary<int, CityTable> City { get; private set; }
+        public static IReadOnlyDictionary<int,PlayerNameTable>PlayerName{get;set;}
+        public static IReadOnlyDictionary<int,PlayerNicknameTable>PlayerNickname{get;set;}
+        public static IReadOnlyDictionary<int,PlayerSignTable>PlayerSign{get;set;}
+        public static IReadOnlyDictionary<int,DirtyWordTable>DirtyWord{get;set;}
 
         public TextAsset PlayerInitialConfigTable;
         public TextAsset ResourceConfigTable;
@@ -89,6 +95,11 @@ using UnityEngine;
         public TextAsset BaYeStoryEventTable;
         public TextAsset BaYeTvTable;
         public TextAsset BaYeNameTable;
+        public TextAsset CityTable;
+        public TextAsset PlayerNameTable;
+        public TextAsset PlayerNicknameTable;
+        public TextAsset PlayerSignTable;
+        public TextAsset DirtyWordTable;
 
         private static Dictionary<string, Dictionary<int, IReadOnlyList<string>>> data;
         private void Awake()
@@ -144,6 +155,11 @@ using UnityEngine;
             BaYeStoryEvent =      ResolveProperty(l => new BaYeStoryEventTable(l));
             BaYeTv =              ResolveProperty(l => new BaYeTvTable(l));
             BaYeName =            ResolveProperty(l => new BaYeNameTable(l));
+            City =                ResolveProperty(l => new CityTable(l));
+            PlayerName =          ResolveProperty(l => new PlayerNameTable(l));
+            PlayerNickname =      ResolveProperty(l => new PlayerNicknameTable(l));
+            PlayerSign =          ResolveProperty(l => new PlayerSignTable(l));
+            DirtyWord =           ResolveProperty(l => new DirtyWordTable(l));
         }
 
         private IReadOnlyDictionary<int, T> ResolveProperty<T>(Func<IList<string>,T> func)
@@ -156,7 +172,7 @@ using UnityEngine;
         private Dictionary<int, IReadOnlyList<string>> ConvertText(string text)
         {
             text = text.Replace(@"\\", @"\");
-            return Json.DeserializeList<List<string>>(text).ToDictionary(row => int.Parse(row[0]), row =>row as IReadOnlyList<string>);
+            return Assets.Scripts.Utl.Json.DeserializeList<List<string>>(text).ToDictionary(row => int.Parse(row[0]), row =>row as IReadOnlyList<string>);
         }
 
         /// <summary>

@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using CorrelateLib;
 using UnityEngine;
 
 public class RewardManager : MonoBehaviour

@@ -67,5 +67,5 @@ public class PreLoadController : MonoBehaviour
 public class SplashImage
 {
     public Image Image;
-    [Range(1,5)] public int Duration = 2;
+    [Range(1,5)] public float Duration = 2;
 }

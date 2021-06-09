@@ -4,6 +4,7 @@ using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
+using CorrelateLib;
 using UnityEngine.SceneManagement;
 using Newtonsoft.Json;
 
@@ -310,7 +311,7 @@ public class LoadSaveData : MonoBehaviour
                         if (isEncrypted != 0)
                             jsonStr3 = EncryptDecipherTool.DESDecrypt(jsonStr3);
                         jsonStr3 = InspectionAndCorrectionString(jsonStr3, new string[] { "}]}" }, filePath3);
-                        save3 = Json.Deserialize<PrivateCodeData>(jsonStr3)?.ToNewSave();
+                        save3 = Assets.Scripts.Utl.Json.Deserialize<PrivateCodeData>(jsonStr3)?.ToNewSave();
                     }
 
                     //武将士兵塔数据读档 
@@ -417,7 +418,7 @@ public class LoadSaveData : MonoBehaviour
                             jsonStr3 = File.ReadAllText(filePath3);
                             if (isEncrypted != 0)
                                 jsonStr3 = EncryptDecipherTool.DESDecrypt(jsonStr3);
-                            save3 = Json.Deserialize<PrivateCodeData>(jsonStr3).ToNewSave();
+                            save3 = Assets.Scripts.Utl.Json.Deserialize<PrivateCodeData>(jsonStr3).ToNewSave();
                         }
                     }
 

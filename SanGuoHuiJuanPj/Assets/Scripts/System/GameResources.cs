@@ -11,7 +11,8 @@ public enum ForceFlags
     魏 = 1,
     吴 = 2,
     袁 = 3,
-    吕 = 4
+    吕 = 4,
+    其它 = 5
 }
 
 public class GameResources
@@ -39,6 +40,8 @@ public class GameResources
     private const string StateDinPath = "Prefabs/stateDin/";
     private const string ForceFlagsPath = "Image/shiLi/Flag";
     private const string ForceNamePath = "Image/shiLi/Name";
+    private const string CityFlagPath = "Image/City/Flag";
+    public const string CityIconPath = "Image/City/Icon";
     /// <summary>
     /// Key = heroId, Value = sprite
     /// </summary>
@@ -57,31 +60,60 @@ public class GameResources
     public IReadOnlyDictionary<ForceFlags, Sprite> ForceName => forceNameMap;
     public IReadOnlyDictionary<string, GameObject> Effects => effectsMap;
     public IReadOnlyDictionary<string, GameObject> StateDin => stateDinMap;
+    public IReadOnlyDictionary<int, Sprite> CityFlag => cityFlag;
+    public IReadOnlyDictionary<int, Sprite> CityIcon => cityIcon;
 
     private bool isInit;
     private IReadOnlyDictionary<string, GameObject> effectsMap;
     private IReadOnlyDictionary<string, GameObject> stateDinMap;
+    private IReadOnlyDictionary<int, Sprite> cityFlag;
+    private IReadOnlyDictionary<int, Sprite> cityIcon;
 
     public void Init(bool forceReload = false)
     {
         if (isInit && !forceReload) return;
         Instance = this;
-        heroImgMap  = new ResourceDataWrapper<int, Sprite>(Resources.LoadAll<Sprite>(HeroImagesPath)
-             .Select(o => new {imageId = int.Parse(o.name), sprite = o})
-            .Join(DataTable.Hero.Values, c => c.imageId, t => t.ImageId,
-                (c, t) => new {t.Id, c.sprite}).OrderBy(c=>c.Id).ToDictionary(h=>h.Id,h=>h.sprite),nameof(heroImgMap));
-        classImgMap = new ResourceDataWrapper<int, Sprite>(Resources.LoadAll<Sprite>(ClassImagesPath).ToDictionary(s => int.Parse(s.name), s => s),nameof(classImgMap));
-        fuZhuImgMap = new ResourceDataWrapper<int, Sprite>(Resources.LoadAll<Sprite>(FuZhuImagesPath).ToDictionary(s => int.Parse(s.name), s => s),nameof(fuZhuImgMap));
-        gradeImgMap = new ResourceDataWrapper<int, Sprite>(Resources.LoadAll<Sprite>(GradeImagesPath).ToDictionary(s => int.Parse(s.name), s => s),nameof(gradeImgMap));
-        guanQiaEventMap = new ResourceDataWrapper<int, Sprite>(Resources.LoadAll<Sprite>(GuanQiaEventImagesPath).Where(s=>int.TryParse(s.name,out _)).ToDictionary(s => int.Parse(s.name), s => s),nameof(guanQiaEventMap));
-        frameImgMap = new ResourceDataWrapper<int, Sprite>(Resources.LoadAll<Sprite>(FrameImagesPath).ToDictionary(s => int.Parse(s.name), s => s),nameof(frameImgMap));
-        artWindowMap = new ResourceDataWrapper<int, Sprite>(Resources.LoadAll<Sprite>(ArtWindowImagesPath).ToDictionary(s => int.Parse(s.name), s => s),nameof(artWindowMap));
-        battleBgMap = new ResourceDataWrapper<int, Sprite>(Resources.LoadAll<Sprite>(BattleBgImagesPath).ToDictionary(s => int.Parse(s.name), s => s),nameof(battleBgMap));
-        forceFlagMap = new ResourceDataWrapper<ForceFlags, Sprite>(Resources.LoadAll<Sprite>(ForceFlagsPath).ToDictionary(s => (ForceFlags) int.Parse(s.name), s => s),nameof(forceFlagMap));
-        forceNameMap = new ResourceDataWrapper<ForceFlags, Sprite>(Resources.LoadAll<Sprite>(ForceNamePath).ToDictionary(s => (ForceFlags) int.Parse(s.name), s => s),nameof(forceNameMap));
-        effectsMap = new ResourceDataWrapper<string,GameObject>(Resources.LoadAll<GameObject>(EffectsGameObjectPath).ToDictionary(g => g.name, g => g),nameof(effectsMap));
-        stateDinMap = new ResourceDataWrapper<string, GameObject>(Resources.LoadAll<GameObject>(StateDinPath).ToDictionary(g => g.name, g => g),nameof(stateDinMap));
+        heroImgMap = new ResourceDataWrapper<int, Sprite>(Resources.LoadAll<Sprite>(HeroImagesPath)
+                .Select(o => new {imageId = int.Parse(o.name), sprite = o})
+                .Join(DataTable.Hero.Values, c => c.imageId, t => t.ImageId,
+                    (c, t) => new {t.Id, c.sprite}).OrderBy(c => c.Id).ToDictionary(h => h.Id, h => h.sprite),
+            nameof(heroImgMap));
+        classImgMap = new ResourceDataWrapper<int, Sprite>(
+            Resources.LoadAll<Sprite>(ClassImagesPath).ToDictionary(s => int.Parse(s.name), s => s),
+            nameof(classImgMap));
+        fuZhuImgMap = new ResourceDataWrapper<int, Sprite>(
+            Resources.LoadAll<Sprite>(FuZhuImagesPath).ToDictionary(s => int.Parse(s.name), s => s),
+            nameof(fuZhuImgMap));
+        gradeImgMap = new ResourceDataWrapper<int, Sprite>(
+            Resources.LoadAll<Sprite>(GradeImagesPath).ToDictionary(s => int.Parse(s.name), s => s),
+            nameof(gradeImgMap));
+        guanQiaEventMap = new ResourceDataWrapper<int, Sprite>(
+            Resources.LoadAll<Sprite>(GuanQiaEventImagesPath).Where(s => int.TryParse(s.name, out _))
+                .ToDictionary(s => int.Parse(s.name), s => s), nameof(guanQiaEventMap));
+        frameImgMap = new ResourceDataWrapper<int, Sprite>(
+            Resources.LoadAll<Sprite>(FrameImagesPath).ToDictionary(s => int.Parse(s.name), s => s),
+            nameof(frameImgMap));
+        artWindowMap = new ResourceDataWrapper<int, Sprite>(
+            Resources.LoadAll<Sprite>(ArtWindowImagesPath).ToDictionary(s => int.Parse(s.name), s => s),
+            nameof(artWindowMap));
+        battleBgMap = new ResourceDataWrapper<int, Sprite>(
+            Resources.LoadAll<Sprite>(BattleBgImagesPath).ToDictionary(s => int.Parse(s.name), s => s),
+            nameof(battleBgMap));
+        forceFlagMap = new ResourceDataWrapper<ForceFlags, Sprite>(
+            Resources.LoadAll<Sprite>(ForceFlagsPath).ToDictionary(s => (ForceFlags) int.Parse(s.name), s => s),
+            nameof(forceFlagMap));
+        forceNameMap = new ResourceDataWrapper<ForceFlags, Sprite>(
+            Resources.LoadAll<Sprite>(ForceNamePath).ToDictionary(s => (ForceFlags) int.Parse(s.name), s => s),
+            nameof(forceNameMap));
+        effectsMap = new ResourceDataWrapper<string, GameObject>(
+            Resources.LoadAll<GameObject>(EffectsGameObjectPath).ToDictionary(g => g.name, g => g), nameof(effectsMap));
+        stateDinMap = new ResourceDataWrapper<string, GameObject>(
+            Resources.LoadAll<GameObject>(StateDinPath).ToDictionary(g => g.name, g => g), nameof(stateDinMap));
+        cityFlag = new ResourceDataWrapper<int, Sprite>(Resources.LoadAll<Sprite>(CityFlagPath).ToDictionary(s => int.Parse(s.name), s => s), nameof(stateDinMap));
+        cityIcon = new ResourceDataWrapper<int, Sprite>(Resources.LoadAll<Sprite>(CityIconPath).ToDictionary(s => int.Parse(s.name), s => s), nameof(stateDinMap));
     }
+
+
 
     internal class ResourceDataWrapper<TKey,TValue> : IReadOnlyDictionary<TKey,TValue>
     {

@@ -86,7 +86,7 @@ public class SignalRClient : MonoBehaviour
         cancellationTokenSource = new CancellationTokenSource();
         cancellationTokenSource.Token.Register(() => OnConnectionClose(XDebug.Throw<SignalRClient>("取消连接！")));
         var response = await Http.PostAsync(Server.SIGNALR_LOGIN_API,
-            Json.Serialize(Server.GetUserInfo(username, password)), cancellationTokenSource.Token);
+            Assets.Scripts.Utl.Json.Serialize(Server.GetUserInfo(username, password)), cancellationTokenSource.Token);
         if (!response.IsSuccessStatusCode)
         {
             DebugLog($"连接失败！[{response.StatusCode}]");
@@ -119,7 +119,7 @@ public class SignalRClient : MonoBehaviour
         cancellationTokenSource = new CancellationTokenSource();
         cancellationTokenSource.Token.Register(() => OnConnectionClose(XDebug.Throw<SignalRClient>("取消连接！")));
         var response = await Http.PostAsync(Server.DEVICE_LOGIN_API,
-            Json.Serialize(Server.GetUserInfo(GamePref.Username, GamePref.Password)), cancellationTokenSource.Token);
+            Assets.Scripts.Utl.Json.Serialize(Server.GetUserInfo(GamePref.Username, GamePref.Password)), cancellationTokenSource.Token);
         if (!response.IsSuccessStatusCode)
         {
             DebugLog($"连接失败！[{response.StatusCode}]");
@@ -149,7 +149,7 @@ public class SignalRClient : MonoBehaviour
     public async Task SynchronizeSaved()
     {
         var jData = await Invoke(EventStrings.Req_Saved);
-        var bag = Json.Deserialize<ViewBag>(jData);
+        var bag = Assets.Scripts.Utl.Json.Deserialize<ViewBag>(jData);
         var playerData = bag.GetPlayerDataDto();
         var warChestList = bag.GetPlayerWarChests();
         var redeemedList = bag.GetPlayerRedeemedCodes();
@@ -281,7 +281,7 @@ public class SignalRClient : MonoBehaviour
             if (bag == default)
                 bag = ViewBag.Instance();
             var result = await _hub.InvokeCoreAsync(method, _stringType,
-                bag == null ? new object[0] : new object[] {Json.Serialize(bag)},
+                bag == null ? new object[0] : new object[] {Assets.Scripts.Utl.Json.Serialize(bag)},
                 cancellationToken);
             return result?.ToString();
         }
@@ -316,11 +316,12 @@ public class SignalRClient : MonoBehaviour
 
     private async void OnServerCalledUpload(string args)
     {
+        var param = Assets.Scripts.Utl.Json.DeserializeList<string>(args);
         var saved = PlayerDataForGame.instance;
         var playerData = saved.pyData;
         var warChest = saved.gbocData.fightBoxs.ToArray();
         var redeemedCodes = new string[0];//saved.gbocData.redemptionCodeGotList.ToArray();
-        var token = args[0];
+        var token = param[0];
         var campaign = saved.warsData.warUnlockSaveData.Select(w => new WarCampaignDto
                 {WarId = w.warId, IsFirstRewardTaken = w.isTakeReward, UnlockProgress = w.unLockCount})
             .Where(w => w.UnlockProgress > 0).ToArray();
