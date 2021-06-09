@@ -11,6 +11,7 @@ using UnityEngine.UI;
 
 public class LoginUiController : MonoBehaviour
 {
+    const string DeviceLoginString = "ClientIsDeviceLogin";
     [Serializable]
     public enum ActionWindows
     {
@@ -106,7 +107,7 @@ public class LoginUiController : MonoBehaviour
     private async Task ResetAccountApi()
     {
         var response = await Http.PostAsync(Server.RESET_GAMEPLAY_API,
-            Json.Serialize(Server.GetUserInfo(resetAccount.username.text, resetAccount.password.text)));
+            Assets.Scripts.Utl.Json.Serialize(Server.GetUserInfo(resetAccount.username.text, resetAccount.password.text)));
         var message = "账号重置成功！";
         if (!response.IsSuccessStatusCode) message = $"请求失败[{(int)response.StatusCode}]!";
         UnityMainThread.thread.RunNextFrame(() =>
@@ -185,7 +186,7 @@ public class LoginUiController : MonoBehaviour
         if(!IsPassPasswordLogic(register.password,register.rePassword,register.message))
             return;
         var userInfo = await Http.PostAsync<UserInfo>(Server.PLAYER_REG_ACCOUNT_API,
-            Json.Serialize(Server.GetUserInfo(register.username.text, register.password.text)));
+            Assets.Scripts.Utl.Json.Serialize(Server.GetUserInfo(register.username.text, register.password.text)));
         if(userInfo==null)
         {
             register.message.text = "注册失败!";
@@ -212,7 +213,7 @@ public class LoginUiController : MonoBehaviour
     private async Task RequestUsernameToRegister()
     {
         var response = await Http.PostAsync(Server.REQUEST_USERNAME_API,
-            Json.Serialize(Server.GetUserInfo(null, null)));
+            Assets.Scripts.Utl.Json.Serialize(Server.GetUserInfo(null, null)));
         var uJson = await response.Content.ReadAsStringAsync();
         var isSuccess = response.IsSuccessStatusCode;
 
@@ -222,7 +223,7 @@ public class LoginUiController : MonoBehaviour
             return;
         }
 
-        var user = Json.Deserialize<UserInfo>(uJson);
+        var user = Assets.Scripts.Utl.Json.Deserialize<UserInfo>(uJson);
         UnityMainThread.thread.RunNextFrame(() =>
         {
             OnAction(ActionWindows.Register);
@@ -251,11 +252,12 @@ public class LoginUiController : MonoBehaviour
     {
         busyPanel.gameObject.SetActive(true);
         login.message.text = string.Empty;
-        SignalRClient.instance.DirectLogin((success, code, info) => LoginAction(success, code, info, string.Empty));
+        SignalRClient.instance.DirectLogin((success, code, info) => LoginAction(success, code, info, DeviceLoginString));
     }
 
     private void LoginAction(bool success, int code, SignalRClient.SignalRConnectionInfo info,string password)
     {
+        GamePref.FlagClientLoginMethod(password == DeviceLoginString);
         busyPanel.gameObject.SetActive(false);
         if (success)
         {

@@ -39,7 +39,7 @@ public class SignalRClient : MonoBehaviour
     private CancellationTokenSource cancellationTokenSource;
 
     private static HubConnection _hub;
-    private Dictionary<string, UnityAction<object[]>> _actions;
+    private Dictionary<string, UnityAction<string>> _actions;
     private static readonly Type _stringType = typeof(string);
     private bool isBusy;
     public ApiPanel ApiPanel;
@@ -59,7 +59,7 @@ public class SignalRClient : MonoBehaviour
     private void Start()
     {
         //Login();
-        _actions = new Dictionary<string, UnityAction<object[]>>();
+        _actions = new Dictionary<string, UnityAction<string>>();
         OnStatusChanged += s => DebugLog($"状态更新[{s}]!");
         if(ServerPanel!=null) ServerPanel.Init(this);
         SubscribeAction(EventStrings.SR_UploadPy, OnServerCalledUpload);
@@ -86,7 +86,7 @@ public class SignalRClient : MonoBehaviour
         cancellationTokenSource = new CancellationTokenSource();
         cancellationTokenSource.Token.Register(() => OnConnectionClose(XDebug.Throw<SignalRClient>("取消连接！")));
         var response = await Http.PostAsync(Server.SIGNALR_LOGIN_API,
-            Json.Serialize(Server.GetUserInfo(username, password)), cancellationTokenSource.Token);
+            Assets.Scripts.Utl.Json.Serialize(Server.GetUserInfo(username, password)), cancellationTokenSource.Token);
         if (!response.IsSuccessStatusCode)
         {
             DebugLog($"连接失败！[{response.StatusCode}]");
@@ -119,7 +119,7 @@ public class SignalRClient : MonoBehaviour
         cancellationTokenSource = new CancellationTokenSource();
         cancellationTokenSource.Token.Register(() => OnConnectionClose(XDebug.Throw<SignalRClient>("取消连接！")));
         var response = await Http.PostAsync(Server.DEVICE_LOGIN_API,
-            Json.Serialize(Server.GetUserInfo(GamePref.Username, GamePref.Password)), cancellationTokenSource.Token);
+            Assets.Scripts.Utl.Json.Serialize(Server.GetUserInfo(GamePref.Username, GamePref.Password)), cancellationTokenSource.Token);
         if (!response.IsSuccessStatusCode)
         {
             DebugLog($"连接失败！[{response.StatusCode}]");
@@ -149,7 +149,7 @@ public class SignalRClient : MonoBehaviour
     public async Task SynchronizeSaved()
     {
         var jData = await Invoke(EventStrings.Req_Saved);
-        var bag = Json.Deserialize<ViewBag>(jData);
+        var bag = Assets.Scripts.Utl.Json.Deserialize<ViewBag>(jData);
         var playerData = bag.GetPlayerDataDto();
         var warChestList = bag.GetPlayerWarChests();
         var redeemedList = bag.GetPlayerRedeemedCodes();
@@ -175,27 +175,34 @@ public class SignalRClient : MonoBehaviour
     {
         try
         {
-            if(_hub==null)
+
+            if (_hub != null)
             {
-                _hub = new HubConnectionBuilder()
-                    .WithUrl(connectionInfo.Url, cfg =>
-                        cfg.AccessTokenProvider = () => Task.Run(() => connectionInfo.AccessToken, cancellationToken))
-                    .WithAutomaticReconnect(new TimeSpan[]
-                    {
-                        TimeSpan.FromSeconds(1), 
-                        TimeSpan.FromSeconds(2), 
-                        TimeSpan.FromSeconds(4),
-                        TimeSpan.FromSeconds(5),
-                    })
-                    .Build();
-                _hub.ServerTimeout = TimeSpan.FromMinutes(ServerTimeOutMinutes);
-                _hub.KeepAliveInterval = TimeSpan.FromSeconds(KeeAliveIntervalSecs);
-                _hub.HandshakeTimeout = TimeSpan.FromSeconds(HandShakeTimeoutSecs);
-                _hub.Closed += OnConnectionClose;
-                _hub.Reconnected += OnReconnected;
-                _hub.Reconnecting += OnReconnecting;
-                _hub.On<string, string>(EventStrings.Server_Call, OnServerCall);
+                _hub.Closed -= OnConnectionClose;
+                _hub.Reconnected -= OnReconnected;
+                _hub.Reconnecting -= OnReconnecting;
+                Application.quitting -= Disconnect;
+                _hub = null;
             }
+
+            _hub = new HubConnectionBuilder()
+                .WithUrl(connectionInfo.Url, cfg =>
+                    cfg.AccessTokenProvider = () => Task.Run(() => connectionInfo.AccessToken, cancellationToken))
+                .WithAutomaticReconnect(new TimeSpan[]
+                {
+                    TimeSpan.FromSeconds(1),
+                    TimeSpan.FromSeconds(2),
+                    TimeSpan.FromSeconds(5),
+                    TimeSpan.FromSeconds(10),
+                })
+                .Build();
+            _hub.ServerTimeout = TimeSpan.FromMinutes(ServerTimeOutMinutes);
+            _hub.KeepAliveInterval = TimeSpan.FromSeconds(KeeAliveIntervalSecs);
+            _hub.HandshakeTimeout = TimeSpan.FromSeconds(HandShakeTimeoutSecs);
+            _hub.Closed += OnConnectionClose;
+            _hub.Reconnected += OnReconnected;
+            _hub.Reconnecting += OnReconnecting;
+            _hub.On<string, string>(EventStrings.Server_Call, OnServerCall);
 
             if (_hub.State == HubConnectionState.Connected) throw new InvalidOperationException("Hub is connected!");
             await _hub.StartAsync(cancellationToken);
@@ -229,14 +236,14 @@ public class SignalRClient : MonoBehaviour
         }
     }
 
-    public void SubscribeAction(string method, UnityAction<object[]> action)
+    public void SubscribeAction(string method, UnityAction<string> action)
     {
         if (!_actions.ContainsKey(method))
             _actions.Add(method, default);
         _actions[method] += action;
     }
 
-    public void UnSubscribeAction(string method, UnityAction<object[]> action)
+    public void UnSubscribeAction(string method, UnityAction<string> action)
     {
         if (!_actions.ContainsKey(method))
             throw XDebug.Throw<SignalRClient>($"Method[{method}] not registered!");
@@ -257,8 +264,7 @@ public class SignalRClient : MonoBehaviour
         }
 #endif
         if(! _actions.TryGetValue(method,out var action))return;
-        var args = Json.Deserialize<object[]>(content);
-        action?.Invoke(args);
+        action?.Invoke(content);
     }
 
     public async void Invoke(string method, UnityAction<string> recallAction , IViewBag bag = default,
@@ -275,7 +281,7 @@ public class SignalRClient : MonoBehaviour
             if (bag == default)
                 bag = ViewBag.Instance();
             var result = await _hub.InvokeCoreAsync(method, _stringType,
-                bag == null ? new object[0] : new object[] {Json.Serialize(bag)},
+                bag == null ? new object[0] : new object[] {Assets.Scripts.Utl.Json.Serialize(bag)},
                 cancellationToken);
             return result?.ToString();
         }
@@ -308,13 +314,14 @@ public class SignalRClient : MonoBehaviour
 
     #region Upload
 
-    private async void OnServerCalledUpload(object[] args)
+    private async void OnServerCalledUpload(string args)
     {
+        var param = Assets.Scripts.Utl.Json.DeserializeList<string>(args);
         var saved = PlayerDataForGame.instance;
         var playerData = saved.pyData;
         var warChest = saved.gbocData.fightBoxs.ToArray();
         var redeemedCodes = new string[0];//saved.gbocData.redemptionCodeGotList.ToArray();
-        var token = args[0];
+        var token = param[0];
         var campaign = saved.warsData.warUnlockSaveData.Select(w => new WarCampaignDto
                 {WarId = w.warId, IsFirstRewardTaken = w.isTakeReward, UnlockProgress = w.unLockCount})
             .Where(w => w.UnlockProgress > 0).ToArray();

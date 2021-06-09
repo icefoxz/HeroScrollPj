@@ -24,8 +24,10 @@ public class AdmobController : AdControllerBase
 
     public void Init(Action<bool, string> admobCallBack)
     {
+#if !UNITY_EDITOR
         MobileAds.Initialize(_ => { });
         OnLoadAd(admobCallBack);
+#endif
     }
 
     IEnumerator OnRetryLoadingAction(Action<bool, string> admobCallBack)

@@ -14,7 +14,7 @@ public class Configuration : MonoBehaviour
     public void Init()
     {
         var json = EncryptDecipherTool.DESDecrypt(gameConfig.text);
-        var serverFields = Json.Deserialize<ServerFields>(json);
+        var serverFields = Assets.Scripts.Utl.Json.Deserialize<ServerFields>(json);
         Server.Initialize(serverFields);
     }
 }

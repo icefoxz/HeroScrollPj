@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Assets.Scripts.Utl;
 using UnityEngine;
 using UnityEngine.Events;
@@ -49,8 +50,12 @@ public class GameSystem : MonoBehaviour
         LoginUi = loginUiController;
         TimeSystemControl = timeSystemControl;
         SceneManager.sceneLoaded += SceneManagerOnSceneLoaded;
+
+        //InitEnqueue(dataTable.Init);
+        Parallel.Invoke(dataTable.Init);
+
         InitQueue = new Queue<Func<bool>>();
-        InitEnqueue(dataTable.Init);
+
         InitEnqueue(Configuration.Init);
         InitEnqueue(() =>
         {
@@ -132,7 +137,7 @@ public class GameSystem : MonoBehaviour
         StartCoroutine(InitCo());
     }
 
-    private void InitEnqueue(Action action)
+    protected void InitEnqueue(Action action)
     {
         InitQueue.Enqueue(Func);
         bool Func()

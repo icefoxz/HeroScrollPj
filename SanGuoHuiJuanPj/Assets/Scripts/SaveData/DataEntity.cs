@@ -41,10 +41,10 @@ public class UserSaveArchive : IUserSaveArchive
         Phone = userInfo.Phone;
         DeviceId = userInfo.DeviceId;
         LastUpdate = userInfo.LastUpdate;
-        PlayerInfo = Json.Serialize(playerData);
-        CardsData = Json.Serialize(hst);
-        Expedition = Json.Serialize(war);
-        RewardsRecord = Json.Serialize(reward);
+        PlayerInfo = Assets.Scripts.Utl.Json.Serialize(playerData);
+        CardsData = Assets.Scripts.Utl.Json.Serialize(hst);
+        Expedition = Assets.Scripts.Utl.Json.Serialize(war);
+        RewardsRecord = Assets.Scripts.Utl.Json.Serialize(reward);
     }
 }
 
