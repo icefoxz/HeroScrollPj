@@ -4,7 +4,7 @@ using System.Linq;
 using CorrelateLib;
 using UnityEngine;
 
-    public class DataTable : MonoBehaviour
+public class DataTable : MonoBehaviour
     {
         private const string TableSuffix = "Table";
         private const string DataSuffix = "Data";
@@ -172,7 +172,7 @@ using UnityEngine;
         private Dictionary<int, IReadOnlyList<string>> ConvertText(string text)
         {
             text = text.Replace(@"\\", @"\");
-            return Assets.Scripts.Utl.Json.DeserializeList<List<string>>(text).ToDictionary(row => int.Parse(row[0]), row =>row as IReadOnlyList<string>);
+            return Json.DeserializeList<List<string>>(text).ToDictionary(row => int.Parse(row[0]), row =>row as IReadOnlyList<string>);
         }
 
         /// <summary>

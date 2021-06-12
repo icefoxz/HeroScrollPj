@@ -10,10 +10,12 @@ public class WorldMapCityUi : MonoBehaviour
     public Text Name;
     public FlagUi Flag;
 
-    public void Set(int cityId,string cityName ,int iconIndex, UnityAction<int> onButtonClickAction)
+    public void Set(int cityId, UnityAction<int> onButtonClickAction)
     {
-        Img.sprite = GameResources.Instance.CityIcon[iconIndex];
-        Name.text = cityName;
+        var city = DataTable.City[cityId];
+        Img.sprite = GameResources.Instance.CityIcon[city.Icon];
+        Name.text = city.Name;
+        Flag.Set(city.Short, city.Flag);
         UiBtn.onClick.RemoveAllListeners();
         UiBtn.onClick.AddListener(() => onButtonClickAction(cityId));
     }

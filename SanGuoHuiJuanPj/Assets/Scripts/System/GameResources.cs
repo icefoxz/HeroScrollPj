@@ -41,7 +41,8 @@ public class GameResources
     private const string ForceFlagsPath = "Image/shiLi/Flag";
     private const string ForceNamePath = "Image/shiLi/Name";
     private const string CityFlagPath = "Image/City/Flag";
-    public const string CityIconPath = "Image/City/Icon";
+    private const string CityIconPath = "Image/City/Icon";
+    private const string AvatarPath = "Image/Player/Icon";
     /// <summary>
     /// Key = heroId, Value = sprite
     /// </summary>
@@ -62,12 +63,14 @@ public class GameResources
     public IReadOnlyDictionary<string, GameObject> StateDin => stateDinMap;
     public IReadOnlyDictionary<int, Sprite> CityFlag => cityFlag;
     public IReadOnlyDictionary<int, Sprite> CityIcon => cityIcon;
+    public IReadOnlyDictionary<int, Sprite> Avatar => avatar;
 
     private bool isInit;
     private IReadOnlyDictionary<string, GameObject> effectsMap;
     private IReadOnlyDictionary<string, GameObject> stateDinMap;
     private IReadOnlyDictionary<int, Sprite> cityFlag;
     private IReadOnlyDictionary<int, Sprite> cityIcon;
+    private IReadOnlyDictionary<int, Sprite> avatar;
 
     public void Init(bool forceReload = false)
     {
@@ -111,6 +114,7 @@ public class GameResources
             Resources.LoadAll<GameObject>(StateDinPath).ToDictionary(g => g.name, g => g), nameof(stateDinMap));
         cityFlag = new ResourceDataWrapper<int, Sprite>(Resources.LoadAll<Sprite>(CityFlagPath).ToDictionary(s => int.Parse(s.name), s => s), nameof(stateDinMap));
         cityIcon = new ResourceDataWrapper<int, Sprite>(Resources.LoadAll<Sprite>(CityIconPath).ToDictionary(s => int.Parse(s.name), s => s), nameof(stateDinMap));
+        avatar = new ResourceDataWrapper<int, Sprite>(Resources.LoadAll<Sprite>(AvatarPath).ToDictionary(s => int.Parse(s.name), s => s), nameof(avatar));
     }
 
 

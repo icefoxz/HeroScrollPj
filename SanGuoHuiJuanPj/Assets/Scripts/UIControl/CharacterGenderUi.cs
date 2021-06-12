@@ -25,7 +25,18 @@ public class CharacterGenderUi:MonoBehaviour
         }
     }
 
-    void Start() => SetGender(CharacterGender.Female);
+    void Start()
+    {
+        Male.onValueChanged.AddListener(isOn=>SetGender(isOn?CharacterGender.Male:CharacterGender.Female));
+        Female.onValueChanged.AddListener(isOn=>SetGender(isOn?CharacterGender.Female:CharacterGender.Male));
+        SetGender(CharacterGender.Female);
+    }
+
+    public void SetAvailability(bool enable)
+    {
+        Male.interactable = enable;
+        Female.interactable = enable;
+    }
 
     public void SetGender(CharacterGender gender)
     {

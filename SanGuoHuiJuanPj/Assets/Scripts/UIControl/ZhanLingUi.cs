@@ -13,8 +13,6 @@ public class ZhanLingUi : MonoBehaviour
     public Text EffectText;
     public Text Countdown;
 
-    public void UpdateUi() => UpdateUi(PlayerDataForGame.instance.Stamina.Value);
-
     public void UpdateUi(int value)
     {
         _value = value;

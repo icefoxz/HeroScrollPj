@@ -41,10 +41,10 @@ public class UserSaveArchive : IUserSaveArchive
         Phone = userInfo.Phone;
         DeviceId = userInfo.DeviceId;
         LastUpdate = userInfo.LastUpdate;
-        PlayerInfo = Assets.Scripts.Utl.Json.Serialize(playerData);
-        CardsData = Assets.Scripts.Utl.Json.Serialize(hst);
-        Expedition = Assets.Scripts.Utl.Json.Serialize(war);
-        RewardsRecord = Assets.Scripts.Utl.Json.Serialize(reward);
+        PlayerInfo = Json.Serialize(playerData);
+        CardsData = Json.Serialize(hst);
+        Expedition = Json.Serialize(war);
+        RewardsRecord = Json.Serialize(reward);
     }
 }
 
@@ -181,6 +181,27 @@ public class PlayerData : IPlayerData
     public float LastGameVersion { get; set; }
     //战斗的时间倍率
     public float WarTimeScale { get; set; } = 1;
+}
+
+public class Character : ICharacter
+{
+    public static Character Instance(ICharacter cha)
+    {
+        return cha == null
+            ? null
+            : new Character
+            {
+                Avatar = cha.Avatar, Gender = cha.Gender, Name = cha.Name, Nickname = cha.Nickname, Rank = cha.Rank,
+                Settle = cha.Settle, Sign = cha.Sign
+            };
+    }
+    public string Name { get; set; }
+    public string Nickname { get; set; }
+    public int Gender { get; set; }
+    public int Avatar { get; set; }
+    public string Sign { get; set; }
+    public int Settle { get; set; }
+    public int Rank { get; set; }
 }
 
 //战斗卡牌信息类

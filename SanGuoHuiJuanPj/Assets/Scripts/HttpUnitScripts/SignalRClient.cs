@@ -6,6 +6,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Assets;
 using Assets.Scripts.Utl;
 using Beebyte.Obfuscator;
 using CorrelateLib;
@@ -18,6 +19,7 @@ using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Object = System.Object;
+using Json = CorrelateLib.Json;
 
 [Skip]
 /// <summary>
@@ -86,7 +88,7 @@ public class SignalRClient : MonoBehaviour
         cancellationTokenSource = new CancellationTokenSource();
         cancellationTokenSource.Token.Register(() => OnConnectionClose(XDebug.Throw<SignalRClient>("取消连接！")));
         var response = await Http.PostAsync(Server.SIGNALR_LOGIN_API,
-            Assets.Scripts.Utl.Json.Serialize(Server.GetUserInfo(username, password)), cancellationTokenSource.Token);
+            Json.Serialize(Server.GetUserInfo(username, password)), cancellationTokenSource.Token);
         if (!response.IsSuccessStatusCode)
         {
             DebugLog($"连接失败！[{response.StatusCode}]");
@@ -119,7 +121,7 @@ public class SignalRClient : MonoBehaviour
         cancellationTokenSource = new CancellationTokenSource();
         cancellationTokenSource.Token.Register(() => OnConnectionClose(XDebug.Throw<SignalRClient>("取消连接！")));
         var response = await Http.PostAsync(Server.DEVICE_LOGIN_API,
-            Assets.Scripts.Utl.Json.Serialize(Server.GetUserInfo(GamePref.Username, GamePref.Password)), cancellationTokenSource.Token);
+            Json.Serialize(Server.GetUserInfo(GamePref.Username, GamePref.Password)), cancellationTokenSource.Token);
         if (!response.IsSuccessStatusCode)
         {
             DebugLog($"连接失败！[{response.StatusCode}]");
@@ -149,14 +151,16 @@ public class SignalRClient : MonoBehaviour
     public async Task SynchronizeSaved()
     {
         var jData = await Invoke(EventStrings.Req_Saved);
-        var bag = Assets.Scripts.Utl.Json.Deserialize<ViewBag>(jData);
+        var bag = Json.Deserialize<ViewBag>(jData);
         var playerData = bag.GetPlayerDataDto();
+        var character = bag.GetPlayerCharacterDto();
         var warChestList = bag.GetPlayerWarChests();
         var redeemedList = bag.GetPlayerRedeemedCodes();
         var warCampaignList = bag.GetPlayerWarCampaignDtos();
         var gameCardList = bag.GetPlayerGameCardDtos();
         var troops = bag.GetPlayerTroopDtos();
         PlayerDataForGame.instance.pyData = PlayerData.Instance(playerData);
+        PlayerDataForGame.instance.Character = character.IsValidCharacter() ? Character.Instance(character) : null;
         PlayerDataForGame.instance.GenerateLocalStamina();
         PlayerDataForGame.instance.warsData.warUnlockSaveData = warCampaignList.Select(w => new UnlockWarCount
         {
@@ -181,7 +185,7 @@ public class SignalRClient : MonoBehaviour
                 _hub.Closed -= OnConnectionClose;
                 _hub.Reconnected -= OnReconnected;
                 _hub.Reconnecting -= OnReconnecting;
-                Application.quitting -= Disconnect;
+                Application.quitting -= OnDisconnect;
                 _hub = null;
             }
 
@@ -208,7 +212,7 @@ public class SignalRClient : MonoBehaviour
             await _hub.StartAsync(cancellationToken);
             StatusChanged(_hub.State,$"Host:{connectionInfo.Url},\nToken:{connectionInfo.AccessToken}\n连接成功！");
             cancellationTokenSource = null;
-            Application.quitting += Disconnect;
+            Application.quitting += OnDisconnect;
         }
         catch (Exception e)
         {
@@ -217,6 +221,8 @@ public class SignalRClient : MonoBehaviour
         }
         return true;
     }
+
+    private void OnDisconnect() => Disconnect();
 
     public async void ReconnectServer(UnityAction<bool> onReconnectAction)
     {
@@ -281,24 +287,21 @@ public class SignalRClient : MonoBehaviour
             if (bag == default)
                 bag = ViewBag.Instance();
             var result = await _hub.InvokeCoreAsync(method, _stringType,
-                bag == null ? new object[0] : new object[] {Assets.Scripts.Utl.Json.Serialize(bag)},
+                bag == null ? new object[0] : new object[] { CorrelateLib.Json.Serialize(bag)},
                 cancellationToken);
             return result?.ToString();
         }
         catch (Exception e)
         {
-#if UNITY_EDITOR
-            XDebug.LogError<SignalRClient>($"svr_{method}:{e.Message}");
+            XDebug.LogError<SignalRClient>($"Error on interpretation {method}:{e.Message}");
             throw;
-#endif
-            return null;
         }
     }
 
     /// <summary>
     /// 强制离线
     /// </summary>
-    public async void Disconnect()
+    public async void Disconnect(UnityAction onActionDone = null)
     {
         if (_hub.State == HubConnectionState.Disconnected)
             return;
@@ -310,13 +313,14 @@ public class SignalRClient : MonoBehaviour
         }
         if (_hub.State == HubConnectionState.Disconnected) return;
         await _hub.StopAsync();
+        onActionDone?.Invoke();
     }
 
     #region Upload
 
     private async void OnServerCalledUpload(string args)
     {
-        var param = Assets.Scripts.Utl.Json.DeserializeList<string>(args);
+        var param = Json.DeserializeList<string>(args);
         var saved = PlayerDataForGame.instance;
         var playerData = saved.pyData;
         var warChest = saved.gbocData.fightBoxs.ToArray();

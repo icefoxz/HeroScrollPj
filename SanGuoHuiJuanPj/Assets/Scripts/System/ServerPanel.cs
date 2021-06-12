@@ -47,7 +47,7 @@ public class ServerPanel : MonoBehaviour
         SignalR = signalR;
         SignalR.SubscribeAction(EventStrings.SC_Disconnect, ServerCallDisconnect);
         SignalR.OnStatusChanged += OnStatusChanged;
-        reconnectButton.onClick.AddListener(ReconnectOnDisconnected);
+        reconnectButton.onClick.AddListener(()=>Reconnect());
         exitButton.onClick.AddListener(Application.Quit);
         exitButton.gameObject.SetActive(false);
         gameObject.SetActive(false);
@@ -63,6 +63,7 @@ public class ServerPanel : MonoBehaviour
 
     private void UiShow(States state)
     {
+        gameObject.SetActive(state != States.None);
         foreach (var ui in StateSet)
         {
             ui.Key.gameObject.SetActive(ui.Value == state);
@@ -87,7 +88,7 @@ public class ServerPanel : MonoBehaviour
                 StartCoroutine(Counting(state));
                 return;
             case HubConnectionState.Disconnected:
-                ReconnectOnDisconnected();
+                Reconnect();
                 break;
         }
     }
@@ -100,12 +101,8 @@ public class ServerPanel : MonoBehaviour
         SignalR.Disconnect();
         StopAllCoroutines();
         OnStatusChanged(HubConnectionState.Disconnected);
-        var state = States.ServerMaintenance;
-        if (!string.IsNullOrWhiteSpace(arg))
-        {
-            Message.text = arg;
-            state = States.Other;
-        }
+        var state = arg.IsNullArg() ? States.ServerMaintenance : States.Other;
+        if (state == States.Other) Message.text = arg;
         UiShow(state);
     }
 
@@ -129,12 +126,12 @@ public class ServerPanel : MonoBehaviour
     void OnApplicationFocus(bool isFocus)
     {
         if(!isFocus)return;
-        if(SignalR.Status == HubConnectionState.Disconnected) ReconnectOnDisconnected();
+        if(SignalR.Status == HubConnectionState.Disconnected) Reconnect();
     }
 
-    private void ReconnectOnDisconnected()
+    private void Reconnect()
     {
-        if(!isDisconnectRequested) SignalR.ReconnectServer(OnRetryConnectToServer);
+        if (!isDisconnectRequested) SignalR.ReconnectServer(OnRetryConnectToServer);
     }
 
     private void OnRetryConnectToServer(bool success)
@@ -149,4 +146,5 @@ public class ServerPanel : MonoBehaviour
         var msg = success ? "重连成功！" : $"连接失败,错误码：{code}";
         PlayerDataForGame.instance.ShowStringTips(msg);
     }
+
 }

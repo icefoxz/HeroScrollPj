@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using CorrelateLib;
 using Newtonsoft.Json;
 using UnityEngine;
 
@@ -12,7 +13,7 @@ public static class Http
     public static async Task<T> GetAsync<T>(string url) where T : class
     {
         var response = await GetAsync(url);
-        return response.IsSuccess() ? Assets.Scripts.Utl.Json.Deserialize<T>(await response.Content.ReadAsStringAsync()) : null;
+        return response.IsSuccess() ? Json.Deserialize<T>(await response.Content.ReadAsStringAsync()) : null;
     }
 
     public static async Task<HttpResponseMessage> GetAsync(string url)
@@ -32,7 +33,7 @@ public static class Http
     public static async Task<T> PostAsync<T>(string url, string content) where T : class
     {
         var response = await PostAsync(url, content);
-        return response.IsSuccess() ? Assets.Scripts.Utl.Json.Deserialize<T>(await response.Content.ReadAsStringAsync()) : null;
+        return response.IsSuccess() ? Json.Deserialize<T>(await response.Content.ReadAsStringAsync()) : null;
     }
 
     public static async Task<HttpResponseMessage> PostAsync(string url, string content, CancellationToken token = default)
