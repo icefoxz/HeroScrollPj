@@ -4,7 +4,7 @@ using System.Linq;
 using CorrelateLib;
 using UnityEngine;
 
-    public class DataTable : MonoBehaviour
+public class DataTable : MonoBehaviour
     {
         private const string TableSuffix = "Table";
         private const string DataSuffix = "Data";

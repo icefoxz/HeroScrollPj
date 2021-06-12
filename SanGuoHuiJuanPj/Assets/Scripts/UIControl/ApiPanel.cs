@@ -24,11 +24,18 @@ public class ApiPanel : MonoBehaviour
             throw new InvalidOperationException();
         instance = this;
         Client = client;
+        Client.SubscribeAction(EventStrings.SC_ReLogin, args => ClientReconnect());
         SetBusy(false);
     }
 
+
     public void Invoke(UnityAction<ViewBag> successAction, UnityAction<string> failedAction, string method,
         IViewBag bag = default,
+        CancellationToken cancellationToken = default) =>
+        Invoke(successAction, failedAction, method, bag, true, cancellationToken);
+
+    public void Invoke(UnityAction<ViewBag> successAction, UnityAction<string> failedAction, string method,
+        IViewBag bag,bool closeBusyAfterInvoke,
         CancellationToken cancellationToken = default)
     {
         SetBusy(this);
@@ -44,7 +51,7 @@ public class ApiPanel : MonoBehaviour
             var viewBag = Json.Deserialize<ViewBag>(result);
             if (viewBag == null) failedAction?.Invoke(result);
             else successAction.Invoke(viewBag);
-            SetBusy(false);
+            if(closeBusyAfterInvoke) SetBusy(false);
         }, bag, cancellationToken);
     }
 
@@ -65,4 +72,34 @@ public class ApiPanel : MonoBehaviour
         });
     }
 
+    private void ClientReconnect()
+    {
+        StopAllCoroutines();
+        StartCoroutine(DelayedReLogin());
+    }
+
+    private IEnumerator DelayedReLogin()
+    {
+        yield return new WaitForSeconds(1.5f);
+        var isDeviceLogin = GamePref.ClientLoginMethod == 1;
+        if (isDeviceLogin)
+        {
+            Client.Disconnect(() =>
+            {
+                Client.DirectLogin(CallBack);
+            });
+        }else Client.Disconnect(() =>
+        {
+            Client.UserLogin(CallBack, GamePref.Username, GamePref.Password);
+        });
+    }
+
+    private void CallBack(bool success, int code, SignalRClient.SignalRConnectionInfo info)
+    {
+#if UNITY_EDITOR
+        XDebug.Log<ServerPanel>(
+            $"Success = {success}, Code = {code}, user: {info.Username}, Token = {info.AccessToken}");
+#endif
+        SetBusy(false);
+    }
 }

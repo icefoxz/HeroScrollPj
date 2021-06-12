@@ -46,7 +46,6 @@ public class ServerPanel : MonoBehaviour
     {
         SignalR = signalR;
         SignalR.SubscribeAction(EventStrings.SC_Disconnect, ServerCallDisconnect);
-        SignalR.SubscribeAction(EventStrings.SC_ReLogin, args => ClientReconnect());
         SignalR.OnStatusChanged += OnStatusChanged;
         reconnectButton.onClick.AddListener(()=>Reconnect());
         exitButton.onClick.AddListener(Application.Quit);
@@ -64,6 +63,7 @@ public class ServerPanel : MonoBehaviour
 
     private void UiShow(States state)
     {
+        gameObject.SetActive(state != States.None);
         foreach (var ui in StateSet)
         {
             ui.Key.gameObject.SetActive(ui.Value == state);
@@ -101,12 +101,8 @@ public class ServerPanel : MonoBehaviour
         SignalR.Disconnect();
         StopAllCoroutines();
         OnStatusChanged(HubConnectionState.Disconnected);
-        var state = States.ServerMaintenance;
-        if (!string.IsNullOrWhiteSpace(arg))
-        {
-            Message.text = arg;
-            state = States.Other;
-        }
+        var state = arg.IsNullArg() ? States.ServerMaintenance : States.Other;
+        if (state == States.Other) Message.text = arg;
         UiShow(state);
     }
 
@@ -151,24 +147,4 @@ public class ServerPanel : MonoBehaviour
         PlayerDataForGame.instance.ShowStringTips(msg);
     }
 
-    private void ClientReconnect()
-    {
-        var isDeviceLogin = GamePref.ClientLoginMethod == 1;
-        if (isDeviceLogin)
-        {
-            SignalR.Disconnect(() =>
-            {
-                SignalR.DirectLogin(DebugCallBack);
-            });
-        }else SignalR.Disconnect(() =>
-        {
-            SignalR.UserLogin(DebugCallBack, GamePref.Username, GamePref.Password);
-        });
-    }
-
-    private void DebugCallBack(bool success, int code, SignalRClient.SignalRConnectionInfo info)
-    {
-        XDebug.Log<ServerPanel>(
-            $"Success = {success}, Code = {code}, user: {info.Username}, Token = {info.AccessToken}");
-    }
 }

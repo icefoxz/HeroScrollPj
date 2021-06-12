@@ -64,13 +64,14 @@ public class PlayerCharacterUi : MonoBehaviour
     private void SetCharacter()
     {
         var cha = PlayerDataForGame.instance.Character;
-        if(cha!=null)
+        if (cha != null)
         {
             Name.text = cha.Name;
             Nickname.text = cha.Nickname;
             Sign.text = cha.Sign;
             GenderUi.SetGender((CharacterGender) cha.Gender);
         }
+
         SetAvailability(cha == null);
     }
 
@@ -81,8 +82,9 @@ public class PlayerCharacterUi : MonoBehaviour
         CheckInit();
         if (IsCharacterValid)
         {
+            PlayerDataForGame.instance.Character = global::Character.Instance(Character);
             ApiPanel.instance.Invoke(OnCreateCharacterSuccess, PlayerDataForGame.instance.ShowStringTips,
-                EventStrings.Req_CreateCharacter, ViewBag.Instance().PlayerCharacterDto(Character));
+                EventStrings.Req_CreateCharacter, ViewBag.Instance().PlayerCharacterDto(Character), false);
             return;
         }
 
@@ -100,14 +102,12 @@ public class PlayerCharacterUi : MonoBehaviour
         }
     }
 
-    private void OnCreateCharacterSuccess(ViewBag vb)
-    {
-        SetAvailability(true);
-    }
+    private void OnCreateCharacterSuccess(ViewBag vb) => Show();
 
     private void SetAvailability(bool enable)
     {
         SubmitButton.enabled = enable;
+        SubmitButton.gameObject.SetActive(enable);
         Name.interactable = enable;
         Nickname.interactable = enable;
         Sign.interactable = enable;
