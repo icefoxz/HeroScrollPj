@@ -8,6 +8,7 @@ using CorrelateLib;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
+using Json = CorrelateLib.Json;
 
 public class LoginUiController : MonoBehaviour
 {
@@ -32,6 +33,7 @@ public class LoginUiController : MonoBehaviour
     public UnityAction OnResetAccountAction;
     public Image busyPanel;
     public string DeviceIsBound = @"设备已绑定了账号，请用设备登录修改账号信息!";
+    private static bool isDeviceLogin;
 #if UNITY_EDITOR
     void Start()
     {
@@ -106,8 +108,7 @@ public class LoginUiController : MonoBehaviour
 
     private async Task ResetAccountApi()
     {
-        var response = await Http.PostAsync(Server.RESET_GAMEPLAY_API,
-            Assets.Scripts.Utl.Json.Serialize(Server.GetUserInfo(resetAccount.username.text, resetAccount.password.text)));
+        var response = await Http.PostAsync(Server.RESET_GAMEPLAY_API,Json.Serialize(Server.GetUserInfo(resetAccount.username.text, resetAccount.password.text)));
         var message = "账号重置成功！";
         if (!response.IsSuccessStatusCode) message = $"请求失败[{(int)response.StatusCode}]!";
         UnityMainThread.thread.RunNextFrame(() =>
@@ -152,10 +153,10 @@ public class LoginUiController : MonoBehaviour
     private void InitAccountInfo()
     {
         //accountInfo.warningMessage.gameObject.SetActive(!GamePref.IsUserAccountCompleted);
-        if(GamePref.IsUserAccountCompleted) accountInfo.password.text = GamePref.Password;
-
+        if (GamePref.IsUserAccountCompleted) accountInfo.password.text = GamePref.Password;
+        accountInfo.password.contentType = isDeviceLogin ? InputField.ContentType.Password : InputField.ContentType.Standard;
         accountInfo.backBtn.onClick.AddListener(Close);
-        accountInfo.changePasswordBtn.onClick.AddListener(()=>OnAction(ActionWindows.ChangePassword));
+        accountInfo.changePasswordBtn.onClick.AddListener(() => OnAction(ActionWindows.ChangePassword));
     }
 
     private void InitRegister()
@@ -185,8 +186,7 @@ public class LoginUiController : MonoBehaviour
     {
         if(!IsPassPasswordLogic(register.password,register.rePassword,register.message))
             return;
-        var userInfo = await Http.PostAsync<UserInfo>(Server.PLAYER_REG_ACCOUNT_API,
-            Assets.Scripts.Utl.Json.Serialize(Server.GetUserInfo(register.username.text, register.password.text)));
+        var userInfo = await Http.PostAsync<UserInfo>(Server.PLAYER_REG_ACCOUNT_API,Json.Serialize(Server.GetUserInfo(register.username.text, register.password.text)));
         if(userInfo==null)
         {
             register.message.text = "注册失败!";
@@ -213,7 +213,7 @@ public class LoginUiController : MonoBehaviour
     private async Task RequestUsernameToRegister()
     {
         var response = await Http.PostAsync(Server.REQUEST_USERNAME_API,
-            Assets.Scripts.Utl.Json.Serialize(Server.GetUserInfo(null, null)));
+            Json.Serialize(Server.GetUserInfo(null, null)));
         var uJson = await response.Content.ReadAsStringAsync();
         var isSuccess = response.IsSuccessStatusCode;
 
@@ -223,13 +223,13 @@ public class LoginUiController : MonoBehaviour
             return;
         }
 
-        var user = Assets.Scripts.Utl.Json.Deserialize<UserInfo>(uJson);
+        var user = Json.Deserialize<UserInfo>(uJson);
         UnityMainThread.thread.RunNextFrame(() =>
         {
             OnAction(ActionWindows.Register);
             register.username.text = user.Username;
-            register.message.text = DeviceIsBound;
-            register.ShowPasswordUi(false);
+            register.message.text = isSuccess ? string.Empty : DeviceIsBound;
+            register.ShowPasswordUi(isSuccess);
         });
     }
 
@@ -257,7 +257,8 @@ public class LoginUiController : MonoBehaviour
 
     private void LoginAction(bool success, int code, SignalRClient.SignalRConnectionInfo info,string password)
     {
-        GamePref.FlagClientLoginMethod(password == DeviceLoginString);
+        isDeviceLogin = password == DeviceLoginString;
+        GamePref.FlagClientLoginMethod(isDeviceLogin);
         busyPanel.gameObject.SetActive(false);
         if (success)
         {

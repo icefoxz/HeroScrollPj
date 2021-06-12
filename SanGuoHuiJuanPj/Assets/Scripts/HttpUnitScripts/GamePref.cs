@@ -28,7 +28,7 @@ public static class GamePref
         get
         {
             var json = PlayerPrefs.GetString(BaYeSave);
-            return Assets.Scripts.Utl.Json.Deserialize<BaYeDataClass>(json);
+            return Json.Deserialize<BaYeDataClass>(json);
         }
     }
 
@@ -74,6 +74,6 @@ public static class GamePref
     public static void SetPrefWarSpeed(float speed) => PlayerPrefs.SetFloat(PlayerWarSpeedPrefs, speed);
     public static void SetPrefMusic(bool isPlay) => PlayerPrefs.SetInt(PlayerMusicOffPrefs, isPlay ? 0 : 1);
     public static void FlagDeviceReg(string username) => PlayerPrefs.SetString(AccountCompleteUsername, username);
-    public static void SaveBaYe(BaYeDataClass save) => PlayerPrefs.SetString(BaYeSave, Assets.Scripts.Utl.Json.Serialize(save));
+    public static void SaveBaYe(BaYeDataClass save) => PlayerPrefs.SetString(BaYeSave, Json.Serialize(save));
     public static void FlagClientLoginMethod(bool isDeviceLogin) => PlayerPrefs.SetInt(LoginMethod, isDeviceLogin ? 1 : 0);
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using CorrelateLib;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -14,12 +15,16 @@ public class WorldMapWindow : MonoBehaviour
     public WorldMapUi WorldMap;
     public Button CharacterButton;
     public Button WorldButton;
+    public Button CloseButton;
 
     void Start()
     {
         CharacterButton.onClick.AddListener(()=>OnSwitch(Switches.Character));
         WorldButton.onClick.AddListener(()=>OnSwitch(Switches.World));
+        CloseButton.onClick.AddListener(()=>gameObject.SetActive(false));
     }
+
+    public void Show() => gameObject.SetActive(true);
 
     private void OnSwitch(Switches state)
     {
@@ -36,5 +41,15 @@ public class WorldMapWindow : MonoBehaviour
             default:
                 throw new ArgumentOutOfRangeException(nameof(state), state, null);
         }
+    }
+
+    public void CreateCharacter()
+    {
+        ApiPanel.instance.Invoke(vb =>
+            {
+                Debug.Log("角色创建成功！");
+            }, Debug.Log,
+            EventStrings.Req_CreateCharacter,
+            ViewBag.Instance().PlayerCharacterDto(PlayerCharacter.Character));
     }
 }

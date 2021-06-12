@@ -26,11 +26,10 @@ public class UIManager : MonoBehaviour
 
     public Pages currentPage;
     public Image waitWhileImpress;//敬请期待 
-    public ZhanLingUi ZhanLingUi;
     [SerializeField]
     GameObject zhuChengHeroContentObj;  //主城卡牌集合框 
     [SerializeField]
-    GameObject playerInfoObj;   //玩家信息obj 
+    PlayerInfoUi playerInfoUi;//玩家信息控件
     [SerializeField]
     public Text yuanBaoNumText;        //元宝数量Text 
     [SerializeField]
@@ -49,8 +48,7 @@ public class UIManager : MonoBehaviour
     GameObject warsChooseBtnPreObj;   //战役选择按钮obj 
     [SerializeField]
     GameObject queRenWindows;   //操作确认窗口 
-    //[SerializeField] 
-    public GameObject[] boxBtnObjs;    //宝箱obj 
+
     public Expedition expedition;//战役 
     public TaoYuan taoYuan;//桃园 
     public Barrack Barrack;//主营
@@ -496,8 +494,7 @@ public class UIManager : MonoBehaviour
         if (PlayerDataForGame.instance.lastSenceIndex == 2 && PlayerDataForGame.instance.WarReward.Stamina > 0)
         {
             var rewardStamina = PlayerDataForGame.instance.WarReward.Stamina;
-            ZhanLingUi.UpdateUi();
-            ZhanLingUi.ShowEffect(rewardStamina);
+            playerInfoUi.UpdateZhanLing(rewardStamina);
         }
         PlayerDataForGame.instance.lastSenceIndex = 1;
     }
@@ -559,11 +556,7 @@ public class UIManager : MonoBehaviour
     }
 
     //刷新体力相关的内容显示 
-    public void UpdateShowTiLiInfo(string staminaText)
-    {
-        ZhanLingUi.UpdateCountdown(staminaText);
-        ZhanLingUi.UpdateUi();
-    }
+    public void UpdateShowTiLiInfo(string countText) => playerInfoUi.UpdateZhanLingCountdown(countText);
 
     /// <summary> 
     /// 开始对战 
@@ -597,8 +590,7 @@ public class UIManager : MonoBehaviour
                     IsJumping = true;
                     AudioController0.instance.ChangeAudioClip(12);
                     AudioController0.instance.PlayAudioSource(0);
-                    ZhanLingUi.UpdateUi();
-                    ZhanLingUi.ShowEffect(-staminaCost);
+                    playerInfoUi.UpdateZhanLing(-staminaCost);
                     PlayerDataForGame.instance.StaminaReturnTemp = staminaMap.MaxReturn;
                     PlayerDataForGame.instance.boxForTiLiNums = staminaMap.CostOfChest;
                     StartCoroutine(LateGoToFightScene());
@@ -811,29 +803,7 @@ public class UIManager : MonoBehaviour
         //StartCoroutine(LateToChangeViewShow(0));
     }
 
-    public void RefreshPlayerInfoUi()
-    {
-        //player`s name 
-        playerInfoObj.transform.GetChild(1).GetChild(1).GetComponent<Text>().text = DataTable.PlayerInitialConfig[PlayerDataForGame.instance.pyData.ForceId].Force;
-        if (PlayerDataForGame.instance.pyData.Level >= DataTable.PlayerLevelConfig.Keys.Max())
-        {
-            playerInfoObj.transform.GetChild(0).GetComponent<Slider>().value = 1;
-            playerInfoObj.transform.GetChild(2).GetChild(1).GetComponent<Text>().text = DataTable.GetStringText(34);
-            playerInfoObj.transform.GetChild(0).GetChild(2).GetComponent<Text>().text = PlayerDataForGame.instance.pyData.Exp + "/" + 99999;
-        }
-        else
-        {
-            //Exp 
-            playerInfoObj.transform.GetChild(0).GetComponent<Slider>().value = 1f * PlayerDataForGame.instance.pyData.Exp / DataTable.PlayerLevelConfig[PlayerDataForGame.instance.pyData.Level + 1].Exp;
-            //Level 
-            playerInfoObj.transform.GetChild(2).GetChild(1).GetComponent<Text>().text = string.Format(DataTable.GetStringText(35), PlayerDataForGame.instance.pyData.Level);//玩家等级 
-            playerInfoObj.transform.GetChild(0).GetChild(2).GetComponent<Text>().text = PlayerDataForGame.instance.pyData.Exp + "/" + DataTable.PlayerLevelConfig[PlayerDataForGame.instance.pyData.Level + 1].Exp;
-        }
-        //货币 
-        yuanBaoNumText.text = PlayerDataForGame.instance.pyData.YuanBao.ToString();
-        yvQueNumText.text = PlayerDataForGame.instance.pyData.YvQue.ToString();
-        ZhanLingUi.UpdateUi();
-    }
+    public void RefreshPlayerInfoUi() => playerInfoUi.UpdateUi();
 
     /// <summary> 
     /// 展示奖励 
@@ -953,12 +923,12 @@ public class UIManager : MonoBehaviour
     /// 获取玩家经验 
     /// </summary> 
     /// <param name="expNums"></param> 
-    public void GetPlayerExp(int expNums)
+    public void AddPlayerExp(int expNums)
     {
         if (PlayerDataForGame.instance.pyData.Level >= DataTable.PlayerLevelConfig.Count)
         {
             PlayerDataForGame.instance.pyData.Exp += expNums;
-            playerInfoObj.transform.GetChild(0).GetChild(2).GetComponent<Text>().text = PlayerDataForGame.instance.pyData.Exp + "/" + 99999;
+            playerInfoUi.UpdateUi();
             PlayerDataForGame.instance.isNeedSaveData = true;
             LoadSaveData.instance.SaveGameData(1);
             return;
@@ -976,19 +946,7 @@ public class UIManager : MonoBehaviour
                 break;
             }
         }
-
-        if (PlayerDataForGame.instance.pyData.Level >= DataTable.PlayerLevelConfig.Keys.Max())
-        {
-            playerInfoObj.transform.GetChild(0).GetComponent<Slider>().value = 1;
-            playerInfoObj.transform.GetChild(2).GetChild(1).GetComponent<Text>().text = DataTable.GetStringText(34);
-            playerInfoObj.transform.GetChild(0).GetChild(2).GetComponent<Text>().text = PlayerDataForGame.instance.pyData.Exp + "/" + 99999;
-        }
-        else
-        {
-            playerInfoObj.transform.GetChild(0).GetComponent<Slider>().value = 1f * PlayerDataForGame.instance.pyData.Exp / DataTable.PlayerLevelConfig[PlayerDataForGame.instance.pyData.Level + 1].Exp;
-            playerInfoObj.transform.GetChild(2).GetChild(1).GetComponent<Text>().text = string.Format(DataTable.GetStringText(35), PlayerDataForGame.instance.pyData.Level);
-            playerInfoObj.transform.GetChild(0).GetChild(2).GetComponent<Text>().text = PlayerDataForGame.instance.pyData.Exp + "/" + DataTable.PlayerLevelConfig[PlayerDataForGame.instance.pyData.Level + 1].Exp;
-        }
+        playerInfoUi.UpdateUi();
         Barrack.RefreshCardList();
         //LoadSaveData.instance.SaveByJson(PlayerDataForGame.instance.pyData); 
         PlayerDataForGame.instance.isNeedSaveData = true;

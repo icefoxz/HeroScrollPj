@@ -172,7 +172,7 @@ using UnityEngine;
         private Dictionary<int, IReadOnlyList<string>> ConvertText(string text)
         {
             text = text.Replace(@"\\", @"\");
-            return Assets.Scripts.Utl.Json.DeserializeList<List<string>>(text).ToDictionary(row => int.Parse(row[0]), row =>row as IReadOnlyList<string>);
+            return Json.DeserializeList<List<string>>(text).ToDictionary(row => int.Parse(row[0]), row =>row as IReadOnlyList<string>);
         }
 
         /// <summary>

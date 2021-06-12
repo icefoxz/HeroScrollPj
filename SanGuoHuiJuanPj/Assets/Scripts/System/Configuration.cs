@@ -6,6 +6,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using Assets.Editor;
 using UnityEngine;
 using UnityEditor;
+using CorrelateLib;
 
 public class Configuration : MonoBehaviour
 {
@@ -14,7 +15,7 @@ public class Configuration : MonoBehaviour
     public void Init()
     {
         var json = EncryptDecipherTool.DESDecrypt(gameConfig.text);
-        var serverFields = Assets.Scripts.Utl.Json.Deserialize<ServerFields>(json);
+        var serverFields = Json.Deserialize<ServerFields>(json);
         Server.Initialize(serverFields);
     }
 }

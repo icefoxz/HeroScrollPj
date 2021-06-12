@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Net;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using CorrelateLib;
 using Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.Events;
@@ -165,7 +166,7 @@ public class SystemTimer : MonoBehaviour
         try
         {
             var jsonApi = await response.Content.ReadAsStringAsync();
-            var apiObj = Assets.Scripts.Utl.Json.Deserialize<TaobaoJsonApi>(jsonApi);
+            var apiObj = Json.Deserialize<TaobaoJsonApi>(jsonApi);
             var serverTicks = long.Parse(apiObj.data.t);
             var serverTimeNow = UnixToDateTime(serverTicks).AddTicks(sw.ElapsedTicks);
 #if UNITY_EDITOR

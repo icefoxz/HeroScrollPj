@@ -9,6 +9,6 @@ public class CityCharacterUi : MonoBehaviour
 
     public void Set(ICharacter character)
     {
-        Name.text = $"{character.Surname}{character.Name}";
+        Name.text = character.Name;
     }
 }

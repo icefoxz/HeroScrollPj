@@ -46,8 +46,9 @@ public class ServerPanel : MonoBehaviour
     {
         SignalR = signalR;
         SignalR.SubscribeAction(EventStrings.SC_Disconnect, ServerCallDisconnect);
+        SignalR.SubscribeAction(EventStrings.SC_ReLogin, args => ClientReconnect());
         SignalR.OnStatusChanged += OnStatusChanged;
-        reconnectButton.onClick.AddListener(ReconnectOnDisconnected);
+        reconnectButton.onClick.AddListener(()=>Reconnect());
         exitButton.onClick.AddListener(Application.Quit);
         exitButton.gameObject.SetActive(false);
         gameObject.SetActive(false);
@@ -87,7 +88,7 @@ public class ServerPanel : MonoBehaviour
                 StartCoroutine(Counting(state));
                 return;
             case HubConnectionState.Disconnected:
-                ReconnectOnDisconnected();
+                Reconnect();
                 break;
         }
     }
@@ -129,12 +130,12 @@ public class ServerPanel : MonoBehaviour
     void OnApplicationFocus(bool isFocus)
     {
         if(!isFocus)return;
-        if(SignalR.Status == HubConnectionState.Disconnected) ReconnectOnDisconnected();
+        if(SignalR.Status == HubConnectionState.Disconnected) Reconnect();
     }
 
-    private void ReconnectOnDisconnected()
+    private void Reconnect()
     {
-        if(!isDisconnectRequested) SignalR.ReconnectServer(OnRetryConnectToServer);
+        if (!isDisconnectRequested) SignalR.ReconnectServer(OnRetryConnectToServer);
     }
 
     private void OnRetryConnectToServer(bool success)
@@ -148,5 +149,26 @@ public class ServerPanel : MonoBehaviour
     {
         var msg = success ? "重连成功！" : $"连接失败,错误码：{code}";
         PlayerDataForGame.instance.ShowStringTips(msg);
+    }
+
+    private void ClientReconnect()
+    {
+        var isDeviceLogin = GamePref.ClientLoginMethod == 1;
+        if (isDeviceLogin)
+        {
+            SignalR.Disconnect(() =>
+            {
+                SignalR.DirectLogin(DebugCallBack);
+            });
+        }else SignalR.Disconnect(() =>
+        {
+            SignalR.UserLogin(DebugCallBack, GamePref.Username, GamePref.Password);
+        });
+    }
+
+    private void DebugCallBack(bool success, int code, SignalRClient.SignalRConnectionInfo info)
+    {
+        XDebug.Log<ServerPanel>(
+            $"Success = {success}, Code = {code}, user: {info.Username}, Token = {info.AccessToken}");
     }
 }

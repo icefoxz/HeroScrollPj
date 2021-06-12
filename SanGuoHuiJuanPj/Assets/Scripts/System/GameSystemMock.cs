@@ -3,6 +3,6 @@
     void Start()
     {
         Init();
-        InitEnqueue(UIManager.instance.Init);
+        if(UIManager.instance!=null) InitEnqueue(UIManager.instance.Init);
     }
 }
