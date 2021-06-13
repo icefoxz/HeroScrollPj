@@ -20,10 +20,6 @@ public class StartSceneToServerCS : MonoBehaviour
 
     public Button StartButton;
 
-    public GameObject busyPanel; //等待网络的挡板
-
-    public SignalRClient signalRClient;
-
     //删除所有
     public void ClearAllData()
     {
@@ -122,12 +118,5 @@ public class StartSceneToServerCS : MonoBehaviour
         GameSystem.InitGameDependencyComponents();
         GameSystem.LoginUi.Close();
         StartSceneUIManager.instance.LoadingScene(GameSystem.GameScene.MainScene, true);
-    }
-
-    private async void BusyFunc(Func<Task> task)
-    {
-        busyPanel.gameObject.SetActive(true);
-        await task.Invoke();
-        UnityMainThread.thread.RunNextFrame(() => busyPanel.gameObject.SetActive(true));
     }
 }
