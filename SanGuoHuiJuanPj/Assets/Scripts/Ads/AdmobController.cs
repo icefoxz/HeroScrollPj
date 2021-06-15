@@ -12,7 +12,7 @@ public class AdmobController : AdControllerBase
     public override AdAgentBase.States Status => _status;
 
     public const string TestId = "ca-app-pub-3940256099942544/5224354917";
-    public const string AdUnitId = "ca-app-pub-6126766415984891/1283385219";
+    public const string AdUnitId = "ca-app-pub-6126766415984891/6186935878";
     public int Retries = 3;
     public string LastMessage { get; private set; }
     private ResponseEvent onLoad = new ResponseEvent();

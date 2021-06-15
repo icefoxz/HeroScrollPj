@@ -106,9 +106,6 @@ public class PlayerDataForGame : MonoBehaviour
 
     [HideInInspector]
     public int lastSenceIndex;  //上一个场景索引记录 
-    [HideInInspector]
-    public int boxForTiLiNums;  //返还体力单个宝箱扣除体力数 
-
     private bool isRequestingSaveFile; //存档请求中
     //计算出战总数量 
     public int TotalCardsEnlisted => fightHeroId.Count + fightTowerId.Count + fightTrapId.Count;
@@ -125,8 +122,8 @@ public class PlayerDataForGame : MonoBehaviour
     private LocalStamina stamina;
 
     public WarReward WarReward { get; set; }
+    public StaminaCost CurrentStaCost { get; private set; }
     public BaYeManager BaYeManager { get; set; }
-    public int StaminaReturnTemp { get; set; }
 
     private void Awake()
     {
@@ -394,15 +391,13 @@ public class PlayerDataForGame : MonoBehaviour
             .Enlist(CurrentWarForceId).Select(c => c.ToDto()).ToList();
         ApiPanel.instance.Invoke(vb =>
             {
-                WarReward = new WarReward(vb.Values[0].ToString(), selectedWarId, StaminaReturnTemp);
+                WarReward = new WarReward(vb.Values[0].ToString(), selectedWarId, 0);
                 var troop = vb.GetTroopDto();
                 UpdateTroopEnlist(troop);
-                StaminaReturnTemp = 0;
             }, msg =>
             {
                 ShowStringTips(msg);
-                WarReward = new WarReward(string.Empty, selectedWarId,StaminaReturnTemp);
-                StaminaReturnTemp = 0;
+                WarReward = new WarReward(string.Empty, selectedWarId, 0);
             }, EventStrings.Req_TroopToCampaign,
             ViewBag.Instance().TroopDto(new TroopDto
             {
@@ -462,4 +457,12 @@ public class PlayerDataForGame : MonoBehaviour
 
     }
 
+    public void SetStaminaBeforeWar(StaminaCost cost) => CurrentStaCost = cost;
+
+    public int StaminaReturnFromLastWar()
+    {
+        if (CurrentStaCost == null) return 0;
+        var cost = CurrentStaCost.TotalCost(WarReward.Chests.Count, true);
+        return CurrentStaCost.Cost - cost;
+    }
 }

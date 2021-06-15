@@ -4896,14 +4896,9 @@ public class FightController : MonoBehaviour
             var warReward = PlayerDataForGame.instance.WarReward;
             for (int i = 0; i < getBoxsList.Count; i++)
             {
-                //PlayerDataForGame.instance.gbocData.fightBoxs.Add(getBoxsList[i]);
                 warReward.Chests.Add(getBoxsList[i]);
-                warReward.Stamina -= PlayerDataForGame.instance.boxForTiLiNums;
             }
-
-            //PlayerDataForGame.instance.isNeedSaveData = true;
-            //LoadSaveData.instance.SaveGameData(4);
-
+            
             WarsUIManager.instance.eventsWindows[4].transform.GetChild(1).GetChild(1).GetChild(1).GetChild(0).GetComponent<Text>().text = "×" + getBoxsList.Count;
             WarsUIManager.instance.eventsWindows[4].transform.GetChild(1).GetChild(1).GetChild(1).gameObject.SetActive(true);
         }

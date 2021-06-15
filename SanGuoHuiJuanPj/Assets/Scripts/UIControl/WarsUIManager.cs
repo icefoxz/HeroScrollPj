@@ -342,11 +342,9 @@ public class WarsUIManager : MonoBehaviour
         } else if (PlayerDataForGame.instance.WarType == PlayerDataForGame.WarTypes.Expedition)
         {
             PlayerDataForGame.instance.UpdateWarUnlockProgress(passedGuanQiaNums);
-            reward.Stamina = PlayerDataForGame.instance.WarReward.Stamina;
             var ca = PlayerDataForGame.instance.warsData.GetCampaign(reward.WarId);
             //if (treasureChestNums > 0) rewardMap.Trade(2, treasureChestNums); //index2是宝箱图
             var viewBag = ViewBag.Instance()
-                .ResourceDto(new ResourceDto(reward.YuanBao, reward.YuQue, reward.Stamina, reward.Exp))
                 .WarCampaignDto(new WarCampaignDto{IsFirstRewardTaken = ca.isTakeReward,UnlockProgress = ca.unLockCount,WarId = ca.warId})
                 .SetValues(reward.Token, reward.Chests);
             ApiPanel.instance.Invoke(vb =>
@@ -355,8 +353,8 @@ public class WarsUIManager : MonoBehaviour
                     var campaign = vb.GetWarCampaignDto();
                     var chests = vb.GetPlayerWarChests();
                     PlayerDataForGame.instance.gbocData.fightBoxs.AddRange(chests);
-                    var war = PlayerDataForGame.instance.warsData.warUnlockSaveData.First(
-                        c => c.warId == campaign.WarId);
+                    var war = PlayerDataForGame.instance.warsData.warUnlockSaveData
+                        .First(c => c.warId == campaign.WarId);
                     war.unLockCount = campaign.UnlockProgress;
                     ConsumeManager.instance.SaveChangeUpdatePlayerData(player, 0);
                 }, PlayerDataForGame.instance.ShowStringTips,

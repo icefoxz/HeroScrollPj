@@ -117,7 +117,7 @@ public class UIManager : MonoBehaviour
     public void Init()
     {
         AudioController1.instance.ChangeBackMusic();
-        Invoke(nameof(GetBackTiLiForFight), 2f);
+        Invoke(nameof(ReturnStaminaFromWar), 2f);
 
         TimeSystemControl.instance.InitStaminaCount(PlayerDataForGame.instance.Stamina.Value <
                                                     TimeSystemControl.instance.MaxStamina);
@@ -489,13 +489,11 @@ public class UIManager : MonoBehaviour
     }
 
     //获取战役返还的体力 
-    private void GetBackTiLiForFight()
+    private void ReturnStaminaFromWar()
     {
-        if (PlayerDataForGame.instance.lastSenceIndex == 2 && PlayerDataForGame.instance.WarReward.Stamina > 0)
-        {
-            var rewardStamina = PlayerDataForGame.instance.WarReward.Stamina;
-            playerInfoUi.UpdateZhanLing(rewardStamina);
-        }
+        var staminaCost = PlayerDataForGame.instance.StaminaReturnFromLastWar();
+        if (PlayerDataForGame.instance.lastSenceIndex == 2 && staminaCost != 0)
+            playerInfoUi.UpdateZhanLing(staminaCost);
         PlayerDataForGame.instance.lastSenceIndex = 1;
     }
 
@@ -591,8 +589,7 @@ public class UIManager : MonoBehaviour
                     AudioController0.instance.ChangeAudioClip(12);
                     AudioController0.instance.PlayAudioSource(0);
                     playerInfoUi.UpdateZhanLing(-staminaCost);
-                    PlayerDataForGame.instance.StaminaReturnTemp = staminaMap.MaxReturn;
-                    PlayerDataForGame.instance.boxForTiLiNums = staminaMap.CostOfChest;
+                    PlayerDataForGame.instance.SetStaminaBeforeWar(staminaMap);
                     StartCoroutine(LateGoToFightScene());
                 }
             }

@@ -292,6 +292,4 @@ public class Expedition : MonoBehaviour
             EventStrings.Req_Achievement,
             ViewBag.Instance().SetValue(playerUnlockProgress.warId));
     }
-
-
 }

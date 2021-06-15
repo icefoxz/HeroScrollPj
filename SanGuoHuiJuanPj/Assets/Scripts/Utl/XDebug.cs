@@ -83,11 +83,21 @@ public static class XDebug
     {
         return new XDebugException(message, methodName, typeName);
     }
+    public static XDebugException Throw(Exception exception,string message,string typeName,[CallerMemberName] string methodName = null)
+    {
+        return new XDebugException(exception, message, methodName, typeName);
+    }
 
     public class XDebugException : Exception
     {
         public XDebugException(string message = null,string methodName = null,string typeName = null): base($"{typeName}.{methodName}():{message}")
         {
+        }
+
+        public XDebugException(Exception exception = null, string message = null, string methodName = null,
+            string typeName = null) : base($"{typeName}.{methodName}():{message}", exception)
+        {
+
         }
     }
 
