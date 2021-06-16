@@ -442,7 +442,7 @@ public class PlayerDataForGame : MonoBehaviour
 
     public void GenerateLocalStamina()
     {
-        stamina = new LocalStamina(pyData.LastStaminaUpdateTicks, pyData.Stamina, secsPerStamina, staminaIncreaseLimit,
+        stamina = new LocalStamina(pyData.Stamina, secsPerStamina, staminaIncreaseLimit,
             staminaMax);
     }
 
