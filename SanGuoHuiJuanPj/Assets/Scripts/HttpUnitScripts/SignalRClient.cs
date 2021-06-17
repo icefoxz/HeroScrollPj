@@ -273,10 +273,15 @@ public class SignalRClient : MonoBehaviour
         action?.Invoke(content);
     }
 
-    public async void Invoke(string method, UnityAction<string> recallAction , IViewBag bag = default,
-        CancellationToken cancellationToken = default)
+    public async void Invoke(string method, UnityAction<string> recallAction , IViewBag bag = default)
     {
-        var result = await Invoke(method, bag, cancellationToken);
+        var cs = new CancellationTokenSource();
+        var result = await Invoke(method, bag, cs.Token);
+        if (cs.IsCancellationRequested)
+        {
+            UnityMainThread.thread.RunNextFrame(() => recallAction?.Invoke("请求取消！"));
+            return;
+        }
         UnityMainThread.thread.RunNextFrame(()=>recallAction?.Invoke(result));
     }
 
@@ -287,14 +292,14 @@ public class SignalRClient : MonoBehaviour
             if (bag == default)
                 bag = ViewBag.Instance();
             var result = await _hub.InvokeCoreAsync(method, _stringType,
-                bag == null ? new object[0] : new object[] { CorrelateLib.Json.Serialize(bag)},
+                bag == null ? new object[0] : new object[] { Json.Serialize(bag)},
                 cancellationToken);
             return result?.ToString();
         }
         catch (Exception e)
         {
             XDebug.LogError<SignalRClient>($"Error on interpretation {method}:{e.Message}");
-            throw;
+            return $"请求异常: {e}";
         }
     }
 
