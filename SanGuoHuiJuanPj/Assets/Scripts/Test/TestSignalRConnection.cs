@@ -22,11 +22,14 @@ public class TestSignalRConnection : MonoBehaviour
 
     public void TestRequest()
     {
-        //var card = new GameCardDto(14, GameCardType.Hero, 3, 2);
-        //var result = await Client.Invoke("Req_CardSell", new object[] {14, 0, Json.Serialize(card)});
-        //await Client.SynchronizePlayerData(true);
-        //await Client.SynchronizeSaved();
-        //XDebug.Log<TestSignalRConnection>(result);
+        ApiPanel.instance.Invoke(vb =>
+            {
+                XDebug.Log(typeof(TestSignalRConnection), $"Api[{EventStrings.Req_OnlineCharacters}] Success!");
+                XDebug.Log(typeof(TestSignalRConnection), Json.Serialize(vb));
+            },
+            msg => XDebug.Log(typeof(TestSignalRConnection),
+                $"Api[{EventStrings.Req_OnlineCharacters}] Failed! : {msg}"),
+            EventStrings.Req_OnlineCharacters);
     }
 
     public void Disconnect() => Client.Disconnect();

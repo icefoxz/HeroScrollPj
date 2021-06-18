@@ -29,7 +29,16 @@ allprojects {
             url "https://maven.google.com"
         }
         maven {
-            url "https://maven.google.com/" // Assets/GoogleMobileAds/Editor/GoogleMobileAdsDependencies.xml:7
+            url "https://android-sdk.is.com/" // Assets/IronSource/Editor/IronSourceSDKDependencies.xml:9, Assets/IronSource/Editor/ISAdColonyAdapterDependencies.xml:16, Assets/IronSource/Editor/ISAdMobAdapterDependencies.xml:16, Assets/IronSource/Editor/ISAppLovinAdapterDependencies.xml:8, Assets/IronSource/Editor/ISPangleAdapterDependencies.xml:15, Assets/IronSource/Editor/ISUnityAdsAdapterDependencies.xml:8, Assets/IronSource/Editor/ISVungleAdapterDependencies.xml:16
+        }
+        maven {
+            url "https://maven.google.com/" // Assets/IronSource/Editor/IronSourceSDKDependencies.xml:17, Assets/IronSource/Editor/IronSourceSDKDependencies.xml:25, Assets/IronSource/Editor/ISAdColonyAdapterDependencies.xml:8, Assets/IronSource/Editor/ISAdMobAdapterDependencies.xml:8, Assets/IronSource/Editor/ISAppLovinAdapterDependencies.xml:15, Assets/IronSource/Editor/ISUnityAdsAdapterDependencies.xml:15
+        }
+        maven {
+            url "https://artifact.bytedance.com/repository/pangle/" // Assets/IronSource/Editor/ISPangleAdapterDependencies.xml:8
+        }
+        maven {
+            url "https://jitpack.io/" // Assets/IronSource/Editor/ISVungleAdapterDependencies.xml:8
         }
         mavenLocal()
         jcenter()
@@ -43,8 +52,21 @@ apply plugin: 'com.android.library'
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 // Android Resolver Dependencies Start
-    implementation 'com.google.android.gms:play-services-ads:19.5.0' // Assets/GoogleMobileAds/Editor/GoogleMobileAdsDependencies.xml:7
-    implementation 'com.mopub:mopub-sdk:5.17.0' // Assets/MoPub/Scripts/Editor/MoPubDependencies.xml:3
+    implementation 'com.adcolony:sdk:4.5.0' // Assets/IronSource/Editor/ISAdColonyAdapterDependencies.xml:8
+    implementation 'com.applovin:applovin-sdk:10.3.0' // Assets/IronSource/Editor/ISAppLovinAdapterDependencies.xml:15
+    implementation 'com.google.android.gms:play-services-ads:20.1.0' // Assets/IronSource/Editor/ISAdMobAdapterDependencies.xml:8
+    implementation 'com.google.android.gms:play-services-ads-identifier:17.0.0' // Assets/IronSource/Editor/IronSourceSDKDependencies.xml:17
+    implementation 'com.google.android.gms:play-services-basement:17.2.1' // Assets/IronSource/Editor/IronSourceSDKDependencies.xml:25
+    implementation 'com.ironsource.adapters:adcolonyadapter:4.3.8' // Assets/IronSource/Editor/ISAdColonyAdapterDependencies.xml:16
+    implementation 'com.ironsource.adapters:admobadapter:4.3.20' // Assets/IronSource/Editor/ISAdMobAdapterDependencies.xml:16
+    implementation 'com.ironsource.adapters:applovinadapter:4.3.25' // Assets/IronSource/Editor/ISAppLovinAdapterDependencies.xml:8
+    implementation 'com.ironsource.adapters:pangleadapter:4.3.2' // Assets/IronSource/Editor/ISPangleAdapterDependencies.xml:15
+    implementation 'com.ironsource.adapters:unityadsadapter:4.3.11' // Assets/IronSource/Editor/ISUnityAdsAdapterDependencies.xml:8
+    implementation 'com.ironsource.adapters:vungleadapter:4.3.8' // Assets/IronSource/Editor/ISVungleAdapterDependencies.xml:16
+    implementation 'com.ironsource.sdk:mediationsdk:7.1.6' // Assets/IronSource/Editor/IronSourceSDKDependencies.xml:9
+    implementation 'com.pangle.global:ads-sdk:3.5.1.1' // Assets/IronSource/Editor/ISPangleAdapterDependencies.xml:8
+    implementation 'com.unity3d.ads:unity-ads:3.7.2' // Assets/IronSource/Editor/ISUnityAdsAdapterDependencies.xml:15
+    implementation 'com.vungle:publisher-sdk-android:6.9.1' // Assets/IronSource/Editor/ISVungleAdapterDependencies.xml:8
 // Android Resolver Dependencies End
 **DEPS**}
 

@@ -74,7 +74,9 @@ public class AdManager : AdControllerBase
         //MoPubController = gameObject.AddComponent<MoPubController>();
         //MoPubController.Init();
         IronSourceController = gameObject.AddComponent<IronSourceController>();
+#if !UNITY_EDITOR
         IronSourceController.Init();
+#endif
         Queue = new QueueByRatio<AdControllerBase>(
             Series.Join(Controllers,ad=>ad,c=>c.Key,(_,c)=>c.Value).ToArray()
         );
