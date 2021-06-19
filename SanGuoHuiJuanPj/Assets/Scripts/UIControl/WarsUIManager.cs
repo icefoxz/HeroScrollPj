@@ -777,16 +777,16 @@ public class WarsUIManager : MonoBehaviour
 
         shopInfoObj.SetActive(false);
         var sanXuan = eventsWindows[3].GetComponent<SanXuanWindowUi>();
-
+        sanXuan.SetTrade(refreshCost + 1);
         GoldForCity -= refreshCost;
         playerInfoObj.transform.GetChild(1).GetChild(0).GetComponent<Text>().text = GoldForCity.ToString();
         for (int i = 0; i < sanXuan.GameCards.Length; i++)
         {
-            int btnIndex = i;
-            var ui = sanXuan.GameCards[i];
             var pick = DataTable.Mercenary.Values.Select(m => new WeightElement {Id = m.Id, Weight = m.Weight})
                 .Pick().Id;
             var mercenary = DataTable.Mercenary[pick];
+            int btnIndex = i;
+            var ui = sanXuan.GameCards[i];
             var info = GenerateCard(i, ui, mercenary);
             //广告概率
             if (Random.Range(0, 100) < 25)
@@ -823,13 +823,13 @@ public class WarsUIManager : MonoBehaviour
     private void UpdateQiYvWoods()
     {
         var sanXuan = eventsWindows[3].GetComponent<SanXuanWindowUi>();
+            var pick = DataTable.Mercenary.Values.Select(m => new WeightElement {Id = m.Id, Weight = m.Weight})
+                .Pick().Id;
+            var mercenary = DataTable.Mercenary[pick];
         for (int i = 0; i < sanXuan.GameCards.Length; i++)
         {
             var index = i;
             var ui = sanXuan.GameCards[i];
-            var pick = DataTable.Mercenary.Values.Select(m => new WeightElement {Id = m.Id, Weight = m.Weight})
-                .Pick().Id;
-            var mercenary = DataTable.Mercenary[pick];
             var info = GenerateCard(i,ui, mercenary);
             ui.SetPrice(0, () => GetOrBuyCards(false, 0, ui.Card, info, index));
         }

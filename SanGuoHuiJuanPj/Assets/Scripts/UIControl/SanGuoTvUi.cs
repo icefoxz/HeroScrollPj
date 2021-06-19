@@ -10,7 +10,7 @@ public class SanGuoTvUi : MonoBehaviour
 {
     public Text[] contents;
     public Text[] clocks;
-    public int Secs = 60 * 5;
+    public int Secs = 30;
     
     private void Start()
     {
