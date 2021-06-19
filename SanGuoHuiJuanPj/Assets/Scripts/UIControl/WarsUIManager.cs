@@ -57,7 +57,7 @@ public class WarsUIManager : MonoBehaviour
     float percentReturnHp;    //回春回血百分比
 
     public int baYeDefaultLevel = 3;
-    public int cityLevel;   //记录城池等级
+    public int cityLevel = 1;   //记录城池等级
     public int goldForCity; //记录城池金币
 
     public int GoldForCity
@@ -127,7 +127,6 @@ public class WarsUIManager : MonoBehaviour
             BattleOverShow(false);
             yield return null;
         }
-        cityLevel = 1;
         switch (PlayerDataForGame.instance.WarType)
         {
             //战斗金币
@@ -183,7 +182,7 @@ public class WarsUIManager : MonoBehaviour
     {
         currentEvent = EventTypes.Generic;
         //尝试展示指引
-        ShowOrHideGuideObj(0, true);
+        //ShowOrHideGuideObj(0, true);
         InitShowParentGuanQia(new int[] {DataTable.War[PlayerDataForGame.instance.selectedWarId].BeginPoint});
     }
 
@@ -413,7 +412,7 @@ public class WarsUIManager : MonoBehaviour
                 startBtn.SetActive(true);
                 SelectOneGuanQia(obj);
                 ChooseParentGuanQia(checkPoint.Id, randArtImg, obj.transform);
-                InterToDiffGuanQia(IsBattle(checkPoint.EventType) ? 1 : checkPoint.EventType, checkPoint.BattleEventTableId, checkPoint.Id);
+                OnCheckpointInvoke(IsBattle(checkPoint.EventType) ? 1 : checkPoint.EventType, checkPoint.BattleEventTableId, checkPoint.Id);
             });
         }
         StartCoroutine(LiteInitChooseFirst(0));
@@ -459,7 +458,7 @@ public class WarsUIManager : MonoBehaviour
     /// </summary>
     /// <param name="eventType"></param>
     /// <param name="eventId"></param>
-    private void InterToDiffGuanQia(int eventType, int eventId, int guanQiaId)
+    private void OnCheckpointInvoke(int eventType, int eventId, int guanQiaId)
     {
         switch (eventType)
         {
@@ -553,9 +552,9 @@ public class WarsUIManager : MonoBehaviour
     {
         currentEvent = isBuy ? EventTypes.Trade : EventTypes.Adventure;
         //尝试关闭指引
-        ShowOrHideGuideObj(0, false);
+        //ShowOrHideGuideObj(0, false);
 
-        ShowOrHideGuideObj(1, true);
+        //ShowOrHideGuideObj(1, true);
 
         PlayAudioClip(19);
 
@@ -744,19 +743,8 @@ public class WarsUIManager : MonoBehaviour
     //关闭三选的附加方法
     public void CloseSanXuanWin()
     {
-        if (shopInfoObj.activeSelf)
-        {
-            shopInfoObj.SetActive(false);
-        }
-        Transform woodsList = eventsWindows[3].transform.GetChild(0).GetChild(1);
-        for (int i = 0; i < 3; i++)
-        {
-            GameObject go = woodsList.GetChild(i).GetChild(8).gameObject;
-            if (go.activeSelf)
-            {
-                go.SetActive(false);
-            }
-        }
+        var sanXuan = eventsWindows[3].GetComponent<SanXuanWindowUi>();
+        sanXuan.ResetUi();
     }
 
     int updateShopNeedGold; //商店刷新所需金币
@@ -772,109 +760,81 @@ public class WarsUIManager : MonoBehaviour
     /// <summary>
     /// 刷新商店列表
     /// </summary>
-    /// <param name="updateMoney">刷新所需金币</param>
-    [Skip] private bool UpdateShoppingList(int updateMoney)
+    /// <param name="refreshCost">刷新所需金币</param>
+    [Skip]
+    private bool UpdateShoppingList(int refreshCost)
     {
-        var re = GameResources;
-        if (updateMoney != 0)
+        if (refreshCost != 0)
         {
             PlayAudioClip(13);
         }
 
-        if (updateMoney != 0 && updateMoney > GoldForCity)
+        if (refreshCost != 0 && refreshCost > GoldForCity)
         {
             PlayerDataForGame.instance.ShowStringTips(DataTable.GetStringText(56));
             return false;
         }
-        else
+
+        shopInfoObj.SetActive(false);
+        var sanXuan = eventsWindows[3].GetComponent<SanXuanWindowUi>();
+
+        GoldForCity -= refreshCost;
+        playerInfoObj.transform.GetChild(1).GetChild(0).GetComponent<Text>().text = GoldForCity.ToString();
+        for (int i = 0; i < sanXuan.GameCards.Length; i++)
         {
-            shopInfoObj.SetActive(false);
-            Transform woodsList = eventsWindows[3].transform.GetChild(0).GetChild(1);
-            for (int i = 0; i < 3; i++)
+            int btnIndex = i;
+            var ui = sanXuan.GameCards[i];
+            var pick = DataTable.Mercenary.Values.Select(m => new WeightElement {Id = m.Id, Weight = m.Weight})
+                .Pick().Id;
+            var mercenary = DataTable.Mercenary[pick];
+            var info = GenerateCard(i, ui, mercenary);
+            //广告概率
+            if (Random.Range(0, 100) < 25)
             {
-                GameObject go = woodsList.GetChild(i).GetChild(8).gameObject;
-                if (go.activeSelf)
+                ui.SetAd(() => AdAgentBase.instance.BusyRetry(() =>
                 {
-                    go.SetActive(false);
-                }
+                    //if (!AdController.instance.ShowVideo(
+                    GetOrBuyCards(true, 0, ui.Card, info, btnIndex);
+                    PlayerDataForGame.instance.ShowStringTips(DataTable.GetStringText(57));
+                }, () => { PlayerDataForGame.instance.ShowStringTips(DataTable.GetStringText(6)); }));
+                continue;
             }
 
-            GoldForCity -= updateMoney;
-            playerInfoObj.transform.GetChild(1).GetChild(0).GetComponent<Text>().text = GoldForCity.ToString();
+            ui.SetPrice(mercenary.Cost, () =>
+                GetOrBuyCards(true, mercenary.Cost, ui.Card, info, btnIndex));
+        }
 
-            for (int i = 0; i < 3; i++)
-            {
-                int btnIndex = i;
-                int pick = DataTable.Mercenary.Values.Select(m => new WeightElement {Id = m.Id, Weight = m.Weight})
-                    .Pick().Id;
-                var mercenary = DataTable.Mercenary[pick];
-                var cardType = (GameCardType)mercenary.Produce.CardType;
-                var cardRarity = mercenary.Produce.Rarity;
-                var cardLevel = mercenary.Produce.Star;
+        return true;
+    }
 
-                var card = RandomPickFromRareClass(cardType, cardRarity);
-                woodsList.GetChild(i).GetChild(1).GetComponent<Image>().sprite = cardType == GameCardType.Hero
-                    ? re.HeroImg[card.Id]
-                    : re.FuZhuImg[card.ImageId];
-                ShowNameTextRules(woodsList.GetChild(i).GetChild(3).GetComponent<Text>(), card.Name);
-                //名字颜色
-                woodsList.GetChild(i).GetChild(3).GetComponent<Text>().color = NameColorChoose(card.Rare);
-                woodsList.GetChild(i).GetChild(5).GetComponentInChildren<Text>().text = card.Short;
-                //兵种框
-                woodsList.GetChild(i).GetChild(5).GetComponent<Image>().sprite =
-                    cardType == GameCardType.Hero ? re.ClassImg[0] : re.ClassImg[1];
-                FrameChoose(card.Rare, woodsList.GetChild(i).GetChild(6).GetComponent<Image>());
-                woodsList.GetChild(i).GetComponent<Button>().onClick.RemoveAllListeners();
-                woodsList.GetChild(i).GetComponent<Button>().onClick.AddListener(() =>
-                    OnClickToShowShopInfo(btnIndex, card.About));
-                woodsList.GetChild(i).GetChild(4).GetComponent<Image>().sprite = re.GradeImg[cardLevel];
+    private GameCardInfo GenerateCard(int index, TradableGameCardUi ui, MercenaryTable mercenary)
+    {
+        var cardType = (GameCardType) mercenary.Produce.CardType;
+        var cardRarity = mercenary.Produce.Rarity;
+        var cardLevel = mercenary.Produce.Star;
+        var card = RandomPickFromRareClass(cardType, cardRarity);
+        ui.SetGameCard(NowLevelAndHadChip.Instance(card.Id, mercenary.Produce.CardType, cardLevel));
+        ui.OnClickAction.RemoveAllListeners();
+        ui.OnClickAction.AddListener(() => OnClickToShowShopInfo(index, card.About));
+        return card;
+    }
 
-                Transform getBtnTran = woodsList.GetChild(i).GetChild(9);
-
-                //免费获取文字隐藏
-                getBtnTran.GetChild(0).gameObject.SetActive(false);
-                //清除按钮事件
-                getBtnTran.GetComponent<Button>().onClick.RemoveAllListeners();
-                Button adBtn = getBtnTran.GetComponent<Button>();
-                adBtn.enabled = true;
-                //需要的金币数
-                int mercenaryCost = 0;
-                //广告概率
-                if (Random.Range(0, 100) < 25)
-                {
-                    mercenaryCost = 0;
-                    getBtnTran.GetChild(1).gameObject.SetActive(false);
-                    getBtnTran.GetChild(2).gameObject.SetActive(true);
-                    adBtn.onClick.AddListener(() => AdAgentBase.instance.BusyRetry(() =>
-                    {
-                        adBtn.enabled = false;
-                        //if (!AdController.instance.ShowVideo(
-                        GetOrBuyCards(true, mercenaryCost, cardType, card.Id, cardLevel, btnIndex);
-                        getBtnTran.GetChild(2).gameObject.SetActive(false);
-                        PlayerDataForGame.instance.ShowStringTips(DataTable.GetStringText(57));
-                        adBtn.enabled = true;
-                    }, () =>
-                    {
-                        PlayerDataForGame.instance.ShowStringTips(DataTable.GetStringText(6));
-                        adBtn.enabled = true;
-                    }));
-                }
-                else
-                {
-                    mercenaryCost = mercenary.Cost;
-                    getBtnTran.GetChild(1).GetComponent<Text>().text = mercenaryCost.ToString();
-                    getBtnTran.GetChild(1).gameObject.SetActive(true);
-                    getBtnTran.GetChild(2).gameObject.SetActive(false);
-
-                    getBtnTran.GetComponent<Button>().onClick.AddListener(() =>
-                        GetOrBuyCards(true, mercenaryCost, cardType, card.Id, cardLevel, btnIndex));
-                }
-                woodsList.GetChild(i).gameObject.SetActive(true);
-            }
-
-            return true;
+    //刷新奇遇商品
+    private void UpdateQiYvWoods()
+    {
+        var sanXuan = eventsWindows[3].GetComponent<SanXuanWindowUi>();
+        for (int i = 0; i < sanXuan.GameCards.Length; i++)
+        {
+            var index = i;
+            var ui = sanXuan.GameCards[i];
+            var pick = DataTable.Mercenary.Values.Select(m => new WeightElement {Id = m.Id, Weight = m.Weight})
+                .Pick().Id;
+            var mercenary = DataTable.Mercenary[pick];
+            var info = GenerateCard(i,ui, mercenary);
+            ui.SetPrice(0, () => GetOrBuyCards(false, 0, ui.Card, info, index));
         }
     }
+
     /// <summary>
     /// 匹配稀有度的颜色
     /// </summary>
@@ -916,51 +876,32 @@ public class WarsUIManager : MonoBehaviour
     GameObject shopInfoObj; //展示三选详细信息obj
 
     //展示三选单位个体信息
-    private void OnClickToShowShopInfo(int btnIndex, string infoStr)
+    private void OnClickToShowShopInfo(int btnIndex, string text)
     {
-        ShowOrHideGuideObj(1, false);
+        //ShowOrHideGuideObj(1, false);
 
-        Transform woodsList = eventsWindows[3].transform.GetChild(0).GetChild(1);
-        for (int i = 0; i < 3; i++)
+        var sanXuan = eventsWindows[3].GetComponent<SanXuanWindowUi>();
+        for (var i = 0; i < sanXuan.GameCards.Length; i++)
         {
-            GameObject go = woodsList.GetChild(i).GetChild(8).gameObject;
-            if (i != btnIndex)
-            {
-                if (go.activeSelf)
-                {
-                    go.SetActive(false);
-                }
-            }
-            else
-            {
-                if (!go.activeSelf)
-                {
-                    go.SetActive(true);
-                }
-            }
+            var ui = sanXuan.GameCards[i];
+            ui.SetSelect(i == btnIndex);
         }
-        Text infoText = shopInfoObj.GetComponentInChildren<Text>();
-        if (!shopInfoObj.activeSelf)
-        {
-            infoText.text = "";
-            Image infoImg = shopInfoObj.GetComponentInChildren<Image>();
-            infoImg.color = new Color(1f, 1f, 1f, 0f);
-            shopInfoObj.SetActive(true);
-            infoImg.DOFade(1, 0.2f);
-        }
-        infoText.DOFade(0, 0.3f).OnComplete(delegate ()
-        {
-            infoText.text = infoStr;
-            infoText.DOFade(1, 0.3f);
-        });
+        sanXuan.ShowInfo(text);
+        //if (!shopInfoObj.activeSelf)
+        //{
+        //    infoText.text = "";
+        //    Image infoImg = shopInfoObj.GetComponentInChildren<Image>();
+        //    infoImg.color = new Color(1f, 1f, 1f, 0f);
+        //    shopInfoObj.SetActive(true);
+        //    infoImg.DOFade(1, 0.2f);
+        //}
     }
 
     //观看视频刷新奇遇
     [Skip]
     public void WatchAdForUpdateQiYv()
     {
-        Button adBtn = eventsWindows[3].transform.GetChild(0).GetChild(5).GetComponent<Button>();
-        adBtn.enabled = false;
+        var adBtn = eventsWindows[3].GetComponent<SanXuanWindowUi>().AdRefreshBtn;
         AdAgentBase.instance.BusyRetry(() =>
         {
             adBtn.gameObject.SetActive(false);
@@ -969,110 +910,62 @@ public class WarsUIManager : MonoBehaviour
         adBtn.enabled = true;
     }
 
-    //刷新奇遇商品
-    private void UpdateQiYvWoods()
-    {
-        var resources = GameResources;
-        int randomPick = DataTable.Mercenary.Values.Select(m => new WeightElement {Id = m.Id, Weight = m.Weight}).Pick()
-            .Id;
-        var mercenary = DataTable.Mercenary[randomPick];
-        var cardType = (GameCardType)mercenary.Produce.CardType;
-        var cardRarity = mercenary.Produce.Rarity;
-        int cardLevel = mercenary.Produce.Star;
-        Transform woodsList = eventsWindows[3].transform.GetChild(0).GetChild(1);
-        for (int i = 0; i < 3; i++)
-        {
-            var card = RandomPickFromRareClass(cardType, cardRarity);
-            woodsList.GetChild(i).GetChild(1).GetComponent<Image>().sprite = cardType == GameCardType.Hero
-                ? resources.HeroImg[card.Id]
-                : resources.FuZhuImg[card.ImageId];
-            ShowNameTextRules(woodsList.GetChild(i).GetChild(3).GetComponent<Text>(), card.Name);
-            //名字颜色
-            woodsList.GetChild(i).GetChild(3).GetComponent<Text>().color = NameColorChoose(card.Rare);
-            woodsList.GetChild(i).GetChild(4).GetComponent<Image>().sprite = resources.GradeImg[cardLevel];
-            woodsList.GetChild(i).GetChild(5).GetComponentInChildren<Text>().text = card.Short;
-            //兵种框
-            woodsList.GetChild(i).GetChild(5).GetComponent<Image>().sprite =
-                cardType == GameCardType.Hero ? resources.ClassImg[0] : resources.ClassImg[1];
-            FrameChoose(card.Rare, woodsList.GetChild(i).GetChild(6).GetComponent<Image>());
-            Transform getBtnTran = woodsList.GetChild(i).GetChild(9);
-            getBtnTran.GetChild(0).gameObject.SetActive(true);
-            getBtnTran.GetChild(1).gameObject.SetActive(false);
-            getBtnTran.GetChild(2).gameObject.SetActive(false);
-            getBtnTran.GetComponent<Button>().onClick.RemoveAllListeners();
-            int btnIndex = i;
-            getBtnTran.GetComponent<Button>().onClick.AddListener(() =>
-                GetOrBuyCards(false, 0, cardType, card.Id, cardLevel, btnIndex));
-            woodsList.GetChild(i).gameObject.SetActive(true);
-
-            woodsList.GetChild(i).GetComponent<Button>().onClick.RemoveAllListeners();
-            woodsList.GetChild(i).GetComponent<Button>().onClick.AddListener(() =>
-                OnClickToShowShopInfo(btnIndex, card.About));
-        }
-    }
-
     //奇遇或商店界面初始化
     private void InitializeQYOrSp(bool isBuy)
     {
+        var ui = eventsWindows[3].GetComponent<SanXuanWindowUi>();
+        /***************************************************/
         Transform tran = eventsWindows[3].transform.GetChild(0);
         if (isBuy)
         {
             //重置刷新商店所需金币
             updateShopNeedGold = 2;
-            tran.GetChild(3).GetChild(1).GetComponent<Text>().text = updateShopNeedGold.ToString();
-            //标题
-            tran.GetChild(0).GetComponent<Image>().sprite = GameResources.GuanQiaEventImg[6];
-            //刷新按钮
-            tran.GetChild(3).gameObject.SetActive(true);
-            //奇遇刷新按钮
-            tran.GetChild(5).gameObject.SetActive(false);
+            ui.SetTrade(updateShopNeedGold);
             UpdateShoppingList(0);
         }
         else
         {
             //奇遇刷新按钮
-            tran.GetChild(5).GetComponent<Button>().enabled = true;
-
-            tran.GetChild(0).GetComponent<Image>().sprite = GameResources.GuanQiaEventImg[5];
-            tran.GetChild(3).gameObject.SetActive(false);
-            tran.GetChild(5).gameObject.SetActive(true);
+            ui.SetRecruit();
             UpdateQiYvWoods();
         }
     }
 
     //获得或购买三选物品
-    private void GetOrBuyCards(bool isBuy, int money, GameCardType cardType, int cardId, int cardLevel, int btnIndex)
+    private void GetOrBuyCards(bool isBuy, int cost, NowLevelAndHadChip card, GameCardInfo info, int btnIndex)
     {
+        var sanXuan =
+            eventsWindows[3]
+                .GetComponent<SanXuanWindowUi>(); //.transform.GetChild(0).GetChild(1).GetChild(btnIndex).gameObject.SetActive(false);
+        var ui = sanXuan.GameCards[btnIndex];
         if (isBuy)
         {
             PlayAudioClip(13);
-            if (money > GoldForCity)
+            if (GoldForCity < cost)
             {
                 PlayerDataForGame.instance.ShowStringTips(DataTable.GetStringText(56));
                 return;
             }
-            else
-            {
-                GoldForCity -= money;
-                playerInfoObj.transform.GetChild(1).GetChild(0).GetComponent<Text>().text = GoldForCity.ToString();
-                eventsWindows[3].transform.GetChild(0).GetChild(1).GetChild(btnIndex).gameObject.SetActive(false);
-            }
+
+            GoldForCity -= cost;
+            playerInfoObj.transform.GetChild(1).GetChild(0).GetComponent<Text>().text = GoldForCity.ToString();
+
+            ui.Off();
         }
-        NowLevelAndHadChip nowLevelAndHadChip = new NowLevelAndHadChip().Instance(cardType,cardId,cardLevel);
-        CreateCardToList(nowLevelAndHadChip);
-        if (!isBuy)
-        {
-            PassGuanQia();
-        }
+
+        CreateCardToList(card, info);
+        if (!isBuy) PassGuanQia();
+
         if (shopInfoObj.activeSelf)
         {
             shopInfoObj.SetActive(false);
         }
-        GameObject obj = eventsWindows[3].transform.GetChild(0).GetChild(1).GetChild(btnIndex).GetChild(8).gameObject;
-        if (obj.activeSelf)
-        {
-            obj.SetActive(false);
-        }
+
+        ui.SetSelect(false); //GameObject obj = eventsWindows[3].transform.GetChild(0).GetChild(1).GetChild(btnIndex).GetChild(8).gameObject;
+        //if (obj.activeSelf)
+        //{
+        //    obj.SetActive(false);
+        //}
     }
 
     //初始化答题界面
@@ -1116,7 +1009,7 @@ public class WarsUIManager : MonoBehaviour
 
             var info = RandomPickFromRareClass((GameCardType)reward.CardType, reward.Rarity);
             var card = new NowLevelAndHadChip().Instance(info.Type, info.Id, reward.Star);
-            CreateCardToList(card);
+            CreateCardToList(card,info);
         }
         else
         {
@@ -1128,7 +1021,17 @@ public class WarsUIManager : MonoBehaviour
     }
 
     //根据稀有度返回随机id
-    public GameCardInfo RandomPickFromRareClass(GameCardType cardType,int rarity) => GameCardInfo.RandomPick(cardType, rarity);
+    public GameCardInfo RandomPickFromRareClass(GameCardType cardType,int rarity)
+    {
+        var info = GameCardInfo.RandomPick(cardType, rarity);
+        if (rarity == 1)
+        {
+            var cha = GameSystem.MapService.GetWhiteCard();
+            if(cha.IsCharacter) info.Rename(cha.Name, cha.Nickname, cha.Sign);
+        }
+
+        return info;
+    }
 
     //初始化卡牌列表
     private void InitCardListShow()
@@ -1159,10 +1062,10 @@ public class WarsUIManager : MonoBehaviour
     }
 
     //创建玩家卡牌
-    private void CreateCardToList(NowLevelAndHadChip card)
+    private void CreateCardToList(NowLevelAndHadChip card) => CreateCardToList(card, card.GetInfo());
+    private void CreateCardToList(NowLevelAndHadChip card, GameCardInfo info)
     {
         var re = GameResources;
-        var info = card.GetInfo();
         GameObject obj = Instantiate(cardForWarListPres, heroCardListObj.transform);
         var cardDrag = obj.GetComponent<CardForDrag>();
         cardDrag.Init(herosCardListTran, herosCardListScrollRect);
@@ -1294,7 +1197,7 @@ public class WarsUIManager : MonoBehaviour
     /// </summary>
     public void OnClickUpLevel()
     {
-        ShowOrHideGuideObj(2, false);
+        //ShowOrHideGuideObj(2, false);
         var baseCfg = DataTable.BaseLevel[cityLevel];
         if (GoldForCity < baseCfg.Cost)
         {
@@ -1439,36 +1342,36 @@ public class WarsUIManager : MonoBehaviour
     [SerializeField]
     GameObject[] guideObjs; // 指引objs 0:开始关卡 1:查看奇遇 2:升级按钮
 
-    //显示或隐藏指引
-    public void ShowOrHideGuideObj(int index, bool isShow)
-    {
-        if (isShow)
-        {
-            if (PlayerDataForGame.instance.GuideObjsShowed[index + 4] == 0)
-            {
-                guideObjs[index].SetActive(true);
-            }
-        }
-        else
-        {
-            if (PlayerDataForGame.instance.GuideObjsShowed[index + 4] == 0)
-            {
-                guideObjs[index].SetActive(false);
-                PlayerDataForGame.instance.GuideObjsShowed[index + 4] = 1;
-                switch (index)
-                {
-                    case 0:
-                        PlayerPrefs.SetInt(StringForGuide.guideStartGQ, 1);
-                        break;
-                    case 1:
-                        PlayerPrefs.SetInt(StringForGuide.guideCheckCardInfo, 1);
-                        break;
-                    default:
-                        break;
-                }
-            }
-        }
-    }
+    ////显示或隐藏指引
+    //public void ShowOrHideGuideObj(int index, bool isShow)
+    //{
+    //    if (isShow)
+    //    {
+    //        if (PlayerDataForGame.instance.GuideObjsShowed[index + 4] == 0)
+    //        {
+    //            guideObjs[index].SetActive(true);
+    //        }
+    //    }
+    //    else
+    //    {
+    //        if (PlayerDataForGame.instance.GuideObjsShowed[index + 4] == 0)
+    //        {
+    //            guideObjs[index].SetActive(false);
+    //            PlayerDataForGame.instance.GuideObjsShowed[index + 4] = 1;
+    //            switch (index)
+    //            {
+    //                case 0:
+    //                    PlayerPrefs.SetInt(StringForGuide.guideStartGQ, 1);
+    //                    break;
+    //                case 1:
+    //                    PlayerPrefs.SetInt(StringForGuide.guideCheckCardInfo, 1);
+    //                    break;
+    //                default:
+    //                    break;
+    //            }
+    //        }
+    //    }
+    //}
 
     bool isShowQuitTips = false;
 

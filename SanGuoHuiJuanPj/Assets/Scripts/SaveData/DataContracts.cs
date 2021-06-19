@@ -118,14 +118,16 @@ public class RedemptionCodeGot
 [Skip]
 public class NowLevelAndHadChip : IGameCard,IComparable<NowLevelAndHadChip>
 {
-    public static NowLevelAndHadChip Instance(GameCardDto dto)
+    public static NowLevelAndHadChip Instance(GameCardDto dto) => Instance(dto.CardId,(int)dto.Type,dto.Level,dto.Chips);
+
+    public static NowLevelAndHadChip Instance(int cardId,int type,int level,int chips = 0)
     {
         return new NowLevelAndHadChip
         {
-            id = dto.CardId, 
-            chips = dto.Chips, 
-            level = dto.Level, 
-            typeIndex = (int) dto.Type
+            id = cardId,
+            chips = chips, 
+            level = level, 
+            typeIndex = type
         };
     }
     public int id;          //id

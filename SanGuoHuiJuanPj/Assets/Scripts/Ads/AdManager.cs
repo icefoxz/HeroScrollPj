@@ -80,7 +80,7 @@ public class AdManager : AdControllerBase
         Queue = new QueueByRatio<AdControllerBase>(
             Series.Join(Controllers,ad=>ad,c=>c.Key,(_,c)=>c.Value).ToArray()
         );
-        AdAgent.Init(this);
+        AdAgent?.Init(this);
     }
 
     public override void RequestShow(UnityAction<bool, string> requestAction)
@@ -118,16 +118,16 @@ public class AdManager : AdControllerBase
     private void ControllersAdResolve()
     {
 #if !UNITY_EDITOR
-       // if(AdmobController.Status == AdAgentBase.States.Closed ||
-       //    AdmobController.Status == AdAgentBase.States.FailedToLoad ||
-       //    AdmobController.Status == AdAgentBase.States.None)
-       //     AdmobController.OnLoadAd(AdmobRetryCallBack);
-       // if(DoNewAdController.Status == AdAgentBase.States.Closed ||
-       //    DoNewAdController.Status == AdAgentBase.States.FailedToLoad ||
-       //    DoNewAdController.Status == AdAgentBase.States.None) DoNewAdController.RequestLoad(null);
-       // if(MoPubController.Status == AdAgentBase.States.Closed ||
-       //    MoPubController.Status == AdAgentBase.States.FailedToLoad ||
-       //    MoPubController.Status == AdAgentBase.States.None) MoPubController.RequestLoad(null);
+        if (DoNewAdController.Status == AdAgentBase.States.Closed ||
+            DoNewAdController.Status == AdAgentBase.States.FailedToLoad ||
+            DoNewAdController.Status == AdAgentBase.States.None) DoNewAdController.RequestLoad(null);
+        // if(AdmobController.Status == AdAgentBase.States.Closed ||
+        //    AdmobController.Status == AdAgentBase.States.FailedToLoad ||
+        //    AdmobController.Status == AdAgentBase.States.None)
+        //     AdmobController.OnLoadAd(AdmobRetryCallBack);
+        // if(MoPubController.Status == AdAgentBase.States.Closed ||
+        //    MoPubController.Status == AdAgentBase.States.FailedToLoad ||
+        //    MoPubController.Status == AdAgentBase.States.None) MoPubController.RequestLoad(null);
 #endif
     }
 

@@ -37,6 +37,7 @@ public class SignalRClient : MonoBehaviour
     public int HandShakeTimeoutSecs = 10;
     public ServerPanel ServerPanel;
     public event UnityAction<HubConnectionState> OnStatusChanged;
+    public event UnityAction OnConnected; 
     public static SignalRClient instance;
     private CancellationTokenSource cancellationTokenSource;
 
@@ -62,11 +63,12 @@ public class SignalRClient : MonoBehaviour
     {
         //Login();
         _actions = new Dictionary<string, UnityAction<string>>();
-        OnStatusChanged += s => DebugLog($"状态更新[{s}]!");
+        OnStatusChanged += msg => DebugLog($"链接状态更变：{msg}");
         if(ServerPanel!=null) ServerPanel.Init(this);
         SubscribeAction(EventStrings.SR_UploadPy, OnServerCalledUpload);
         ApiPanel.Init(this);
     }
+
 
     async void OnApplicationQuit()
     {
@@ -179,7 +181,6 @@ public class SignalRClient : MonoBehaviour
     {
         try
         {
-
             if (_hub != null)
             {
                 _hub.Closed -= OnConnectionClose;

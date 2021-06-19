@@ -25,20 +25,18 @@ public class WarDataMocker : MonoBehaviour
 #if UNITY_EDITOR
     private void Awake()
     {
+        GameSystem.instance.Init();
         StartCoroutine(Init());
-        GameSystem.OnWarSceneInit += () =>
-        {
-            playerData.WarReward = new WarReward("test", warId, 0);
-            playerData.WarType = PlayerDataForGame.WarTypes.Expedition;
-            playerData.selectedWarId = warId;
-            playerData.zhanYiColdNums = gold;
-            WarsUIManager.instance.cityLevel = cityLevel;
-        };
     }
 
     IEnumerator Init()
     {
         yield return new WaitUntil(() => GameSystem.IsInit);
+        playerData.WarReward = new WarReward("test", warId, 0);
+        playerData.WarType = PlayerDataForGame.WarTypes.Expedition;
+        playerData.selectedWarId = warId;
+        playerData.zhanYiColdNums = gold;
+        WarsUIManager.instance.cityLevel = cityLevel;
         PrepareCards();
     }
 #endif

@@ -14,6 +14,6 @@ public class UnityApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        DoNewsAdManagerHolder.init(this,false);//是否是测试环境 false代表正式环境 true代表测试环境，接入一律写false
+        DoNewsAdManagerHolder.init(this);//是否是测试环境 false代表正式环境 true代表测试环境，接入一律写false
     }
 }

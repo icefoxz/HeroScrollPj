@@ -10,7 +10,6 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
@@ -28,7 +27,7 @@ import java.util.HashMap;
  * author:yaoyaozhong
  **/
 public class DnUnitySDK {
-
+    private static final String TAG = "DnUnitySDK";
     private static HashMap<String, DoNewsAdNative> hashMap = new HashMap<>();//缓存不同的广告位id
 
     private DnUnitySDK() {
@@ -69,7 +68,7 @@ public class DnUnitySDK {
             @Override
             public void run() {
                 if (rootParam == null) {
-                    Log.d("DnLogMsg", "rootParam is not null：");
+                    Log.d(TAG, "UnitySDK 开屏 rootParam is not null：");
                     rootParam = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
                 }
                 if (splashLayout == null) {
@@ -79,19 +78,19 @@ public class DnUnitySDK {
                     splashLayout.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
                         @Override
                         public void onViewAttachedToWindow(View v) {
-                            Log.d("DnLogMsg", "onViewAttachedToWindow：");
-                            showSplashAD(splashLayout,positionId,activity,splashCallBack);
+                            Log.d(TAG, "UnitySDK 开屏  onViewAttachedToWindow：");
+                            showSplashAD(splashLayout, positionId, activity, splashCallBack);
                         }
 
                         @Override
                         public void onViewDetachedFromWindow(View v) {
-                            Log.d("DnLogMsg", "onViewDetachedFromWindow：");
+                            Log.d(TAG, "UnitySDK 开屏  onViewDetachedFromWindow：");
                         }
                     });
                     activity.addContentView(splashLayout, rootParam);
-                }else{
-                    Log.d("DnLogMsg", "splashLayout is not null");
-                    showSplashAD(splashLayout,positionId,activity,splashCallBack);
+                } else {
+                    Log.d(TAG, "UnitySDK 开屏  splashLayout is not null");
+                    showSplashAD(splashLayout, positionId, activity, splashCallBack);
                 }
             }
         });
@@ -106,17 +105,20 @@ public class DnUnitySDK {
         doNewsAdNative.onCreateAdSplash(activity, doNewsAD, new DoNewsAdNative.SplashListener() {
             @Override
             public void onNoAD(String s) {//未获取到填充广告 s代表错误信息 可以通过sendMsg回调给游戏
+                Log.d(TAG, "UnitySDK 开屏  没有填充：" + s);
                 splashCallBack.onNoAD(s);
                 splashLayout.removeAllViews();
             }
 
             @Override
             public void onClicked() {//点击广告
+                Log.d(TAG, "UnitySDK 开屏  点击事件");
                 splashCallBack.onAdClick();
             }
 
             @Override
             public void onShow() {//开始展示广告
+                Log.d(TAG, "UnitySDK 开屏  开始展示");
                 splashCallBack.onShow();
             }
 
@@ -127,11 +129,13 @@ public class DnUnitySDK {
 
             @Override
             public void onPresent() {//广告曝光
+                Log.d(TAG, "UnitySDK 开屏  曝光事件");
                 splashCallBack.onPresent();
             }
 
             @Override
             public void onADDismissed() {//广告消失，跳转界面
+                Log.d(TAG, "UnitySDK 开屏  关闭事件");
                 splashCallBack.onADDismissed();
                 splashLayout.removeAllViews();
             }
@@ -145,8 +149,9 @@ public class DnUnitySDK {
      * @param isDebug
      */
     public void init(boolean isDebug) {
+        Log.d(TAG, "UnitySDK 开始调用初始化方法");
         final Activity unityActivity = getActivity();
-        DoNewsAdManagerHolder.init(unityActivity, isDebug);//是否是测试环境 false代表正式环境 true代表测试环境，接入一律写false
+        DoNewsAdManagerHolder.init(unityActivity);
     }
 
     private RelativeLayout bannerLayout;
@@ -191,7 +196,7 @@ public class DnUnitySDK {
                         }
 
                     } else {
-                        bannerCallBack.onAdError("广告宽度不能小于屏幕宽度的百分之75");
+                        bannerCallBack.onAdError("UnitySDK banner 广告宽度不能小于屏幕宽度的百分之75");
                     }
                 } else {
                     widthDP = px2dip(unityActivity, (float) width);
@@ -199,16 +204,16 @@ public class DnUnitySDK {
                 int heightDP = 0;
 
                 if (height <= 0) {
-                    bannerCallBack.onAdError("广告宽度不能小于0");
+                    bannerCallBack.onAdError("UnitySDK banner 广告宽度不能小于0");
                     return;
                 } else {
                     heightDP = px2dip(unityActivity, (float) height);//插屏的高度
                 }
-                if(bannerLayoutParam==null){
+                if (bannerLayoutParam == null) {
                     bannerLayoutParam = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
                 }
 
-                if(bannerLayout==null){
+                if (bannerLayout == null) {
                     //添加banner布局 通过addContentView()添加到UnityPlayerActivity里面
                     bannerLayout = new RelativeLayout(unityActivity);
                     bannerLayout.setBackgroundColor(0x00000000);
@@ -219,18 +224,18 @@ public class DnUnitySDK {
                     bannerLayout.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
                         @Override
                         public void onViewAttachedToWindow(View v) {
-                            Log.d("DnLogMsg", "banner onViewAttachedToWindow：");
-                            showBannerAD(unityActivity,bannerLayout,positionId, finalWidthDP, finalHeightDP,bannerCallBack);
+                            Log.d(TAG, "UnitySDK banner onViewAttachedToWindow：");
+                            showBannerAD(unityActivity, bannerLayout, positionId, finalWidthDP, finalHeightDP, bannerCallBack);
                         }
 
                         @Override
                         public void onViewDetachedFromWindow(View v) {
-                            Log.d("DnLogMsg", "banner onViewDetachedFromWindow：");
+                            Log.d(TAG, "UnitySDK banner onViewDetachedFromWindow：");
                         }
                     });
                     int screenHeight = (int) getHeight(getActivity());
-                    Log.d("DnLogMsg", "屏幕高：" + screenHeight);
-                    Log.d("DnLogMsg", "屏幕宽：" + getScreenWidthpx(getActivity()));
+                    Log.d(TAG, "UnitySDK banner屏幕高：" + screenHeight);
+                    Log.d(TAG, "UnitySDK banner 屏幕宽：" + getScreenWidthpx(getActivity()));
                     int marginLP = 0;
                     if (marginL < 0) {
                         marginLP = 0;
@@ -249,10 +254,10 @@ public class DnUnitySDK {
                         marginTP = 0;
                         if (marginB > 0) {
                             marginTP = screenHeight - height - marginB;
-                            Log.d("DnLogMsg", "banner 在屏幕底部:");
+                            Log.d(TAG, "UnitySDK banner 在屏幕底部:");
                         }
                     } else {
-                        Log.d("DnLogMsg", "banner 在屏幕顶部:");
+                        Log.d(TAG, "UnitySDK banner 在屏幕顶部:");
                         marginTP = marginT;
                     }
                     int marginBP = 0;
@@ -261,21 +266,22 @@ public class DnUnitySDK {
                     } else {
                         marginBP = marginB;
                     }
-                    if(bannerRootParam ==null){
+                    if (bannerRootParam == null) {
                         bannerRootParam = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
                     }
                     bannerRootParam.setMargins(marginLP, marginTP, marginRP, marginBP);
                     unityActivity.addContentView(bannerLayout, bannerRootParam);
-                }else{
-                    Log.d("DnLogMsg", "bannerLayout is not null：");
-                    showBannerAD(unityActivity,bannerLayout,positionId,widthDP,heightDP,bannerCallBack);
+                } else {
+                    Log.d(TAG, "UnitySDK bannerLayout is not null：");
+                    showBannerAD(unityActivity, bannerLayout, positionId, widthDP, heightDP, bannerCallBack);
                 }
             }
         });
 
     }
 
-    private void showBannerAD(Activity activity,final RelativeLayout bannerLayout, String positionId, int widthDP, int heightDP, final BannerCallBack bannerCallBack) {
+    private void showBannerAD(Activity activity, final RelativeLayout bannerLayout, String positionId, int widthDP, int heightDP, final BannerCallBack bannerCallBack) {
+        Log.d(TAG, "开始调用unitySDK中banner方法");
         DoNewsAD doNewsAD = new DoNewsAD.Builder()
                 .setPositionid(positionId)//广告位ID
                 .setExpressViewWidth(widthDP)//插屏宽度 dp
@@ -287,33 +293,38 @@ public class DnUnitySDK {
 
             @Override
             public void onAdError(String s) {
-                bannerLayout.removeAllViews();
+                Log.d(TAG, "unitySDK中banner 错误：" + s);
                 bannerCallBack.onAdError(s);
+                bannerLayout.removeAllViews();
             }
 
             @Override
             public void showAd() {
+                Log.d(TAG, "unitySDK中banner开始展示");
                 bannerCallBack.onAdShow();
             }
 
             @Override
             public void onRenderSuccess(View view) {
-
+                Log.d(TAG, "unitySDK中banner渲染成功");
             }
 
             @Override
             public void onADExposure() {
+                Log.d(TAG, "unitySDK中banner曝光事件");
                 bannerCallBack.onAdExposure();
             }
 
             @Override
             public void onADClosed() {
+                Log.d(TAG, "unitySDK中banner关闭事件");
                 bannerLayout.removeAllViews();
                 bannerCallBack.onAdClose();
             }
 
             @Override
             public void onADClicked() {
+                Log.d(TAG, "unitySDK中banner点击事件");
                 bannerCallBack.onAdClick();
             }
         });
@@ -328,6 +339,7 @@ public class DnUnitySDK {
      * @return
      */
     public void requestDirectAd(final String positionId, final RewardVideoCallBack rewardVideoCallBack) {
+        Log.d(TAG, "unitySDK中开始请求激励视频 直接播放");
         final Activity unityActivity = getActivity();
         unityActivity.runOnUiThread(new Runnable() {
             @Override
@@ -341,26 +353,31 @@ public class DnUnitySDK {
                 doNewsAdNative.onCreateRewardAd(unityActivity, doNewsAD, new DoNewsAdNative.RewardVideoAdListener() {
                     @Override
                     public void onError(int code, String msg) {//请求激励视频出错
+                        Log.d(TAG, "unitySDK中 激励视频在线播放 没有填充或者播放错误:" + msg);
                         rewardVideoCallBack.onAdError(msg);
                     }
 
                     @Override
                     public void onAdShow() {//视频显示
+                        Log.d(TAG, "unitySDK中 激励视频在线播放 开始播放 onAdShow");
                         rewardVideoCallBack.onAdShow();
                     }
 
                     @Override
                     public void onAdVideoBarClick() {//点击激励视频
+                        Log.d(TAG, "unitySDK中 激励视频在线播放 点击事件 onAdVideoBarClick");
                         rewardVideoCallBack.onAdClick();
                     }
 
                     @Override
                     public void onAdClose() {//视频关闭
+                        Log.d(TAG, "unitySDK中 激励视频在线播放 关闭事件 onAdClose");
                         rewardVideoCallBack.onAdClose();
                     }
 
                     @Override
                     public void onVideoComplete() {//视频播放完成
+                        Log.d(TAG, "unitySDK中 激励视频在线播放 播放完成事件 onVideoComplete");
                         rewardVideoCallBack.onVideoComplete();
                     }
 
@@ -368,14 +385,17 @@ public class DnUnitySDK {
                     @Override
                     public void onRewardVerify(boolean rewardVerify) {//获取奖励回调
                         if (rewardVerify) {
+                            Log.d(TAG, "unitySDK中 激励视频在线播放 奖励事件 成功");
                             rewardVideoCallBack.onRewardVerify(true);
                         } else {
+                            Log.d(TAG, "unitySDK中 激励视频在线播放 奖励事件 失败");
                             rewardVideoCallBack.onRewardVerify(false);
                         }
                     }
 
                     @Override
                     public void onSkippedVideo() {//跳过回调
+                        Log.d(TAG, "unitySDK中 激励视频在线播放 跳过时间 onSkippedVideo");
                         rewardVideoCallBack.onSkippedVideo();
                     }
                 });
@@ -392,12 +412,13 @@ public class DnUnitySDK {
      * @return
      */
     public void requestLoadVideo(final String positionId, final RewardVideoPloadCallBack rewardVideoPloadCallBack) {
+        Log.d(TAG, "unitySDK中 激励视频预加载方法 开始调用");
         final Activity unityActivity = getActivity();
         unityActivity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 DoNewsAD doNewsAD;//多牛Bean
-                DoNewsAdNative doNewsAdNative;
+                final DoNewsAdNative doNewsAdNative;
                 doNewsAD = new DoNewsAD.Builder()
                         .setPositionid(positionId)//广告位ID
                         .build();
@@ -405,42 +426,51 @@ public class DnUnitySDK {
                 doNewsAdNative.preLoadRewardAd(unityActivity, doNewsAD, new DoNewsAdNative.RewardVideoAdCacheListener() {
                     @Override
                     public void onError(int code, String msg) {//请求激励视频出错
+                        Log.d(TAG, "多牛UnitySDK激励视频 填充失败：" + msg);
                         rewardVideoPloadCallBack.onAdError(msg);
                     }
 
                     @Override
                     public void onADLoad() {
+                        Log.d(TAG, "多牛UnitySDK激励视频 onADLoad");
                         rewardVideoPloadCallBack.onADLoad();
                     }
 
                     @Override
                     public void onVideoCached() {
+                        Log.d(TAG, "多牛UnitySDK激励视频 : onVideoCached");
+                        hashMap.put(positionId, doNewsAdNative);
                         rewardVideoPloadCallBack.onVideoCached();
                     }
 
                     @Override
                     public void onAdShow() {//视频显示
+                        Log.d(TAG, "多牛UnitySDK激励视频 曝光时间：onAdShow");
                         rewardVideoPloadCallBack.onAdShow();
                     }
 
                     @Override
                     public void onAdVideoBarClick() {//点击激励视频
+                        Log.d(TAG, "多牛UnitySDK激励视频缓 点击事件 onAdVideoBarClick");
                         rewardVideoPloadCallBack.onAdClick();
                     }
 
                     @Override
                     public void onAdClose() {//视频关闭
+                        Log.d(TAG, "多牛UnitySDK激励视频 关闭事件 onAdClose");
                         rewardVideoPloadCallBack.onAdClose();
                     }
 
                     @Override
                     public void onVideoComplete() {//视频播放完成
+                        Log.d(TAG, "多牛UnitySDK激励视频 播放完成 onVideoComplete");
                         rewardVideoPloadCallBack.onVideoComplete();
                     }
 
                     //视频播放完成后，奖励验证回调，rewardVerify：是否有效，发奖励比例要以此为接口为准。
                     @Override
                     public void onRewardVerify(boolean rewardVerify) {//获取奖励回调
+                        Log.d(TAG, "多牛UnitySDK激励视频 奖励回调 onRewardVerify：" + rewardVerify);
                         if (rewardVerify) {
                             rewardVideoPloadCallBack.onRewardVerify(true);
                         } else {
@@ -448,14 +478,13 @@ public class DnUnitySDK {
                         }
                     }
                 });
-                hashMap.put(positionId, doNewsAdNative);
             }
         });
     }
 
     /**
      * 预加载激励视频显示方法
-     * 这个方法名已经被我改了，因为原名[requestRewardVideo]获取不到。@Leo
+     * 这个方法名已经被我改了，因为原名[requestRVPloadShow]获取不到。@Leo
      * @param positionId
      */
     public void requestShowVideo(final String positionId) {
@@ -464,11 +493,11 @@ public class DnUnitySDK {
             @Override
             public void run() {
                 if (hashMap.size() > 0) {
+                    Log.d(TAG, "多牛UnitySDK激励视频 hashmap size 大于0");
                     if (hashMap.get(positionId) != null) {
-                        if (hashMap.get(positionId).isLoadReady()) {
-                            hashMap.get(positionId).showRewardAd();//播放
-                            hashMap.remove(positionId);
-                        }
+                        Log.d(TAG, "多牛UnitySDK激励视频 hashMap.get(positionId) 不能为空 调用播放方法");
+                        hashMap.get(positionId).showRewardAd();//播放
+                        hashMap.remove(positionId);
                     }
                 } else {
                     Toast.makeText(unityActivity, "暂时没有预加载的激励视频，请稍后再试！", Toast.LENGTH_SHORT).show();
@@ -488,7 +517,7 @@ public class DnUnitySDK {
      * @return
      */
     public void requestInstertialAd(final String positionId, final int width, final int height, final InsterStialCallBack insterStialCallBack) {
-        Log.d("requestInstertialAd", "insterstial width:" + width);
+        Log.d(TAG, "UnitySDK 调用插屏广告 width:" + width);
         final Activity unityActivity = getActivity();
         unityActivity.runOnUiThread(new Runnable() {
             @Override
@@ -513,26 +542,31 @@ public class DnUnitySDK {
                 doNewsAdNative.onCreateInterstitial(getActivity(), doNewsAD, new DoNewsAdNative.DonewsInterstitialADListener() {
                     @Override
                     public void onAdError(final String s) {//没有获取到广告
+                        Log.d(TAG, "UnitySDK 调用插屏广告 没有填充:" + s);
                         insterStialCallBack.onAdError(s);
                     }
 
                     @Override
                     public void showAd() {//显示广告
+                        Log.d(TAG, "UnitySDK 调用插屏广告 开始显示事件: showAd");
                         insterStialCallBack.onAdShow();
                     }
 
                     @Override
                     public void onADExposure() {//广告曝光
+                        Log.d(TAG, "UnitySDK 调用插屏广告 曝光事件: onADExposure");
                         insterStialCallBack.onADExposure();
                     }
 
                     @Override
                     public void onADClosed() {//广告关闭
+                        Log.d(TAG, "UnitySDK 调用插屏广告 关闭事件: onADClosed");
                         insterStialCallBack.onAdClose();
                     }
 
                     @Override
                     public void onADClicked() {//广告点击
+                        Log.d(TAG, "UnitySDK 调用插屏广告 点击事件: onADClicked");
                         insterStialCallBack.onAdClick();
                     }
 

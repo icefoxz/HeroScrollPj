@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Assets.HttpUnitScripts;
 using Assets.Scripts.Utl;
 using UnityEngine;
 using UnityEngine.Events;
@@ -36,6 +37,8 @@ public class GameSystem : MonoBehaviour
     public static UnityAction OnWarSceneInit;
     public static UnityAction OnMainSceneInit;
     private Queue<Func<bool>> InitQueue;
+
+    public static MapService MapService { get; private set; }
 
     void Awake()
     {
@@ -149,4 +152,9 @@ public class GameSystem : MonoBehaviour
 
     public void RegNextSceneLoadAction(UnityAction action) => SceneLoadActions.Add(action);
 
+    public void BeginAllServices()
+    {
+        MapService = new MapService();
+        MapService.Init();
+    }
 }
