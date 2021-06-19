@@ -10,57 +10,57 @@ public class SanGuoTvUi : MonoBehaviour
 {
     public Text[] contents;
     public Text[] clocks;
-    private float lastTime;
-    public int Secs = 60;
+    public int Secs = 60 * 5;
     
     private void Start()
     {
         GenerateReport();
+        StartCoroutine(CountdownTimer());
     }
 
-    void Update()
+    private IEnumerator CountdownTimer()
     {
-        lastTime += Time.deltaTime;
-        if (lastTime <= Secs)return;
-        lastTime = 0;
-        GenerateReport();
-    }
-
-    //每个半个小时更新报道一次
-    public void GenerateReport()
-    {
-        var now = DateTime.Now;
-        var result = DataTable.BaYeTv.Values
-            .Select(obj =>
-            {
-                return new Report
-                {
-                    Id = obj.Id,
-                    Weight = obj.Weight, //权重
-                    Text = obj.Text, //文本
-                    Time = obj.Time, //时间
-                    Format = obj.Format //格式
-                };
-            }).Where(r => r.Time.IsTableTimeInRange(now))
-            .Pick(contents.Length).ToList();
-        for (int i = 0; i < result.Count; i++)
+        while (true)
         {
-            clocks[i].text = SystemTimer.instance.CurrentClock;
-            contents[i].text = GetFormattedText(result[i]);
+            GenerateReport();
+            yield return new WaitForSeconds(Secs);
         }
     }
 
-    private string GetFormattedText(Report report)
+    //每个5分钟更新报道一次
+    public void GenerateReport()
+    {
+        var now = DateTime.Now;
+        var npcs = DataTable.BaYeTv.Values
+            .Select(obj => new Speech
+            {
+                Id = obj.Id,
+                Weight = obj.Weight, //权重
+                Text = obj.Text, //文本
+                Time = obj.Time, //时间
+                Format = obj.Format //格式
+            }).Where(r => r.Time.IsTableTimeInRange(now))
+            .Pick(contents.Length).ToList();
+
+        for (int i = 0; i < contents.Length; i++)
+        {
+            var card = GameSystem.MapService.GetWhiteCard();
+            contents[i].text = card.IsCharacter ? $"{card.Name} : {card.Sign}" : GetFormattedText(npcs[i]);
+            clocks[i].text = SystemTimer.instance.CurrentClock;
+        }
+    }
+
+    private string GetFormattedText(Speech speech)
     {
         object[] names = DataTable.BaYeName.Values.Select(obj => new Character
         {
             Name = obj.Name,
             Weight = obj.Weight
-        }).Pick(report.Format).Select(r => r.Name).ToArray();
-        return string.Format(report.Text, names);
+        }).Pick(speech.Format).Select(r => r.Name).ToArray();
+        return string.Format(speech.Text, names);
     }
 
-    private class Report : IWeightElement
+    private class Speech : IWeightElement
     {
         public int Id{ get; set; }
         public int Weight { get; set; }

@@ -54,27 +54,19 @@ public static class XDebug
 
     public static void Log<T>(string message,[CallerMemberName] string methodName = null,T type = default) where T : class
     {
-#if UNITY_EDITOR
         Debug.Log($"{type?.GetType().Name}:{methodName}() {message}");
-#endif
     }
     public static void LogError<T>(string message,[CallerMemberName] string methodName = null,T type = default) where T : class
     {
-#if UNITY_EDITOR
         Debug.LogError($"{type?.GetType().Name}:{methodName}() {message}");
-#endif
     }
     public static void LogError(string message,string typeName,[CallerMemberName] string methodName = null) 
     {
-#if UNITY_EDITOR
         Debug.LogError($"{typeName}:{methodName}() {message}");
-#endif
     }
     public static void Log(Type type,string message,[CallerMemberName] string methodName = null)
     {
-#if UNITY_EDITOR
         Debug.Log($"{type.Name}:{methodName}() {message}");
-#endif
     }
 
     public static XDebugException Throw<T>(string message, [CallerMemberName] string methodName = null,
@@ -83,11 +75,21 @@ public static class XDebug
     {
         return new XDebugException(message, methodName, typeName);
     }
+    public static XDebugException Throw(Exception exception,string message,string typeName,[CallerMemberName] string methodName = null)
+    {
+        return new XDebugException(exception, message, methodName, typeName);
+    }
 
     public class XDebugException : Exception
     {
         public XDebugException(string message = null,string methodName = null,string typeName = null): base($"{typeName}.{methodName}():{message}")
         {
+        }
+
+        public XDebugException(Exception exception = null, string message = null, string methodName = null,
+            string typeName = null) : base($"{typeName}.{methodName}():{message}", exception)
+        {
+
         }
     }
 

@@ -37,6 +37,7 @@ public class SignalRClient : MonoBehaviour
     public int HandShakeTimeoutSecs = 10;
     public ServerPanel ServerPanel;
     public event UnityAction<HubConnectionState> OnStatusChanged;
+    public event UnityAction OnConnected; 
     public static SignalRClient instance;
     private CancellationTokenSource cancellationTokenSource;
 
@@ -62,11 +63,12 @@ public class SignalRClient : MonoBehaviour
     {
         //Login();
         _actions = new Dictionary<string, UnityAction<string>>();
-        OnStatusChanged += s => DebugLog($"状态更新[{s}]!");
+        OnStatusChanged += msg => DebugLog($"链接状态更变：{msg}");
         if(ServerPanel!=null) ServerPanel.Init(this);
         SubscribeAction(EventStrings.SR_UploadPy, OnServerCalledUpload);
         ApiPanel.Init(this);
     }
+
 
     async void OnApplicationQuit()
     {
@@ -179,7 +181,6 @@ public class SignalRClient : MonoBehaviour
     {
         try
         {
-
             if (_hub != null)
             {
                 _hub.Closed -= OnConnectionClose;
@@ -273,10 +274,15 @@ public class SignalRClient : MonoBehaviour
         action?.Invoke(content);
     }
 
-    public async void Invoke(string method, UnityAction<string> recallAction , IViewBag bag = default,
-        CancellationToken cancellationToken = default)
+    public async void Invoke(string method, UnityAction<string> recallAction , IViewBag bag = default)
     {
-        var result = await Invoke(method, bag, cancellationToken);
+        var cs = new CancellationTokenSource();
+        var result = await Invoke(method, bag, cs.Token);
+        if (cs.IsCancellationRequested)
+        {
+            UnityMainThread.thread.RunNextFrame(() => recallAction?.Invoke("请求取消！"));
+            return;
+        }
         UnityMainThread.thread.RunNextFrame(()=>recallAction?.Invoke(result));
     }
 
@@ -287,14 +293,14 @@ public class SignalRClient : MonoBehaviour
             if (bag == default)
                 bag = ViewBag.Instance();
             var result = await _hub.InvokeCoreAsync(method, _stringType,
-                bag == null ? new object[0] : new object[] { CorrelateLib.Json.Serialize(bag)},
+                bag == null ? new object[0] : new object[] { Json.Serialize(bag)},
                 cancellationToken);
             return result?.ToString();
         }
         catch (Exception e)
         {
             XDebug.LogError<SignalRClient>($"Error on interpretation {method}:{e.Message}");
-            throw;
+            return $"请求异常: {e}";
         }
     }
 

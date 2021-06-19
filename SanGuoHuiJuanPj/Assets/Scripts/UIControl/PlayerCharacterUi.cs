@@ -102,7 +102,11 @@ public class PlayerCharacterUi : MonoBehaviour
         }
     }
 
-    private void OnCreateCharacterSuccess(ViewBag vb) => Show();
+    private void OnCreateCharacterSuccess(ViewBag vb)
+    {
+        Show();
+        UIManager.instance.RefreshPlayerInfoUi();
+    }
 
     private void SetAvailability(bool enable)
     {

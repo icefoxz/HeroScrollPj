@@ -204,8 +204,8 @@ public class GameCardInfo
 
     public int Id { get; }
     public GameCardType Type { get; }
-    public string Name { get; }
-    public string Intro { get; }
+    public string Name { get; private set; }
+    public string Intro { get; private set; }
     public string About { get; }
     public int Rare { get; }
     public int ForceId { get; }
@@ -250,6 +250,12 @@ public class GameCardInfo
             hpsMap.Add(index, hp);
             index++;
         }
+    }
+
+    public void Rename(string name, string nickname, string sign)
+    {
+        Name = name;
+        Intro = $"字 【{nickname}】\n {sign}";
     }
 
     public int GetDamage(int level) => damageMap[level];

@@ -30,13 +30,11 @@ public class ApiPanel : MonoBehaviour
 
 
     public void Invoke(UnityAction<ViewBag> successAction, UnityAction<string> failedAction, string method,
-        IViewBag bag = default,
-        CancellationToken cancellationToken = default) =>
-        Invoke(successAction, failedAction, method, bag, true, cancellationToken);
+        IViewBag bag = default) =>
+        Invoke(successAction, failedAction, method, bag, true);
 
     public void Invoke(UnityAction<ViewBag> successAction, UnityAction<string> failedAction, string method,
-        IViewBag bag,bool closeBusyAfterInvoke,
-        CancellationToken cancellationToken = default)
+        IViewBag bag,bool closeBusyAfterInvoke)
     {
         SetBusy(this);
 #if UNITY_EDITOR
@@ -52,7 +50,7 @@ public class ApiPanel : MonoBehaviour
             if (viewBag == null) failedAction?.Invoke(result);
             else successAction.Invoke(viewBag);
             if(closeBusyAfterInvoke) SetBusy(false);
-        }, bag, cancellationToken);
+        }, bag);
     }
 
     public async void SyncSaved(UnityAction onCompleteAction)

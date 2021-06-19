@@ -13,15 +13,13 @@ public class LocalStamina
     public int MaxValue { get; }
     public bool IsStopIncrease => Value >= IncreaseLimit;
 
-    public LocalStamina(long seed,int defaultValue, int secsPerStamina, int increaseLimit, int maxValue)
+    public LocalStamina(int defaultValue, int secsPerStamina, int increaseLimit, int maxValue)
     {
-        if (seed == default) seed = SysTime.UnixNow;
-        Seed = seed;
+        Seed = SysTime.UnixNow;
         DefaultValue = defaultValue;
         SecsPerStamina = secsPerStamina;
         IncreaseLimit = increaseLimit;
         MaxValue = maxValue;
-        UpdateStamina();
     }
 
     public void AddStamina(int value) => SetValue(Value + value);
@@ -31,7 +29,7 @@ public class LocalStamina
     {
         DefaultValue = value;
         UpdateValue = 0;
-        if (Value < IncreaseLimit) return;//如果体力小于自增上限，无需处理(体力还继续更新)
+        if (!IsStopIncrease) return;//如果体力小于自增上限，无需处理(体力还继续更新)
         if (Value > MaxValue)//如果体力大于极限，设极限值。
             DefaultValue = MaxValue;
         Seed = SysTime.UnixNow;//记录当前数据修改时间

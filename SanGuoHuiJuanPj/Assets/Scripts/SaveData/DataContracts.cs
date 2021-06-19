@@ -118,14 +118,16 @@ public class RedemptionCodeGot
 [Skip]
 public class NowLevelAndHadChip : IGameCard,IComparable<NowLevelAndHadChip>
 {
-    public static NowLevelAndHadChip Instance(GameCardDto dto)
+    public static NowLevelAndHadChip Instance(GameCardDto dto) => Instance(dto.CardId,(int)dto.Type,dto.Level,dto.Chips);
+
+    public static NowLevelAndHadChip Instance(int cardId,int type,int level,int chips = 0)
     {
         return new NowLevelAndHadChip
         {
-            id = dto.CardId, 
-            chips = dto.Chips, 
-            level = dto.Level, 
-            typeIndex = (int) dto.Type
+            id = cardId,
+            chips = chips, 
+            level = level, 
+            typeIndex = type
         };
     }
     public int id;          //id
@@ -255,8 +257,8 @@ public class BaYeCityEvent
     public List<int> ExpList { get; set; } = new List<int>();
     public List<int> WarIds { get; set; } = new List<int>();
     public bool[] PassedStages { get; set; } = new bool[0];
-    public int CityId { get; set; } = -1;
-    public int EventId { get; set; } = -1;
+    public int CityId { get; set; }
+    public int EventId { get; set; }
 }
 [Skip]
 public class BaYeStoryEvent

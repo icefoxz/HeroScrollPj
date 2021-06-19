@@ -32,11 +32,7 @@ public class PlayerInfoUi : MonoBehaviour
         YuQue.text = PlayerDataForGame.instance.pyData.YvQue.ToString();
         Exp.Set(PlayerDataForGame.instance.pyData.Exp, maxExp);
         var cha = PlayerDataForGame.instance.Character;
-        if (cha != null)
-        {
-            CharacterName.text = cha.Name;
-            CharacterNickname.text = cha.Nickname;
-        }
+        if (cha != null) UpdateCharacter(cha);
         //货币 
         UpdateZhanLing();
     }

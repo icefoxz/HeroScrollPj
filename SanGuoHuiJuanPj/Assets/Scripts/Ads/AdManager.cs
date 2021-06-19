@@ -17,7 +17,8 @@ public class AdManager : AdControllerBase
         Unity,
         Admob,
         DoNew,
-        MoPub
+        MoPub,
+        IronSource
     }
 
     public AdAgentBase adAgent;
@@ -25,16 +26,18 @@ public class AdManager : AdControllerBase
     private bool isInit;
     public AdAgentBase AdAgent => adAgent;
     public DoNewAdController DoNewAdController { get; private set; }
-    public AdmobController AdmobController { get; private set; }
-    public UnityAdController UnityAdController { get; private set; }
-    public MoPubController MoPubController { get; private set; }
-    public override AdAgentBase.States Status => AdmobController.Status;
+    //public AdmobController AdmobController { get; private set; }
+    //public UnityAdController UnityAdController { get; private set; }
+    //public MoPubController MoPubController { get; private set; }
+    public IronSourceController IronSourceController { get; private set; }
+    public override AdAgentBase.States Status => AdAgentBase.States.Loaded;
     [Header("广告播放顺序")]public Ads[] Series;
     [Header("广告源比率")]
-    public int UnityRatio = 1;
-    public int AdmobRatio = 1;
+    //public int UnityRatio = 1;
+    //public int AdmobRatio = 1;
     public int DoNewRatio = 2;
-    public int MoPubRatio = 1;
+    //public int MoPubRatio = 1;
+    public int IronSourceRatio = 3;
     private QueueByRatio<AdControllerBase> Queue;
 
     private Dictionary<Ads, (int, AdControllerBase)> Controllers
@@ -45,10 +48,11 @@ public class AdManager : AdControllerBase
             {
                 _controllers = new Dictionary<Ads, (int, AdControllerBase)>
                 {
-                    {Ads.Unity, (UnityRatio, UnityAdController)},
-                    {Ads.Admob, (AdmobRatio, AdmobController)},
+                    //{Ads.Unity, (UnityRatio, UnityAdController)},
+                    //{Ads.Admob, (AdmobRatio, AdmobController)},
                     {Ads.DoNew, (DoNewRatio, DoNewAdController)},
-                    {Ads.MoPub, (MoPubRatio, MoPubController)}
+                    //{Ads.MoPub, (MoPubRatio, MoPubController)},
+                    {Ads.IronSource,(IronSourceRatio,IronSourceController)}
                 };
             }
 
@@ -63,16 +67,20 @@ public class AdManager : AdControllerBase
         if (isInit) throw XDebug.Throw<AdManager>("Duplicate init!");
         isInit = true;
         DoNewAdController = gameObject.AddComponent<DoNewAdController>();
-        AdmobController = gameObject.AddComponent<AdmobController>();
-        AdmobController.Init(AdmobRetryCallBack);
-        UnityAdController = gameObject.AddComponent<UnityAdController>();
-        UnityAdController.Init();
-        MoPubController = gameObject.AddComponent<MoPubController>();
-        MoPubController.Init();
+        //AdmobController = gameObject.AddComponent<AdmobController>();
+        //AdmobController.Init(AdmobRetryCallBack);
+        //UnityAdController = gameObject.AddComponent<UnityAdController>();
+        //UnityAdController.Init();
+        //MoPubController = gameObject.AddComponent<MoPubController>();
+        //MoPubController.Init();
+        IronSourceController = gameObject.AddComponent<IronSourceController>();
+#if !UNITY_EDITOR
+        IronSourceController.Init();
+#endif
         Queue = new QueueByRatio<AdControllerBase>(
             Series.Join(Controllers,ad=>ad,c=>c.Key,(_,c)=>c.Value).ToArray()
         );
-        AdAgent.Init(this);
+        AdAgent?.Init(this);
     }
 
     public override void RequestShow(UnityAction<bool, string> requestAction)
@@ -110,16 +118,16 @@ public class AdManager : AdControllerBase
     private void ControllersAdResolve()
     {
 #if !UNITY_EDITOR
-        if(AdmobController.Status == AdAgentBase.States.Closed ||
-           AdmobController.Status == AdAgentBase.States.FailedToLoad ||
-           AdmobController.Status == AdAgentBase.States.None)
-            AdmobController.OnLoadAd(AdmobRetryCallBack);
-        if(DoNewAdController.Status == AdAgentBase.States.Closed ||
-           DoNewAdController.Status == AdAgentBase.States.FailedToLoad ||
-           DoNewAdController.Status == AdAgentBase.States.None) DoNewAdController.RequestLoad(null);
-        if(MoPubController.Status == AdAgentBase.States.Closed ||
-           MoPubController.Status == AdAgentBase.States.FailedToLoad ||
-           MoPubController.Status == AdAgentBase.States.None) MoPubController.RequestLoad(null);
+        if (DoNewAdController.Status == AdAgentBase.States.Closed ||
+            DoNewAdController.Status == AdAgentBase.States.FailedToLoad ||
+            DoNewAdController.Status == AdAgentBase.States.None) DoNewAdController.RequestLoad(null);
+        // if(AdmobController.Status == AdAgentBase.States.Closed ||
+        //    AdmobController.Status == AdAgentBase.States.FailedToLoad ||
+        //    AdmobController.Status == AdAgentBase.States.None)
+        //     AdmobController.OnLoadAd(AdmobRetryCallBack);
+        // if(MoPubController.Status == AdAgentBase.States.Closed ||
+        //    MoPubController.Status == AdAgentBase.States.FailedToLoad ||
+        //    MoPubController.Status == AdAgentBase.States.None) MoPubController.RequestLoad(null);
 #endif
     }
 

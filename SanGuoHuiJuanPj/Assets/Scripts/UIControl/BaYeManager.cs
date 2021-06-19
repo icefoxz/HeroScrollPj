@@ -72,26 +72,56 @@ public class BaYeManager : MonoBehaviour
 
     private void InitBaYeMap()
     {
-        //初始化城池
-        map = DataTable.BaYeCity.Values.Select(city =>
+        var typeName = nameof(BaYeManager);
+        try
+        {
+
+            //初始化城池
+            map = DataTable.BaYeCity.Values.Select(city =>
             {
                 var cityId = city.EventPoint;
                 var baYeEventId = city.BaYeCityEventTableIds.Select(id =>
                     new BaYeEventWeightElement(id, DataTable.BaYeCityEvent[id].Weight)).Pick().Id;
-                 //根据地图获取对应的事件id列表，并根据权重随机获取一个事件id
+                //根据地图获取对应的事件id列表，并根据权重随机获取一个事件id
                 var baYeEvent = GetBaYeEvent(baYeEventId, cityId);
-                return new BaYeCityEvent { CityId = cityId, EventId = baYeEventId, ExpList = baYeEvent.ExpList, WarIds = baYeEvent.WarIds};
-            }).ToList();//根据权重随机战役id
+                return new BaYeCityEvent
+                    {CityId = cityId, EventId = baYeEventId, ExpList = baYeEvent.ExpList, WarIds = baYeEvent.WarIds};
+            }).ToList(); //根据权重随机战役id
+        }
+        catch (Exception e)
+        {
+            throw XDebug.Throw(e, "InitMap", typeName);
+        }
+
         var baYe = PlayerDataForGame.instance.baYe;
-        foreach (var baYeEvent in baYe.data)
-            map[baYeEvent.CityId] = baYeEvent;
+        try
+        {
+            foreach (var baYeEvent in baYe.data)
+            {
+                if (map.All(c => c.CityId != baYeEvent.CityId))
+                    throw new InvalidOperationException($"找不到城池[{baYeEvent.CityId}]");
+                map[baYeEvent.CityId] = baYeEvent;
+            }
+        }
+        catch (Exception e)
+        {
+            throw XDebug.Throw(e, "Set cities", typeName);
+        }
 
         //初始化故事事件
         //事件点初始化
         var now = DateTime.Now;
-        eventPointAndStoriesMap = DataTable.BaYeStoryPool.Values
-            .Where(m => DataTable.BaYeStoryEvent[m.EventId].Time.IsTableTimeInRange(now))
-            .ToDictionary(m=>m.EventId,m=>m.BaYeStoryTableIds); //读取数据表转化城key=事件点,value=事件列
+        try
+        {
+            eventPointAndStoriesMap = DataTable.BaYeStoryPool.Values
+                .Where(m => DataTable.BaYeStoryEvent[m.EventId].Time.IsTableTimeInRange(now))
+                .ToDictionary(m => m.EventId, m => m.BaYeStoryTableIds); //读取数据表转化城key=事件点,value=事件列
+
+        }
+        catch (Exception e)
+        {
+            throw XDebug.Throw(e, "Set Event point and pool", typeName);
+        }
 
         if (isHourlyEventRegistered) return;
         isHourlyEventRegistered = true;
@@ -163,7 +193,7 @@ public class BaYeManager : MonoBehaviour
             SelectorUIMove(false, null);
         }
 
-        Dictionary<int, int> GetZhanLing(int amount,int min, int max)
+        Dictionary<int, int> GetZhanLing(int amount,int min, int incMax)
         {
             var forceList = DataTable.Force.Keys.ToList();
             if (forceList.Count < amount)
@@ -173,7 +203,7 @@ public class BaYeManager : MonoBehaviour
             {
                 var index = Random.Range(0, forceList.Count);
                 var pick = forceList[index];
-                zhanLingSelection.Add(pick, Random.Range(min, max + 1));
+                zhanLingSelection.Add(pick, Random.Range(min, incMax + 1));
                 forceList.Remove(pick);
             }
             return zhanLingSelection;
