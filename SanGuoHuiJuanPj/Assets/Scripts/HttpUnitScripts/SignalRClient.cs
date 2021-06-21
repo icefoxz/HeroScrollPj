@@ -162,7 +162,7 @@ public class SignalRClient : MonoBehaviour
         var gameCardList = bag.GetPlayerGameCardDtos();
         var troops = bag.GetPlayerTroopDtos();
         PlayerDataForGame.instance.pyData = PlayerData.Instance(playerData);
-        PlayerDataForGame.instance.Character = character.IsValidCharacter() ? Character.Instance(character) : null;
+        PlayerDataForGame.instance.UpdateCharacter(character);
         PlayerDataForGame.instance.GenerateLocalStamina();
         PlayerDataForGame.instance.warsData.warUnlockSaveData = warCampaignList.Select(w => new UnlockWarCount
         {
@@ -326,7 +326,7 @@ public class SignalRClient : MonoBehaviour
 
     private async void OnServerCalledUpload(string args)
     {
-        var param = Json.DeserializeList<string>(args);
+        var param = Json.DeserializeList<ViewBag>(args);
         var saved = PlayerDataForGame.instance;
         var playerData = saved.pyData;
         var warChest = saved.gbocData.fightBoxs.ToArray();

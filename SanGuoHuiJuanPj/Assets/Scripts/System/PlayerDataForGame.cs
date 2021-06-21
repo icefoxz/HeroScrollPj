@@ -9,6 +9,7 @@ using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
+using Assets;
 
 public class PlayerDataForGame : MonoBehaviour
 {
@@ -124,6 +125,7 @@ public class PlayerDataForGame : MonoBehaviour
     public WarReward WarReward { get; set; }
     public StaminaCost CurrentStaCost { get; private set; }
     public BaYeManager BaYeManager { get; set; }
+    public bool IsCompleteLoading { get; private set; }
 
     private void Awake()
     {
@@ -188,6 +190,7 @@ public class PlayerDataForGame : MonoBehaviour
     IEnumerator ShowTransitionEffect(GameSystem.GameScene scene, bool isRequestSyncData,Func<bool> untilTrue)
     {
         isJumping = true;
+        IsCompleteLoading = false;
         if(isRequestSyncData)
         {
             isRequestingSaveFile = true;
@@ -222,7 +225,11 @@ public class PlayerDataForGame : MonoBehaviour
         loadingText.gameObject.SetActive(false);
         infoText.gameObject.SetActive(false);
         loadingImg.gameObject.SetActive(true);
-        loadingImg.DOFade(0, fadeSpeed).OnComplete(() => loadingImg.gameObject.SetActive(false));
+        loadingImg.DOFade(0, fadeSpeed).OnComplete(() =>
+        {
+            loadingImg.gameObject.SetActive(false);
+            IsCompleteLoading = true;
+        });
     }
 
     /// <summary> 
@@ -464,5 +471,10 @@ public class PlayerDataForGame : MonoBehaviour
         if (CurrentStaCost == null) return 0;
         var cost = CurrentStaCost.TotalCost(WarReward.Chests.Count, true);
         return CurrentStaCost.Cost - cost;
+    }
+
+    public void UpdateCharacter(ICharacter cha)
+    {
+        Character = Character.Instance(cha);
     }
 }

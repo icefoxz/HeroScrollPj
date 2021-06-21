@@ -34,8 +34,8 @@ public class GameSystem : MonoBehaviour
     public static GameResources GameResources { get; private set; }
     public Canvas systemCanvas;
     public static bool IsInit { get; private set; }
-    public static UnityAction OnWarSceneInit;
-    public static UnityAction OnMainSceneInit;
+    public static UnityEvent OnWarSceneInit = new UnityEvent();
+    public static UnityEvent OnMainSceneInit = new UnityEvent();
     private Queue<Func<bool>> InitQueue;
 
     public static MapService MapService { get; private set; }
@@ -98,11 +98,9 @@ public class GameSystem : MonoBehaviour
                 OnStartSceneLoaded();
                 break;
             case GameScene.MainScene:
-                OnMainSceneInit?.Invoke();
                 OnMainSceneLoaded();
                 break;
             case GameScene.WarScene:
-                OnWarSceneInit?.Invoke();
                 OnWarSceneLoaded();
                 break;
             case GameScene.PreloadScene:
@@ -125,9 +123,23 @@ public class GameSystem : MonoBehaviour
     {
         WarsUIManager.instance.Init();
         EffectsPoolingControl.instance.Init();
+        OnWarSceneInit.Invoke();
+        OnWarSceneInit?.RemoveAllListeners();
     }
 
-    private void OnMainSceneLoaded() => UIManager.instance.Init();
+    public bool ShowStaminaEffect { get; set; }
+    private void OnMainSceneLoaded()
+    {
+        UIManager.instance.Init();
+        if(ShowStaminaEffect)
+        {
+            UIManager.instance.DelayInvokeReturnStaminaUi();
+            ShowStaminaEffect = false;
+        }
+        OnMainSceneInit.Invoke();
+        OnMainSceneInit?.RemoveAllListeners();
+    }
+
 
     private void OnStartSceneLoaded()
     {

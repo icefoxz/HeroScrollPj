@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Assets;
 using CorrelateLib;
 using UnityEngine;
 
@@ -187,7 +188,7 @@ public class Character : ICharacter
 {
     public static Character Instance(ICharacter cha)
     {
-        return cha == null
+        return cha == null || !cha.IsValidCharacter()
             ? null
             : new Character
             {
@@ -202,6 +203,21 @@ public class Character : ICharacter
     public string Sign { get; set; }
     public int Settle { get; set; }
     public int Rank { get; set; }
+
+    public CharacterDto ToDto()
+    {
+        var dto = new CharacterDto
+        {
+            Name = Name,
+            Nickname = Nickname,
+            Gender = Gender,
+            Avatar = Avatar,
+            Sign = Sign,
+            Settle = Settle,
+            Rank = Rank
+        };
+        return dto;
+    }
 }
 
 //战斗卡牌信息类

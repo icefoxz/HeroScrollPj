@@ -358,6 +358,8 @@ public class WarsUIManager : MonoBehaviour
                     ConsumeManager.instance.SaveChangeUpdatePlayerData(player, 0);
                 }, PlayerDataForGame.instance.ShowStringTips,
                 EventStrings.Req_WarReward, viewBag);
+            GameSystem.instance.ShowStaminaEffect = true;
+            //GameSystem.OnMainSceneInit.AddListener(UIManager.instance.DelayInvokeReturnStaminaUi);
         }
         //gameOverWindow.Show(rewardMap);
         gameOverWindow.Show(reward, PlayerDataForGame.instance.WarType == PlayerDataForGame.WarTypes.Baye);
@@ -762,7 +764,7 @@ public class WarsUIManager : MonoBehaviour
     /// </summary>
     /// <param name="refreshCost">刷新所需金币</param>
     [Skip]
-    private bool UpdateShoppingList(int refreshCost)
+    private bool UpdateShoppingList(int refreshCost = 0)
     {
         if (refreshCost != 0)
         {
@@ -777,7 +779,7 @@ public class WarsUIManager : MonoBehaviour
 
         shopInfoObj.SetActive(false);
         var sanXuan = eventsWindows[3].GetComponent<SanXuanWindowUi>();
-        sanXuan.SetTrade(refreshCost + 1);
+        sanXuan.SetTrade(refreshCost == 0 ? updateShopNeedGold : refreshCost + 1);
         GoldForCity -= refreshCost;
         playerInfoObj.transform.GetChild(1).GetChild(0).GetComponent<Text>().text = GoldForCity.ToString();
         for (int i = 0; i < sanXuan.GameCards.Length; i++)
@@ -921,7 +923,7 @@ public class WarsUIManager : MonoBehaviour
             //重置刷新商店所需金币
             updateShopNeedGold = 2;
             ui.SetTrade(updateShopNeedGold);
-            UpdateShoppingList(0);
+            UpdateShoppingList();
         }
         else
         {
@@ -1021,15 +1023,11 @@ public class WarsUIManager : MonoBehaviour
     }
 
     //根据稀有度返回随机id
-    public GameCardInfo RandomPickFromRareClass(GameCardType cardType,int rarity)
+    public GameCardInfo RandomPickFromRareClass(GameCardType cardType, int rarity)
     {
         var info = GameCardInfo.RandomPick(cardType, rarity);
-        if (rarity == 1)
-        {
-            var cha = GameSystem.MapService.GetWhiteCard();
-            if(cha.IsCharacter) info.Rename(cha.Name, cha.Nickname, cha.Sign);
-        }
-
+        if (cardType != GameCardType.Hero || rarity != 1) return info;
+        if (GameSystem.MapService.GetCharacterInRandom(50, out var cha)) info.Rename(cha.Name, cha.Nickname, cha.Sign);
         return info;
     }
 

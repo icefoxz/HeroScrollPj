@@ -6,7 +6,8 @@ using UnityEngine.UI;
 
 public class CharacterGenderUi:MonoBehaviour
 {
-    public event Action<CharacterGender> OnNotifyChanged;
+    private class GenderEvent : UnityEvent<CharacterGender> { }
+    public UnityEvent<CharacterGender> OnNotifyChanged = new GenderEvent();
     public CharacterGender Gender { get; }
     public Toggle Male;
     public Toggle Female;

@@ -27,8 +27,6 @@ public class UIManager : MonoBehaviour
     public Pages currentPage;
     public Image waitWhileImpress;//敬请期待 
     [SerializeField]
-    GameObject zhuChengHeroContentObj;  //主城卡牌集合框 
-    [SerializeField]
     PlayerInfoUi playerInfoUi;//玩家信息控件
     [SerializeField]
     public Text yuanBaoNumText;        //元宝数量Text 
@@ -85,6 +83,7 @@ public class UIManager : MonoBehaviour
     public Button baYeWarButton;//霸业开始战斗按键 
     public Image bayeBelowLevelPanel;//霸业等级不足挡板 
     public Image bayeErrorPanel;//霸业异常档板
+    public PlayerCharacterUi PlayerCharacterUi;
 
     private List<BaYeCityField> cityFields; //霸业的地图物件 
     private List<BaYeForceField> forceFields; //可选势力物件 
@@ -117,7 +116,6 @@ public class UIManager : MonoBehaviour
     public void Init()
     {
         AudioController1.instance.ChangeBackMusic();
-        Invoke(nameof(ReturnStaminaFromWar), 2f);
 
         TimeSystemControl.instance.InitStaminaCount(PlayerDataForGame.instance.Stamina.Value <
                                                     TimeSystemControl.instance.MaxStamina);
@@ -140,6 +138,7 @@ public class UIManager : MonoBehaviour
 
         OnStartMainScene();
         PlayerDataForGame.instance.selectedWarId = -1;
+        PlayerCharacterUi.Init();
         IsInit = true;
     }
 
@@ -488,9 +487,17 @@ public class UIManager : MonoBehaviour
         jiBanInfoConObj.SetActive(false);
     }
 
-    //获取战役返还的体力 
-    private void ReturnStaminaFromWar()
+    public void DelayInvokeReturnStaminaUi()
     {
+        StopAllCoroutines();
+        StartCoroutine(ReturnStaminaFromWar());
+    }
+
+    //获取战役返还的体力 
+    private IEnumerator ReturnStaminaFromWar()
+    {
+        yield return new WaitUntil(() => PlayerDataForGame.instance.IsCompleteLoading);
+        yield return new WaitForSeconds(1f);
         var staminaCost = PlayerDataForGame.instance.StaminaReturnFromLastWar();
         if (PlayerDataForGame.instance.lastSenceIndex == 2 && staminaCost != 0)
             playerInfoUi.UpdateZhanLing(staminaCost);

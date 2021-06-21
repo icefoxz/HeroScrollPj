@@ -27,7 +27,6 @@ public class SanGuoTvUi : MonoBehaviour
         }
     }
 
-    //每个5分钟更新报道一次
     public void GenerateReport()
     {
         var now = DateTime.Now;
@@ -44,8 +43,9 @@ public class SanGuoTvUi : MonoBehaviour
 
         for (int i = 0; i < contents.Length; i++)
         {
-            var card = GameSystem.MapService.GetWhiteCard();
-            contents[i].text = card.IsCharacter ? $"{card.Name} : {card.Sign}" : GetFormattedText(npcs[i]);
+            contents[i].text = GameSystem.MapService.GetCharacterInRandom(50, out var cha)
+                ? $"{cha.Name} : {cha.Sign}"
+                : GetFormattedText(npcs[i]);
             clocks[i].text = SystemTimer.instance.CurrentClock;
         }
     }

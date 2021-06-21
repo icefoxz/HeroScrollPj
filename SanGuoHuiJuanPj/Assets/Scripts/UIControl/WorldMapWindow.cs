@@ -50,6 +50,6 @@ public class WorldMapWindow : MonoBehaviour
                 Debug.Log("角色创建成功！");
             }, Debug.Log,
             EventStrings.Req_CreateCharacter,
-            ViewBag.Instance().PlayerCharacterDto(PlayerCharacter.Character));
+            ViewBag.Instance().PlayerCharacterDto(PlayerCharacter.Character.ToDto()));
     }
 }

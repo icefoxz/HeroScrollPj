@@ -24,7 +24,7 @@ public class SanXuanWindowUi : MonoBehaviour
     public void SetTrade(int refreshCost)
     {
         Title.sprite = GameResources.Instance.GuanQiaEventImg[6];
-        DisplayTradeSet(false);
+        DisplayTradeSet(true);
         RefreshText.text = refreshCost.ToString();
     }
 

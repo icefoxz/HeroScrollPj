@@ -8,14 +8,9 @@ namespace Assets.HttpUnitScripts
     public class MapService
     {
         public Queue<ICharacter> Characters { get; private set; }
-        public IReadOnlyList<WhiteCard> NpcWhiteCards { get; }
+
         private bool isRequestingCharacter;
-        public MapService()
-        {
-            Characters = new Queue<ICharacter>();
-            NpcWhiteCards = DataTable.Hero.Values.Where(h => h.Rarity == 1)
-                .Select(h => new WhiteCard(GameCardInfo.GetInfo(GameCardType.Hero, h.Id))).ToList();
-        }
+        public MapService() => Characters = new Queue<ICharacter>();
 
         public void Init() => RequestingOnlineCharactersApi();
 
@@ -45,13 +40,21 @@ namespace Assets.HttpUnitScripts
             return list.ToArray();
         }
 
-        public WhiteCard GetWhiteCard()
+        public bool GetCharacterInRandom(int randomValue,out ICharacter cha)
+        {
+            cha = null;
+            if(Random.Range(0, 100) > randomValue) return false;
+            cha = GetCharacter();
+            return cha != null;
+        }
+
+        public ICharacter GetCharacter()
         {
             //优先获取角色.没有了再给出数据表的npc
-            if (Characters.Any()) return new WhiteCard(Characters.Dequeue());
+            if (Characters.Any()) return Characters.Dequeue();
             if (!isRequestingCharacter)
                 RequestingOnlineCharactersApi();
-            return NpcWhiteCards[Random.Range(0, NpcWhiteCards.Count)];
+            return null;
         }
 
         private void RequestingOnlineCharactersApi()
@@ -70,44 +73,6 @@ namespace Assets.HttpUnitScripts
         {
             isRequestingCharacter = false;
             GenerateCards(vb.GetCharacterDtos());
-        }
-    }
-
-    public class WhiteCard : ICharacter
-    {
-        public bool IsCharacter => Character != null;
-        public GameCardInfo CardInfo { get; }
-        public ICharacter Character { get; }
-        public string Name { get; set; }
-        public string Nickname { get; set; }
-        public int Gender { get; set; }
-        public int Avatar { get; set; }
-        public string Sign { get; set; }
-        public int Settle { get; set; }
-        public int Rank { get; set; }
-
-        public WhiteCard(ICharacter c)
-        {
-            Name = c.Name;
-            Nickname = c.Nickname;
-            Gender = c.Gender;
-            Avatar = c.Avatar;
-            Sign = c.Sign;
-            Settle = c.Settle;
-            Rank = c.Rank;
-            Character = c;
-        }
-
-        public WhiteCard(GameCardInfo c)
-        {
-            Name = c.Name;
-            Nickname = c.Intro;
-            Gender = 1;
-            Avatar = c.ImageId;
-            Sign = c.About;
-            Settle = 0;
-            Rank = 0;
-            CardInfo = c;
         }
     }
 }
