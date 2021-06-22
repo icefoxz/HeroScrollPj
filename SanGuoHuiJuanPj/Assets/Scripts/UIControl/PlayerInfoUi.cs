@@ -18,7 +18,7 @@ public class PlayerInfoUi : MonoBehaviour
     {
         CharacterName.text = cha.Name;
         CharacterNickname.text = cha.Nickname;
-        Avatar.sprite = GameResources.Instance.Avatar[cha.Avatar];
+        Avatar.sprite = GameResources.Instance.Avatar[cha.Gender];
     }
     public void UpdateUi()
     {

@@ -2,26 +2,51 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Events;
 
-public class UiDisplayMapper<TKey,TValue> where TKey : Enum where TValue : Component
+/// <summary>
+/// Unity 控件状态映像表
+/// </summary>
+/// <typeparam name="TValue">控件</typeparam>
+public class UiDisplayMapper<TValue> where TValue : Component
 {
-    public Dictionary<TKey,TValue[]> Data { get; private set; }
-    private List<TValue> List { get; }
+    public IReadOnlyDictionary<Enum, IReadOnlyList<TValue>> Data => _data.ToDictionary(v => v.Key, v => new List<TValue>(v.Value) as IReadOnlyList<TValue>);
 
-    public UiDisplayMapper(params (TKey, TValue[])[] data)
+    private List<TValue> List { get; set; }
+    private UnityAction<bool,TValue> processAction;
+    private readonly Dictionary<Enum, List<TValue>> _data;
+
+    public UiDisplayMapper((Enum, TValue[])[] data, UnityAction<bool,TValue> action = null)
     {
-        Data = data.ToDictionary(d => d.Item1, d => d.Item2);
-        List = data.SelectMany(i => i.Item2).Distinct().ToList();
+        _data = data.ToDictionary(d => d.Item1, d => d.Item2.ToList());
+        processAction = action ?? GameObjectShow;
+        ResolveList();
     }
 
-    public void Set(TKey key)
+    public UiDisplayMapper(params (Enum, TValue[])[] data):this(data,null) { }
+
+    public UiDisplayMapper(UnityAction<bool,TValue> action):this(new (Enum, TValue[])[0],action) { }
+
+    public UiDisplayMapper():this(new (Enum, TValue[])[0],null) { }
+
+    private static void GameObjectShow(bool result, TValue com) => com.gameObject.SetActive(result);
+
+    public void Add(Enum key, params TValue[] values)
+    {
+        _data.Add(key,values.ToList());
+        ResolveList();
+    }
+
+    private void ResolveList() => List = Data.SelectMany(i => i.Value).Distinct().ToList();
+
+    public void Set(Enum key)
     {
         if (!Data.ContainsKey(key))
         {
-            List.ForEach(t=>t.gameObject.SetActive(false));
+            List.ForEach(t => processAction.Invoke(false, t));//t=>t.gameObject.SetActive(false));
             return;
         }
         var block = Data[key];
-        List.ForEach(t => t.gameObject.SetActive(block.Any(b => b == t)));
+        List.ForEach(t => processAction.Invoke(block.Any(b => b == t), t)); //t.gameObject.SetActive(block.Any(b => b == t)));
     }
 }

@@ -84,6 +84,7 @@ public class UIManager : MonoBehaviour
     public Image bayeBelowLevelPanel;//霸业等级不足挡板 
     public Image bayeErrorPanel;//霸业异常档板
     public PlayerCharacterUi PlayerCharacterUi;
+    public ConfirmationWindowUi ConfirmationWindowUi;
 
     private List<BaYeCityField> cityFields; //霸业的地图物件 
     private List<BaYeForceField> forceFields; //可选势力物件 
@@ -100,6 +101,30 @@ public class UIManager : MonoBehaviour
 
     bool isShowInfo;//说明窗口是否开启 
 
+    [SerializeField]
+    GameObject huiJuanWinObj;   //绘卷窗口obj 
+
+    [SerializeField]
+    GameObject jiBanBtnsConObj;  //羁绊按钮集合窗口obj 
+
+    [SerializeField]
+    GameObject jiBanInfoConObj; //羁绊详情窗口obj 
+
+    [SerializeField]
+    Transform jibanBtnBoxTran;  //羁绊按钮集合 
+
+    [SerializeField]
+    Transform jibanHeroBoxTran; //羁绊详情武将集合 
+
+    [SerializeField]
+    Button jiBanWinCloseBtn;    //羁绊界面关闭按钮 
+
+    [SerializeField]
+    public BaYeEventUIController baYeBattleEventController;   //霸业事件点父级 
+    [SerializeField]
+    public GameObject chooseBaYeEventImg;  //选择霸业地点的Img 
+    [SerializeField]
+    Text baYeGoldNumText;   //霸业金币数量 
 
     private void Awake()
     {
@@ -129,7 +154,7 @@ public class UIManager : MonoBehaviour
 
         InitializationPlayerInfo();
         expedition.Init();
-        Barrack.Init(MergeCard,OnClickForSellCard,OnCardEnlist);
+        Barrack.Init(MergeCard, OnClickForSellCard, OnCardEnlist);
         InitChickenOpenTs();
         InitChickenBtnFun();
         InitJiBanForMainFun();
@@ -139,33 +164,9 @@ public class UIManager : MonoBehaviour
         OnStartMainScene();
         PlayerDataForGame.instance.selectedWarId = -1;
         PlayerCharacterUi.Init();
+        ConfirmationWindowUi.Init();
         IsInit = true;
     }
-
-    [SerializeField]
-    GameObject huiJuanWinObj;   //绘卷窗口obj 
-
-    [SerializeField]
-    GameObject jiBanBtnsConObj;  //羁绊按钮集合窗口obj 
-
-    [SerializeField]
-    GameObject jiBanInfoConObj; //羁绊详情窗口obj 
-
-    [SerializeField]
-    Transform jibanBtnBoxTran;  //羁绊按钮集合 
-
-    [SerializeField]
-    Transform jibanHeroBoxTran; //羁绊详情武将集合 
-
-    [SerializeField]
-    Button jiBanWinCloseBtn;    //羁绊界面关闭按钮 
-
-    [SerializeField]
-    public BaYeEventUIController baYeBattleEventController;   //霸业事件点父级 
-    [SerializeField]
-    public GameObject chooseBaYeEventImg;  //选择霸业地点的Img 
-    [SerializeField]
-    Text baYeGoldNumText;   //霸业金币数量 
 
     /// <summary> 
     /// Main场景(切换)初始化 
@@ -199,6 +200,11 @@ public class UIManager : MonoBehaviour
         string title = DataTable.GetStringText(68);
         string text = DataTable.GetStringText(69);
         ShowInfo(title, text);
+    }
+
+    public void OnConfirmation(UnityAction confirmAction,ConfirmationWindowUi.Resources resource,int cost = 0)
+    {
+        ConfirmationWindowUi.Show(confirmAction, resource, cost);
     }
 
     /// <summary> 
