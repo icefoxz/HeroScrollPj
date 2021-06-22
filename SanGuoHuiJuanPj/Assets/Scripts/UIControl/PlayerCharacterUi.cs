@@ -161,10 +161,10 @@ public class PlayerCharacterUi : MonoBehaviour
     private void ReqCreateCharacter()
     {
         if (state == States.Registered) return;
-        Character.Name = Name.text;
-        Character.Nickname = Nickname.text;
-        Character.Gender = (int)GenderUi.Gender;
-        Character.Sign = Sign.text;
+        Character = new Character
+        {
+            Name = Name.text, Nickname = Nickname.text, Gender = (int) GenderUi.Gender, Sign = Sign.text
+        };
         if (Character.IsValidCharacter())//完整信息才请求
         {
             PlayerDataForGame.instance.Character = global::Character.Instance(Character);
