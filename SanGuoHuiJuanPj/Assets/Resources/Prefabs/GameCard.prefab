@@ -450,8 +450,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Button: {fileID: 3132163347831558592}
   Chips: {fileID: 3122890704471372053}
-  HighlightColor: {r: 0, g: 0.5660378, b: 0.022197627, a: 1}
-  NormalColor: {r: 1, g: 1, b: 1, a: 1}
+  HighlightColor: {r: 0, g: 0.7075472, b: 0.02948119, a: 1}
+  NormalColor: {r: 0.6603774, g: 0.6603774, b: 0.6603774, a: 1}
   Enlisted: {fileID: 3122890704471373499}
   Disabled: {fileID: 8477986127977176329}
   Selected: {fileID: 8477986127977175725}
@@ -1067,7 +1067,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.5660378, g: 0.39924666, b: 0.258989, a: 0}
+  m_Color: {r: 0.6666667, g: 0.6666667, b: 0.6666667, a: 1}
   m_RaycastTarget: 0
   m_Maskable: 1
   m_OnCullStateChanged:

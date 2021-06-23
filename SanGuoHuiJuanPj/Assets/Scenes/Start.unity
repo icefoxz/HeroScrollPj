@@ -24635,47 +24635,52 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b24c1c2cf2bc08541969411947a62cc6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PlayerInitialConfigTable: {fileID: 0}
-  ResourceConfigTable: {fileID: 0}
-  HeroTable: {fileID: 0}
-  PlayerLevelConfigTable: {fileID: 0}
-  TowerTable: {fileID: 0}
-  MilitaryTable: {fileID: 0}
-  CardLevelTable: {fileID: 0}
-  TrapTable: {fileID: 0}
-  WarChestTable: {fileID: 0}
-  WarTable: {fileID: 0}
-  BaseLevelTable: {fileID: 0}
-  CheckpointTable: {fileID: 0}
-  BattleEventTable: {fileID: 0}
-  EnemyTable: {fileID: 0}
-  EnemyUnitTable: {fileID: 0}
-  QuestTable: {fileID: 0}
-  QuestRewardTable: {fileID: 0}
-  MercenaryTable: {fileID: 0}
-  GameModeTable: {fileID: 0}
-  GuideTable: {fileID: 0}
-  TipsTable: {fileID: 0}
-  RCodeTable: {fileID: 0}
-  ChickenTable: {fileID: 0}
-  StaticArrangementTable: {fileID: 0}
-  TextTable: {fileID: 0}
-  NumericalConfigTable: {fileID: 0}
-  JiBanTable: {fileID: 0}
-  ForceTable: {fileID: 0}
-  BaYeCityTable: {fileID: 0}
-  BaYeCityEventTable: {fileID: 0}
-  BaYeLevelMappingTable: {fileID: 0}
-  BaYeTaskTable: {fileID: 0}
-  BaYeStoryPoolTable: {fileID: 0}
-  BaYeStoryEventTable: {fileID: 0}
-  BaYeTvTable: {fileID: 0}
-  BaYeNameTable: {fileID: 0}
-  CityTable: {fileID: 0}
-  PlayerNameTable: {fileID: 0}
-  PlayerNicknameTable: {fileID: 0}
-  PlayerSignTable: {fileID: 0}
-  DirtyWordTable: {fileID: 0}
+  PlayerInitialConfigTable: {fileID: 4900000, guid: 921f62706299b244d8a523254226097b,
+    type: 3}
+  ResourceConfigTable: {fileID: 4900000, guid: ffa0276064f18b542867acb713b6ee29, type: 3}
+  HeroTable: {fileID: 4900000, guid: 854b29f69ab861441a56676affb1517b, type: 3}
+  PlayerLevelConfigTable: {fileID: 4900000, guid: 709d42002d2bfda42823207e1633ca80,
+    type: 3}
+  TowerTable: {fileID: 4900000, guid: 30fba64f2cfb5bf43bbe5c8b76e78190, type: 3}
+  MilitaryTable: {fileID: 4900000, guid: 3f38c08fd7296fb4bb673429d30b2d02, type: 3}
+  CardLevelTable: {fileID: 4900000, guid: 9194b71568986bd4cb2524e6aaac79e5, type: 3}
+  TrapTable: {fileID: 4900000, guid: c710ae4f21a8a8b42bcba6ae34c97188, type: 3}
+  WarChestTable: {fileID: 4900000, guid: 9c11d3c32ec882e438c286f6847f3afa, type: 3}
+  WarTable: {fileID: 4900000, guid: 9eeb6e310f100254e8738fcc2c5eb700, type: 3}
+  BaseLevelTable: {fileID: 4900000, guid: ebd066346737ce74a98099acdad33f68, type: 3}
+  CheckpointTable: {fileID: 4900000, guid: 13f88c2afcd17ac4db10343ddd34529e, type: 3}
+  BattleEventTable: {fileID: 4900000, guid: dd7bd412c8a9897469d270993364b064, type: 3}
+  EnemyTable: {fileID: 4900000, guid: c94ab0dcbe13f4541ae990da8d9d4865, type: 3}
+  EnemyUnitTable: {fileID: 4900000, guid: 66e24056dcb231b46b77a15272edacad, type: 3}
+  QuestTable: {fileID: 4900000, guid: fd195730252fb5c429fd5d3951f5841c, type: 3}
+  QuestRewardTable: {fileID: 4900000, guid: 7477cbdd0491d3c40883b6aeadcd89be, type: 3}
+  MercenaryTable: {fileID: 4900000, guid: ddd7ee5b57c8a4c4f8d498988dc9853b, type: 3}
+  GameModeTable: {fileID: 4900000, guid: 7afb6fb12dd4ccc4c97a9654e9a698b1, type: 3}
+  GuideTable: {fileID: 4900000, guid: 8bb8eeafb82740f4288e6efd72b3c26f, type: 3}
+  TipsTable: {fileID: 4900000, guid: 14e337033223a5d46a3816d4b1ddc27d, type: 3}
+  RCodeTable: {fileID: 4900000, guid: e42ae777c3d056e49b937d24bc86ad55, type: 3}
+  ChickenTable: {fileID: 4900000, guid: 04e5cefd227997546898d91c31c8ca52, type: 3}
+  StaticArrangementTable: {fileID: 4900000, guid: c17605e413a18fe4b82bd87d6e14393a,
+    type: 3}
+  TextTable: {fileID: 4900000, guid: 4c2aed8d2d5de1241ba3c9f767696f53, type: 3}
+  NumericalConfigTable: {fileID: 4900000, guid: c61611d2c57e27b43a6caedc0371f9a8,
+    type: 3}
+  JiBanTable: {fileID: 4900000, guid: 1e31bd04b6e6fdd42ac714e086fec2f9, type: 3}
+  ForceTable: {fileID: 4900000, guid: 672c9c75802e0364d857b5ee2f22bfcd, type: 3}
+  BaYeCityTable: {fileID: 4900000, guid: f810b5864c60a164e8f79107cd6df82e, type: 3}
+  BaYeCityEventTable: {fileID: 4900000, guid: cebe59cb0d3d5994790b3c2fec999e46, type: 3}
+  BaYeLevelMappingTable: {fileID: 4900000, guid: acd6389eaf07fa8409e7fb0a7bbed236,
+    type: 3}
+  BaYeTaskTable: {fileID: 4900000, guid: f9bc3cb151daa244ea091bc24f4de9ab, type: 3}
+  BaYeStoryPoolTable: {fileID: 4900000, guid: ed6c0f696eb7eaa48b2b0d2c731d202f, type: 3}
+  BaYeStoryEventTable: {fileID: 4900000, guid: a2c63aac9dc14b0488c126f0c5637356, type: 3}
+  BaYeTvTable: {fileID: 4900000, guid: 5954c7fba09cf55499a9cb39b94b52f0, type: 3}
+  BaYeNameTable: {fileID: 4900000, guid: 5640efbcfbe49ff4e95fbdd8e5c8c551, type: 3}
+  CityTable: {fileID: 4900000, guid: 24a1467250feb4047b079b91b8c2f04e, type: 3}
+  PlayerNameTable: {fileID: 4900000, guid: a47bac4219266bb429c189b5f84f0933, type: 3}
+  PlayerNicknameTable: {fileID: 4900000, guid: 5967e0ffc6ea74846834481903c1cd6d, type: 3}
+  PlayerSignTable: {fileID: 4900000, guid: cffd8187e7c82d14d983ef747158bcbf, type: 3}
+  DirtyWordTable: {fileID: 4900000, guid: f1cc888dd9f059b4a825bd8d6e5bee25, type: 3}
 --- !u!114 &2417001442274742912
 MonoBehaviour:
   m_ObjectHideFlags: 0
