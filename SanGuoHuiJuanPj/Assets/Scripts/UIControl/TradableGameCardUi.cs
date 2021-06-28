@@ -13,7 +13,7 @@ public class TradableGameCardUi : MonoBehaviour
         Ad
     }
     public GameCardUi GameCard;
-    public NowLevelAndHadChip Card { get; private set; }
+    public GameCard Card { get; private set; }
     public Button BuyBtn;
     public Text FreeLabel;
     public Text PriceLabel;
@@ -61,7 +61,7 @@ public class TradableGameCardUi : MonoBehaviour
 
     public void SetSelect(bool isSelected) => GameCard.Selected(isSelected);
 
-    public void SetGameCard(NowLevelAndHadChip card)
+    public void SetGameCard(GameCard card)
     {
         Card = card;
         gameObject.SetActive(true);

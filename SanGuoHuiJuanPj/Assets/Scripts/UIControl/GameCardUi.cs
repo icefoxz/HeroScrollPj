@@ -16,7 +16,7 @@ public class GameCardUi : MonoBehaviour
     }
     public CardModes Mode { get; private set; }
     public GameCardInfo CardInfo { get; private set; }
-    public NowLevelAndHadChip Card { get; private set; }
+    public GameCard Card { get; private set; }
     //persist components
     public Image Image;
     public Text Name;
@@ -43,7 +43,7 @@ public class GameCardUi : MonoBehaviour
         }
     }
 
-    public void Set(NowLevelAndHadChip card,CardModes mode)
+    public void Set(GameCard card,CardModes mode)
     {
         Card = card;
         CardInfo = card.GetInfo();

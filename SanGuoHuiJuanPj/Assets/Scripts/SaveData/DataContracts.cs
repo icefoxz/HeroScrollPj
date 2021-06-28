@@ -110,19 +110,19 @@ public class GetBoxOrCodeData
     public List<string> redemptionCodeGotList = new List<string>();
 }
 [Skip]
-public class RedemptionCodeGot
+public class RCode
 {
     public int id;      //兑换码id
     public bool isGot;  //是否领取过
 }
 [Skip]
-public class NowLevelAndHadChip : IGameCard,IComparable<NowLevelAndHadChip>
+public class GameCard : IGameCard,IComparable<GameCard>
 {
-    public static NowLevelAndHadChip Instance(GameCardDto dto) => Instance(dto.CardId,(int)dto.Type,dto.Level,dto.Chips);
+    public static GameCard Instance(GameCardDto dto) => Instance(dto.CardId,(int)dto.Type,dto.Level,dto.Chips);
 
-    public static NowLevelAndHadChip Instance(int cardId,int type,int level,int chips = 0)
+    public static GameCard Instance(int cardId,int type,int level,int chips = 0)
     {
-        return new NowLevelAndHadChip
+        return new GameCard
         {
             id = cardId,
             chips = chips, 
@@ -138,7 +138,6 @@ public class NowLevelAndHadChip : IGameCard,IComparable<NowLevelAndHadChip>
     public bool isHad;      //是否拥有过
     public int maxLevel = 1;    //历史最高星级
 
-    public bool IsOwned => chips > 0 || level > 0;//是否拥有
     public int CardId => id;
     public int Level
     {
@@ -152,7 +151,7 @@ public class NowLevelAndHadChip : IGameCard,IComparable<NowLevelAndHadChip>
     }
     public int Type => typeIndex;
 
-    public int CompareTo(NowLevelAndHadChip other)
+    public int CompareTo(GameCard other)
     {
         if (ReferenceEquals(this, other)) return 0;
         if (ReferenceEquals(null, other)) return 1;
@@ -170,7 +169,7 @@ public class NowLevelAndHadChip : IGameCard,IComparable<NowLevelAndHadChip>
         if (chipsComparison != 0) return -chipsComparison;
         return id.CompareTo(other.id);
 
-        int GetRare(NowLevelAndHadChip c)
+        int GetRare(GameCard c)
         {
             switch ((GameCardType) c.typeIndex)
             {
@@ -194,15 +193,15 @@ public class NowLevelAndHadChip : IGameCard,IComparable<NowLevelAndHadChip>
 public class HSTDataClass
 {
     //武将
-    public List<NowLevelAndHadChip> heroSaveData;
+    public List<GameCard> heroSaveData;
     //士兵
-    public List<NowLevelAndHadChip> soldierSaveData;
+    public List<GameCard> soldierSaveData;
     //塔
-    public List<NowLevelAndHadChip> towerSaveData;
+    public List<GameCard> towerSaveData;
     //陷阱
-    public List<NowLevelAndHadChip> trapSaveData;
+    public List<GameCard> trapSaveData;
     //技能
-    public List<NowLevelAndHadChip> spellSaveData;
+    public List<GameCard> spellSaveData;
 }
 [Skip]
 public class UnlockWarCount

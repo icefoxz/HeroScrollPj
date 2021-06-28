@@ -10,7 +10,13 @@ public class TestAd : MonoBehaviour
 {
     public Text reportText;
     public Text stateText;
-    public DoNewAdController controller;
+    public IronSourceController controller;
+
+
+    void Start()
+    {
+        controller.Init();
+    }
 
     public void Load() => controller.RequestLoad((b, m) => TextDisplay(b, m));
 
@@ -20,6 +26,6 @@ public class TestAd : MonoBehaviour
 
     void Update()
     {
-        stateText.text = controller.status.ToString();
+        stateText.text = controller.Status.ToString();
     }
 }

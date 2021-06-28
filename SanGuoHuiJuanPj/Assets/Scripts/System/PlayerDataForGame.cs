@@ -110,7 +110,7 @@ public class PlayerDataForGame : MonoBehaviour
     private bool isRequestingSaveFile; //存档请求中
     //计算出战总数量 
     public int TotalCardsEnlisted => fightHeroId.Count + fightTowerId.Count + fightTrapId.Count;
-
+    public int UnlockForceId => DataTable.PlayerLevelConfig[pyData.Level].UnlockForces;
     public LocalStamina Stamina
     {
         get
@@ -126,6 +126,7 @@ public class PlayerDataForGame : MonoBehaviour
     public StaminaCost CurrentStaCost { get; private set; }
     public BaYeManager BaYeManager { get; set; }
     public bool IsCompleteLoading { get; private set; }
+    public int MilitaryPower => GetCards(false).Sum(c => c.Power());
 
     private void Awake()
     {
@@ -235,7 +236,7 @@ public class PlayerDataForGame : MonoBehaviour
     /// <summary> 
     /// 添加或删除卡牌id到出战列表 
     /// </summary> 
-    public bool EnlistCard(NowLevelAndHadChip card, bool isAdd)
+    public bool EnlistCard(GameCard card, bool isAdd)
     {
         var cardType = (GameCardType) card.typeIndex;
         var cardLimit = DataTable.PlayerLevelConfig[pyData.Level].CardLimit;
@@ -367,7 +368,7 @@ public class PlayerDataForGame : MonoBehaviour
 
     public void UpdateGameCards(TroopDto[] troops, GameCardDto[] gameCardList)
     {
-        var cards = gameCardList.Select(NowLevelAndHadChip.Instance)
+        var cards = gameCardList.Select(GameCard.Instance)
             .Where(c => c.IsOwning())
             .GroupBy(c => (GameCardType) c.typeIndex, c => c)
             .ToDictionary(c => c.Key, c => c.ToList());
@@ -379,11 +380,11 @@ public class PlayerDataForGame : MonoBehaviour
                 chip.isFight = 1;
         }
         if (!cards.TryGetValue(GameCardType.Hero, out hstData.heroSaveData))
-            hstData.heroSaveData = new List<NowLevelAndHadChip>();
+            hstData.heroSaveData = new List<GameCard>();
         if (!cards.TryGetValue(GameCardType.Tower, out hstData.towerSaveData))
-            hstData.towerSaveData = new List<NowLevelAndHadChip>();
+            hstData.towerSaveData = new List<GameCard>();
         if (!cards.TryGetValue(GameCardType.Trap, out hstData.trapSaveData))
-            hstData.trapSaveData = new List<NowLevelAndHadChip>();
+            hstData.trapSaveData = new List<GameCard>();
     }
 
     public void SendTroopToWarApi()
@@ -453,13 +454,21 @@ public class PlayerDataForGame : MonoBehaviour
             staminaMax);
     }
 
+    public IEnumerable<GameCard> GetCards(bool isAllForces)
+    {
+        var list = hstData.heroSaveData
+            .Concat(hstData.towerSaveData)
+            .Concat(hstData.trapSaveData).Where(c=>c.IsOwning());
+        return !isAllForces ? list : list.Where(c => c.GetInfo().ForceId <= UnlockForceId);
+    }
+
     public IEnumerable<GameCardDto> GetLocalDtos()
     {
         return GenerateDtoList(hstData.heroSaveData)
             .Concat(GenerateDtoList(hstData.towerSaveData))
             .Concat(GenerateDtoList(hstData.trapSaveData)).ToArray();
 
-        IEnumerable<GameCardDto> GenerateDtoList(IEnumerable<NowLevelAndHadChip> list) => list
+        IEnumerable<GameCardDto> GenerateDtoList(IEnumerable<GameCard> list) => list
             .Where(c => c.IsOwning()).Select(c => new GameCardDto(c.CardId, c.Type, c.Level, c.Chips));
 
     }

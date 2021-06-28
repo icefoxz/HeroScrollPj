@@ -259,7 +259,7 @@ public class Expedition : MonoBehaviour
                 var reCard = vb.GetGameCardDto();
                 if(reCard!=null)
                 {
-                    List<NowLevelAndHadChip> list = null;
+                    List<GameCard> list = null;
                     switch (reCard.Type)
                     {
                         case GameCardType.Hero:

@@ -32,7 +32,7 @@ public class RewardWindowUi : MonoBehaviour
         if(reward.Stamina > 0) GetUiFromPool().SetStamina(reward.Stamina);
         foreach (var card in reward.Cards)
         {
-            GetUiFromPool().SetCard(new NowLevelAndHadChip
+            GetUiFromPool().SetCard(new GameCard
                 {chips = card.cardChips, id = card.cardId, typeIndex = card.cardType});
         }
     }

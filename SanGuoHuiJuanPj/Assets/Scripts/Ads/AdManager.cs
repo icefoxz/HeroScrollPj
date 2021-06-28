@@ -14,15 +14,14 @@ public class AdManager : AdControllerBase
 {
     [Serializable]public enum Ads
     {
-        Unity,
-        Admob,
+        IronSource,
         DoNew,
-        MoPub,
-        IronSource
+        //Unity,
+        //Admob,
+        //MoPub,
     }
 
     public AdAgentBase adAgent;
-    public int AdmobRetry = 3;
     private bool isInit;
     public AdAgentBase AdAgent => adAgent;
     public DoNewAdController DoNewAdController { get; private set; }
@@ -48,11 +47,11 @@ public class AdManager : AdControllerBase
             {
                 _controllers = new Dictionary<Ads, (int, AdControllerBase)>
                 {
+                    {Ads.IronSource,(IronSourceRatio,IronSourceController)},
+                    {Ads.DoNew, (DoNewRatio, DoNewAdController)}
                     //{Ads.Unity, (UnityRatio, UnityAdController)},
                     //{Ads.Admob, (AdmobRatio, AdmobController)},
-                    {Ads.DoNew, (DoNewRatio, DoNewAdController)},
                     //{Ads.MoPub, (MoPubRatio, MoPubController)},
-                    {Ads.IronSource,(IronSourceRatio,IronSourceController)}
                 };
             }
 
@@ -67,25 +66,31 @@ public class AdManager : AdControllerBase
         if (isInit) throw XDebug.Throw<AdManager>("Duplicate init!");
         isInit = true;
         DoNewAdController = gameObject.AddComponent<DoNewAdController>();
+        DoNewAdController.Init();
+        IronSourceController = gameObject.AddComponent<IronSourceController>();
+        IronSourceController.Init();
         //AdmobController = gameObject.AddComponent<AdmobController>();
         //AdmobController.Init(AdmobRetryCallBack);
         //UnityAdController = gameObject.AddComponent<UnityAdController>();
         //UnityAdController.Init();
         //MoPubController = gameObject.AddComponent<MoPubController>();
         //MoPubController.Init();
-        IronSourceController = gameObject.AddComponent<IronSourceController>();
-#if !UNITY_EDITOR
-        IronSourceController.Init();
-#endif
         Queue = new QueueByRatio<AdControllerBase>(
             Series.Join(Controllers,ad=>ad,c=>c.Key,(_,c)=>c.Value).ToArray()
         );
         AdAgent?.Init(this);
+        StartCoroutine(NextSecondRequestCache());
+    }
+
+    private IEnumerator NextSecondRequestCache()
+    {
+        yield return new WaitForSeconds(1);
+        ControllersAdResolve();
     }
 
     public override void RequestShow(UnityAction<bool, string> requestAction)
     {
-        admobRetryCount = 0;
+        //admobRetryCount = 0;
         var controller = Queue.Dequeue();
         var count = 0;
         if (controller.Status != AdAgentBase.States.Loaded)
@@ -112,12 +117,8 @@ public class AdManager : AdControllerBase
 
     public override void RequestLoad(UnityAction<bool, string> loadingAction) => loadingAction(true, string.Empty);
 
-    #region 内部请求admob
-    private int admobRetryCount;
-
     private void ControllersAdResolve()
     {
-#if !UNITY_EDITOR
         if (DoNewAdController.Status == AdAgentBase.States.Closed ||
             DoNewAdController.Status == AdAgentBase.States.FailedToLoad ||
             DoNewAdController.Status == AdAgentBase.States.None) DoNewAdController.RequestLoad(null);
@@ -128,17 +129,7 @@ public class AdManager : AdControllerBase
         // if(MoPubController.Status == AdAgentBase.States.Closed ||
         //    MoPubController.Status == AdAgentBase.States.FailedToLoad ||
         //    MoPubController.Status == AdAgentBase.States.None) MoPubController.RequestLoad(null);
-#endif
     }
-
-    private void AdmobRetryCallBack(bool success, string message)
-    {
-        if (success) return;
-        admobRetryCount++;
-        if (admobRetryCount >= AdmobRetry) return;
-        ControllersAdResolve();
-    }
-    #endregion
 }
 
 /// <summary>

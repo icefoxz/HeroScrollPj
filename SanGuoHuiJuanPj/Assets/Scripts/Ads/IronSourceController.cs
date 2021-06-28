@@ -8,14 +8,22 @@ public class IronSourceController : AdControllerBase
     private const string AppKey = "fd6ae971";
     private const string PlacementId = "DefaultRewardedVideo";
     private UnityAction<bool, string> showAction;
-    
+    private UnityAction<bool, string> loadAction;
     public void Init()
     {
+#if !UNITY_EDITOR
         IronSource.Agent.init(AppKey, IronSourceAdUnits.REWARDED_VIDEO);
+#endif
         IronSourceEvents.onRewardedVideoAvailabilityChangedEvent += OnRewardedVideoAvailabilityChangedEvent;
         IronSourceEvents.onRewardedVideoAdRewardedEvent += OnRewardedVideoAdRewardedEvent;
         IronSourceEvents.onRewardedVideoAdShowFailedEvent += OnRewardedVideoAdShowFailedEvent;
+        IronSourceEvents.onRewardedVideoAdLoadFailedDemandOnlyEvent += OnRewardedVideoAdLoadFailedDemandOnlyEvent;
+        IronSourceEvents.onRewardedVideoAdLoadedDemandOnlyEvent += OnRewardedVideoAdLoadedDemandOnlyEvent;
     }
+
+    private void OnRewardedVideoAdLoadedDemandOnlyEvent(string msg) => loadAction?.Invoke(true, msg);
+
+    private void OnRewardedVideoAdLoadFailedDemandOnlyEvent(string msg, IronSourceError err) => loadAction?.Invoke(false,$"{err}: {msg}");
 
     private void OnRewardedVideoAdShowFailedEvent(IronSourceError error) => showAction?.Invoke(false, error.getDescription());
 
@@ -31,6 +39,7 @@ public class IronSourceController : AdControllerBase
 
     public override void RequestLoad(UnityAction<bool, string> loadingAction)
     {
+        IronSource.Agent.loadISDemandOnlyRewardedVideo(PlacementId);
     }
 
     void OnApplicationPause(bool isPaused) => IronSource.Agent.onApplicationPause(isPaused);

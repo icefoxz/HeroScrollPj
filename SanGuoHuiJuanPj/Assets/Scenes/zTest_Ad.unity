@@ -276,6 +276,7 @@ GameObject:
   - component: {fileID: 371798062}
   - component: {fileID: 371798061}
   - component: {fileID: 371798063}
+  - component: {fileID: 371798064}
   m_Layer: 0
   m_Name: GameObject
   m_TagString: Untagged
@@ -297,7 +298,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   reportText: {fileID: 51174344}
   stateText: {fileID: 1336057049}
-  controller: {fileID: 371798063}
+  controller: {fileID: 371798064}
 --- !u!4 &371798062
 Transform:
   m_ObjectHideFlags: 0
@@ -330,6 +331,18 @@ MonoBehaviour:
   OnCached:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &371798064
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 371798060}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e6366465a05393147873dd33eeefab36, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &710285501
 GameObject:
   m_ObjectHideFlags: 0

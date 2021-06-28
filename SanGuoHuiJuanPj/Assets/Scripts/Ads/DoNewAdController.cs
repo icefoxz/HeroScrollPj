@@ -32,7 +32,7 @@ public class DoNewAdController : AdControllerBase
     private RewardedVideoAd cachedVideoAd;
     private RewardAdListener rewardAdListener;
 
-    void Awake()
+    public void Init()
     {
         SDK.apiType = SDK.ApiType.Release;
         status = AdAgentBase.States.None;
@@ -40,6 +40,7 @@ public class DoNewAdController : AdControllerBase
 
     public override void RequestLoad(UnityAction<bool,string> requestAction)
     {
+#if !UNITY_EDITOR
         status = AdAgentBase.States.Loading;
         rewardAdListener = new RewardAdListener((isSuccess,msg) =>
         {
@@ -47,6 +48,7 @@ public class DoNewAdController : AdControllerBase
             requestAction?.Invoke(isSuccess,msg);
         });
         cachedVideoAd = RewardedVideoAd.LoadRewardedVideoAd(PlaceId,rewardAdListener);
+#endif
         //requestAction?.Invoke(true, string.Empty);//直接播放，不需要load
     }
 

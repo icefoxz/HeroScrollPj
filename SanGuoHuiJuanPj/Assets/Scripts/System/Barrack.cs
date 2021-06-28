@@ -14,7 +14,7 @@ public class Barrack : MonoBehaviour
     public Transform InventoryContent;
     private List<GameCardUi> _cardPool = new List<GameCardUi>();
 
-    public void Init(UnityAction<NowLevelAndHadChip> onCardMerge,UnityAction<NowLevelAndHadChip> onCardSell,UnityAction<NowLevelAndHadChip> onCardEnlist)
+    public void Init(UnityAction<GameCard> onCardMerge,UnityAction<GameCard> onCardSell,UnityAction<GameCard> onCardEnlist)
     {
         var flagBtn = PointDesk.FlagUi.gameObject.AddComponent<Button>();
         flagBtn.onClick.AddListener(() =>
@@ -40,7 +40,7 @@ public class Barrack : MonoBehaviour
         if (SelectedForce != forceId)
         {
             if (forceId < 0 ||
-                forceId > DataTable.PlayerLevelConfig[PlayerDataForGame.instance.pyData.Level].UnlockForces)
+                forceId > PlayerDataForGame.instance.UnlockForceId)
             {
                 SelectedForce = 0;
             }
@@ -52,7 +52,7 @@ public class Barrack : MonoBehaviour
         PlayerDataForGame.instance.RefreshEnlisted(SelectedForce);
         ResetCardPool();
         if (_cardPool.Count == 0) return;
-        NowLevelAndHadChip selected;
+        GameCard selected;
         selected = PointDesk.SelectedCard?.Card;
         if (selected == null ||
             !_cardPool.Any(ui => ui.Card.CardId == selected.CardId && ui.Card.Type == selected.Type))
@@ -62,7 +62,7 @@ public class Barrack : MonoBehaviour
         AudioController0.instance.RandomPlayGuZhengAudio(); //播放随机音效 
     }
 
-    private void HighlightSelected(NowLevelAndHadChip card) =>
+    private void HighlightSelected(GameCard card) =>
         _cardPool.ForEach(c => c.Selected(c.Card.CardId == card.CardId && c.Card.Type == card.Type));
     private void ResetCardPool()
     {
@@ -77,7 +77,7 @@ public class Barrack : MonoBehaviour
         cards.ForEach(InstanceGameCardUi);
     }
 
-    private void InstanceGameCardUi(NowLevelAndHadChip card)
+    private void InstanceGameCardUi(GameCard card)
     {
         var ui = GetCardFromPool();
         ui.Set(card, GameCardUi.CardModes.Desk);
