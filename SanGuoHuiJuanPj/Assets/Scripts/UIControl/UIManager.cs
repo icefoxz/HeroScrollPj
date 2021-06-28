@@ -630,7 +630,7 @@ public class UIManager : MonoBehaviour
     /// <summary> 
     /// 合成卡牌 
     /// </summary> 
-    private void MergeCard(NowLevelAndHadChip card)
+    private void MergeCard(GameCard card)
     {
         var nextLevel = DataTable.CardLevel[card.level + 1];
         var isChipsEnough = card.chips >= nextLevel.ChipsConsume;
@@ -649,7 +649,7 @@ public class UIManager : MonoBehaviour
             {
                 var player = vb.GetPlayerDataDto();
                 var dto = vb.GetGameCardDto();
-                NowLevelAndHadChip ca;
+                GameCard ca;
                 var hst = PlayerDataForGame.instance.hstData;
                 switch (dto.Type)
                 {
@@ -687,7 +687,7 @@ public class UIManager : MonoBehaviour
             ViewBag.Instance().SetValues(new object[] {card.id, card.typeIndex}));
     }
 
-    private void OnCardEnlist(NowLevelAndHadChip card)
+    private void OnCardEnlist(GameCard card)
     {
         ApiPanel.instance.Invoke(vb =>
             {
@@ -703,7 +703,7 @@ public class UIManager : MonoBehaviour
 
 
     //出售卡牌 
-    private void OnClickForSellCard(NowLevelAndHadChip gameCard)
+    private void OnClickForSellCard(GameCard gameCard)
     {
         AudioController0.instance.ChangeAudioClip(18);
         AudioController0.instance.PlayAudioSource(0);
@@ -770,7 +770,7 @@ public class UIManager : MonoBehaviour
     /// <summary> 
     /// 对HST的数据进行排序 
     /// </summary> 
-    private void SortHSTData(List<NowLevelAndHadChip> dataList)
+    private void SortHSTData(List<GameCard> dataList)
     {
         dataList.Sort((c1, c2) =>
         {
@@ -787,7 +787,7 @@ public class UIManager : MonoBehaviour
             return GetRare(c2).CompareTo(GetRare(c1));
         });
 
-        int GetRare(NowLevelAndHadChip c)
+        int GetRare(GameCard c)
         {
             switch ((GameCardType)c.typeIndex)
             {

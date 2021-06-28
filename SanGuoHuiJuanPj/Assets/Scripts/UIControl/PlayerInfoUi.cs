@@ -11,6 +11,7 @@ public class PlayerInfoUi : MonoBehaviour
     public Text Level;
     public Text YuanBao;
     public Text YuQue;
+    public Text MilitaryPower;
     public ExpSlider Exp;
     public ZhanLingUi ZhanLingUi;
 
@@ -22,15 +23,17 @@ public class PlayerInfoUi : MonoBehaviour
     }
     public void UpdateUi()
     {
-        var isLevelMax = PlayerDataForGame.instance.pyData.Level >= DataTable.PlayerLevelConfig.Keys.Max();
-        var maxExp = isLevelMax ? 99999 : DataTable.PlayerLevelConfig[PlayerDataForGame.instance.pyData.Level + 1].Exp;
+        var py = PlayerDataForGame.instance.pyData;
+        var isLevelMax = py.Level >= DataTable.PlayerLevelConfig.Keys.Max();
+        var maxExp = isLevelMax ? 99999 : DataTable.PlayerLevelConfig[py.Level + 1].Exp;
         var levelText = isLevelMax
             ? DataTable.GetStringText(34)
-            : string.Format(DataTable.GetStringText(35), PlayerDataForGame.instance.pyData.Level);
+            : string.Format(DataTable.GetStringText(35), py.Level);
         Level.text = levelText;
-        YuanBao.text = PlayerDataForGame.instance.pyData.YuanBao.ToString();
-        YuQue.text = PlayerDataForGame.instance.pyData.YvQue.ToString();
-        Exp.Set(PlayerDataForGame.instance.pyData.Exp, maxExp);
+        YuanBao.text = py.YuanBao.ToString();
+        YuQue.text = py.YvQue.ToString();
+        MilitaryPower.text = PlayerDataForGame.instance.MilitaryPower.ToString();
+        Exp.Set(py.Exp, maxExp);
         var cha = PlayerDataForGame.instance.Character;
         if (cha != null) UpdateCharacter(cha);
         //货币 

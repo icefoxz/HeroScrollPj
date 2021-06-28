@@ -471,7 +471,7 @@ public class LoadSaveData : MonoBehaviour
         }
         return save;
 
-        List<NowLevelAndHadChip> ResolveData(List<NowLevelAndHadChip> data,GameCardType cardType)
+        List<GameCard> ResolveData(List<GameCard> data,GameCardType cardType)
         {
             return data.Where(card =>
             {
@@ -553,9 +553,9 @@ public class LoadSaveData : MonoBehaviour
         //////////////////////////////////////////////////////////////////////////////////////// 
         HSTDataClass hstSaveData = new HSTDataClass
         {
-            heroSaveData = new List<NowLevelAndHadChip>(),
-            towerSaveData = new List<NowLevelAndHadChip>(),
-            trapSaveData = new List<NowLevelAndHadChip>()
+            heroSaveData = new List<GameCard>(),
+            towerSaveData = new List<GameCard>(),
+            trapSaveData = new List<GameCard>()
         };
         DataTable.PlayerInitialConfig[pySaveData.ForceId].InitialHero.ToList().ForEach(id =>
         {
@@ -694,7 +694,7 @@ public class LoadSaveData : MonoBehaviour
         //战役宝箱
         public List<int> fightBoxs;
         //兑换码
-        public List<RedemptionCodeGot> redemptionCodeGotList;
+        public List<RCode> redemptionCodeGotList;
 
         public GetBoxOrCodeData ToNewSave()
         {

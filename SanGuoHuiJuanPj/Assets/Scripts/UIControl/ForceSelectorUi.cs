@@ -28,7 +28,7 @@ public class ForceSelectorUi : MonoBehaviour
     public IReadOnlyDictionary<int, Button> BtnData => btnData;
     public virtual void Init(PlayerDataForGame.WarTypes warType)
     {
-        var totalUnlock = DataTable.PlayerLevelConfig[PlayerDataForGame.instance.pyData.Level].UnlockForces;
+        var totalUnlock = PlayerDataForGame.instance.UnlockForceId;
         var totalDisplayForce = mode == Modes.仅显示可用
             ? totalUnlock + 1
             : DataTable.Force.Count;

@@ -25,6 +25,8 @@ public class PointDesk : MonoBehaviour
     [SerializeField]Button CardSellBtn;
     [SerializeField]Text SellingPrice;
     [SerializeField]Button EnlistBtn;
+    [SerializeField]Text CardCapability;
+    [SerializeField]Text CardCapabilityTxt;
 
     [SerializeField]Text EnlistBtnLabel;
     [SerializeField]GameObject UpLevelEffect; //升星特效 
@@ -66,7 +68,7 @@ public class PointDesk : MonoBehaviour
         //EnlistBtn.onClick.AddListener(()=>OnEnlistCall.Invoke(SelectedCard.Card));
     }
 
-    public void SelectCard(NowLevelAndHadChip card)
+    public void SelectCard(GameCard card)
     {
         SelectedCard.Set(card, GameCardUi.CardModes.Desk);
         var info = card.GetInfo();
@@ -79,18 +81,21 @@ public class PointDesk : MonoBehaviour
             ? card.level > 0 ? string.Format(DataTable.GetStringText(33), info.GetHp(card.Level)) : string.Empty
             : string.Empty;
         Info.text = info.Intro;
+        var isCardEnlistAble = card.IsEnlistAble();
+        CardCapability.gameObject.SetActive(isCardEnlistAble);
+        CardCapabilityTxt.text = isCardEnlistAble ? card.Power().ToString() : string.Empty;
         UpdateMergeInfo(card);
         UpdateSellingPrice(card);
         UpdateEnlist();
     }
 
-    private void UpdateSellingPrice(NowLevelAndHadChip card)
+    private void UpdateSellingPrice(GameCard card)
     {
         var value = card.GetValue();
         SellingPrice.text = value.ToString();
     }
 
-    private void UpdateMergeInfo(NowLevelAndHadChip card)
+    private void UpdateMergeInfo(GameCard card)
     {
         var isFragment = card.Level == 0;
         MergeImg.gameObject.SetActive(isFragment);
@@ -167,5 +172,5 @@ public class PointDesk : MonoBehaviour
     //}
     public void SetForce(int forceId) => FlagUi.Set((ForceFlags) forceId);
 
-    public class CardEvent : UnityEvent<NowLevelAndHadChip> { }
+    public class CardEvent : UnityEvent<GameCard> { }
 }

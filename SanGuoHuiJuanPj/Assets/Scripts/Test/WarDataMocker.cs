@@ -62,9 +62,9 @@ public class WarDataMocker : MonoBehaviour
         }
         else
         {
-            cards = heroes.Select(c => new NowLevelAndHadChip {id = c.CardId, level = c.Level, typeIndex = 0})
-                .Concat(towers.Select(t => new NowLevelAndHadChip {id = t.CardId, level = t.Level, typeIndex = 2}))
-                .Concat(traps.Select(t => new NowLevelAndHadChip {id = t.CardId, level = t.Level, typeIndex = 3}))
+            cards = heroes.Select(c => new GameCard {id = c.CardId, level = c.Level, typeIndex = 0})
+                .Concat(towers.Select(t => new GameCard {id = t.CardId, level = t.Level, typeIndex = 2}))
+                .Concat(traps.Select(t => new GameCard {id = t.CardId, level = t.Level, typeIndex = 3}))
                 .GroupBy(c => c.typeIndex, c => c.id, (type, cIds) => new {type, cIds})
                 .ToDictionary(c => c.type, c => c.cIds.ToList());
         }

@@ -22,10 +22,10 @@ public static class GameSystemExtension
     /// <param name="cards"></param>
     /// <param name="forceId">军团Id</param>
     /// <returns></returns>
-    public static IEnumerable<NowLevelAndHadChip> Enlist(this IEnumerable<NowLevelAndHadChip> cards, int forceId) =>
+    public static IEnumerable<GameCard> Enlist(this IEnumerable<GameCard> cards, int forceId) =>
         cards.Where(card => GetForceId(card) == forceId && card.level > 0 && card.isFight > 0);
-
-    public static int GetForceId(this NowLevelAndHadChip card)
+    public static bool IsEnlistAble(this GameCard card) => card.Level > 0;
+    public static int GetForceId(this GameCard card)
     {
         //单位类型0武将 1士兵 2塔 3陷阱 4技能
         int force = -1;
@@ -44,20 +44,20 @@ public static class GameSystemExtension
         return force;
     }
 
-    public static NowLevelAndHadChip GetOrInstance(this List<NowLevelAndHadChip> cards, int cardId, int cardType, int level) =>
+    public static GameCard GetOrInstance(this List<GameCard> cards, int cardId, int cardType, int level) =>
         cards.GetOrInstance(cardId, (GameCardType) cardType,level);
 
-    public static NowLevelAndHadChip GetOrInstance(this List<NowLevelAndHadChip> cards, int cardId,
+    public static GameCard GetOrInstance(this List<GameCard> cards, int cardId,
         GameCardType cardType, int level)
     {
         var card = cards.SingleOrDefault(c => c.id == cardId);
         if (card != null) return card;
-        card = new NowLevelAndHadChip().Instance(cardType, cardId, level);
+        card = new GameCard().Instance(cardType, cardId, level);
         cards.Add(card);
         return card;
     }
 
-    public static NowLevelAndHadChip Instance(this NowLevelAndHadChip card, GameCardType type, int cardId, int cardLevel)
+    public static GameCard Instance(this GameCard card, GameCardType type, int cardId, int cardLevel)
     {
         card.id = cardId;
         card.level = cardLevel;
@@ -102,9 +102,10 @@ public static class GameSystemExtension
         };
     }
 
-    public static GameCardInfo GetInfo(this NowLevelAndHadChip card) => GameCardInfo.GetInfo(card);
+    public static GameCardInfo GetInfo(this GameCard card) => GameCardInfo.GetInfo(card);
+    public static int Power(this GameCard card) => card.CardCapability(card.GetInfo().Rare);
 
-    public static int GetValue(this NowLevelAndHadChip card)
+    public static int GetValue(this GameCard card)
     {
         var info = card.GetInfo();
         int chips = card.chips + DataTable.CardLevel.Where(lv => lv.Key <= card.level).Sum(kv => kv.Value.ChipsConsume);
@@ -149,7 +150,7 @@ public enum GuideProps
 /// </summary>
 public class GameCardInfo
 {
-    public static GameCardInfo GetInfo(NowLevelAndHadChip card) => GetInfo((GameCardType) card.typeIndex, card.id);
+    public static GameCardInfo GetInfo(GameCard card) => GetInfo((GameCardType) card.typeIndex, card.id);
 
     public static GameCardInfo GetInfo(GameCardType type,int id)
     {

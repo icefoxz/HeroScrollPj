@@ -22,11 +22,11 @@ public class UserSaveArchive : IUserSaveArchive
     {
         var hst = new HSTDataClass
         {
-            heroSaveData = h.heroSaveData.Where(c => c.IsOwned).ToList(),
-            soldierSaveData = h.soldierSaveData.Where(c => c.IsOwned).ToList(),
-            spellSaveData = h.spellSaveData.Where(c => c.IsOwned).ToList(),
-            towerSaveData = h.towerSaveData.Where(c => c.IsOwned).ToList(),
-            trapSaveData = h.trapSaveData.Where(c => c.IsOwned).ToList()
+            heroSaveData = h.heroSaveData.Where(c => c.IsOwning()).ToList(),
+            soldierSaveData = h.soldierSaveData.Where(c => c.IsOwning()).ToList(),
+            spellSaveData = h.spellSaveData.Where(c => c.IsOwning()).ToList(),
+            towerSaveData = h.towerSaveData.Where(c => c.IsOwning()).ToList(),
+            trapSaveData = h.trapSaveData.Where(c => c.IsOwning()).ToList()
         };
         var war = new WarsDataClass
         {
@@ -99,7 +99,7 @@ public class ObsoletedPyData
     //战役宝箱
     public List<int> fightBoxs;
     //兑换码
-    public List<RedemptionCodeGot> redemptionCodeGotList;
+    public List<RCode> redemptionCodeGotList;
 }
 
 /// <summary>
@@ -124,7 +124,7 @@ public class ObsoletedPlayerData
     //战役宝箱
     public List<int> fightBoxs;
     //兑换码
-    public List<RedemptionCodeGot> redemptionCodeGotList;
+    public List<RCode> redemptionCodeGotList;
 }
 
 /// <summary>

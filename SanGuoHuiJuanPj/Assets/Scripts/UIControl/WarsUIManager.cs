@@ -815,7 +815,7 @@ public class WarsUIManager : MonoBehaviour
         var cardRarity = mercenary.Produce.Rarity;
         var cardLevel = mercenary.Produce.Star;
         var card = RandomPickFromRareClass(cardType, cardRarity);
-        ui.SetGameCard(NowLevelAndHadChip.Instance(card.Id, mercenary.Produce.CardType, cardLevel));
+        ui.SetGameCard(GameCard.Instance(card.Id, mercenary.Produce.CardType, cardLevel));
         ui.OnClickAction.RemoveAllListeners();
         ui.OnClickAction.AddListener(() => OnClickToShowShopInfo(index, card.About));
         return card;
@@ -934,7 +934,7 @@ public class WarsUIManager : MonoBehaviour
     }
 
     //获得或购买三选物品
-    private void GetOrBuyCards(bool isBuy, int cost, NowLevelAndHadChip card, GameCardInfo info, int btnIndex)
+    private void GetOrBuyCards(bool isBuy, int cost, GameCard card, GameCardInfo info, int btnIndex)
     {
         var sanXuan =
             eventsWindows[3]
@@ -1010,7 +1010,7 @@ public class WarsUIManager : MonoBehaviour
             var reward = DataTable.QuestReward[pick].Produce;
 
             var info = RandomPickFromRareClass((GameCardType)reward.CardType, reward.Rarity);
-            var card = new NowLevelAndHadChip().Instance(info.Type, info.Id, reward.Star);
+            var card = new GameCard().Instance(info.Type, info.Id, reward.Star);
             CreateCardToList(card,info);
         }
         else
@@ -1038,9 +1038,9 @@ public class WarsUIManager : MonoBehaviour
 #if UNITY_EDITOR
         if (forceId == -2) //-2为测试用不重置卡牌，直接沿用卡牌上的阵容
         {
-            PlayerDataForGame.instance.fightHeroId.Select(id=> new NowLevelAndHadChip().Instance(GameCardType.Hero,id,1))
-                .Concat(PlayerDataForGame.instance.fightTowerId.Select(id=> new NowLevelAndHadChip().Instance(GameCardType.Tower,id,1)))
-                .Concat(PlayerDataForGame.instance.fightTrapId.Select(id=> new NowLevelAndHadChip().Instance(GameCardType.Trap,id,1)))
+            PlayerDataForGame.instance.fightHeroId.Select(id=> new GameCard().Instance(GameCardType.Hero,id,1))
+                .Concat(PlayerDataForGame.instance.fightTowerId.Select(id=> new GameCard().Instance(GameCardType.Tower,id,1)))
+                .Concat(PlayerDataForGame.instance.fightTrapId.Select(id=> new GameCard().Instance(GameCardType.Trap,id,1)))
                 .ToList().ForEach(CreateCardToList);
             return;
         }
@@ -1060,8 +1060,8 @@ public class WarsUIManager : MonoBehaviour
     }
 
     //创建玩家卡牌
-    private void CreateCardToList(NowLevelAndHadChip card) => CreateCardToList(card, card.GetInfo());
-    private void CreateCardToList(NowLevelAndHadChip card, GameCardInfo info)
+    private void CreateCardToList(GameCard card) => CreateCardToList(card, card.GetInfo());
+    private void CreateCardToList(GameCard card, GameCardInfo info)
     {
         var re = GameResources;
         GameObject obj = Instantiate(cardForWarListPres, heroCardListObj.transform);
@@ -1126,7 +1126,7 @@ public class WarsUIManager : MonoBehaviour
     }
 
     //定位到cardId对应的索引号
-    private int FindIndexFromData(List<NowLevelAndHadChip> saveData, int cardId)
+    private int FindIndexFromData(List<GameCard> saveData, int cardId)
     {
         int index = 0;
         for (; index < saveData.Count; index++)

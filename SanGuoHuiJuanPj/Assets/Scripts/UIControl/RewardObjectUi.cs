@@ -60,7 +60,7 @@ public class RewardObjectUi : MonoBehaviour
         Value.text = stamina.ToString();
     }
     
-    public void SetCard(NowLevelAndHadChip card)
+    public void SetCard(GameCard card)
     {
         DisplayItem(Items.Card);
         CardUi.Set(card, GameCardUi.CardModes.Desk);
