@@ -105,18 +105,6 @@ public class UIManager : MonoBehaviour
     GameObject huiJuanWinObj;   //绘卷窗口obj 
 
     [SerializeField]
-    GameObject jiBanBtnsConObj;  //羁绊按钮集合窗口obj 
-
-    [SerializeField]
-    GameObject jiBanInfoConObj; //羁绊详情窗口obj 
-
-    [SerializeField]
-    Transform jibanBtnBoxTran;  //羁绊按钮集合 
-
-    [SerializeField]
-    Transform jibanHeroBoxTran; //羁绊详情武将集合 
-
-    [SerializeField]
     Button jiBanWinCloseBtn;    //羁绊界面关闭按钮 
 
     [SerializeField]
@@ -157,7 +145,6 @@ public class UIManager : MonoBehaviour
         Barrack.Init(MergeCard, OnClickForSellCard, OnCardEnlist);
         InitChickenOpenTs();
         InitChickenBtnFun();
-        InitJiBanForMainFun();
         InitBaYeFun();
         PlayerDataForGame.instance.ClearGarbageStationObj();
 
@@ -401,96 +388,6 @@ public class UIManager : MonoBehaviour
                 baYeChestButtons[i].Ready();
             else baYeChestButtons[i].Open();
         }
-    }
-
-    //main场景羁绊内容的初始化 
-    private void InitJiBanForMainFun()
-    {
-        foreach (var jiBan in DataTable.JiBan.Values)
-        {
-            if (jiBan.IsOpen == 0) continue;
-            Transform tran = jibanBtnBoxTran.GetChild(jiBan.Id);
-            if (tran != null)
-            {
-                tran.GetChild(0).GetChild(0).GetComponent<Image>().sprite =
-                    Resources.Load("Image/JiBan/name_v/" + jiBan.Id, typeof(Sprite)) as Sprite;
-                tran.GetChild(0).GetChild(0).GetComponent<Button>().onClick.AddListener(() =>
-                    ShowJiBanInfoOnClick(jiBan.Id));
-                tran.gameObject.SetActive(true);
-            }
-        }
-        jiBanWinCloseBtn.onClick.AddListener(CloseHuiJuanWinObjFun);
-    }
-
-    //点击单个羁绊按钮展示详细信息 
-    private void ShowJiBanInfoOnClick(int indexId)
-    {
-        for (int i = 0; i < jibanHeroBoxTran.childCount; i++)
-        {
-            jibanHeroBoxTran.transform.GetChild(i).gameObject.SetActive(false);
-        }
-
-        var jiBan = DataTable.JiBan[indexId];
-        for (int i = 0; i < jiBan.Cards.Length; i++)
-        {
-            var card = jiBan.Cards[i];
-            var heroType = (int) GameCardType.Hero;
-            if (card.CardType == heroType)
-            {
-                var hero = DataTable.Hero[card.CardId];
-                Transform tran = jibanHeroBoxTran.GetChild(i);
-                GameObject obj = tran.GetChild(0).gameObject;
-                //名字 
-                GameCardUi.NameTextSizeAlignment(obj.transform.GetChild(2).GetComponent<Text>(), hero.Name);
-                //名字颜色根据稀有度 
-                obj.transform.GetChild(2).GetComponent<Text>().color =
-                    GameCardInfo.GetInfo((GameCardType) card.CardType, card.CardId).GetNameColor();
-                //卡牌 
-                obj.transform.GetChild(1).GetComponent<Image>().sprite =
-                    GameResources.HeroImg[hero.Id];
-                //兵种名 
-                obj.transform.GetChild(4).GetComponentInChildren<Text>().text =
-                    DataTable.Military[hero.MilitaryUnitTableId].Short;
-                //兵种框 
-                obj.transform.GetChild(4).GetComponent<Image>().sprite = GameResources.ClassImg[0];
-                tran.gameObject.SetActive(true);
-            }
-        }
-
-        jiBanInfoConObj.transform.GetChild(0).GetComponent<Image>().sprite = Resources.Load("Image/JiBan/art/" + indexId, typeof(Sprite)) as Sprite;
-        jiBanInfoConObj.transform.GetChild(0).GetChild(0).GetComponent<Text>().text = DataTable.JiBan[indexId].JiBanEffect;
-        jiBanInfoConObj.transform.GetChild(0).GetChild(1).GetChild(0).GetComponent<Image>().sprite = Resources.Load("Image/JiBan/name_h/" + indexId, typeof(Sprite)) as Sprite;
-
-
-        jiBanBtnsConObj.SetActive(false);
-        jiBanInfoConObj.SetActive(true);
-        jiBanWinCloseBtn.onClick.RemoveAllListeners();
-        jiBanWinCloseBtn.onClick.AddListener(delegate ()
-        {
-            jiBanInfoConObj.SetActive(false);
-            jiBanBtnsConObj.SetActive(true);
-            jiBanWinCloseBtn.onClick.RemoveAllListeners();
-            jiBanWinCloseBtn.onClick.AddListener(CloseHuiJuanWinObjFun);
-        });
-    }
-
-    /// <summary> 
-    /// 打开绘卷界面 
-    /// </summary> 
-    public void OpenHuiJuanWinObjFun()
-    {
-        jiBanBtnsConObj.SetActive(true);
-        huiJuanWinObj.SetActive(true);
-    }
-
-    /// <summary> 
-    /// 关闭绘卷界面 
-    /// </summary> 
-    private void CloseHuiJuanWinObjFun()
-    {
-        huiJuanWinObj.SetActive(false);
-        jiBanBtnsConObj.SetActive(false);
-        jiBanInfoConObj.SetActive(false);
     }
 
     public void DelayInvokeReturnStaminaUi()

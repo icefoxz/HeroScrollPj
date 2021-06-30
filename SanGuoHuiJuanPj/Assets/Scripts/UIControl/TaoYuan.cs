@@ -19,13 +19,21 @@ using UnityEngine.UI;
     private bool isConsumeAd;//是否消费了广告
     public JiuTanUI jiuTan;//酒坛
     public Button jinNangBtn;//锦囊
+    public Button jiBanBtn;//羁绊
     public TaoYuanChestUI zhanYiChest;//战役宝箱
     public YvQueChestUI copperChest;//铜宝箱
     public YvQueChestUI goldChest;//金宝箱
     public JinNangUI jinNangUi;//锦囊
+    public JiBanWindowController jiBanController;//羁绊
     private Dictionary<TaoYuanChestUI, int> chestCostMap;//宝箱和价钱的映射表
 
-    private void Start() => InitChests();
+    private void Start()
+    {
+        InitChests();
+        jiBanController.Init();
+        jiBanBtn.onClick.RemoveAllListeners();
+        jiBanBtn.onClick.AddListener(OnShowJiBanWindow);
+    }
 
     //初始化宝箱的展示
     private void InitChests()
@@ -77,6 +85,8 @@ using UnityEngine.UI;
         }
         OnJinNangFailed(string.Empty);
     }
+
+    public void OnShowJiBanWindow() => jiBanController.Show();
 
     public void OnOpenJinNang(ViewBag viewBag)
     {

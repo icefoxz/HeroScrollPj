@@ -645,6 +645,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3122890704471373644}
   - component: {fileID: 3122890704471373157}
+  - component: {fileID: 2566819052061150262}
   - component: {fileID: 3122890704471372867}
   - component: {fileID: 3546903380910472575}
   m_Layer: 5
@@ -694,8 +695,30 @@ MonoBehaviour:
   Level: {fileID: 3122890704471373553}
   Short: {fileID: 3122890704471374535}
   Frame: {fileID: 3122890704471373557}
+  GrayScale: {fileID: 2566819052061150262}
   CityOperation: {fileID: 5290392904829200310}
   WarOperation: {fileID: 5290392904260827618}
+--- !u!114 &2566819052061150262
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3122890704471373159}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5803f4a5f7ba802449086ee250b855c1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  grayMaterial: {fileID: 2100000, guid: c2022945786731f4c9ac34786feb052c, type: 2}
+  textGray: {r: 0.3, g: 0.3, b: 0.3, a: 1}
+  images:
+  - {fileID: 3122890704471372085}
+  - {fileID: 3122890704471373483}
+  - {fileID: 3122890704471373557}
+  - {fileID: 3122890704471373553}
+  texts:
+  - {fileID: 3122890704471373546}
 --- !u!222 &3122890704471372867
 CanvasRenderer:
   m_ObjectHideFlags: 0

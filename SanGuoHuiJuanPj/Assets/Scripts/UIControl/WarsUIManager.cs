@@ -358,7 +358,7 @@ public class WarsUIManager : MonoBehaviour
                     ConsumeManager.instance.SaveChangeUpdatePlayerData(player, 0);
                 }, PlayerDataForGame.instance.ShowStringTips,
                 EventStrings.Req_WarReward, viewBag);
-            GameSystem.instance.ShowStaminaEffect = true;
+            GameSystem.Instance.ShowStaminaEffect = true;
             //GameSystem.OnMainSceneInit.AddListener(UIManager.instance.DelayInvokeReturnStaminaUi);
         }
         //gameOverWindow.Show(rewardMap);
