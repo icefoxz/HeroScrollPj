@@ -16,11 +16,11 @@ public class ConfirmationWindowUi : MonoBehaviour
     public Image YuQueImage;
     public Image YuanBaoImage;
     public Text Value;
-    private UiDisplayMapper<Component> mapper;
+    private UiStateMapper<Component> mapper;
 
     public void Init()
     {
-        mapper = new UiDisplayMapper<Component>(
+        mapper = new UiStateMapper<Component>(
             (Resources.YuQue, new Component[] {YuQueImage, Value}),
             (Resources.YuanBao, new Component[] {YuanBaoImage, Value})
         );

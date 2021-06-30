@@ -25,7 +25,7 @@ public class WarDataMocker : MonoBehaviour
 #if UNITY_EDITOR
     private void Awake()
     {
-        GameSystem.instance.Init();
+        GameSystem.Instance.Init();
         StartCoroutine(Init());
     }
 

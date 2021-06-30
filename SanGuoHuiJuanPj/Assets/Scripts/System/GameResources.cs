@@ -18,16 +18,6 @@ public enum ForceFlags
 public class GameResources
 {
     public static GameResources Instance { get; private set; }
-    private IReadOnlyDictionary<int, Sprite> heroImgMap;
-    private IReadOnlyDictionary<int, Sprite> classImgMap;
-    private IReadOnlyDictionary<int, Sprite> fuZhuImgMap;
-    private IReadOnlyDictionary<int, Sprite> gradeImgMap;
-    private IReadOnlyDictionary<int, Sprite> guanQiaEventMap;
-    private IReadOnlyDictionary<int, Sprite> frameImgMap;
-    private IReadOnlyDictionary<int, Sprite> artWindowMap;
-    private IReadOnlyDictionary<int, Sprite> battleBgMap;
-    private IReadOnlyDictionary<ForceFlags, Sprite> forceFlagMap;
-    private IReadOnlyDictionary<ForceFlags, Sprite> forceNameMap;
     private const string HeroImagesPath = "Image/Cards/Hero/";
     private const string ClassImagesPath = "Image/classImage/";
     private const string FuZhuImagesPath = "Image/Cards/FuZhu/";
@@ -43,6 +33,9 @@ public class GameResources
     private const string CityFlagPath = "Image/City/Flag";
     private const string CityIconPath = "Image/City/Icon";
     private const string AvatarPath = "Image/Player/Icon";
+    private const string JiBanBgPath = "Image/JiBan/art";
+    private const string JiBanVTextPath = "Image/JiBan/name_v";
+    private const string JiBanHTextPath = "Image/JiBan/name_h";
     /// <summary>
     /// Key = heroId, Value = sprite
     /// </summary>
@@ -64,13 +57,31 @@ public class GameResources
     public IReadOnlyDictionary<int, Sprite> CityFlag => cityFlag;
     public IReadOnlyDictionary<int, Sprite> CityIcon => cityIcon;
     public IReadOnlyDictionary<int, Sprite> Avatar => avatar;
+    public IReadOnlyDictionary<int, Sprite> JiBanBg => jiBanBg;
+    public IReadOnlyDictionary<int, Sprite> JiBanVText => jiBanVText;
+    public IReadOnlyDictionary<int, Sprite> JiBanHText => jiBanHText;
 
     private bool isInit;
+
+    private IReadOnlyDictionary<int, Sprite> heroImgMap;
+    private IReadOnlyDictionary<int, Sprite> classImgMap;
+    private IReadOnlyDictionary<int, Sprite> fuZhuImgMap;
+    private IReadOnlyDictionary<int, Sprite> gradeImgMap;
+    private IReadOnlyDictionary<int, Sprite> guanQiaEventMap;
+    private IReadOnlyDictionary<int, Sprite> frameImgMap;
+    private IReadOnlyDictionary<int, Sprite> artWindowMap;
+    private IReadOnlyDictionary<int, Sprite> battleBgMap;
+    private IReadOnlyDictionary<ForceFlags, Sprite> forceFlagMap;
+    private IReadOnlyDictionary<ForceFlags, Sprite> forceNameMap;
     private IReadOnlyDictionary<string, GameObject> effectsMap;
     private IReadOnlyDictionary<string, GameObject> stateDinMap;
     private IReadOnlyDictionary<int, Sprite> cityFlag;
     private IReadOnlyDictionary<int, Sprite> cityIcon;
     private IReadOnlyDictionary<int, Sprite> avatar;
+    private IReadOnlyDictionary<int, Sprite> jiBanBg;
+    private IReadOnlyDictionary<int,Sprite> jiBanHText;
+    private IReadOnlyDictionary<int,Sprite> jiBanVText;
+
 
     public void Init(bool forceReload = false)
     {
@@ -115,8 +126,10 @@ public class GameResources
         cityFlag = new ResourceDataWrapper<int, Sprite>(Resources.LoadAll<Sprite>(CityFlagPath).ToDictionary(s => int.Parse(s.name), s => s), nameof(stateDinMap));
         cityIcon = new ResourceDataWrapper<int, Sprite>(Resources.LoadAll<Sprite>(CityIconPath).ToDictionary(s => int.Parse(s.name), s => s), nameof(stateDinMap));
         avatar = new ResourceDataWrapper<int, Sprite>(Resources.LoadAll<Sprite>(AvatarPath).ToDictionary(s => int.Parse(s.name), s => s), nameof(avatar));
+        jiBanBg = new ResourceDataWrapper<int, Sprite>(Resources.LoadAll<Sprite>(JiBanBgPath).ToDictionary(s => int.Parse(s.name), s => s), nameof(jiBanBg));
+        jiBanHText= new ResourceDataWrapper<int, Sprite>(Resources.LoadAll<Sprite>(JiBanHTextPath).ToDictionary(s => int.Parse(s.name), s => s), nameof(jiBanHText));
+        jiBanVText= new ResourceDataWrapper<int, Sprite>(Resources.LoadAll<Sprite>(JiBanVTextPath).ToDictionary(s => int.Parse(s.name), s => s), nameof(jiBanVText));
     }
-
 
 
     internal class ResourceDataWrapper<TKey,TValue> : IReadOnlyDictionary<TKey,TValue>

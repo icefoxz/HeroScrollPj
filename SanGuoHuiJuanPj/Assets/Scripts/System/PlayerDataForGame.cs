@@ -459,7 +459,7 @@ public class PlayerDataForGame : MonoBehaviour
         var list = hstData.heroSaveData
             .Concat(hstData.towerSaveData)
             .Concat(hstData.trapSaveData).Where(c=>c.IsOwning());
-        return !isAllForces ? list : list.Where(c => c.GetInfo().ForceId <= UnlockForceId);
+        return isAllForces ? list : list.Where(c => c.GetInfo().ForceId <= UnlockForceId);
     }
 
     public IEnumerable<GameCardDto> GetLocalDtos()

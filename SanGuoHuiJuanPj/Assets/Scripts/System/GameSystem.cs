@@ -20,29 +20,33 @@ public class GameSystem : MonoBehaviour
 
     public static GameScene CurrentScene { get; private set; }
 
-    public static GameSystem instance;
+    public static GameSystem Instance { get; private set; }
     public static LoginUiController LoginUi { get; private set; }
-    public LoginUiController loginUiController;
     public static TimeSystemControl TimeSystemControl { get; private set; }
+    public static Configuration Configuration { get; private set; }
+    public static GameResources GameResources { get; private set; }
+    public static bool IsInit { get; private set; }
+    public static MapService MapService { get; private set; }
+
+    #region Reference Fields
+    public LoginUiController loginUiController;
     public TimeSystemControl timeSystemControl;
     public PlayerDataForGame playerDataForGame;
-    private List<UnityAction> SceneLoadActions { get; } = new List<UnityAction>();
     public Configuration configuration;
     public DataTable dataTable;
-    public static Configuration Configuration { get; private set; }
-
-    public static GameResources GameResources { get; private set; }
+    public PrefabManager prefabManager;
     public Canvas systemCanvas;
-    public static bool IsInit { get; private set; }
+    #endregion
+
+    //method properties/fields
+    private List<UnityAction> SceneLoadActions { get; } = new List<UnityAction>();
     public static UnityEvent OnWarSceneInit = new UnityEvent();
     public static UnityEvent OnMainSceneInit = new UnityEvent();
     private Queue<Func<bool>> InitQueue;
 
-    public static MapService MapService { get; private set; }
-
     void Awake()
     {
-        instance = this;
+        Instance = this;
         DontDestroyOnLoad(gameObject);
     }
 
@@ -65,6 +69,7 @@ public class GameSystem : MonoBehaviour
             GameResources = new GameResources();
             GameResources.Init();
         });
+        InitEnqueue(prefabManager.Init);
         InitEnqueue(() => AudioController0.instance.MusicSwitch(GamePref.PrefMusicPlay));
         InitEnqueue(() => AudioController1.instance.MusicSwitch(GamePref.PrefMusicPlay));
         InitEnqueue(() =>

@@ -117,7 +117,7 @@ public class StartSceneToServerCS : MonoBehaviour
 
         GameSystem.InitGameDependencyComponents();
         GameSystem.LoginUi.Close();
-        GameSystem.instance.BeginAllServices();
+        GameSystem.Instance.BeginAllServices();
         StartSceneUIManager.instance.LoadingScene(GameSystem.GameScene.MainScene, true);
     }
 }

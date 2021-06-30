@@ -17,11 +17,11 @@ public class ConsumeBtnUi : MonoBehaviour
     public Text Free;
     public Transform ConsumeBody;
     public Button Button;
-    private UiDisplayMapper<Component> mapper;
+    private UiStateMapper<Component> mapper;
 
     public virtual void Init()
     {
-        mapper = new UiDisplayMapper<Component>(
+        mapper = new UiStateMapper<Component>(
             (States.Free, new Component[] {Free}),
             (States.YuQue, new Component[] {YuQue, ConsumeBody, Value}),
             (States.YuanBao, new Component[] {YuanBao, ConsumeBody, Value}));
