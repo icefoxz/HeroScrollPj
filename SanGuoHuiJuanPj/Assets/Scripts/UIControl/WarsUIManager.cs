@@ -492,7 +492,7 @@ public class WarsUIManager : MonoBehaviour
                 operationButton.GetComponent<Button>().onClick.AddListener(delegate ()
                 {
                     if (isPointMoveNow || isEnteredLevel) return;
-                    GoToTheQiYu(false);
+                    GoToSanXuan(false);
                     isEnteredLevel = true;
                 });
                 break;
@@ -501,7 +501,7 @@ public class WarsUIManager : MonoBehaviour
                 operationButton.GetComponent<Button>().onClick.AddListener(delegate ()
                 {
                     if (isPointMoveNow || isEnteredLevel) return;
-                    GoToTheQiYu(true);
+                    GoToSanXuan(true);
                     isEnteredLevel = true;
                 });
                 break;
@@ -545,10 +545,9 @@ public class WarsUIManager : MonoBehaviour
     /// <summary>
     /// 进入奇遇或购买
     /// </summary>
-    /// <param name="qiyuId"></param>
-    private void GoToTheQiYu(bool isBuy)
+    private void GoToSanXuan(bool isTrade)
     {
-        currentEvent = isBuy ? EventTypes.Trade : EventTypes.Adventure;
+        currentEvent = isTrade ? EventTypes.Trade : EventTypes.Adventure;
         //尝试关闭指引
         //ShowOrHideGuideObj(0, false);
 
@@ -556,8 +555,8 @@ public class WarsUIManager : MonoBehaviour
 
         PlayAudioClip(19);
 
-        InitializeQYOrSp(isBuy);
-        SanXuanWindow.Show();
+        InitializeQYOrSp(isTrade);
+        SanXuanWindow.Show(isTrade);
         //eventsWindows[3].SetActive(true);
     }
 

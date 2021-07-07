@@ -19,9 +19,9 @@ public class SanXuanWindowUi : MonoBehaviour
         gameObject.SetActive(false);
     }
 
-    public void Show()
+    public void Show(bool isTrade)
     {
-        AdConsume.ShowWithUpdate();
+        SetDisplayAdConsume(isTrade);
         gameObject.SetActive(true);
     }
 
@@ -46,11 +46,15 @@ public class SanXuanWindowUi : MonoBehaviour
     private void DisplayTradeSet(bool isTrade)
     {
         RefreshBtn.gameObject.SetActive(isTrade);
-        if(!isTrade) AdConsume.ShowWithUpdate();
-        else AdConsume.Off();
+        SetDisplayAdConsume(isTrade);
         //AdRefreshBtn.gameObject.SetActive(!isTrade);
     }
 
+    private void SetDisplayAdConsume(bool isTrade)
+    {
+        if(!isTrade) AdConsume.ShowWithUpdate();
+        else AdConsume.Off();
+    }
 
     public void SetRecruit()
     {

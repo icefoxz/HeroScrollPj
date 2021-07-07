@@ -33,8 +33,9 @@ public class JiBanWindowUi : MonoBehaviour
         {
             var card = GameCard.Instance(element.CardId, element.CardType, 0);
             var ui = Instantiate(GameCardUiPrefab,content);
-            ui.Set(card, GameCardUi.CardModes.Basic);
-            ui.SetGay(!gameCards.Any(g => g.CardId == element.CardId && g.Type == element.CardType));
+            ui.Set(card, GameCardUi.CardModes.Desk);
+            ui.CityOperation.OffChipValue();
+            ui.CityOperation.SetDisable(!gameCards.Any(g => g.CardId == element.CardId && g.Type == element.CardType));
         }
     }
 
