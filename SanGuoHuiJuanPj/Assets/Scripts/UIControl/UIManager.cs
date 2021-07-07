@@ -66,12 +66,9 @@ public class UIManager : MonoBehaviour
     [SerializeField]
     GameObject[] guideObjs; // 指引objs 0:桃园宝箱 1:战役宝箱 2:合成 3:开始战役 
 
-    [SerializeField]
-    GameObject chickenEntObj;   //体力入口 
-    [SerializeField]
-    GameObject chickenShopWindowObj;    //烧鸡商店窗口 
-    [SerializeField]
-    Button[] chickenShopBtns;   //体力商店购买按钮 
+    //[SerializeField] 
+    //RoastedChickenWindow chickenWindow;
+
     [SerializeField]
     Text chickenCloseText;  //烧鸡关闭时间Text 
 
@@ -140,11 +137,13 @@ public class UIManager : MonoBehaviour
             PlayerDataForGame.instance.BaYeManager.Init();
         }
 
+        taoYuan.Init();
+
         InitializationPlayerInfo();
         expedition.Init();
         Barrack.Init(MergeCard, OnClickForSellCard, OnCardEnlist);
         InitChickenOpenTs();
-        InitChickenBtnFun();
+        //chickenWindow.Init();
         InitBaYeFun();
         PlayerDataForGame.instance.ClearGarbageStationObj();
 
@@ -153,6 +152,11 @@ public class UIManager : MonoBehaviour
         PlayerCharacterUi.Init();
         ConfirmationWindowUi.Init();
         IsInit = true;
+    }
+
+    public void UpdateMainSceneUi()
+    {
+        playerInfoUi.UpdateUi();
     }
 
     /// <summary> 
@@ -458,7 +462,7 @@ public class UIManager : MonoBehaviour
             });
         }
 
-        ShowRewardsThings(new DeskReward(warChest.YuanBao, warChest.YvQue, warChest.Exp, 0, rewards), 1.5f); //显示奖励窗口
+        ShowRewardsThings(new DeskReward(warChest.YuanBao, warChest.YvQue, warChest.Exp, 0, 0, rewards), 1.5f); //显示奖励窗口
         ConsumeManager.instance.SaveChangeUpdatePlayerData(player, 0);
         return player;
     }
@@ -705,12 +709,10 @@ public class UIManager : MonoBehaviour
     /// </summary> 
     public void InitializationPlayerInfo()
     {
-        RefreshPlayerInfoUi();
+        playerInfoUi.UpdateUi();
         Barrack.RefreshCardList();
         //StartCoroutine(LateToChangeViewShow(0));
     }
-
-    public void RefreshPlayerInfoUi() => playerInfoUi.UpdateUi();
 
     /// <summary> 
     /// 展示奖励 
@@ -930,9 +932,7 @@ public class UIManager : MonoBehaviour
                 var py = vb.GetPlayerDataDto();
                 var cards = vb.GetPlayerGameCardDtos();
                 var troops = vb.GetPlayerTroopDtos();
-                PlayerDataForGame.instance.UpdateGameCards(troops, cards);
-                ConsumeManager.instance.SaveChangeUpdatePlayerData(py, 7);
-                OnSuccessRedeemed(rC, py);
+                OnSuccessRedeemed(rC, py, troops, cards);
             }, PlayerDataForGame.instance.ShowStringTips,
             EventStrings.Req_RCode, ViewBag.Instance().SetValue(code));
 
@@ -944,100 +944,25 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    private void OnSuccessRedeemed(RCodeTable rCode, PlayerDataDto playerData)
+    private void OnSuccessRedeemed(RCodeTable rCode, PlayerDataDto playerData,TroopDto[] troops ,GameCardDto[] cards)
     {
+        PlayerDataForGame.instance.UpdateGameCards(troops, cards);
         var rewards = rCode.Cards.Select(c => new CardReward
             {cardId = c.CardId, cardChips = c.Chips, cardType = c.Type}).ToList();
         PlayerDataForGame.instance.gbocData.redemptionCodeGotList.Add(rCode.Code);
         ConsumeManager.instance.SaveChangeUpdatePlayerData(playerData, 0);
-
         rtInputField.text = "";
         PlayerDataForGame.instance.ShowStringTips(rCode.Info);
         rtCloseBtn.onClick.Invoke();
         AudioController0.instance.ChangeAudioClip(0);
         AudioController0.instance.PlayAudioSource(0);
-        ShowRewardsThings(new DeskReward(rCode.YuanBao, rCode.YuQue, 0, rCode.TiLi, rewards), 0);
+        ShowRewardsThings(new DeskReward(rCode.YuanBao, rCode.YuQue, 0, rCode.TiLi, rCode.AdPass, rewards), 0);
     }
 
     ///////////////////////////鸡坛相关///////////////////////////////// 
 
-    //给体力商店按钮添加方法 
-    private void InitChickenBtnFun()
-    {
-        var chickenTables = DataTable.Chicken.Values.ToList();
-        for (int i = 0; i < chickenShopBtns.Length; i++)
-        {
-            var chicken = chickenTables[i];
-            chickenShopBtns[i].onClick.AddListener(() => ChickenShoppingGetTiLi(chicken.Id));
-            //显示体力的数量 
-            chickenShopBtns[i].transform.parent.GetChild(1).GetComponent<Text>().text = "×" + chicken.Stamina;
-            //显示消耗玉阙的数量 
-            if (i != 0)
-            {
-                chickenShopBtns[i].transform.GetChild(0).GetComponent<Text>().text = "×" + chicken.YuQueCost;
-            }
-        }
-
-        chickenEntObj.transform.GetChild(1).GetComponent<Button>().onClick.AddListener(delegate ()
-        {
-            AudioController0.instance.ChangeAudioClip(25);
-            AudioController0.instance.PlayAudioSource(0);
-            chickenShopWindowObj.SetActive(true);
-        });
-    }
-
-    //体力商店按钮统一处理 
-    private void OpenOrCloseChickenBtn(bool isCanTake)
-    {
-        for (int i = 0; i < chickenShopBtns.Length; i++)
-        {
-            chickenShopBtns[i].enabled = isCanTake;
-        }
-    }
-
-    //商店购买体力 
-    [Skip]
-    private void ChickenShoppingGetTiLi(int chickenId)
-    {
-        AudioController0.instance.ChangeAudioClip(13);
-        OpenOrCloseChickenBtn(false);
-        if (chickenId == 1)
-            AdAgentBase.instance.BusyRetry(InvokeApi
-                , () =>
-                {
-                    PlayerDataForGame.instance.ShowStringTips(DataTable.GetStringText(6));
-                    OpenOrCloseChickenBtn(true);
-                });
-        else InvokeApi();
-
-        void InvokeApi()
-        {
-            ApiPanel.instance.Invoke(bag =>
-                {
-                    var chicken = bag.GetChicken();
-                    var player = bag.GetPlayerDataDto();
-                    ConsumeManager.instance.SaveChangeUpdatePlayerData(player);
-                    //GetTiLiForChicken(yuQueCost, stamina);
-                    OnSuccessRequestChicken(chickenId == 2 ? 50 : 51, chicken.Stamina);
-                }, msg =>
-                {
-                    PlayerDataForGame.instance.ShowStringTips(msg);
-                    OpenOrCloseChickenBtn(true);
-                }, EventStrings.Req_Chicken,
-                ViewBag.Instance().SetValue(chickenId));
-        }
-    }
-
-    private void OnSuccessRequestChicken(int textIndex, int stamina)
-    {
-        PlayerDataForGame.instance.ShowStringTips(string.Format(DataTable.GetStringText(textIndex), stamina));
-        GetCkChangeTimeAndWindow();
-        AudioController0.instance.ChangeAudioClip(25);
-        AudioController0.instance.PlayAudioSource(0);
-    }
-
     //成功获得体力后的方法 
-    private void GetCkChangeTimeAndWindow()
+    public void GetCkChangeTimeAndWindow()
     {
         //当前时间点TimeOfDay 
         TimeSpan dspNow = TimeSystemControl.instance.SystemTimer.Now.LocalDateTime.TimeOfDay;
@@ -1062,8 +987,7 @@ public class UIManager : MonoBehaviour
             PlayerPrefs.SetInt(TimeSystemControl.openCKTime2_str, openCKTime2);
         }
 
-        chickenShopWindowObj.SetActive(false);
-        OpenOrCloseChickenBtn(true);
+        //chickenWindow.Off();
     }
 
     //鸡坛开启时间点 
@@ -1104,197 +1028,159 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    //对开启鸡坛时间进行矫正 
-    public void InitOpenChickenTime(bool isGetNetTime)
-    {
-        if (!isGetNetTime)
-        {
-            //没有网络连接关闭鸡坛入口 
-            if (chickenEntObj.activeSelf)
-            {
-                chickenEntObj.SetActive(false);
-            }
-        }
-        else
-        {
-            bool isOpen = CanOpenChickenEntr();
-            if (chickenEntObj.activeSelf != isOpen)
-            {
-                chickenEntObj.SetActive(isOpen);
-            }
-        }
-    }
+    ////对开启鸡坛时间进行矫正 
+    //public void InitOpenChickenTime(bool isGetNetTime)
+    //{
+    //    if (isGetNetTime) return;
+    //    //没有网络连接关闭鸡坛入口 
+    //    chickenWindow.Off();
+    //}
 
     int openCKTime0 = 0;    //0未到时1可开启2已领取 
     int openCKTime1 = 0;
     int openCKTime2 = 0;
 
-    int closeCkWinSeconds = 7201;
+    //int closeCkWinSeconds = 7201;
 
-    //刷新鸡坛关闭时间显示 
-    private void UpdateChickenCloseTime(TimeSpan dspNow, TimeSpan dspEnd)
-    {
-        int seconds = (int)(dspEnd.TotalSeconds - dspNow.TotalSeconds);
-        if (seconds < closeCkWinSeconds)
-        {
-            closeCkWinSeconds = seconds;
-            chickenCloseText.text = TimeSystemControl.instance.TimeDisplayText(TimeSpan.FromSeconds(closeCkWinSeconds));
-        }
-    }
+    ////刷新鸡坛关闭时间显示 
+    //private void UpdateChickenCloseTime(TimeSpan dspNow, TimeSpan dspEnd)
+    //{
+    //    int seconds = (int)(dspEnd.TotalSeconds - dspNow.TotalSeconds);
+    //    if (seconds < closeCkWinSeconds)
+    //    {
+    //        closeCkWinSeconds = seconds;
+    //        chickenCloseText.text = TimeSystemControl.instance.TimeDisplayInChineseText(TimeSpan.FromSeconds(closeCkWinSeconds));
+    //    }
+    //}
 
-    //是否可以开启鸡坛 
-    private bool CanOpenChickenEntr()
-    {
-        //当前时间点TimeOfDay 
-        TimeSpan dspNow = TimeSystemControl.instance.SystemTimer.Now.LocalDateTime.TimeOfDay;
-        //TimeSpan dspNow = DateTime.Now.TimeOfDay; 
+    ////是否可以开启鸡坛 
+    //private bool IsChickenReady()
+    //{
+    //    //当前时间点TimeOfDay 
+    //    TimeSpan dspNow = TimeSystemControl.instance.SystemTimer.Now.LocalDateTime.TimeOfDay;
+    //    //TimeSpan dspNow = DateTime.Now.TimeOfDay; 
 
-        //在12点-14点之间 
-        if (chickenOpenTs[0][0] < dspNow && dspNow < chickenOpenTs[0][1])
-        {
-            //如果未领取过 
-            if (openCKTime0 != 2)
-            {
-                if (openCKTime0 == 0)
-                {
-                    openCKTime0 = 1;
-                    PlayerPrefs.SetInt(TimeSystemControl.openCKTime0_str, openCKTime0);
+    //    //在12点-14点之间 
+    //    if (chickenOpenTs[0][0] < dspNow && dspNow < chickenOpenTs[0][1])
+    //    {
+    //        //如果未领取过 
+    //        if (openCKTime0 != 2)
+    //        {
+    //            if (openCKTime0 == 0)
+    //            {
+    //                openCKTime0 = 1;
+    //                PlayerPrefs.SetInt(TimeSystemControl.openCKTime0_str, openCKTime0);
 
-                    openCKTime2 = 0;
-                    PlayerPrefs.SetInt(TimeSystemControl.openCKTime2_str, openCKTime2);
+    //                openCKTime2 = 0;
+    //                PlayerPrefs.SetInt(TimeSystemControl.openCKTime2_str, openCKTime2);
 
-                    closeCkWinSeconds = 7201;
+    //                closeCkWinSeconds = 7201;
 
-                    TimeSystemControl.instance.UpdateIsNotFirstInGame();
-                }
-                UpdateChickenCloseTime(dspNow, chickenOpenTs[0][1]);
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-        else
-        {
-            if (openCKTime0 != 0)
-            {
-                openCKTime0 = 0;
-                PlayerPrefs.SetInt(TimeSystemControl.openCKTime0_str, openCKTime0);
-            }
-        }
-        //在17点-19点之间 
-        if (chickenOpenTs[1][0] < dspNow && dspNow < chickenOpenTs[1][1])
-        {
-            if (openCKTime1 != 2)
-            {
-                if (openCKTime1 == 0)
-                {
-                    openCKTime1 = 1;
-                    PlayerPrefs.SetInt(TimeSystemControl.openCKTime1_str, openCKTime1);
+    //                TimeSystemControl.instance.UpdateIsNotFirstInGame();
+    //            }
+    //            UpdateChickenCloseTime(dspNow, chickenOpenTs[0][1]);
+    //            return true;
+    //        }
 
-                    openCKTime0 = 0;
-                    PlayerPrefs.SetInt(TimeSystemControl.openCKTime0_str, openCKTime0);
+    //        return false;
+    //    }
 
-                    closeCkWinSeconds = 7201;
+    //    if (openCKTime0 != 0)
+    //    {
+    //        openCKTime0 = 0;
+    //        PlayerPrefs.SetInt(TimeSystemControl.openCKTime0_str, openCKTime0);
+    //    }
+    //    //在17点-19点之间 
+    //    if (chickenOpenTs[1][0] < dspNow && dspNow < chickenOpenTs[1][1])
+    //    {
+    //        if (openCKTime1 != 2)
+    //        {
+    //            if (openCKTime1 == 0)
+    //            {
+    //                openCKTime1 = 1;
+    //                PlayerPrefs.SetInt(TimeSystemControl.openCKTime1_str, openCKTime1);
 
-                    TimeSystemControl.instance.UpdateIsNotFirstInGame();
-                }
-                UpdateChickenCloseTime(dspNow, chickenOpenTs[1][1]);
-                return false;
-            }
-            else
-            {
-                return false;
-            }
-        }
-        else
-        {
-            if (openCKTime1 != 0)
-            {
-                openCKTime1 = 0;
-                PlayerPrefs.SetInt(TimeSystemControl.openCKTime1_str, openCKTime1);
-            }
-        }
-        //在21点-23点之间 
-        if (chickenOpenTs[2][0] < dspNow && dspNow < chickenOpenTs[2][1])
-        {
-            if (openCKTime2 != 2)
-            {
-                if (openCKTime2 == 0)
-                {
-                    openCKTime2 = 1;
-                    PlayerPrefs.SetInt(TimeSystemControl.openCKTime2_str, openCKTime2);
+    //                openCKTime0 = 0;
+    //                PlayerPrefs.SetInt(TimeSystemControl.openCKTime0_str, openCKTime0);
 
-                    openCKTime1 = 0;
-                    PlayerPrefs.SetInt(TimeSystemControl.openCKTime1_str, openCKTime1);
+    //                closeCkWinSeconds = 7201;
 
-                    openCKTime0 = 0;
-                    PlayerPrefs.SetInt(TimeSystemControl.openCKTime1_str, openCKTime1);
+    //                TimeSystemControl.instance.UpdateIsNotFirstInGame();
+    //            }
+    //            UpdateChickenCloseTime(dspNow, chickenOpenTs[1][1]);
+    //            return false;
+    //        }
 
-                    closeCkWinSeconds = 7201;
+    //        return false;
+    //    }
 
-                    TimeSystemControl.instance.UpdateIsNotFirstInGame();
-                }
-                UpdateChickenCloseTime(dspNow, chickenOpenTs[2][1]);
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-        else
-        {
-            if (openCKTime2 != 0)
-            {
-                openCKTime2 = 0;
-                PlayerPrefs.SetInt(TimeSystemControl.openCKTime2_str, openCKTime2);
-            }
-        }
-        return false;
-    }
+    //    if (openCKTime1 != 0)
+    //    {
+    //        openCKTime1 = 0;
+    //        PlayerPrefs.SetInt(TimeSystemControl.openCKTime1_str, openCKTime1);
+    //    }
+    //    //在21点-23点之间 
+    //    if (chickenOpenTs[2][0] < dspNow && dspNow < chickenOpenTs[2][1])
+    //    {
+    //        if (openCKTime2 != 2)
+    //        {
+    //            if (openCKTime2 == 0)
+    //            {
+    //                openCKTime2 = 1;
+    //                PlayerPrefs.SetInt(TimeSystemControl.openCKTime2_str, openCKTime2);
 
-    bool isShowQuitTips = false;
+    //                openCKTime1 = 0;
+    //                PlayerPrefs.SetInt(TimeSystemControl.openCKTime1_str, openCKTime1);
+
+    //                openCKTime0 = 0;
+    //                PlayerPrefs.SetInt(TimeSystemControl.openCKTime1_str, openCKTime1);
+
+    //                closeCkWinSeconds = 7201;
+
+    //                TimeSystemControl.instance.UpdateIsNotFirstInGame();
+    //            }
+    //            UpdateChickenCloseTime(dspNow, chickenOpenTs[2][1]);
+    //            return true;
+    //        }
+
+    //        return false;
+    //    }
+
+    //    if (openCKTime2 != 0)
+    //    {
+    //        openCKTime2 = 0;
+    //        PlayerPrefs.SetInt(TimeSystemControl.openCKTime2_str, openCKTime2);
+    //    }
+    //    return false;
+    //}
+
+    bool isWaitingToExit = false;
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            if (isShowQuitTips)
-            {
-                ExitGame();
-            }
-            else
-            {
-                isShowQuitTips = true;
-                PlayerDataForGame.instance.ShowStringTips(DataTable.GetStringText(52));
-                Invoke(nameof(ResetQuitBool), 2f);
-            }
-        }
-    }
-    //重置退出游戏判断参数 
-    private void ResetQuitBool()
-    {
-        isShowQuitTips = false;
+        if (Input.GetKeyDown(KeyCode.Escape)) OnExitActionTriggered();
     }
 
-    /// <summary> 
-    /// 存储游戏 
-    /// </summary> 
-    public void SaveGame()
+    private void OnExitActionTriggered()
     {
-        LoadSaveData.instance.SaveGameData();
+        if (isWaitingToExit)
+        {
+            PlayOnClickMusic();
+
+#if UNITY_ANDROID
+            Application.Quit();
+#endif
+        }
+        else
+        {
+            isWaitingToExit = true;
+            PlayerDataForGame.instance.ShowStringTips(DataTable.GetStringText(52));
+            Invoke(nameof(StopWaitingForQuit), 2f);
+        }
     }
+
+    //重置退出游戏判断参数 
+    private void StopWaitingForQuit() => isWaitingToExit = false;
 
     public void AccountInfo() => GameSystem.LoginUi.OnAction(LoginUiController.ActionWindows.Info);
 
-    //退出游戏 
-    public void ExitGame()
-    {
-        PlayOnClickMusic();
-
-#if UNITY_ANDROID
-        Application.Quit();
-#endif
-    }
 }

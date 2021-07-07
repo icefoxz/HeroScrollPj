@@ -23,7 +23,7 @@ public class WarDataMocker : MonoBehaviour
     public GameResources gameResources = new GameResources();
 
 #if UNITY_EDITOR
-    private void Awake()
+    private void Start()
     {
         GameSystem.Instance.Init();
         StartCoroutine(Init());
@@ -36,7 +36,6 @@ public class WarDataMocker : MonoBehaviour
         playerData.WarType = PlayerDataForGame.WarTypes.Expedition;
         playerData.selectedWarId = warId;
         playerData.zhanYiColdNums = gold;
-        WarsUIManager.instance.cityLevel = cityLevel;
         PrepareCards();
     }
 #endif
@@ -73,6 +72,10 @@ public class WarDataMocker : MonoBehaviour
         PlayerDataForGame.instance.fightHeroId = cards.ContainsKey(0) ? cards[0] : new List<int>();
         PlayerDataForGame.instance.fightTowerId = cards.ContainsKey(2) ? cards[2] : new List<int>();
         PlayerDataForGame.instance.fightTrapId = cards.ContainsKey(3) ? cards[3] : new List<int>();
+        if(cityLevel==0)
+            XDebug.LogError<WarDataMocker>("城池等级为0，请设置初始城池等级");
+        WarsUIManager.instance.cityLevel = cityLevel;
+        WarsUIManager.instance.Init();
     }
     [Serializable]
     public class MyCard

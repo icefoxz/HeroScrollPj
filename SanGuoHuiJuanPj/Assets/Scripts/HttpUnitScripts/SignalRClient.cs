@@ -274,33 +274,31 @@ public class SignalRClient : MonoBehaviour
         action?.Invoke(content);
     }
 
-    public async void Invoke(string method, UnityAction<string> recallAction , IViewBag bag = default)
+    public async void Invoke(string method, UnityAction<string> recallAction , IViewBag bag = default, CancellationTokenSource tokenSource = default)
     {
-        var cs = new CancellationTokenSource();
-        var result = await Invoke(method, bag, cs.Token);
-        if (cs.IsCancellationRequested)
-        {
-            UnityMainThread.thread.RunNextFrame(() => recallAction?.Invoke("请求取消！"));
-            return;
-        }
+        var result = await Invoke(method, bag, tokenSource);
         UnityMainThread.thread.RunNextFrame(()=>recallAction?.Invoke(result));
     }
 
-    private async Task<string> Invoke(string method, IViewBag bag = default, CancellationToken cancellationToken = default)
+    private async Task<string> Invoke(string method, IViewBag bag = default, CancellationTokenSource tokenSource = default)
     {
         try
         {
-            if (bag == default)
-                bag = ViewBag.Instance();
+            if (bag == default) bag = ViewBag.Instance();
+            if (tokenSource == null) tokenSource = new CancellationTokenSource();
             var result = await _hub.InvokeCoreAsync(method, _stringType,
                 bag == null ? new object[0] : new object[] { Json.Serialize(bag)},
-                cancellationToken);
+                tokenSource.Token);
             return result?.ToString();
         }
         catch (Exception e)
         {
+#if UNITY_EDITOR
             XDebug.LogError<SignalRClient>($"Error on interpretation {method}:{e.Message}");
-            return $"请求异常: {e}";
+#endif
+            GameSystem.ServerRequestException(method, e.Message);
+            if (!tokenSource.IsCancellationRequested) tokenSource.Cancel();
+            return $"请求服务器异常: {e}";
         }
     }
 

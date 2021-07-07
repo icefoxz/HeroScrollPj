@@ -36,6 +36,8 @@ public static class GamePref
     private const string PlayerWarSpeedPrefs = "PlayerWarSpeedPrefs";
     private const string AccountIdString = "accountName";
     private const string PasswordString = "Password";
+    private const string RoasterChickenString = "RoasterChicken";
+
     public const string PhoneNumber = "Phone";
     public const string IsFirstPlayString = "IsFirstPlay";
     public const string AccountCompleteUsername = "IsUsersAccountComplete";
@@ -76,4 +78,8 @@ public static class GamePref
     public static void FlagDeviceReg(string username) => PlayerPrefs.SetString(AccountCompleteUsername, username);
     public static void SaveBaYe(BaYeDataClass save) => PlayerPrefs.SetString(BaYeSave, Json.Serialize(save));
     public static void FlagClientLoginMethod(bool isDeviceLogin) => PlayerPrefs.SetInt(LoginMethod, isDeviceLogin ? 1 : 0);
+
+    public static string RoasterChickenRecord() => PlayerPrefs.GetString(RoasterChickenString);
+
+    public static void SetRoasterChicken(string json) => PlayerPrefs.SetString(RoasterChickenString, json);
 }

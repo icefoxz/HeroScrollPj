@@ -189,8 +189,8 @@ public class PlayerCharacterUi : MonoBehaviour
 
     private void OnCreateCharacterSuccess(ViewBag vb)
     {
+        PlayerDataForGame.instance.NotifyDataUpdate();
         Show();
-        UIManager.instance.RefreshPlayerInfoUi();
     }
 }
 

@@ -69,6 +69,8 @@ public interface IPlayerData
     long LastWeekChestRedeemTime { get; set; }
     //上一个游戏版本号
     float LastGameVersion { get; set; }
+    //免广告卷
+    int AdPass { get; set; }
 }
 
 /// <summary>
@@ -299,6 +301,7 @@ public class DeskReward
     public int YuQue { get; }
     public int Exp { get; }
     public int Stamina { get; }
+    public int AdPass { get; }
 
     public IReadOnlyList<CardReward> Cards => cards;
 
@@ -306,11 +309,12 @@ public class DeskReward
     {
         
     }
-    public DeskReward(int yuanBao, int yuQue, int exp, int stamina, List<CardReward> cards)
+    public DeskReward(int yuanBao, int yuQue, int exp, int stamina,int adPass ,List<CardReward> cards)
     {
         YuanBao = yuanBao;
         YuQue = yuQue;
         Exp = exp;
+        AdPass = adPass;
         Stamina = stamina;
         this.cards = cards.Select(c => new {GameCardInfo.GetInfo((GameCardType) c.cardType, c.cardId).Rare, c})
             .OrderByDescending(c => c.c.cardType).ThenBy(c => c.Rare).Select(c => c.c).ToList();

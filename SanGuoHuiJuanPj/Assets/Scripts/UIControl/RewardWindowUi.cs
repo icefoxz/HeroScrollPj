@@ -30,6 +30,7 @@ public class RewardWindowUi : MonoBehaviour
         if(reward.YuQue > 0) GetUiFromPool().SetYuQue(reward.YuQue);
         if(reward.Exp > 0) GetUiFromPool().SetExp(reward.Exp);
         if(reward.Stamina > 0) GetUiFromPool().SetStamina(reward.Stamina);
+        if(reward.AdPass > 0) GetUiFromPool().SetAdPass(reward.AdPass);
         foreach (var card in reward.Cards)
         {
             GetUiFromPool().SetCard(new GameCard

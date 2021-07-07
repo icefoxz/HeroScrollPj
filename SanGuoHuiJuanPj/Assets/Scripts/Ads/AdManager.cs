@@ -14,9 +14,9 @@ public class AdManager : AdControllerBase
 {
     [Serializable]public enum Ads
     {
-        IronSource,
+        Unity,
         DoNew,
-        //Unity,
+        IronSource,
         //Admob,
         //MoPub,
     }
@@ -26,17 +26,17 @@ public class AdManager : AdControllerBase
     public AdAgentBase AdAgent => adAgent;
     public DoNewAdController DoNewAdController { get; private set; }
     //public AdmobController AdmobController { get; private set; }
-    //public UnityAdController UnityAdController { get; private set; }
+    public UnityAdController UnityAdController { get; private set; }
     //public MoPubController MoPubController { get; private set; }
     public IronSourceController IronSourceController { get; private set; }
     public override AdAgentBase.States Status => AdAgentBase.States.Loaded;
     [Header("广告播放顺序")]public Ads[] Series;
     [Header("广告源比率")]
-    //public int UnityRatio = 1;
+    public int UnityRatio = 5;
     //public int AdmobRatio = 1;
     public int DoNewRatio = 2;
     //public int MoPubRatio = 1;
-    public int IronSourceRatio = 3;
+    public int IronSourceRatio = 2;
     private QueueByRatio<AdControllerBase> Queue;
 
     private Dictionary<Ads, (int, AdControllerBase)> Controllers
@@ -47,9 +47,9 @@ public class AdManager : AdControllerBase
             {
                 _controllers = new Dictionary<Ads, (int, AdControllerBase)>
                 {
+                    {Ads.Unity, (UnityRatio, UnityAdController)},
                     {Ads.IronSource,(IronSourceRatio,IronSourceController)},
                     {Ads.DoNew, (DoNewRatio, DoNewAdController)}
-                    //{Ads.Unity, (UnityRatio, UnityAdController)},
                     //{Ads.Admob, (AdmobRatio, AdmobController)},
                     //{Ads.MoPub, (MoPubRatio, MoPubController)},
                 };
@@ -61,9 +61,14 @@ public class AdManager : AdControllerBase
 
     private Dictionary<Ads, (int,AdControllerBase)> _controllers;
 
-    void Start()
+#if UNITY_EDITOR
+    public EditorAdEmu adEmu;
+#endif
+
+    public void Init()
     {
         if (isInit) throw XDebug.Throw<AdManager>("Duplicate init!");
+        //if (AdAgentBase.instance != null) return;
         isInit = true;
         DoNewAdController = gameObject.AddComponent<DoNewAdController>();
         DoNewAdController.Init();
@@ -71,15 +76,17 @@ public class AdManager : AdControllerBase
         IronSourceController.Init();
         //AdmobController = gameObject.AddComponent<AdmobController>();
         //AdmobController.Init(AdmobRetryCallBack);
-        //UnityAdController = gameObject.AddComponent<UnityAdController>();
-        //UnityAdController.Init();
+        UnityAdController = gameObject.AddComponent<UnityAdController>();
+        UnityAdController.Init();
         //MoPubController = gameObject.AddComponent<MoPubController>();
         //MoPubController.Init();
         Queue = new QueueByRatio<AdControllerBase>(
             Series.Join(Controllers,ad=>ad,c=>c.Key,(_,c)=>c.Value).ToArray()
         );
         AdAgent?.Init(this);
+#if !UNITY_EDITOR
         StartCoroutine(NextSecondRequestCache());
+#endif
     }
 
     private IEnumerator NextSecondRequestCache()
@@ -90,6 +97,10 @@ public class AdManager : AdControllerBase
 
     public override void RequestShow(UnityAction<bool, string> requestAction)
     {
+#if UNITY_EDITOR
+        adEmu.Set(requestAction);
+        if(adEmu!=null)return;
+#endif
         //admobRetryCount = 0;
         var controller = Queue.Dequeue();
         var count = 0;

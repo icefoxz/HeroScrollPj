@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657844, g: 0.49641222, b: 0.57481694, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -2242,7 +2242,7 @@ MonoBehaviour:
   Title: {fileID: 538008499}
   RefreshBtn: {fileID: 609168709}
   RefreshText: {fileID: 324672584}
-  AdRefreshBtn: {fileID: 951190185}
+  AdConsume: {fileID: 2923709229890077141}
   InfoWindow: {fileID: 1041752470}
   InfoText: {fileID: 1570517276}
 --- !u!1 &140183606
@@ -2883,7 +2883,7 @@ GameObject:
   - component: {fileID: 179711367}
   - component: {fileID: 179711369}
   m_Layer: 5
-  m_Name: StartBattleBtnText
+  m_Name: Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4855,7 +4855,7 @@ GameObject:
   - component: {fileID: 324672585}
   - component: {fileID: 324672584}
   m_Layer: 5
-  m_Name: goldNum
+  m_Name: Gold
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7942,6 +7942,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 542823357}
+  - component: {fileID: 542823361}
   - component: {fileID: 542823360}
   - component: {fileID: 542823359}
   - component: {fileID: 542823358}
@@ -8035,6 +8036,23 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 542823356}
   m_CullTransparentMesh: 0
+--- !u!114 &542823361
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 542823356}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2bafc0464761b2c4ab5cd8f889bbe39e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  freeButton: {fileID: 338955782}
+  ticketButton: {fileID: 796680158}
+  ticketText: {fileID: 2000085809}
+  maxColor: {r: 1, g: 0, b: 0, a: 1}
+  maxTickets: 999
 --- !u!1 &544332547
 GameObject:
   m_ObjectHideFlags: 0
@@ -11111,15 +11129,16 @@ MonoBehaviour:
     type: 3}
   guanQiaPreObj: {fileID: 4726669306532057299, guid: c8ced7f07b8f42a409e5d136d883b653,
     type: 3}
-  startBtn: {fileID: 748998149}
+  operationButton: {fileID: 748998151}
+  operationText: {fileID: 179711367}
   upLevelBtn: {fileID: 2125245539}
-  adRefreshBtn: {fileID: 951190185}
   eventsWindows:
   - {fileID: 1914077670}
   - {fileID: 1370971708}
   - {fileID: 1164217690}
   - {fileID: 138685183}
   - {fileID: 1527760777}
+  SanXuanWindow: {fileID: 138685187}
   gameOverWindow: {fileID: 7684096226171973432}
   percentReturnHp: 1
   baYeDefaultLevel: 3
@@ -11429,7 +11448,7 @@ GameObject:
   - component: {fileID: 748998152}
   - component: {fileID: 748998151}
   m_Layer: 5
-  m_Name: StartBattleBtn
+  m_Name: OperationBtn
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -11623,6 +11642,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 766208178}
+  - component: {fileID: 766208182}
   - component: {fileID: 766208181}
   - component: {fileID: 766208180}
   - component: {fileID: 766208179}
@@ -11716,6 +11736,23 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 766208177}
   m_CullTransparentMesh: 0
+--- !u!114 &766208182
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 766208177}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2bafc0464761b2c4ab5cd8f889bbe39e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  freeButton: {fileID: 322244145}
+  ticketButton: {fileID: 499254071}
+  ticketText: {fileID: 1332977515}
+  maxColor: {r: 1, g: 0, b: 0, a: 1}
+  maxTickets: 999
 --- !u!1 &766358774
 GameObject:
   m_ObjectHideFlags: 0
@@ -15121,6 +15158,7 @@ GameObject:
   - component: {fileID: 953883886}
   - component: {fileID: 953883885}
   - component: {fileID: 953883884}
+  - component: {fileID: 953883883}
   m_Layer: 5
   m_Name: GameCard2
   m_TagString: PyCard
@@ -15152,6 +15190,27 @@ RectTransform:
   m_AnchoredPosition: {x: 655, y: -90}
   m_SizeDelta: {x: 180, y: 180}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &953883883
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 953883881}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5803f4a5f7ba802449086ee250b855c1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  grayMaterial: {fileID: 2100000, guid: c2022945786731f4c9ac34786feb052c, type: 2}
+  textGray: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  images:
+  - {fileID: 2079160750}
+  - {fileID: 2097453656}
+  - {fileID: 1781149338}
+  - {fileID: 1992600991}
+  texts:
+  - {fileID: 605151076}
 --- !u!222 &953883884
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -15177,6 +15236,7 @@ MonoBehaviour:
   Level: {fileID: 1781149338}
   Short: {fileID: 2079160749}
   Frame: {fileID: 2097453656}
+  GrayScale: {fileID: 953883883}
   CityOperation: {fileID: 1926544238}
   WarOperation: {fileID: 2132927404}
 --- !u!114 &953883886
@@ -15195,7 +15255,7 @@ MonoBehaviour:
   BuyBtn: {fileID: 730158}
   FreeLabel: {fileID: 522124180}
   PriceLabel: {fileID: 1227820896}
-  AdLabel: {fileID: 1400259361}
+  AdConsume: {fileID: 542823361}
   OnClickAction:
     m_PersistentCalls:
       m_Calls: []
@@ -15605,6 +15665,7 @@ GameObject:
   - component: {fileID: 986932470}
   - component: {fileID: 986932469}
   - component: {fileID: 986932468}
+  - component: {fileID: 986932467}
   m_Layer: 5
   m_Name: GameCard1
   m_TagString: PyCard
@@ -15636,6 +15697,27 @@ RectTransform:
   m_AnchoredPosition: {x: 375, y: -90}
   m_SizeDelta: {x: 180, y: 180}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &986932467
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 986932465}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5803f4a5f7ba802449086ee250b855c1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  grayMaterial: {fileID: 2100000, guid: c2022945786731f4c9ac34786feb052c, type: 2}
+  textGray: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  images:
+  - {fileID: 1870152579}
+  - {fileID: 1653603422}
+  - {fileID: 1541145483}
+  - {fileID: 734693088}
+  texts:
+  - {fileID: 1606059943}
 --- !u!222 &986932468
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -15661,6 +15743,7 @@ MonoBehaviour:
   Level: {fileID: 734693088}
   Short: {fileID: 1653603421}
   Frame: {fileID: 1541145483}
+  GrayScale: {fileID: 986932467}
   CityOperation: {fileID: 663075010}
   WarOperation: {fileID: 1575295703}
 --- !u!114 &986932470
@@ -15679,7 +15762,7 @@ MonoBehaviour:
   BuyBtn: {fileID: 2002155304}
   FreeLabel: {fileID: 2074978116}
   PriceLabel: {fileID: 303486064}
-  AdLabel: {fileID: 487806645}
+  AdConsume: {fileID: 766208182}
   OnClickAction:
     m_PersistentCalls:
       m_Calls: []
@@ -24855,7 +24938,6 @@ RectTransform:
   - {fileID: 1041752471}
   - {fileID: 2923709229890077138}
   - {fileID: 951190184}
-  - {fileID: 1658509787}
   m_Father: {fileID: 138685184}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -25632,80 +25714,6 @@ CanvasRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1653603419}
-  m_CullTransparentMesh: 0
---- !u!1 &1658509786
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1658509787}
-  - component: {fileID: 1658509789}
-  - component: {fileID: 1658509788}
-  m_Layer: 5
-  m_Name: Image
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &1658509787
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1658509786}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 1582299189}
-  m_RootOrder: 7
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 33}
-  m_SizeDelta: {x: 100, y: 100}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1658509788
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1658509786}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 0}
-  m_Type: 0
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
---- !u!222 &1658509789
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1658509786}
   m_CullTransparentMesh: 0
 --- !u!1 &1662329895
 GameObject:
@@ -35569,8 +35577,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 127.69109, y: -50.592484}
-  m_SizeDelta: {x: 215.38219, y: 81.18497}
+  m_AnchoredPosition: {x: 127.9411, y: -51.09249}
+  m_SizeDelta: {x: 215.8822, y: 82.18498}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2923709229209695437
 MonoBehaviour:
@@ -35736,6 +35744,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2923709229890077138}
   - component: {fileID: 2923709229890077140}
+  - component: {fileID: 2923709229890077141}
   - component: {fileID: 2923709229890077139}
   - component: {fileID: 4986064318123665083}
   m_Layer: 5
@@ -35761,10 +35770,10 @@ RectTransform:
   m_Father: {fileID: 1582299189}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0}
-  m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: 6.2, y: 215}
-  m_SizeDelta: {x: 520.76434, y: 101.18497}
+  m_AnchorMin: {x: 0.24581783, y: 0.15425941}
+  m_AnchorMax: {x: 0.7665822, y: 0.28074062}
+  m_AnchoredPosition: {x: 0.50001526, y: 0.5}
+  m_SizeDelta: {x: 1, y: 1.0000153}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2923709229890077139
 MonoBehaviour:
@@ -35803,6 +35812,23 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2923709229890077137}
   m_CullTransparentMesh: 0
+--- !u!114 &2923709229890077141
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2923709229890077137}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2bafc0464761b2c4ab5cd8f889bbe39e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  freeButton: {fileID: 2923709229209695437}
+  ticketButton: {fileID: 2923709230466059548}
+  ticketText: {fileID: 2923709228983742473}
+  maxColor: {r: 1, g: 0, b: 0, a: 1}
+  maxTickets: 999
 --- !u!1 &2923709230288206129
 GameObject:
   m_ObjectHideFlags: 0
@@ -35919,8 +35945,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 393.0733, y: -50.592484}
-  m_SizeDelta: {x: 215.38219, y: 81.18497}
+  m_AnchoredPosition: {x: 393.8233, y: -51.09249}
+  m_SizeDelta: {x: 215.8822, y: 82.18498}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2923709230466059548
 MonoBehaviour:
@@ -39864,6 +39890,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5959625193629500365}
+  - component: {fileID: 5959625193629500367}
   - component: {fileID: 5959625193629500363}
   - component: {fileID: 5959625193629500364}
   - component: {fileID: 5959625193629500362}
@@ -39874,6 +39901,23 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &5959625193629500367
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5959625193629500366}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2bafc0464761b2c4ab5cd8f889bbe39e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  freeButton: {fileID: 5959625193272080082}
+  ticketButton: {fileID: 5959625194129952515}
+  ticketText: {fileID: 5959625193465524758}
+  maxColor: {r: 1, g: 0, b: 0, a: 1}
+  maxTickets: 999
 --- !u!222 &5959625193816639441
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -41821,6 +41865,7 @@ GameObject:
   - component: {fileID: 8631380708467405634}
   - component: {fileID: 8631380708467405635}
   - component: {fileID: 8631380708467405413}
+  - component: {fileID: 8631380708467405636}
   m_Layer: 5
   m_Name: GameCard0
   m_TagString: PyCard
@@ -41844,7 +41889,7 @@ MonoBehaviour:
   BuyBtn: {fileID: 856132152}
   FreeLabel: {fileID: 133968419}
   PriceLabel: {fileID: 1662329897}
-  AdLabel: {fileID: 251513600}
+  AdConsume: {fileID: 5959625193629500367}
   OnClickAction:
     m_PersistentCalls:
       m_Calls: []
@@ -41865,8 +41910,30 @@ MonoBehaviour:
   Level: {fileID: 8631380708467405015}
   Short: {fileID: 8631380708467408097}
   Frame: {fileID: 8631380708467405011}
+  GrayScale: {fileID: 8631380708467405636}
   CityOperation: {fileID: 1582223448978891152}
   WarOperation: {fileID: 1582223449480232900}
+--- !u!114 &8631380708467405636
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8631380708467405633}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5803f4a5f7ba802449086ee250b855c1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  grayMaterial: {fileID: 2100000, guid: c2022945786731f4c9ac34786feb052c, type: 2}
+  textGray: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  images:
+  - {fileID: 8631380708467404941}
+  - {fileID: 8631380708467406611}
+  - {fileID: 8631380708467405011}
+  - {fileID: 8631380708467405015}
+  texts:
+  - {fileID: 8631380708467405004}
 --- !u!1 &8631380708467405657
 GameObject:
   m_ObjectHideFlags: 0

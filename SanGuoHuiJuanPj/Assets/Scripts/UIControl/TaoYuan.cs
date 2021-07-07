@@ -25,14 +25,48 @@ using UnityEngine.UI;
     public YvQueChestUI goldChest;//金宝箱
     public JinNangUI jinNangUi;//锦囊
     public JiBanWindowController jiBanController;//羁绊
+    [SerializeField] private RoastedChickenWindow chickenWindow;
+    [SerializeField] private ChickenUiController chickenUiController;
+
+    private RoasterChickenTrigger chickenTrigger;
+
     private Dictionary<TaoYuanChestUI, int> chestCostMap;//宝箱和价钱的映射表
 
-    private void Start()
+    public void Init()
     {
+        jinNangUi.Init();
         InitChests();
+        InitJiBan();
+        InitChicken();
+    }
+
+    private void InitJiBan()
+    {
         jiBanController.Init();
         jiBanBtn.onClick.RemoveAllListeners();
         jiBanBtn.onClick.AddListener(OnShowJiBanWindow);
+    }
+
+    private void InitChicken()
+    {
+        chickenTrigger = new RoasterChickenTrigger();
+        chickenTrigger.OnRoasterChickenTrigger += chickenUiController.StartUi;
+        
+        TimeSystemControl.instance.OnHourly += chickenTrigger.UpdateTimeNow;
+        var ui = chickenUiController;
+        ui.ChickenButton.onClick.RemoveAllListeners();
+        ui.ChickenButton.onClick.AddListener(chickenWindow.Show);
+        ui.OnUiClose.AddListener(chickenWindow.Off);
+        var window = chickenWindow;
+        window.OnApiSuccess.AddListener(() =>
+        {
+            chickenUiController.Off();
+            chickenTrigger.FlagNow();
+            window.Off();
+        });
+        window.Init();
+        ui.Off();
+        chickenTrigger.UpdateTimeNow();
     }
 
     //初始化宝箱的展示
@@ -93,12 +127,9 @@ using UnityEngine.UI;
         var jinNang = viewBag.GetJinNang();
         var doubleToken = viewBag.Values[0].ToString();
         var playerDto = viewBag.GetPlayerDataDto();
-        //var list = DataTable.Tips.Values.ToList();
-        //var randId = UnityEngine.Random.Range(0, list.Count);
-        //var tips = list[randId];
-        //var yuanBao = UnityEngine.Random.Range(tips.YuanBaoReward.Min, tips.YuanBaoReward.ExcMax);
+        ConsumeManager.instance.SaveChangeUpdatePlayerData(playerDto);
         var textColor = jinNang.Color == 1 ? ColorDataStatic.name_deepRed : ColorDataStatic.name_brown;
-        jinNangUi.OnReward(jinNang.Text, textColor, jinNang.Sign, jinNang.Stamina, jinNang.YuanBao, doubleToken,
+        jinNangUi.OnInstanceReward(jinNang.Text, textColor, jinNang.Sign, jinNang.Stamina, jinNang.YuanBao, doubleToken,
             playerDto);
     }
 
@@ -252,4 +283,5 @@ using UnityEngine.UI;
             chest.SetChest(false);
         }
     }
+
 }

@@ -11,12 +11,14 @@ public class RewardObjectUi : MonoBehaviour
         YuQue,
         Exp,
         Stamina,
-        Card
+        Card,
+        AdPass
     }
     [SerializeField] private Image YuanBaoImg;
     [SerializeField] private Image YuQueImg;
     [SerializeField] private Image ExpImg;
     [SerializeField] private Image StaminaImg;
+    [SerializeField] private Image AdPassImg;
     [SerializeField] private GameCardUi CardUi;
     [SerializeField] private Text Value;
 
@@ -32,6 +34,7 @@ public class RewardObjectUi : MonoBehaviour
                     {Items.Exp, ExpImg.gameObject},
                     {Items.Stamina, StaminaImg.gameObject},
                     {Items.Card, CardUi.gameObject},
+                    {Items.AdPass, AdPassImg.gameObject}
                 };
             return _itemsMap;
         }
@@ -58,6 +61,12 @@ public class RewardObjectUi : MonoBehaviour
     {
         DisplayItem(Items.Stamina);
         Value.text = stamina.ToString();
+    }
+
+    public void SetAdPass(int adPass)
+    {
+        DisplayItem(Items.AdPass);
+        Value.text = adPass.ToString();
     }
     
     public void SetCard(GameCard card)

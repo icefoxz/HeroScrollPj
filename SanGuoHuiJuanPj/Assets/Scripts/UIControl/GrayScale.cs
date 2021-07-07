@@ -5,7 +5,7 @@ using UnityEngine.UI;
 public class GrayScale : MonoBehaviour
 {
     [SerializeField] Material grayMaterial;
-    [SerializeField] Color textGray;
+    [SerializeField] Color textGray = Color.gray;
     [SerializeField] Image[] images;
     [SerializeField] Text[] texts;
     private const string GrayScaleAmount = "_GrayscaleAmount";

@@ -126,6 +126,7 @@ public class PlayerDataForGame : MonoBehaviour
     public StaminaCost CurrentStaCost { get; private set; }
     public BaYeManager BaYeManager { get; set; }
     public bool IsCompleteLoading { get; private set; }
+    public int AdPass => pyData.AdPass;
     public int MilitaryPower => GetCards(false).Sum(c => c.Power());
 
     private void Awake()
@@ -485,5 +486,29 @@ public class PlayerDataForGame : MonoBehaviour
     public void UpdateCharacter(ICharacter cha)
     {
         Character = Character.Instance(cha);
+    }
+
+    public void NotifyDataUpdate()
+    {
+        switch (GameSystem.CurrentScene)
+        {
+            case GameSystem.GameScene.PreloadScene:
+            case GameSystem.GameScene.StartScene:
+                break;
+            case GameSystem.GameScene.MainScene:
+                UIManager.instance.UpdateMainSceneUi();
+                break;
+            case GameSystem.GameScene.WarScene:
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+    }
+
+    public void UpdateFreeAdTicket(int tickets)
+    {
+        pyData.AdPass = tickets;
+        LoadSaveData.instance.SaveGameData(1);
+        NotifyDataUpdate();
     }
 }

@@ -11,8 +11,12 @@ namespace Assets.HttpUnitScripts
 
         private bool isRequestingCharacter;
         public MapService() => Characters = new Queue<ICharacter>();
-
-        public void Init() => RequestingOnlineCharactersApi();
+        private bool isInit = false;
+        public void Init()
+        {
+            RequestingOnlineCharactersApi();
+            isInit = true;
+        }
 
         private void GenerateCards(CharacterDto[] characters, int repeatAmount = 1)
         {
@@ -29,20 +33,10 @@ namespace Assets.HttpUnitScripts
             }
         }
 
-        public ICharacter[] GetCharacters(int amount)
-        {
-            var list = new List<ICharacter>();
-            for (int i = 0; i < amount ; i++)
-            {
-                if (Characters.Count == 0) return list.ToArray();
-                list.Add(Characters.Dequeue());
-            }
-            return list.ToArray();
-        }
-
         public bool GetCharacterInRandom(int randomValue,out ICharacter cha)
         {
             cha = null;
+            if (!isInit) return false;
             if(Random.Range(0, 100) > randomValue) return false;
             cha = GetCharacter();
             return cha != null;
@@ -50,7 +44,7 @@ namespace Assets.HttpUnitScripts
 
         public ICharacter GetCharacter()
         {
-            //优先获取角色.没有了再给出数据表的npc
+            if (!isInit) return null;
             if (Characters.Any()) return Characters.Dequeue();
             if (!isRequestingCharacter)
                 RequestingOnlineCharactersApi();
