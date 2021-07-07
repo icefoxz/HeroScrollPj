@@ -73,6 +73,7 @@ public class GameCardUi : MonoBehaviour
     {
         WarOperation.ResetUi();
         CityOperation.ResetUi();
+        Mode = mode;
         if(mode == CardModes.Desk)
         {
             CityOperation.Show(this);

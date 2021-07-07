@@ -1165,10 +1165,7 @@ public class UIManager : MonoBehaviour
         if (isWaitingToExit)
         {
             PlayOnClickMusic();
-
-#if UNITY_ANDROID
-            Application.Quit();
-#endif
+            Exit();
         }
         else
         {
@@ -1183,4 +1180,10 @@ public class UIManager : MonoBehaviour
 
     public void AccountInfo() => GameSystem.LoginUi.OnAction(LoginUiController.ActionWindows.Info);
 
+    public void Exit()
+    {
+#if UNITY_ANDROID
+            Application.Quit();
+#endif
+    }
 }
