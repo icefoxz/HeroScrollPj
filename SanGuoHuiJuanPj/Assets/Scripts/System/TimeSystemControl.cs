@@ -93,6 +93,8 @@ public class TimeSystemControl : MonoBehaviour
 
     public void InitStaminaCount(bool isCountdown) => IsCountdown = isCountdown;
 
+    public void TestHourlyInvoke() => OnHourly?.Invoke();
+
     /// <summary>
     /// 更新时间触发器
     /// </summary>

@@ -50,8 +50,7 @@ using UnityEngine.UI;
     private void InitChicken()
     {
         chickenTrigger = new RoasterChickenTrigger();
-        chickenTrigger.OnRoasterChickenTrigger += chickenUiController.StartUi;
-        
+        chickenUiController.Init(chickenTrigger);
         TimeSystemControl.instance.OnHourly += chickenTrigger.UpdateTimeNow;
         var ui = chickenUiController;
         ui.ChickenButton.onClick.RemoveAllListeners();
@@ -68,6 +67,8 @@ using UnityEngine.UI;
         ui.Off();
         chickenTrigger.UpdateTimeNow();
     }
+
+    
 
     //初始化宝箱的展示
     private void InitChests()
@@ -284,4 +285,8 @@ using UnityEngine.UI;
         }
     }
 
+    private void OnDestroy()
+    {
+        TimeSystemControl.instance.OnHourly -= chickenTrigger.UpdateTimeNow;
+    }
 }

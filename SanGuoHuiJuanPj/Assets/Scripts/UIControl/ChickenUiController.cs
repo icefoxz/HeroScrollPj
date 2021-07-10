@@ -12,7 +12,7 @@ public class ChickenUiController : MonoBehaviour
     public Button ChickenButton;
     public UnityEvent OnUiClose;
     private DateTime targetTime;
-
+    private RoasterChickenTrigger trigger;
     private void StartChickenTimeCountdown(int[] timeRange)
     {
         StopAllCoroutines();
@@ -20,7 +20,7 @@ public class ChickenUiController : MonoBehaviour
         StartCoroutine(UpdateChickenCountdownText());
     }
 
-    public void StartUi(int[] timeRange)
+    private void StartUi(int[] timeRange)
     {
         chickenUiParent.SetActive(true);
         StartChickenTimeCountdown(timeRange);
@@ -58,4 +58,14 @@ public class ChickenUiController : MonoBehaviour
         }
     }
 
+    public void Init(RoasterChickenTrigger chickenTrigger)
+    {
+        trigger = chickenTrigger;
+        trigger.OnRoasterChickenTrigger += StartUi;
+    }
+
+    private void OnDestroy()
+    {
+        trigger.OnRoasterChickenTrigger -= StartUi;
+    }
 }

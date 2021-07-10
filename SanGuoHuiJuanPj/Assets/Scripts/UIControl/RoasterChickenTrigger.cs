@@ -28,6 +28,12 @@ public class RoasterChickenTrigger
         mapper = Json.Deserialize<DailyFlagsMapper>(GamePref.RoasterChickenRecord()) ?? new DailyFlagsMapper();
     }
 
+    public void TestTrigger()
+    {
+        var now = DateTime.Now;
+        OnRoasterChickenTrigger?.Invoke(new[] {now.Hour - 1, now.Hour + 1});
+    }
+
     public void UpdateTimeNow()
     {
         var index = IndexInRange();//get the first index of the list which matched in time range. -1 for none of matched
@@ -73,7 +79,7 @@ public class RoasterChickenTrigger
 
         private void CheckAndResetWhenRecordedDayPass()
         {
-            if (!SysTime.IsToday(SysTime.UnixNow)) ResetMap();
+            if (!SysTime.IsToday(LastTicks)) ResetMap();
 
             void ResetMap()
             {
