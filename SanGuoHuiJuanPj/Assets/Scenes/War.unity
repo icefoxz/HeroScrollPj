@@ -8052,6 +8052,7 @@ MonoBehaviour:
   ticketButton: {fileID: 796680158}
   ticketText: {fileID: 2000085809}
   maxColor: {r: 1, g: 0, b: 0, a: 1}
+  defaultTicketColor: {r: 0, g: 0, b: 0, a: 0}
   maxTickets: 999
 --- !u!1 &544332547
 GameObject:
@@ -11765,6 +11766,7 @@ MonoBehaviour:
   ticketButton: {fileID: 499254071}
   ticketText: {fileID: 1332977515}
   maxColor: {r: 1, g: 0, b: 0, a: 1}
+  defaultTicketColor: {r: 0, g: 0, b: 0, a: 1}
   maxTickets: 999
 --- !u!1 &766358774
 GameObject:
@@ -14148,7 +14150,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 747768591}
-        m_MethodName: BattleOverShow
+        m_MethodName: ExpeditionFinalize
         m_Mode: 6
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -26233,7 +26235,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 747768591}
-        m_MethodName: PassGuanQia
+        m_MethodName: PassStage
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -35858,6 +35860,7 @@ MonoBehaviour:
   ticketButton: {fileID: 2923709230466059548}
   ticketText: {fileID: 2923709228983742473}
   maxColor: {r: 1, g: 0, b: 0, a: 1}
+  defaultTicketColor: {r: 0, g: 0, b: 0, a: 0}
   maxTickets: 999
 --- !u!1 &2923709230288206129
 GameObject:
@@ -39947,6 +39950,7 @@ MonoBehaviour:
   ticketButton: {fileID: 5959625194129952515}
   ticketText: {fileID: 5959625193465524758}
   maxColor: {r: 1, g: 0, b: 0, a: 1}
+  defaultTicketColor: {r: 0, g: 0, b: 0, a: 1}
   maxTickets: 999
 --- !u!222 &5959625193816639441
 CanvasRenderer:

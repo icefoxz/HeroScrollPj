@@ -141,7 +141,7 @@ public class GameSystem : MonoBehaviour
     private void OnMainSceneLoaded()
     {
         UIManager.instance.Init();
-        if(ShowStaminaEffect)
+        if (ShowStaminaEffect)
         {
             UIManager.instance.DelayInvokeReturnStaminaUi();
             ShowStaminaEffect = false;
@@ -153,13 +153,12 @@ public class GameSystem : MonoBehaviour
 
     private void OnStartSceneLoaded()
     {
-        InitEnqueue(EffectsPoolingControl.instance.Init);
-        InitEnqueue(StartSceneUIManager.instance.Init);
-        InitEnqueue(StartSceneToServerCS.instance.Init);
-        InitEnqueue(BarrageUiController.instance.Init);
-        InitEnqueue(FightForManagerForStart.instance.Init);
-        InitEnqueue(FightControlForStart.instance.Init);
-        StartCoroutine(InitCo());
+        EffectsPoolingControl.instance.Init();
+        StartSceneUIManager.instance.Init();
+        StartSceneToServerCS.instance.Init();
+        BarrageUiController.instance.Init();
+        FightForManagerForStart.instance.Init();
+        FightControlForStart.instance.Init();
     }
 
     protected void InitEnqueue(Action action)

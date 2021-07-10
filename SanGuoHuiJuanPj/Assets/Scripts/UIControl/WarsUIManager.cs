@@ -142,6 +142,8 @@ public class WarsUIManager : MonoBehaviour
     public void Init()
     {
         StartCoroutine(Initialize());
+        if(EffectsPoolingControl.instance.IsInit)return;
+        EffectsPoolingControl.instance.Init();
     }
 
     IEnumerator Initialize()
@@ -193,7 +195,7 @@ public class WarsUIManager : MonoBehaviour
         gameOverWindow.Init();
         GenericWindow.Init();
         yield return new WaitUntil(()=>PlayerDataForGame.instance.WarReward != null);
-        InitMainUIShow();
+        InitMainUiShow();
 
         InitCardListShow();
 
@@ -477,7 +479,7 @@ public class WarsUIManager : MonoBehaviour
             switch (eventType)
             {
                 case EventTypes.战斗:
-                    GoToBattle(checkpoint.BattleEventTableId, checkpoint.Id); 
+                    GoToBattle(checkpoint); 
                     break;
                 case EventTypes.答题:
                     GoToQuiz();
@@ -503,18 +505,16 @@ public class WarsUIManager : MonoBehaviour
     /// <summary>
     /// 进入战斗
     /// </summary>
-    /// <param name="fightId"></param>
-    private void GoToBattle(int fightId, int guanQiaId)
+    private void GoToBattle(CheckpointTable checkPoint)
     {
         currentEvent = EventTypes.战斗;
         PlayAudioClip(21);
-        var checkPoint = DataTable.Checkpoint[guanQiaId];
         fightBackImage.sprite = GameResources.BattleBG[checkPoint.BattleBG];
         int bgmIndex = checkPoint.BattleBGM;
         AudioController1.instance.isNeedPlayLongMusic = true;
         AudioController1.instance.ChangeAudioClip(audioClipsFightBack[bgmIndex], audioVolumeFightBack[bgmIndex]);
         AudioController1.instance.PlayLongBackMusInit();
-        FightForManager.instance.InitEnemyCardForFight(fightId);
+        FightForManager.instance.InitChessboard(checkPoint.BattleEventTableId);
         Chessboard.SetActive(true);
         //eventsWindows[0].SetActive(true);
     }
@@ -1040,12 +1040,12 @@ public class WarsUIManager : MonoBehaviour
     }
 
     //初始化场景内容
-    private void InitMainUIShow()
+    private void InitMainUiShow()
     {
         battleNameText.text = DataTable.War[PlayerDataForGame.instance.selectedWarId].Title;
         var py = PlayerDataForGame.instance;
         string flagShort;
-        if (py.Character != null && py.Character.IsValidCharacter())
+        if (py.Character != null && py.Character.IsValidCharacter() && !string.IsNullOrWhiteSpace(py.Character.Name))
             flagShort = py.Character.Name.First().ToString();
         else flagShort = DataTable.PlayerInitialConfig[py.pyData.ForceId].Force;
         infoUis.Short.text = flagShort;

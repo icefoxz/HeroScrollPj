@@ -9,12 +9,12 @@ public class AdConsumeController : MonoBehaviour
     [SerializeField] private Button ticketButton;
     [SerializeField] private Text ticketText;
     [SerializeField] private Color maxColor = Color.red;
+    [SerializeField] private Color defaultTicketColor = Color.black;
     [SerializeField] private int maxTickets = 999;
     private UnityAction<bool> watchAdAction;
     private UnityAction<ViewBag> consumeAction;
     private IViewBag requestVb;
     private bool closeIfSuccess;
-    private Color defaultTicketColor;
     public void Init()
     {
         freeButton.onClick.RemoveAllListeners();

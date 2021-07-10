@@ -22,6 +22,7 @@ public class EffectsPoolingControl : MonoBehaviour
     List<List<GameObject>> iconPoolingList = new List<List<GameObject>>();   //状态特效池
 
     private GameResources GameResources => GameResources.Instance;
+    public bool IsInit { get; private set; }
 
     private void Awake()
     {
@@ -33,8 +34,10 @@ public class EffectsPoolingControl : MonoBehaviour
 
     public void Init()
     {
+        if(IsInit)return;
         InitializedEffectsObj();
         InitializedIconsObj();
+        IsInit = true;
     }
 
     private void InitializedEffectsObj()
