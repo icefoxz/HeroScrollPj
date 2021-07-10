@@ -6726,7 +6726,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 747768591}
-        m_MethodName: PassGuanQia
+        m_MethodName: PassStage
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -11122,7 +11122,10 @@ MonoBehaviour:
   herosCardListTran: {fileID: 562278722}
   herosCardListScrollRect: {fileID: 407564373}
   _isDragItem: 0
-  playerInfoObj: {fileID: 1012356339}
+  infoUis:
+    Gold: {fileID: 1825589617}
+    Chests: {fileID: 1784412333}
+    Short: {fileID: 2143110096}
   cityLevelObj: {fileID: 1013465921}
   heroCardListObj: {fileID: 670104548}
   cardForWarListPres: {fileID: 5631416490433059138, guid: 206258dd5de2a644187f1249eeb57652,
@@ -11132,19 +11135,30 @@ MonoBehaviour:
   operationButton: {fileID: 748998151}
   operationText: {fileID: 179711367}
   upLevelBtn: {fileID: 2125245539}
-  eventsWindows:
-  - {fileID: 1914077670}
-  - {fileID: 1370971708}
-  - {fileID: 1164217690}
-  - {fileID: 138685183}
-  - {fileID: 1527760777}
+  Chessboard: {fileID: 1914077670}
   SanXuanWindow: {fileID: 138685187}
+  QuizWindow: {fileID: 1164217692}
+  GenericWindow:
+    WindowObj: {fileID: 1527760777}
+    GoldText: {fileID: 855515197}
+    GoldObj: {fileID: 1473162310}
+    ChestText: {fileID: 1014930833}
+    ChestObj: {fileID: 1589446294}
+    MessageText: {fileID: 1431429964}
+    OkButton: {fileID: 2060764956}
+    CloudObj: {fileID: 473942229}
+    componentSwitch:
+    - State: 0
+      Objs:
+      - {fileID: 380346994}
+    - State: 1
+      Objs:
+      - {fileID: 1431429962}
   gameOverWindow: {fileID: 7684096226171973432}
   percentReturnHp: 1
   baYeDefaultLevel: 3
   cityLevel: 1
   goldForCity: 0
-  treasureChestNums: 0
   cardMoveSpeed: 0
   audioClipsFightEffect:
   - {fileID: 8300000, guid: 9ee17454cab3c354e9d9e8f1bfa69a4f, type: 3}
@@ -11428,7 +11442,6 @@ MonoBehaviour:
   waySpeedFlo: 2.5
   randomChaZhi: 0.4
   pointNums: 10
-  shopInfoObj: {fileID: 1041752470}
   maxHeroNums: 0
   musicBtnText: {fileID: 1412058899}
   guideObjs:
@@ -12584,7 +12597,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 540, y: -1353.775}
+  m_AnchoredPosition: {x: 540, y: -1233.775}
   m_SizeDelta: {x: 937, y: 820}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &796335459
@@ -13743,7 +13756,7 @@ GameObject:
   - component: {fileID: 855515198}
   - component: {fileID: 855515197}
   m_Layer: 5
-  m_Name: Text Reward
+  m_Name: GoldValue
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -13967,7 +13980,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 540, y: -533.775}
+  m_AnchoredPosition: {x: 540, y: -413.77502}
   m_SizeDelta: {x: 937, y: 820}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &856697637
@@ -16207,7 +16220,7 @@ GameObject:
   - component: {fileID: 1014930834}
   - component: {fileID: 1014930833}
   m_Layer: 5
-  m_Name: Text Reward
+  m_Name: ChestValue
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -18648,6 +18661,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1164217691}
+  - component: {fileID: 1164217692}
   m_Layer: 5
   m_Name: FZDSJ DaTi
   m_TagString: Untagged
@@ -18681,6 +18695,33 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1164217692
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1164217690}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 697d17f0d5789234ea1e7a8a97b465fc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  QuestionText: {fileID: 852557455}
+  Answers:
+  - Id: 0
+    Text: {fileID: 2011223911}
+    Button: {fileID: 1841644831}
+  - Id: 0
+    Text: {fileID: 524162447}
+    Button: {fileID: 1064427003}
+  - Id: 0
+    Text: {fileID: 1912775410}
+    Button: {fileID: 1741202594}
+  ContinueButton: {fileID: 2013605809}
+  TextColor: {r: 1, g: 1, b: 1, a: 1}
+  CorrectColor: {r: 0, g: 1, b: 0, a: 1}
+  WrongColor: {r: 1, g: 0, b: 0, a: 1}
 --- !u!1001 &1174285675
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -22707,7 +22748,7 @@ GameObject:
   - component: {fileID: 1431429965}
   - component: {fileID: 1431429964}
   m_Layer: 5
-  m_Name: contentText
+  m_Name: Message
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -23217,7 +23258,7 @@ GameObject:
   - component: {fileID: 1473162313}
   - component: {fileID: 1473162312}
   m_Layer: 5
-  m_Name: Image coin
+  m_Name: Gold
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -24995,7 +25036,7 @@ GameObject:
   - component: {fileID: 1589446297}
   - component: {fileID: 1589446296}
   m_Layer: 5
-  m_Name: Image chest
+  m_Name: Chest
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -31798,18 +31839,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2013605810}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 747768591}
-        m_MethodName: PassGuanQia
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &2013605810
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -32385,7 +32415,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 747768591}
-        m_MethodName: PassGuanQia
+        m_MethodName: PassStage
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -34543,7 +34573,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 540, y: -2173.775}
+  m_AnchoredPosition: {x: 540, y: -2053.775}
   m_SizeDelta: {x: 937, y: 820}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1001 &787100996464796413

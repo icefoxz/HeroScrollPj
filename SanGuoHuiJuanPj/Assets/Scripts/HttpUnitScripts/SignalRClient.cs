@@ -63,7 +63,9 @@ public class SignalRClient : MonoBehaviour
     {
         //Login();
         _actions = new Dictionary<string, UnityAction<string>>();
+#if UNITY_EDITOR
         OnStatusChanged += msg => DebugLog($"链接状态更变：{msg}");
+#endif
         if(ServerPanel!=null) ServerPanel.Init(this);
         SubscribeAction(EventStrings.SR_UploadPy, OnServerCalledUpload);
         ApiPanel.Init(this);

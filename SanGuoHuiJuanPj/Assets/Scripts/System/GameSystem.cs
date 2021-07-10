@@ -133,7 +133,6 @@ public class GameSystem : MonoBehaviour
     private void OnWarSceneLoaded()
     {
         WarsUIManager.instance.Init();
-        EffectsPoolingControl.instance.Init();
         OnWarSceneInit.Invoke();
         OnWarSceneInit?.RemoveAllListeners();
     }

@@ -87,7 +87,6 @@ public class FightForManager : MonoBehaviour
         Input.multiTouchEnabled = false;    //限制多指拖拽
     }
 
-    // Start is called before the first frame update
     public void Init()
     {
         oneDisY = Screen.height / (1920 / gridLayoutGroup.cellSize.y) / 9;

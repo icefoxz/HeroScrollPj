@@ -11,7 +11,7 @@ public class JiBanWindowController : MonoBehaviour
     public Transform BtnContent;
     public Transform JiBanWindowsParent;
     public Button CloseButton;
-    private UiDisplayMapper<int, JiBanWindowUi> winMapper = new UiDisplayMapper<int, JiBanWindowUi>();
+    private ComponentStateSwitch<int, JiBanWindowUi> winMapper = new ComponentStateSwitch<int, JiBanWindowUi>();
 
     public void Init()
     {

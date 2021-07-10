@@ -106,8 +106,6 @@ public class BaYeWindowUI : MiniWindowUI
         selectionView.gameObject.SetActive(false);
         questionView.gameObject.SetActive(false);
         adConsume.Off();
-        //adBtn.onClick.RemoveAllListeners();
-        //adBtn.gameObject.SetActive(false);
         base.Close();
     }
 
@@ -116,8 +114,5 @@ public class BaYeWindowUI : MiniWindowUI
         adConsume.SetCallBackAction(onClickAction.Invoke, _ => onClickAction.Invoke(true),
             ViewBag.Instance().SetValue(0), true);
         adConsume.ShowWithUpdate();
-        //adBtn.onClick.RemoveAllListeners();
-        //adBtn.onClick.AddListener(()=>onClickAction(adBtn));
-        //adBtn.gameObject.SetActive(true);
     }
 }

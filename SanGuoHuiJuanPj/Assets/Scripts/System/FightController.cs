@@ -61,8 +61,8 @@ public class FightController : MonoBehaviour
     private List<FightCardData> gunMuCards; //滚木列表
     private List<FightCardData> gunShiCards;//滚石列表
 
-    int getGold = 0;    //本场战斗获得金币数
-    List<int> getBoxsList = new List<int>();    //本场战斗获得宝箱
+    int totalGold = 0;    //本场战斗获得金币数
+    List<int> chests = new List<int>();    //本场战斗获得宝箱
 
     /// <summary>
     /// 玩家所有羁绊激活情况
@@ -4351,13 +4351,13 @@ public class FightController : MonoBehaviour
                         }
                     }
                     //杀死敌将获得金币
-                    getGold += DataTable.EnemyUnit[FightForManager.instance.enemyFightCardsDatas[i].unitId].GoldReward;
+                    totalGold += DataTable.EnemyUnit[FightForManager.instance.enemyFightCardsDatas[i].unitId].GoldReward;
                     var chests = DataTable.EnemyUnit[FightForManager.instance.enemyFightCardsDatas[i].unitId].WarChest;
                     if (chests!=null && chests.Length>0)
                     {
                         for (int j = 0; j < chests.Length; j++)
                         {
-                            getBoxsList.Add(chests[j]);
+                            this.chests.Add(chests[j]);
                         }
                     }
                     Destroy(FightForManager.instance.enemyFightCardsDatas[i].cardObj);
@@ -4705,14 +4705,14 @@ public class FightController : MonoBehaviour
 
                 CollectiveRecoveryHp(); //战斗结束上阵卡牌回复血量
 
-                StartCoroutine(BattleSettlementFun());
+                StartCoroutine(BattleFinalize());
 
                 PlayerDataForGame.instance.ClearGarbageStationObj();
             }
             else
             {
                 //Debug.Log("---被敌方击败");
-                WarsUIManager.instance.BattleOverShow(false);
+                WarsUIManager.instance.ExpeditionFinalize(false);
                 PlayerDataForGame.instance.ClearGarbageStationObj();
             }
             //Debug.Log("------战斗结束------");
@@ -4840,7 +4840,7 @@ public class FightController : MonoBehaviour
     GameObject gongKeUIObj;
 
     //战斗结算
-    IEnumerator BattleSettlementFun()
+    IEnumerator BattleFinalize()
     {
         boomUIObj.transform.position = FightForManager.instance.enemyCardsPos[17].transform.position;
         fireUIObj.transform.position = gongKeUIObj.transform.position = FightForManager.instance.enemyCardsPos[7].transform.position;
@@ -4868,51 +4868,28 @@ public class FightController : MonoBehaviour
             FightCardData cardData = FightForManager.instance.enemyFightCardsDatas[i];
             if (i != 17 && cardData != null && cardData.nowHp <= 0)
             {
-                getGold += DataTable.EnemyUnit[cardData.unitId].GoldReward;
+                totalGold += DataTable.EnemyUnit[cardData.unitId].GoldReward;
                 var chests = DataTable.EnemyUnit[cardData.unitId].WarChest;
                 //暂时关闭打死单位获得的战役宝箱
                 if (chests!=null && chests.Length > 0)
                 {
                     for (int j = 0; j < chests.Length; j++)
                     {
-                        getBoxsList.Add(chests[j]);
+                        this.chests.Add(chests[j]);
                     }
                 }
             }
         }
-        getGold += DataTable.BattleEvent[FightForManager.instance.battleIdIndex].GoldReward;
+        totalGold += DataTable.BattleEvent[FightForManager.instance.battleIdIndex].GoldReward;
         var warChests = DataTable.BattleEvent[FightForManager.instance.battleIdIndex].WarChestTableIds;
         for (int k = 0; k < warChests.Length; k++)
         {
-            getBoxsList.Add(warChests[k]);
+            chests.Add(warChests[k]);
         }
-        WarsUIManager.instance.GoldForCity += getGold;
-        WarsUIManager.instance.treasureChestNums += getBoxsList.Count;
-        WarsUIManager.instance.UpdateGoldandBoxNumsShow();
-        //WarsUIManager.instance.ShowOrHideGuideObj(2, true);
 
-        if (getBoxsList.Count > 0)
-        {
-            var warReward = PlayerDataForGame.instance.WarReward;
-            for (int i = 0; i < getBoxsList.Count; i++)
-            {
-                warReward.Chests.Add(getBoxsList[i]);
-            }
-            
-            WarsUIManager.instance.eventsWindows[4].transform.GetChild(1).GetChild(1).GetChild(1).GetChild(0).GetComponent<Text>().text = "×" + getBoxsList.Count;
-            WarsUIManager.instance.eventsWindows[4].transform.GetChild(1).GetChild(1).GetChild(1).gameObject.SetActive(true);
-        }
-        else
-        {
-            WarsUIManager.instance.eventsWindows[4].transform.GetChild(1).GetChild(1).GetChild(1).gameObject.SetActive(false);
-        }
-        WarsUIManager.instance.eventsWindows[4].transform.GetChild(1).GetChild(1).GetChild(0).GetChild(0).GetComponent<Text>().text = "×" + getGold;
-        WarsUIManager.instance.eventsWindows[4].transform.GetChild(1).GetChild(1).gameObject.SetActive(true);
-        WarsUIManager.instance.eventsWindows[4].transform.GetChild(1).GetChild(2).gameObject.SetActive(false);
-        WarsUIManager.instance.eventsWindows[4].SetActive(true);
-
-        getGold = 0;
-        getBoxsList.Clear();
+        WarsUIManager.instance.FinalizeWar(totalGold, chests);
+        totalGold = 0;
+        chests.Clear();
     }
 
     //攻击行动方式0-适用于-主动塔,远程兵

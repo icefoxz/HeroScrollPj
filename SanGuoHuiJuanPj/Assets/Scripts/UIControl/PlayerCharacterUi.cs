@@ -28,7 +28,7 @@ public class PlayerCharacterUi : MonoBehaviour
     public Button NicknameEditButton;
     public Button GenderEditButton;
     public Button SignEditButton;
-    private UiStateMapper<Button> mapper;
+    private ComponentActivateSwitch<Button> mapper;
     public Character Character { get; private set; }
     
     private bool isInit = false;
@@ -37,7 +37,7 @@ public class PlayerCharacterUi : MonoBehaviour
     public void Init()
     {
         if (isInit) throw XDebug.Throw<PlayerCharacterUi>("Duplicate init!");
-        mapper = new UiStateMapper<Button>((active, btn) =>
+        mapper = new ComponentActivateSwitch<Button>((active, btn) =>
         {
             btn.interactable = active;
             btn.gameObject.SetActive(active);
