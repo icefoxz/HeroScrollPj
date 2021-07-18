@@ -19,13 +19,56 @@ using UnityEngine.UI;
     private bool isConsumeAd;//是否消费了广告
     public JiuTanUI jiuTan;//酒坛
     public Button jinNangBtn;//锦囊
+    public Button jiBanBtn;//羁绊
     public TaoYuanChestUI zhanYiChest;//战役宝箱
     public YvQueChestUI copperChest;//铜宝箱
     public YvQueChestUI goldChest;//金宝箱
     public JinNangUI jinNangUi;//锦囊
+    public JiBanWindowController jiBanController;//羁绊
+    [SerializeField] private RoastedChickenWindow chickenWindow;
+    [SerializeField] private ChickenUiController chickenUiController;
+
+    private RoasterChickenTrigger chickenTrigger;
+
     private Dictionary<TaoYuanChestUI, int> chestCostMap;//宝箱和价钱的映射表
 
-    private void Start() => InitChests();
+    public void Init()
+    {
+        jinNangUi.Init();
+        InitChests();
+        InitJiBan();
+        InitChicken();
+    }
+
+    private void InitJiBan()
+    {
+        jiBanController.Init();
+        jiBanBtn.onClick.RemoveAllListeners();
+        jiBanBtn.onClick.AddListener(OnShowJiBanWindow);
+    }
+
+    private void InitChicken()
+    {
+        chickenTrigger = new RoasterChickenTrigger();
+        chickenUiController.Init(chickenTrigger);
+        TimeSystemControl.instance.OnHourly += chickenTrigger.UpdateTimeNow;
+        var ui = chickenUiController;
+        ui.ChickenButton.onClick.RemoveAllListeners();
+        ui.ChickenButton.onClick.AddListener(chickenWindow.Show);
+        ui.OnUiClose.AddListener(chickenWindow.Off);
+        var window = chickenWindow;
+        window.OnApiSuccess.AddListener(() =>
+        {
+            chickenUiController.Off();
+            chickenTrigger.FlagNow();
+            window.Off();
+        });
+        window.Init();
+        ui.Off();
+        chickenTrigger.UpdateTimeNow();
+    }
+
+    
 
     //初始化宝箱的展示
     private void InitChests()
@@ -78,17 +121,16 @@ using UnityEngine.UI;
         OnJinNangFailed(string.Empty);
     }
 
+    public void OnShowJiBanWindow() => jiBanController.Show();
+
     public void OnOpenJinNang(ViewBag viewBag)
     {
         var jinNang = viewBag.GetJinNang();
         var doubleToken = viewBag.Values[0].ToString();
         var playerDto = viewBag.GetPlayerDataDto();
-        //var list = DataTable.Tips.Values.ToList();
-        //var randId = UnityEngine.Random.Range(0, list.Count);
-        //var tips = list[randId];
-        //var yuanBao = UnityEngine.Random.Range(tips.YuanBaoReward.Min, tips.YuanBaoReward.ExcMax);
+        ConsumeManager.instance.SaveChangeUpdatePlayerData(playerDto);
         var textColor = jinNang.Color == 1 ? ColorDataStatic.name_deepRed : ColorDataStatic.name_brown;
-        jinNangUi.OnReward(jinNang.Text, textColor, jinNang.Sign, jinNang.Stamina, jinNang.YuanBao, doubleToken,
+        jinNangUi.OnInstanceReward(jinNang.Text, textColor, jinNang.Sign, jinNang.Stamina, jinNang.YuanBao, doubleToken,
             playerDto);
     }
 
@@ -241,5 +283,10 @@ using UnityEngine.UI;
             var chest = map.Key;
             chest.SetChest(false);
         }
+    }
+
+    private void OnDestroy()
+    {
+        TimeSystemControl.instance.OnHourly -= chickenTrigger.UpdateTimeNow;
     }
 }

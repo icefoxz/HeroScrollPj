@@ -40,7 +40,7 @@ public class ApiPanel : MonoBehaviour
 #if UNITY_EDITOR
         if (isSkipApi)
         {
-            successAction.Invoke(ViewBag.Instance());
+            successAction.Invoke(new ViewBag());
             return;
         }
 #endif

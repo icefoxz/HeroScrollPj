@@ -87,11 +87,13 @@ public class TimeSystemControl : MonoBehaviour
         UpdateJiuTanTimer();
         CountdownFreeFourDaysChest();
         CountdownFreeWeeklyChest();
-        UpdateChickenShoping();
+        //UpdateChickenShoping();
         UpdateStamina();
     }
 
     public void InitStaminaCount(bool isCountdown) => IsCountdown = isCountdown;
+
+    public void TestHourlyInvoke() => OnHourly?.Invoke();
 
     /// <summary>
     /// 更新时间触发器
@@ -145,12 +147,12 @@ public class TimeSystemControl : MonoBehaviour
     }
 
     //尝试刷新主城体力商店状态
-    private void UpdateChickenShoping()
-    {
-        //在主界面的话
-        if (GameSystem.CurrentScene != GameSystem.GameScene.MainScene || !UIManager.instance.IsInit) return;
-        UIManager.instance.InitOpenChickenTime(true);
-    }
+    //private void UpdateChickenShoping()
+    //{
+    //    //在主界面的话
+    //    if (GameSystem.CurrentScene != GameSystem.GameScene.MainScene || !UIManager.instance.IsInit) return;
+    //    UIManager.instance.InitOpenChickenTime(true);
+    //}
 
     //时间显示格式
     //public string TimeDisplayText(int seconds)
@@ -181,9 +183,9 @@ public class TimeSystemControl : MonoBehaviour
     //    return str;
     //}
 
-    public string TimeDisplayText(long from, long to) => TimeDisplayText(SysTime.TimeSpanFromUnixTicks(to - @from));
+    public string TimeDisplayInChineseText(long from, long to) => TimeDisplayInChineseText(SysTime.TimeSpanFromUnixTicks(to - @from));
 
-    public string TimeDisplayText(TimeSpan timeSpan = default)
+    public string TimeDisplayInChineseText(TimeSpan timeSpan = default)
     {
         if (timeSpan.TotalSeconds < 1) return string.Empty;
         if (timeSpan.TotalDays >= 1)
@@ -199,8 +201,8 @@ public class TimeSystemControl : MonoBehaviour
         stamina.UpdateStamina();
         if (GameSystem.CurrentScene == GameSystem.GameScene.MainScene)
             UIManager.instance.UpdateShowTiLiInfo(stamina.IsStopIncrease
-                ? TimeDisplayText()
-                : TimeDisplayText(stamina.Countdown));
+                ? TimeDisplayInChineseText()
+                : TimeDisplayInChineseText(stamina.Countdown));
     }
 
     private void UpdateJiuTanTimer()
@@ -217,7 +219,7 @@ public class TimeSystemControl : MonoBehaviour
         var displayText = string.Empty;
         if (limitNotReach)
             displayText =
-                TimeDisplayText(TimeSpan.FromMilliseconds(nextOpenJiuTanTimeTicks - SystemTimer.NowUnixTicks));
+                TimeDisplayInChineseText(TimeSpan.FromMilliseconds(nextOpenJiuTanTimeTicks - SystemTimer.NowUnixTicks));
         UIManager.instance.taoYuan.UpdateJiuTan(IsJiuTanAvailable(lastRedeemIsToday), jiuTanCount, displayText);
     }
 
@@ -234,7 +236,7 @@ public class TimeSystemControl : MonoBehaviour
             return;
         }
 
-        UIManager.instance.taoYuan.copperChest.UpdateChest(TimeDisplayText(SysTime.UnixNow, nextOpenTimeTick),
+        UIManager.instance.taoYuan.copperChest.UpdateChest(TimeDisplayInChineseText(SysTime.UnixNow, nextOpenTimeTick),
             false);
     }
 
@@ -251,7 +253,7 @@ public class TimeSystemControl : MonoBehaviour
             return;
         }
 
-        UIManager.instance.taoYuan.goldChest.UpdateChest(TimeDisplayText(SysTime.UnixNow, nextOpenTimeTick),
+        UIManager.instance.taoYuan.goldChest.UpdateChest(TimeDisplayInChineseText(SysTime.UnixNow, nextOpenTimeTick),
             false);
     }
 

@@ -11,6 +11,7 @@ public class GameCardUi : MonoBehaviour
 {
     public enum CardModes
     {
+        Basic,
         Desk,
         War
     }
@@ -23,6 +24,7 @@ public class GameCardUi : MonoBehaviour
     public Image Level;
     public TextImageUi Short;
     public Image Frame;
+    public GrayScale GrayScale;
     //dynamic components
     public GameCardCityUiOperation CityOperation;
     public GameCardWarUiOperation WarOperation;
@@ -33,6 +35,8 @@ public class GameCardUi : MonoBehaviour
         {
             switch (Mode)
             {
+                case CardModes.Basic:
+                    return false;
                 case CardModes.Desk:
                     return CityOperation.IsSelected;
                 case CardModes.War:
@@ -45,6 +49,7 @@ public class GameCardUi : MonoBehaviour
 
     public void Set(GameCard card,CardModes mode)
     {
+        GrayScale.Init();
         Card = card;
         CardInfo = card.GetInfo();
         Image.sprite = CardInfo.Type == GameCardType.Hero
@@ -68,10 +73,13 @@ public class GameCardUi : MonoBehaviour
     {
         WarOperation.ResetUi();
         CityOperation.ResetUi();
+        Mode = mode;
         if(mode == CardModes.Desk)
         {
             CityOperation.Show(this);
         }
+
+        Level.gameObject.SetActive(mode != CardModes.Basic);
 
         if (mode == CardModes.War)
         {
@@ -90,6 +98,8 @@ public class GameCardUi : MonoBehaviour
                 break;
             case CardModes.War:
                 WarOperation.SetState(GameCardWarUiOperation.States.Selected);
+                break;
+            case CardModes.Basic:
                 break;
             default:
                 throw new ArgumentOutOfRangeException();
@@ -137,5 +147,7 @@ public class GameCardUi : MonoBehaviour
                 break;
         }
     }
+
+    public void SetGay(bool isGray) => GrayScale.SetGray(isGray ? 1 : 0);
 
 }

@@ -4,9 +4,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using Assets;
 using Beebyte.Obfuscator;
 using CorrelateLib;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
@@ -19,8 +21,9 @@ public class WarsUIManager : MonoBehaviour
     public bool _isDragItem;
 
 
-    [SerializeField]
-    GameObject playerInfoObj;   //玩家信息obj
+    //[SerializeField]
+    //GameObject playerInfoObj;   //玩家信息obj
+    [SerializeField] private PlayerInfoUis infoUis;//玩家信息UI
     [SerializeField]
     GameObject cityLevelObj;   //主城信息obj
     [SerializeField]
@@ -29,28 +32,16 @@ public class WarsUIManager : MonoBehaviour
     GameObject cardForWarListPres; //列表卡牌预制件
     [SerializeField]
     GameObject guanQiaPreObj;   //关卡按钮预制件
-    [SerializeField]
-    GameObject startBtn;    //关卡开始按钮
+    [SerializeField] Button operationButton;    //关卡执行按钮
+    [SerializeField] Text operationText; //关卡执行文字
     [SerializeField]
     GameObject upLevelBtn;   //升级城池btn
 
-    public Button adRefreshBtn;//看广告刷新按键
-
-    public GameObject[] eventsWindows; //各种事件窗口 0-战斗；1-故事；2-答题；3-奇遇；4-通用
-    public enum EventTypes
-    {
-        Generic,//通用
-        Battle,//战斗
-        Story,//故事
-        Quest,//答题
-        Adventure,//奇遇
-        Trade,//交易
-        Recover//回春
-    }
-    /// <summary>
-    /// 上一个关卡类型
-    /// </summary>
-    private EventTypes currentEvent = EventTypes.Generic;
+    //public GameObject[] eventsWindows; //各种事件窗口 0-战斗；1-故事；2-答题；3-奇遇；4-通用
+    [SerializeField] GameObject Chessboard;
+    [SerializeField] SanXuanWindowUi SanXuanWindow;
+    [SerializeField] WarQuizWindowUi QuizWindow;//答题
+    [SerializeField] GenericWarWindow GenericWindow;
 
     public WarMiniWindowUI gameOverWindow;//战役结束ui
     [SerializeField]
@@ -75,9 +66,7 @@ public class WarsUIManager : MonoBehaviour
             BaYeManager.instance.SetGold(value);
         }
     }
-
-    public int treasureChestNums;   //记录城池宝箱
-
+    private List<int> WarChests;
     int indexLastGuanQiaId;   //记录上一个关卡id
     int passedGuanQiaNums;  //记录通过的关卡数
 
@@ -102,7 +91,42 @@ public class WarsUIManager : MonoBehaviour
     Text battleScheduleText;    //战役进度文本
     int nowGuanQiaIndex;    //记录当前关卡进度
 
-    bool isEnteredLevel;    //记录是否进入了关卡
+    bool isGettingStage;    //记录是否进入了关卡
+
+    #region EventTypes
+    private enum EventTypes
+    {
+        初始=0,//通用
+        战斗=1,//战斗，注意！有很多数字都代表战斗
+        故事=2,//故事
+        答题=3,//答题
+        回春=4,//回春
+        奇遇=5,//奇遇
+        交易=6,
+    }
+
+    private static int[] BattleEventTypeIds = { 1, 7, 8, 9, 10, 11, 12 };
+    //判断是否是战斗关卡
+    private static bool IsBattle(int eventId) => BattleEventTypeIds.Contains(eventId);
+
+    private static Dictionary<int, EventTypes> NonBattleEventTypes = new Dictionary<int, EventTypes>
+    {
+        {2, EventTypes.故事},
+        {3, EventTypes.答题},
+        {4, EventTypes.回春},
+        {5, EventTypes.奇遇},
+        {6, EventTypes.交易}
+    };
+    private static EventTypes GetEvent(int eventTypeId)
+    {
+        if (IsBattle(eventTypeId)) return EventTypes.战斗;
+        if (NonBattleEventTypes.TryGetValue(eventTypeId, out var eventValue)) return eventValue;
+        throw XDebug.Throw<WarsUIManager>($"无效事件 = {eventTypeId}!");
+    }
+    
+    // 上一个关卡类型
+    private EventTypes currentEvent = EventTypes.初始;
+    #endregion
 
     private GameResources GameResources => GameResources.Instance;
 
@@ -112,7 +136,7 @@ public class WarsUIManager : MonoBehaviour
         {
             instance = this;
         }
-        isPointMoveNow = false;
+        isPointMoving = false;
     }
 
     public void Init()
@@ -124,7 +148,7 @@ public class WarsUIManager : MonoBehaviour
     {
         if (PlayerDataForGame.instance.WarType == PlayerDataForGame.WarTypes.Expedition && string.IsNullOrWhiteSpace(PlayerDataForGame.instance.WarReward.Token))
         {
-            BattleOverShow(false);
+            ExpeditionFinalize(false);
             yield return null;
         }
         switch (PlayerDataForGame.instance.WarType)
@@ -142,7 +166,8 @@ public class WarsUIManager : MonoBehaviour
             default:
                 throw new ArgumentOutOfRangeException();
         }
-        treasureChestNums = 0;
+
+        WarChests = new List<int>();
         indexLastGuanQiaId = 0;
         passedGuanQiaNums = -1;
         playerCardsDatas = new List<FightCardData>();
@@ -154,12 +179,19 @@ public class WarsUIManager : MonoBehaviour
 
         Input.multiTouchEnabled = false;    //限制多指拖拽
         _isDragItem = false;
-        isEnteredLevel = false;
+        isGettingStage = false;
         //------------Awake----------------//
         PlayerDataForGame.instance.lastSenceIndex = 2;
-        adRefreshBtn.onClick.AddListener(WatchAdForUpdateQiYv);
+        SanXuanWindow.Init();
+        SanXuanWindow.AdConsume.SetCallBackAction(success =>
+        {
+            if (success)
+                UpdateQiYuInventory();
+        }, _ => UpdateQiYuInventory(), ViewBag.Instance().SetValue(0), true);
+        QuizWindow.Init();
+        //adRefreshBtn.onClick.AddListener(WatchAdForUpdateQiYv);
         gameOverWindow.Init();
-
+        GenericWindow.Init();
         yield return new WaitUntil(()=>PlayerDataForGame.instance.WarReward != null);
         InitMainUIShow();
 
@@ -171,16 +203,10 @@ public class WarsUIManager : MonoBehaviour
 
     }
 
-    //void OnApplicationPause(bool pause)
-    //{
-    //    if (pause)return;
-    //    Time.timeScale = currentEvent == EventTypes.Battle ? GamePref.PrefWarSpeed : 1f;
-    //}
-
     //初始化关卡
     private void InitGuanQiaShow()
     {
-        currentEvent = EventTypes.Generic;
+        currentEvent = EventTypes.初始;
         //尝试展示指引
         //ShowOrHideGuideObj(0, true);
         InitShowParentGuanQia(new int[] {DataTable.War[PlayerDataForGame.instance.selectedWarId].BeginPoint});
@@ -289,7 +315,7 @@ public class WarsUIManager : MonoBehaviour
     }
 
     //战役结束
-    public void BattleOverShow(bool isWin)
+    public void ExpeditionFinalize(bool isWin)
     {
         Time.timeScale = 1;
         var reward = PlayerDataForGame.instance.WarReward;
@@ -358,16 +384,13 @@ public class WarsUIManager : MonoBehaviour
                     ConsumeManager.instance.SaveChangeUpdatePlayerData(player, 0);
                 }, PlayerDataForGame.instance.ShowStringTips,
                 EventStrings.Req_WarReward, viewBag);
-            GameSystem.instance.ShowStaminaEffect = true;
-            //GameSystem.OnMainSceneInit.AddListener(UIManager.instance.DelayInvokeReturnStaminaUi);
+            GameSystem.Instance.ShowStaminaEffect = true;
         }
-        //gameOverWindow.Show(rewardMap);
         gameOverWindow.Show(reward, PlayerDataForGame.instance.WarType == PlayerDataForGame.WarTypes.Baye);
 
         PlayerDataForGame.instance.isNeedSaveData = true;
         LoadSaveData.instance.SaveGameData(3);
         GamePref.SaveBaYe(PlayerDataForGame.instance.baYe);
-        //gameOverObj.SetActive(true);
     }
 
     //初始化父级关卡
@@ -376,7 +399,7 @@ public class WarsUIManager : MonoBehaviour
         passedGuanQiaNums++;
         if (passedGuanQiaNums >= DataTable.War[PlayerDataForGame.instance.selectedWarId].CheckPoints)
         {
-            BattleOverShow(true);//通过所有关卡
+            ExpeditionFinalize(true);//通过所有关卡
             return;
         }
 
@@ -409,28 +432,14 @@ public class WarsUIManager : MonoBehaviour
             int randArtImg = Random.Range(0, 25); //随机艺术图
             obj.transform.GetChild(1).GetComponent<Button>().onClick.AddListener(delegate()
             {
-                startBtn.GetComponentInChildren<Text>().text =
-                    IsBattle(checkPoint.EventType) ? DataTable.GetStringText(53) : DataTable.GetStringText(54);
-                startBtn.SetActive(true);
+                operationText.text = IsBattle(checkPoint.EventType) ? DataTable.GetStringText(53) : DataTable.GetStringText(54);
+                operationButton.gameObject.SetActive(true);
                 SelectOneGuanQia(obj);
                 ChooseParentGuanQia(checkPoint.Id, randArtImg, obj.transform);
-                OnCheckpointInvoke(IsBattle(checkPoint.EventType) ? 1 : checkPoint.EventType, checkPoint.BattleEventTableId, checkPoint.Id);
+                OnCheckpointInvoke(checkPoint);
             });
         }
         StartCoroutine(LiteInitChooseFirst(0));
-    }
-
-    //判断是否是战斗关卡
-    private bool IsBattle(int guanQiaType)
-    {
-        if (guanQiaType == 1 || guanQiaType == 7 || guanQiaType == 8 || guanQiaType == 9 || guanQiaType == 10 || guanQiaType == 11 || guanQiaType == 12)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
     }
 
     IEnumerator LiteInitChooseFirst(float startTime)
@@ -445,7 +454,7 @@ public class WarsUIManager : MonoBehaviour
     {
         AudioController0.instance.RandomPlayGuZhengAudio();
 
-        startBtn.GetComponent<Button>().onClick.RemoveAllListeners();
+        operationButton.GetComponent<Button>().onClick.RemoveAllListeners();
 
         if (indexSelectGuanQia != null)
         {
@@ -458,60 +467,36 @@ public class WarsUIManager : MonoBehaviour
     /// <summary>
     /// 进入不同关卡
     /// </summary>
-    /// <param name="eventType"></param>
-    /// <param name="eventId"></param>
-    private void OnCheckpointInvoke(int eventType, int eventId, int guanQiaId)
+    private void OnCheckpointInvoke(CheckpointTable cp)
     {
-        switch (eventType)
+        operationButton.onClick.AddListener(() => InvokeToTheNextStage(cp));
+        void InvokeToTheNextStage(CheckpointTable checkpoint)
         {
-            //战斗关卡
-            case 1:
-                startBtn.GetComponent<Button>().onClick.AddListener(delegate ()
-                {
-                    if (isPointMoveNow || isEnteredLevel) return;
-                    GoToTheFight(eventId, guanQiaId);
-                    isEnteredLevel = true;
-                });
-                break;
-            //答题关卡
-            case 3:
-                startBtn.GetComponent<Button>().onClick.AddListener(delegate ()
-                {
-                    if (isPointMoveNow || isEnteredLevel) return;
-                    GoToTheTest();
-                    isEnteredLevel = true;
-                });
-                break;
-            //回血关卡
-            case 4:
-                startBtn.GetComponent<Button>().onClick.AddListener(delegate ()
-                {
-                    if (isPointMoveNow || isEnteredLevel) return;
-                    GoToTheHuiXue();
-                    isEnteredLevel = true;
-                });
-                break;
-            //奇遇(三选)关卡
-            case 5:
-                startBtn.GetComponent<Button>().onClick.AddListener(delegate ()
-                {
-                    if (isPointMoveNow || isEnteredLevel) return;
-                    GoToTheQiYu(false);
-                    isEnteredLevel = true;
-                });
-                break;
-            //购买关卡
-            case 6:
-                startBtn.GetComponent<Button>().onClick.AddListener(delegate ()
-                {
-                    if (isPointMoveNow || isEnteredLevel) return;
-                    GoToTheQiYu(true);
-                    isEnteredLevel = true;
-                });
-                break;
-            //其他事件
-            default:
-                throw new ArgumentOutOfRangeException($"event type [{eventType}]");
+            if (isPointMoving || isGettingStage) return;
+            var eventType = GetEvent(checkpoint.EventType);
+            switch (eventType)
+            {
+                case EventTypes.战斗:
+                    GoToBattle(checkpoint.BattleEventTableId, checkpoint.Id); 
+                    break;
+                case EventTypes.答题:
+                    GoToQuiz();
+                    break;
+                case EventTypes.回春:
+                    GoToRecovery();
+                    break;
+                case EventTypes.奇遇:
+                    GoToSanXuan(false);
+                    break;
+                case EventTypes.交易:
+                    GoToSanXuan(true);
+                    break;
+                case EventTypes.故事:
+                case EventTypes.初始:
+                default:
+                    throw new ArgumentOutOfRangeException($"事件异常 = {eventType}");
+            }
+            isGettingStage = true;
         }
     }
 
@@ -519,9 +504,9 @@ public class WarsUIManager : MonoBehaviour
     /// 进入战斗
     /// </summary>
     /// <param name="fightId"></param>
-    private void GoToTheFight(int fightId, int guanQiaId)
+    private void GoToBattle(int fightId, int guanQiaId)
     {
-        currentEvent = EventTypes.Battle;
+        currentEvent = EventTypes.战斗;
         PlayAudioClip(21);
         var checkPoint = DataTable.Checkpoint[guanQiaId];
         fightBackImage.sprite = GameResources.BattleBG[checkPoint.BattleBG];
@@ -530,29 +515,28 @@ public class WarsUIManager : MonoBehaviour
         AudioController1.instance.ChangeAudioClip(audioClipsFightBack[bgmIndex], audioVolumeFightBack[bgmIndex]);
         AudioController1.instance.PlayLongBackMusInit();
         FightForManager.instance.InitEnemyCardForFight(fightId);
-        eventsWindows[0].SetActive(true);
+        Chessboard.SetActive(true);
+        //eventsWindows[0].SetActive(true);
     }
 
     /// <summary>
     /// 进入答题
     /// </summary>
-    private void GoToTheTest()
+    private void GoToQuiz()
     {
-        currentEvent = EventTypes.Quest;
+        currentEvent = EventTypes.答题;
         PlayAudioClip(19);
 
-        InitializeDaTi();
-
-        eventsWindows[2].SetActive(true);
+        QuizWindow.Show();
+        var pick = DataTable.Quest.Values.Select(q => new WeightElement { Id = q.Id, Weight = q.Weight }).Pick();
+        var quest = DataTable.Quest[pick.Id];
+        QuizWindow.SetQuiz(quest, OnAnswerQuiz);
     }
 
-    /// <summary>
-    /// 进入奇遇或购买
-    /// </summary>
-    /// <param name="qiyuId"></param>
-    private void GoToTheQiYu(bool isBuy)
+    // 进入奇遇或购买
+    private void GoToSanXuan(bool isTrade)
     {
-        currentEvent = isBuy ? EventTypes.Trade : EventTypes.Adventure;
+        currentEvent = isTrade ? EventTypes.交易 : EventTypes.奇遇;
         //尝试关闭指引
         //ShowOrHideGuideObj(0, false);
 
@@ -560,22 +544,23 @@ public class WarsUIManager : MonoBehaviour
 
         PlayAudioClip(19);
 
-        InitializeQYOrSp(isBuy);
-
-        eventsWindows[3].SetActive(true);
+        InitializeQYOrSp(isTrade);
+        SanXuanWindow.Show(isTrade);
+        //eventsWindows[3].SetActive(true);
     }
 
-    /// <summary>
-    /// 进入回血事件
-    /// </summary>
-    private void GoToTheHuiXue()
+    // 进入回血事件
+    private void GoToRecovery()
     {
-        currentEvent = EventTypes.Recover;
+        currentEvent = EventTypes.回春;
         PlayAudioClip(19);
-
-        ReturnToBloodForFightCards();
-
-        eventsWindows[4].SetActive(true);
+        GenericWindow.SetRecovery(DataTable.GetStringText(55));
+        foreach (var card in FightForManager.instance.playerFightCardsDatas)
+        {
+            if (card == null || card.nowHp <= 0) continue;
+            card.nowHp += (int)(percentReturnHp * card.fullHp);
+            FightController.instance.UpdateUnitHpShow(card);
+        }
     }
 
     [SerializeField]
@@ -591,7 +576,7 @@ public class WarsUIManager : MonoBehaviour
     private Vector3 point1Pos;
     private Vector3 point2Pos;
 
-    private bool isPointMoveNow;
+    private bool isPointMoving;
 
     [SerializeField]
     GameObject pointWays;
@@ -599,14 +584,14 @@ public class WarsUIManager : MonoBehaviour
     //通关关卡转换的动画表现
     private void TongGuanCityPointShow()
     {
-        isPointMoveNow = true;
+        isPointMoving = true;
 
         point0Tran.gameObject.SetActive(false);
         point1Tran.position = point0Pos;
 
         point1Tran.DOMove(point1Pos, 1.5f).SetEase(Ease.Unset).OnComplete(delegate ()
         {
-            isPointMoveNow = false;
+            isPointMoving = false;
 
             point0Tran.gameObject.SetActive(true);
         });
@@ -682,23 +667,15 @@ public class WarsUIManager : MonoBehaviour
         }
     }
 
-    //private void FixedUpdate()
-    //{
-    //    if (Input.GetKeyDown(KeyCode.P))
-    //    {
-    //        PassGuanQia();
-    //    }
-    //}
-
     /// <summary>
     /// 通关
     /// </summary>
-    public void PassGuanQia()
+    public void PassStage()
     {
-        if (isPointMoveNow)
+        if (isPointMoving)
             return;
 
-        isEnteredLevel = false;
+        isGettingStage = false;
 
         PlayAudioClip(13);
 
@@ -706,34 +683,14 @@ public class WarsUIManager : MonoBehaviour
         InitShowParentGuanQia(DataTable.Checkpoint[indexLastGuanQiaId].Next);
         TongGuanCityPointShow();
         //关闭所有战斗事件的物件
-        for (int i = 0; i < eventsWindows.Length; i++)
+        if(Chessboard.activeSelf)
         {
-            if (eventsWindows[i].activeSelf)
-            {
-                eventsWindows[i].SetActive(false);
-                if (i == 0)
-                {
-                    AudioController1.instance.ChangeBackMusic();
-                }
-            }
+            Chessboard.SetActive(false);
+            AudioController1.instance.ChangeBackMusic();
         }
-    }
-
-    //给上阵卡牌回血
-    private void ReturnToBloodForFightCards()
-    {
-        eventsWindows[4].transform.GetChild(1).GetChild(2).GetComponent<Text>().text = DataTable.GetStringText(55);
-        eventsWindows[4].transform.GetChild(1).GetChild(1).gameObject.SetActive(false);
-        eventsWindows[4].transform.GetChild(1).GetChild(2).gameObject.SetActive(true);
-
-        for (int i = 0; i < FightForManager.instance.playerFightCardsDatas.Length; i++)
-        {
-            if (FightForManager.instance.playerFightCardsDatas[i] != null && FightForManager.instance.playerFightCardsDatas[i].nowHp > 0)
-            {
-                FightForManager.instance.playerFightCardsDatas[i].nowHp += (int)(percentReturnHp * FightForManager.instance.playerFightCardsDatas[i].fullHp);
-                FightController.instance.UpdateUnitHpShow(FightForManager.instance.playerFightCardsDatas[i]);
-            }
-        }
+        GenericWindow.Off();
+        QuizWindow.Off();
+        SanXuanWindow.Off();
     }
 
     private class WeightElement : IWeightElement
@@ -743,11 +700,7 @@ public class WarsUIManager : MonoBehaviour
     }
 
     //关闭三选的附加方法
-    public void CloseSanXuanWin()
-    {
-        var sanXuan = eventsWindows[3].GetComponent<SanXuanWindowUi>();
-        sanXuan.ResetUi();
-    }
+    public void CloseSanXuanWin() => SanXuanWindow.ResetUi();
 
     int updateShopNeedGold; //商店刷新所需金币
     //刷新商店添加金币
@@ -756,7 +709,7 @@ public class WarsUIManager : MonoBehaviour
         bool isSuccessed = UpdateShoppingList(updateShopNeedGold);
         if (isSuccessed)
             updateShopNeedGold++;
-        eventsWindows[3].transform.GetChild(0).GetChild(3).GetChild(1).GetComponent<Text>().text = updateShopNeedGold.ToString();
+        SanXuanWindow.RefreshText.text = updateShopNeedGold.ToString();
     }
 
     /// <summary>
@@ -777,11 +730,10 @@ public class WarsUIManager : MonoBehaviour
             return false;
         }
 
-        shopInfoObj.SetActive(false);
-        var sanXuan = eventsWindows[3].GetComponent<SanXuanWindowUi>();
+        var sanXuan = SanXuanWindow;
         sanXuan.SetTrade(refreshCost == 0 ? updateShopNeedGold : refreshCost + 1);
         GoldForCity -= refreshCost;
-        playerInfoObj.transform.GetChild(1).GetChild(0).GetComponent<Text>().text = GoldForCity.ToString();
+        UpdateInfoUis();
         for (int i = 0; i < sanXuan.GameCards.Length; i++)
         {
             var pick = DataTable.Mercenary.Values.Select(m => new WeightElement {Id = m.Id, Weight = m.Weight})
@@ -793,12 +745,12 @@ public class WarsUIManager : MonoBehaviour
             //广告概率
             if (Random.Range(0, 100) < 25)
             {
-                ui.SetAd(() => AdAgentBase.instance.BusyRetry(() =>
+                ui.SetAd(success =>
                 {
-                    //if (!AdController.instance.ShowVideo(
+                    if (!success) return;
                     GetOrBuyCards(true, 0, ui.Card, info, btnIndex);
                     PlayerDataForGame.instance.ShowStringTips(DataTable.GetStringText(57));
-                }, () => { PlayerDataForGame.instance.ShowStringTips(DataTable.GetStringText(6)); }));
+                });
                 continue;
             }
 
@@ -822,9 +774,9 @@ public class WarsUIManager : MonoBehaviour
     }
 
     //刷新奇遇商品
-    private void UpdateQiYvWoods()
+    private void UpdateQiYuInventory()
     {
-        var sanXuan = eventsWindows[3].GetComponent<SanXuanWindowUi>();
+        var sanXuan = SanXuanWindow;
             var pick = DataTable.Mercenary.Values.Select(m => new WeightElement {Id = m.Id, Weight = m.Weight})
                 .Pick().Id;
             var mercenary = DataTable.Mercenary[pick];
@@ -837,11 +789,8 @@ public class WarsUIManager : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// 匹配稀有度的颜色
-    /// </summary>
-    /// <returns></returns>
-    private Color NameColorChoose(int rarity)
+    // 匹配稀有度的颜色
+    private Color GetNameColor(int rarity)
     {
         Color color = new Color();
         switch (rarity)
@@ -874,15 +823,12 @@ public class WarsUIManager : MonoBehaviour
         return color;
     }
 
-    [SerializeField]
-    GameObject shopInfoObj; //展示三选详细信息obj
-
     //展示三选单位个体信息
     private void OnClickToShowShopInfo(int btnIndex, string text)
     {
         //ShowOrHideGuideObj(1, false);
 
-        var sanXuan = eventsWindows[3].GetComponent<SanXuanWindowUi>();
+        var sanXuan = SanXuanWindow;
         for (var i = 0; i < sanXuan.GameCards.Length; i++)
         {
             var ui = sanXuan.GameCards[i];
@@ -899,25 +845,10 @@ public class WarsUIManager : MonoBehaviour
         //}
     }
 
-    //观看视频刷新奇遇
-    [Skip]
-    public void WatchAdForUpdateQiYv()
-    {
-        var adBtn = eventsWindows[3].GetComponent<SanXuanWindowUi>().AdRefreshBtn;
-        AdAgentBase.instance.BusyRetry(() =>
-        {
-            adBtn.gameObject.SetActive(false);
-            UpdateQiYvWoods();
-        }, () => PlayerDataForGame.instance.ShowStringTips(DataTable.GetStringText(6)));
-        adBtn.enabled = true;
-    }
-
     //奇遇或商店界面初始化
     private void InitializeQYOrSp(bool isBuy)
     {
-        var ui = eventsWindows[3].GetComponent<SanXuanWindowUi>();
-        /***************************************************/
-        Transform tran = eventsWindows[3].transform.GetChild(0);
+        var ui = SanXuanWindow;
         if (isBuy)
         {
             //重置刷新商店所需金币
@@ -929,16 +860,14 @@ public class WarsUIManager : MonoBehaviour
         {
             //奇遇刷新按钮
             ui.SetRecruit();
-            UpdateQiYvWoods();
+            UpdateQiYuInventory();
         }
     }
 
     //获得或购买三选物品
     private void GetOrBuyCards(bool isBuy, int cost, GameCard card, GameCardInfo info, int btnIndex)
     {
-        var sanXuan =
-            eventsWindows[3]
-                .GetComponent<SanXuanWindowUi>(); //.transform.GetChild(0).GetChild(1).GetChild(btnIndex).gameObject.SetActive(false);
+        var sanXuan = SanXuanWindow;
         var ui = sanXuan.GameCards[btnIndex];
         if (isBuy)
         {
@@ -950,61 +879,32 @@ public class WarsUIManager : MonoBehaviour
             }
 
             GoldForCity -= cost;
-            playerInfoObj.transform.GetChild(1).GetChild(0).GetComponent<Text>().text = GoldForCity.ToString();
+            UpdateInfoUis();
 
             ui.Off();
         }
 
         CreateCardToList(card, info);
-        if (!isBuy) PassGuanQia();
+        if (!isBuy) PassStage();
 
-        if (shopInfoObj.activeSelf)
-        {
-            shopInfoObj.SetActive(false);
-        }
-
-        ui.SetSelect(false); //GameObject obj = eventsWindows[3].transform.GetChild(0).GetChild(1).GetChild(btnIndex).GetChild(8).gameObject;
-        //if (obj.activeSelf)
-        //{
-        //    obj.SetActive(false);
-        //}
+        ui.SetSelect(false); 
     }
 
-    //初始化答题界面
-    private void InitializeDaTi()
-    {
-        eventsWindows[2].transform.GetChild(6).gameObject.SetActive(false);
-        var pick = DataTable.Quest.Values.Select(q=>new WeightElement{Id = q.Id,Weight = q.Weight}).Pick();
-        var quest = DataTable.Quest[pick.Id];
-        eventsWindows[2].transform.GetChild(2).GetComponent<Text>().text = quest.Question;
-        var selections = new[] {quest.A, quest.B, quest.C};
-        for (int i = 3; i < 6; i++)
-        {
-            bool isRight = (i - 2) == quest.Answer;
-            int btnIndex = i;
-            eventsWindows[2].transform.GetChild(i).GetChild(0).GetComponent<Text>().color = Color.white;
-            eventsWindows[2].transform.GetChild(i).GetChild(0).GetComponent<Text>().text = selections[i - 3];
-            eventsWindows[2].transform.GetChild(i).GetComponent<Button>().onClick.AddListener(delegate ()
-            {
-                EndDaTiGiveReward(isRight, btnIndex);
-            });
-        }
-    }
     //答题结束
-    private void EndDaTiGiveReward(bool isCorrect, int btnIndex)
+    private void OnAnswerQuiz(bool isCorrect)
     {
         PlayAudioClip(13);
 
-        for (int i = 3; i < 6; i++)
-        {
-            eventsWindows[2].transform.GetChild(i).GetComponent<Button>().onClick.RemoveAllListeners();
-        }
+        //for (int i = 3; i < 6; i++)
+        //{
+        //    eventsWindows[2].transform.GetChild(i).GetComponent<Button>().onClick.RemoveAllListeners();
+        //}
 
         string rewardStr = "";
         if (isCorrect)
         {
             rewardStr = DataTable.GetStringText(58);
-            eventsWindows[2].transform.GetChild(btnIndex).GetChild(0).GetComponent<Text>().color = Color.green;
+            //eventsWindows[2].transform.GetChild(btnIndex).GetChild(0).GetComponent<Text>().color = Color.green;
             var pick = DataTable.QuestReward.Values.Select(r => new WeightElement {Id = r.Id, Weight = r.Weight})
                 .Pick().Id;
             var reward = DataTable.QuestReward[pick].Produce;
@@ -1016,10 +916,10 @@ public class WarsUIManager : MonoBehaviour
         else
         {
             rewardStr = DataTable.GetStringText(59);
-            eventsWindows[2].transform.GetChild(btnIndex).GetChild(0).GetComponent<Text>().color = Color.red;
+            //eventsWindows[2].transform.GetChild(btnIndex).GetChild(0).GetComponent<Text>().color = Color.red;
         }
         PlayerDataForGame.instance.ShowStringTips(rewardStr);
-        eventsWindows[2].transform.GetChild(6).gameObject.SetActive(true);
+        //eventsWindows[2].transform.GetChild(6).gameObject.SetActive(true);
     }
 
     //根据稀有度返回随机id
@@ -1072,7 +972,7 @@ public class WarsUIManager : MonoBehaviour
             info.Type == GameCardType.Hero ? re.HeroImg[card.id] : re.FuZhuImg[info.ImageId];
         ShowNameTextRules(obj.transform.GetChild(3).GetComponent<Text>(), info.Name);
         //名字颜色
-        obj.transform.GetChild(3).GetComponent<Text>().color = NameColorChoose(info.Rare);
+        obj.transform.GetChild(3).GetComponent<Text>().color = GetNameColor(info.Rare);
         obj.transform.GetChild(4).GetComponent<Image>().sprite = re.GradeImg[card.level];
         obj.transform.GetChild(5).GetComponentInChildren<Text>().text = info.Short;
         //兵种框
@@ -1143,8 +1043,13 @@ public class WarsUIManager : MonoBehaviour
     private void InitMainUIShow()
     {
         battleNameText.text = DataTable.War[PlayerDataForGame.instance.selectedWarId].Title;
-        playerInfoObj.transform.GetChild(0).GetComponent<Text>().text = DataTable.PlayerInitialConfig[PlayerDataForGame.instance.pyData.ForceId].Force;
-        UpdateGoldandBoxNumsShow();
+        var py = PlayerDataForGame.instance;
+        string flagShort;
+        if (py.Character != null && py.Character.IsValidCharacter())
+            flagShort = py.Character.Name.First().ToString();
+        else flagShort = DataTable.PlayerInitialConfig[py.pyData.ForceId].Force;
+        infoUis.Short.text = flagShort;
+        UpdateInfoUis();
         UpdateLevelInfo();
         UpdateBattleSchedule();
     }
@@ -1163,12 +1068,20 @@ public class WarsUIManager : MonoBehaviour
         battleScheduleText.text = str;
     }
 
-    //刷新金币宝箱的显示
-    public void UpdateGoldandBoxNumsShow()
+    public void FinalizeWar(int totalGold, List<int> chests)
     {
-        playerInfoObj.transform.GetChild(1).GetChild(0).GetComponent<Text>().text = GoldForCity.ToString();
-        playerInfoObj.transform.GetChild(2).GetChild(0).GetComponent<Text>().text = treasureChestNums.ToString();
+        GoldForCity += totalGold;
+        WarChests.AddRange(chests);
+        UpdateInfoUis();
+        GenericWindow.SetReward(totalGold, chests.Count);
+        if (chests.Count <= 0) return;
+        var warReward = PlayerDataForGame.instance.WarReward;
+        foreach (var id in chests)
+            warReward.Chests.Add(id);
     }
+
+    //刷新金币宝箱的显示
+    private void UpdateInfoUis() => infoUis.Set(GoldForCity,WarChests);
 
     /// <summary>
     /// 当前武将卡牌上阵最大数量
@@ -1207,7 +1120,7 @@ public class WarsUIManager : MonoBehaviour
             GoldForCity -= baseCfg.Cost;
             cityLevel++;
             PlayerDataForGame.instance.ShowStringTips(DataTable.GetStringText(60));
-            playerInfoObj.transform.GetChild(1).GetChild(0).GetComponent<Text>().text = GoldForCity.ToString();
+            UpdateInfoUis();
             UpdateLevelInfo();
             //满级
             if (cityLevel >= DataTable.BaseLevel.Count)
@@ -1230,7 +1143,7 @@ public class WarsUIManager : MonoBehaviour
     {
         Time.timeScale = 1;
         PlayAudioClip(13);
-        isEnteredLevel = true;  //限制返回主城时还能进入关卡
+        isGettingStage = true;  //限制返回主城时还能进入关卡
         if (PlayerDataForGame.instance.isJumping) return;
         PlayerDataForGame.instance.JumpSceneFun(GameSystem.GameScene.MainScene, false);
     }
@@ -1396,5 +1309,80 @@ public class WarsUIManager : MonoBehaviour
     private void ResetQuitBool()
     {
         isShowQuitTips = false;
+    }
+
+    [Serializable]private class PlayerInfoUis
+    {
+        public Text Gold;
+        public Text Chests;
+        public Text Short;
+
+        public void Set(int gold, ICollection<int> chests)
+        {
+            Gold.text = gold.ToString();
+            Chests.text = chests.Count.ToString();
+        }
+    }
+
+    [Serializable]private class GenericWarWindow
+    {
+        private const string X = "×";
+        [Serializable]public enum States
+        {
+            Reward,
+            Recovery
+        }
+        public GameObject WindowObj;
+        public Text GoldText;
+        public GameObject GoldObj;
+        public Text ChestText;
+        public GameObject ChestObj;
+        public Text MessageText;
+        public Button OkButton;
+        public GameObject CloudObj;
+        [SerializeField]private CSwitch[] componentSwitch;
+        private GameObjectSwitch<States> comSwitch;
+
+        public void Init()
+        {
+            comSwitch = new GameObjectSwitch<States>(componentSwitch.Select(c => (c.State, c.Objs)).ToArray());
+            OkButton.onClick.AddListener(instance.PassStage);
+        }
+
+        private void Show(States state)
+        {
+            WindowObj.SetActive(true);
+            comSwitch.Set(state);
+        }
+
+        public void Off() => WindowObj.SetActive(false);
+
+        [Serializable]private class CSwitch
+        {
+            public States State;
+            public GameObject[] Objs;
+        }
+
+        public IEnumerator InvokeCloudAnimation()
+        {
+            CloudObj.SetActive(false);
+            yield return new WaitForEndOfFrame();
+            CloudObj.SetActive(true);
+        }
+
+        public void SetRecovery(string message)
+        {
+            MessageText.text = message;
+            Show(States.Recovery);
+        }
+
+        public void SetReward(int gold, int chest)
+        {
+            GoldText.text = X + gold;
+            GoldObj.SetActive(gold > 0);
+            ChestText.text = X + chest;
+            ChestObj.SetActive(chest > 0);
+            Show(States.Reward);
+        }
     }
 }

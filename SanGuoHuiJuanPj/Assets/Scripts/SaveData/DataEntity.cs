@@ -142,6 +142,7 @@ public class PlayerData : IPlayerData
             YvQue = dto.YvQue,
             Stamina = dto.Stamina,
             ForceId = dto.ForceId,
+            AdPass = dto.AdPass,
             LastJinNangRedeemTime = dto.LastJinNangRedeemTime,
             DailyJinNangRedemptionCount = dto.DailyJinNangRedemptionCount,
             LastJiuTanRedeemTime = dto.LastJiuTanRedeemTime,
@@ -180,6 +181,8 @@ public class PlayerData : IPlayerData
     public long LastStaminaUpdateTicks { get; set; }
     //游戏版本号
     public float LastGameVersion { get; set; }
+    //免广告卷
+    public int AdPass { get; set; }
     //战斗的时间倍率
     public float WarTimeScale { get; set; } = 1;
 }

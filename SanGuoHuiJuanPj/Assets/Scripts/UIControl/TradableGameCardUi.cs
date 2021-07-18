@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using CorrelateLib;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -17,33 +18,41 @@ public class TradableGameCardUi : MonoBehaviour
     public Button BuyBtn;
     public Text FreeLabel;
     public Text PriceLabel;
-    public Image AdLabel;
+    //public Image AdLabel;
+    public AdConsumeController AdConsume;
     public UnityEvent OnClickAction;
-    private Dictionary<States, GameObject> stateSet;
-    private Dictionary<States, GameObject> StateSet
+    private Dictionary<States, Action<bool>> stateSet;
+    private Dictionary<States, Action<bool>> StateSet
     {
         get
         {
             if (stateSet == null)
             {
-                stateSet = new Dictionary<States, GameObject>
+                stateSet = new Dictionary<States, Action<bool>>
                 {
-                    {States.Free, FreeLabel.gameObject},
-                    {States.Sell, PriceLabel.gameObject},
-                    {States.Ad, AdLabel.gameObject}
+                    {States.Free, on=> FreeLabel.gameObject.SetActive(on)},
+                    {States.Sell,on=> PriceLabel.gameObject.SetActive(on)},
+                    {States.Ad, on =>
+                    {
+                        if(on) AdConsume.ShowWithUpdate();
+                        else AdConsume.Off();
+                    }}
                 };
             }
             return stateSet;
         }
     }
 
-    void Start() => GameCard.CityOperation.OnclickAction.AddListener(()=>OnClickAction.Invoke());
+    void Start()
+    {
+        GameCard.CityOperation.OnclickAction.AddListener(() => OnClickAction.Invoke());
+        AdConsume.Init();
+    }
 
-    public void SetAd(UnityAction action)
+    public void SetAd(UnityAction<bool> action)
     {
         SetState(States.Ad);
-        BuyBtn.onClick.RemoveAllListeners();
-        BuyBtn.onClick.AddListener(action);
+        AdConsume.SetCallBackAction(action, _ => action.Invoke(true), ViewBag.Instance().SetValue(0), true);
     }
 
     public void SetPrice(int price, UnityAction buyAction)
@@ -56,7 +65,7 @@ public class TradableGameCardUi : MonoBehaviour
 
     private void SetState(States state)
     {
-        foreach (var item in StateSet) item.Value.SetActive(item.Key == state);
+        foreach (var item in StateSet) item.Value.Invoke(item.Key == state);
     }
 
     public void SetSelect(bool isSelected) => GameCard.Selected(isSelected);

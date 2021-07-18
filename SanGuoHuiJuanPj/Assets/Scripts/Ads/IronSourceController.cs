@@ -23,7 +23,7 @@ public class IronSourceController : AdControllerBase
 
     private void OnRewardedVideoAdLoadedDemandOnlyEvent(string msg) => loadAction?.Invoke(true, msg);
 
-    private void OnRewardedVideoAdLoadFailedDemandOnlyEvent(string msg, IronSourceError err) => loadAction?.Invoke(false,$"{err}: {msg}");
+    private void OnRewardedVideoAdLoadFailedDemandOnlyEvent(string msg, IronSourceError err) => loadAction?.Invoke(false, $"{err}: {msg}");
 
     private void OnRewardedVideoAdShowFailedEvent(IronSourceError error) => showAction?.Invoke(false, error.getDescription());
 

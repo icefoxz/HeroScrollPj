@@ -20,29 +20,35 @@ public class GameSystem : MonoBehaviour
 
     public static GameScene CurrentScene { get; private set; }
 
-    public static GameSystem instance;
+    public static GameSystem Instance { get; private set; }
     public static LoginUiController LoginUi { get; private set; }
-    public LoginUiController loginUiController;
     public static TimeSystemControl TimeSystemControl { get; private set; }
+    public static Configuration Configuration { get; private set; }
+    public static GameResources GameResources { get; private set; }
+    public static bool IsInit { get; private set; }
+    public static MapService MapService { get; private set; }
+
+    #region Reference Fields
+    public LoginUiController loginUiController;
     public TimeSystemControl timeSystemControl;
     public PlayerDataForGame playerDataForGame;
-    private List<UnityAction> SceneLoadActions { get; } = new List<UnityAction>();
     public Configuration configuration;
     public DataTable dataTable;
-    public static Configuration Configuration { get; private set; }
-
-    public static GameResources GameResources { get; private set; }
+    public PrefabManager prefabManager;
+    public AdManager adManager;
     public Canvas systemCanvas;
-    public static bool IsInit { get; private set; }
+    public ServerRequestExceptionWindow ServerException;
+    #endregion
+    private static ServerRequestExceptionWindow _serverException;
+    //method properties/fields
+    private List<UnityAction> SceneLoadActions { get; } = new List<UnityAction>();
     public static UnityEvent OnWarSceneInit = new UnityEvent();
     public static UnityEvent OnMainSceneInit = new UnityEvent();
     private Queue<Func<bool>> InitQueue;
 
-    public static MapService MapService { get; private set; }
-
     void Awake()
     {
-        instance = this;
+        Instance = this;
         DontDestroyOnLoad(gameObject);
     }
 
@@ -65,11 +71,16 @@ public class GameSystem : MonoBehaviour
             GameResources = new GameResources();
             GameResources.Init();
         });
+        InitEnqueue(prefabManager.Init);
+        InitEnqueue(adManager.Init);
         InitEnqueue(() => AudioController0.instance.MusicSwitch(GamePref.PrefMusicPlay));
         InitEnqueue(() => AudioController1.instance.MusicSwitch(GamePref.PrefMusicPlay));
         InitEnqueue(() =>
         {
+            MapService = new MapService();
             playerDataForGame.Init();
+            _serverException = ServerException;
+            ServerException.Init();
             IsInit = true;
         });
         StartCoroutine(InitCo());
@@ -122,7 +133,6 @@ public class GameSystem : MonoBehaviour
     private void OnWarSceneLoaded()
     {
         WarsUIManager.instance.Init();
-        EffectsPoolingControl.instance.Init();
         OnWarSceneInit.Invoke();
         OnWarSceneInit?.RemoveAllListeners();
     }
@@ -164,9 +174,10 @@ public class GameSystem : MonoBehaviour
 
     public void RegNextSceneLoadAction(UnityAction action) => SceneLoadActions.Add(action);
 
-    public void BeginAllServices()
+    public void BeginAllOnlineServices()
     {
-        MapService = new MapService();
         MapService.Init();
     }
+
+    public static void ServerRequestException(string title, string detail) => _serverException.ShowError(title, detail);
 }

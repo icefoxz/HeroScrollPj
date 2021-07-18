@@ -28,7 +28,7 @@ MonoBehaviour:
   addFakeCode: 1
   minFalseMethodsPerClass: 10
   maxFalseMethodsPerClass: 150
-  unicodeStartInDecimal: 91
+  unicodeStartInDecimal: 388
   numberOfCharacters: 2
   createNameTranslationFile: 0
   nameTranslationFile: nameTranslation.txt
@@ -196,7 +196,7 @@ MonoBehaviour:
   - PunRPC
   - Photon.Pun.PunRPC
   includePublicClasses: 1
-  includePublicMethods: 1
+  includePublicMethods: 0
   includePublicFields: 1
   includePublicProperties: 0
   includePublicEvents: 0

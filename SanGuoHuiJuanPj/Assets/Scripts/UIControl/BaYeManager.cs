@@ -395,20 +395,12 @@ public class BaYeManager : MonoBehaviour
             var rewardMap = InstanceReward(se);
             UIManager.instance.baYeWindowUi.Show(rewardMap);
             OnBayeStoryEventReward(se);
-            UIManager.instance.baYeWindowUi.ShowAdButton(adBtn =>
+            UIManager.instance.baYeWindowUi.ShowAdButton(success =>
             {
-                AdAgentBase.instance.CallAd((success, msg) =>
-                {
-                    if (success)
-                    {
-                        UIManager.instance.baYeWindowUi.Show(InstanceReward(se, 2));
-                        adBtn.gameObject.SetActive(false);
-                        OnBayeStoryEventReward(se);
-                        UIManager.instance.ResetBaYeProgressAndGold();
-                        return;
-                    }
-                    PlayerDataForGame.instance.ShowStringTips($"获取失败！\n{msg}");
-                });
+                if (!success) return;
+                UIManager.instance.baYeWindowUi.Show(InstanceReward(se, 2));
+                OnBayeStoryEventReward(se);
+                UIManager.instance.ResetBaYeProgressAndGold();
             });
             UIManager.instance.ResetBaYeProgressAndGold();
 

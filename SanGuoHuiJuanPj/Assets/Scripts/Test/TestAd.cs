@@ -10,7 +10,7 @@ public class TestAd : MonoBehaviour
 {
     public Text reportText;
     public Text stateText;
-    public IronSourceController controller;
+    public UnityAdController controller;
 
 
     void Start()

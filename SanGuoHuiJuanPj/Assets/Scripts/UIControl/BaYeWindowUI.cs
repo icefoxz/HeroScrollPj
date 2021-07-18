@@ -20,7 +20,8 @@ public class BaYeWindowUI : MiniWindowUI
     public BaYeLingSelectBtn selectionButtonPrefab;
     public Text question;
     public Button[] answer;
-    public Button adBtn;
+    public AdConsumeController adConsume;
+    //public Button adBtn;
     public Button closeBtn;
     private List<BaYeLingSelectBtn> lingCaches;
 
@@ -30,6 +31,7 @@ public class BaYeWindowUI : MiniWindowUI
         foreach (var btn in selectionView.GetComponentsInChildren<BaYeLingSelectBtn>(true))
             btn.gameObject.SetActive(false);
         lingCaches = new List<BaYeLingSelectBtn>();
+        adConsume.Init();
     }
 
     public override void Show(Dictionary<int, int> rewardMap)
@@ -59,7 +61,10 @@ public class BaYeWindowUI : MiniWindowUI
 
     private void DisplayViewChange(DisplayViews display)
     {
-        adBtn.gameObject.SetActive(display==DisplayViews.Reward);
+        if(display == DisplayViews.Reward)
+            adConsume.ShowWithUpdate();
+        else adConsume.Off();
+        //adBtn.gameObject.SetActive(display==DisplayViews.Reward);
         listView.gameObject.SetActive(display == DisplayViews.Reward);
         questionView.gameObject.SetActive(display == DisplayViews.Quest);
         selectionView.gameObject.SetActive(display == DisplayViews.Selection);
@@ -100,15 +105,14 @@ public class BaYeWindowUI : MiniWindowUI
         closeBtn.gameObject.SetActive(true);
         selectionView.gameObject.SetActive(false);
         questionView.gameObject.SetActive(false);
-        adBtn.onClick.RemoveAllListeners();
-        adBtn.gameObject.SetActive(false);
+        adConsume.Off();
         base.Close();
     }
 
-    public void ShowAdButton(UnityAction<Button> onClickAction)
+    public void ShowAdButton(UnityAction<bool> onClickAction)
     {
-        adBtn.onClick.RemoveAllListeners();
-        adBtn.onClick.AddListener(()=>onClickAction(adBtn));
-        adBtn.gameObject.SetActive(true);
+        adConsume.SetCallBackAction(onClickAction.Invoke, _ => onClickAction.Invoke(true),
+            ViewBag.Instance().SetValue(0), true);
+        adConsume.ShowWithUpdate();
     }
 }

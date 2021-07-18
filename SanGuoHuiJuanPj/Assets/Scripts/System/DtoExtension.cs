@@ -24,6 +24,7 @@ namespace Assets
             data.LastFourDaysChestRedeemTime = dto.LastFourDaysChestRedeemTime;
             data.LastWeekChestRedeemTime = dto.LastWeekChestRedeemTime;
             data.LastGameVersion = dto.LastGameVersion;
+            data.AdPass = dto.AdPass;
         }
 
         public static bool IsValidCharacter(this ICharacter c) => !(c.Name == default && c.Nickname == default &&

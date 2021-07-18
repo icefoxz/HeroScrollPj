@@ -74,8 +74,6 @@ public class FightForManager : MonoBehaviour
         new int[2]{ 14,16},             //19
     };
 
-    private GameResources GameResources = GameSystem.GameResources;
-
     private void Awake()
     {
         if (instance == null)
@@ -89,7 +87,6 @@ public class FightForManager : MonoBehaviour
         Input.multiTouchEnabled = false;    //限制多指拖拽
     }
 
-    // Start is called before the first frame update
     public void Init()
     {
         oneDisY = Screen.height / (1920 / gridLayoutGroup.cellSize.y) / 9;
@@ -1283,10 +1280,11 @@ public class FightForManager : MonoBehaviour
         }
 
         var info = GameCardInfo.GetInfo((GameCardType) data.cardType, data.cardId);
+        var resources = GameSystem.GameResources;
         //兵种
         data.cardObj.transform.GetChild(1).GetComponent<Image>().sprite = info.Type == GameCardType.Hero
-            ? GameResources.HeroImg[data.cardId]
-            : GameResources.FuZhuImg[info.ImageId];
+            ? resources.HeroImg[data.cardId]
+            : resources.FuZhuImg[info.ImageId];
         //血量
         data.cardObj.transform.GetChild(2).GetComponent<Image>().fillAmount = 0;
         //名字
@@ -1294,11 +1292,11 @@ public class FightForManager : MonoBehaviour
         //名字颜色
         data.cardObj.transform.GetChild(3).GetComponent<Text>().color = NameColorChoose(info.Rare);
         //星级
-        data.cardObj.transform.GetChild(4).GetComponent<Image>().sprite = GameResources.GradeImg[data.cardGrade];
+        data.cardObj.transform.GetChild(4).GetComponent<Image>().sprite = resources.GradeImg[data.cardGrade];
         //兵种
         data.cardObj.transform.GetChild(5).GetComponentInChildren<Text>().text = info.Short;
         //边框
-        data.cardObj.transform.GetChild(5).GetComponent<Image>().sprite = GameResources.ClassImg[0];
+        data.cardObj.transform.GetChild(5).GetComponent<Image>().sprite = resources.ClassImg[0];
         WarsUIManager.instance.FrameChoose(info.Rare, data.cardObj.transform.GetChild(6).GetComponent<Image>());
         data.damage = info.GetDamage(data.cardGrade);
         data.hpr = info.GameSetRecovery;
